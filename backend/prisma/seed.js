@@ -372,7 +372,12 @@ async function main() {
     const items = os.items || [];
     const t = calcTotals(items);
     const osRecord = await prisma.serviceOrder.upsert({
-      where: { id: os.id }, update: {},
+      where: { id: os.id },
+      update: {
+        totalParts: t.totalParts, totalServices: t.totalServices,
+        totalLabor: t.totalLabor, totalCost: t.totalCost,
+        status: os.status,
+      },
       create: {
         id: os.id, tenantId: demoTenant.id, customerId: customers[os.customerId].id,
         vehicleId: vehicles[os.vehicleId].id, orderType: 'OS', status: os.status,
@@ -385,6 +390,8 @@ async function main() {
         createdAt: os.startedAt || new Date(),
       },
     });
+    // Garante idempotência: remove itens anteriores antes de recriar
+    await prisma.serviceOrderItem.deleteMany({ where: { serviceOrderId: osRecord.id } });
     for (const item of items) {
       const total = item.quantity * item.unitPrice;
       await prisma.serviceOrderItem.create({
@@ -405,6 +412,9 @@ async function main() {
   console.log(`✅ ${osData.length} ordens de serviço com itens`);
 
   // ── Lançamentos Financeiros ────────────────────────────────────────────────
+  // Limpa financeiro anterior do demo para garantir idempotência
+  await prisma.financialTransaction.deleteMany({ where: { tenantId: demoTenant.id } });
+
   // Receitas (das OS pagas)
   const completedOS = osData.filter(o => ['ENTREGUE','FATURADO'].includes(o.status));
   for (const os of completedOS) {
@@ -441,6 +451,10 @@ async function main() {
   console.log(`✅ ${completedOS.length} receitas + ${expenses.length} despesas lançadas`);
 
   // ── Movimentação de Estoque (para OS concluídas) ───────────────────────────
+  // Reseta estoque e movimentações para o demo
+  await prisma.inventoryMovement.deleteMany({ where: { tenantId: demoTenant.id } });
+  await prisma.part.updateMany({ where: { tenantId: demoTenant.id }, data: { currentStock: 20 } });
+
   const stockExits = [
     { partSku: 'MOT-001', qty: 4 * 3 }, // óleo usado em 3 OS
     { partSku: 'MOT-003', qty: 3 },     // filtro de óleo

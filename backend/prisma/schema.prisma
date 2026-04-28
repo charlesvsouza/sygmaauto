@@ -283,7 +283,7 @@ model ServiceOrderItem {
   serviceId       String?
   partId          String?
   description     String
-  quantity        Int      @default(1)
+  quantity        Float    @default(1)
   unitPrice       Float
   totalPrice      Float
   discount       Float  @default(0)
