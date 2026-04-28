@@ -4,11 +4,7 @@ dockerfilePath = "backend/Dockerfile"
 buildContext = "backend"
 
 [deploy]
-startCommand = "sh -c 'npx prisma migrate deploy && node dist/main'"
 healthcheckPath = "/health"
 healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-
-[[services]]
-name = "oficina360-api"
