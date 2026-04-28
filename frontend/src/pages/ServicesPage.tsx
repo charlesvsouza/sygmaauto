@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { servicesApi } from '../api/client';
+import { useAuthStore } from '../store/authStore';
 import {
   Wrench,
   Plus,
@@ -17,8 +18,10 @@ import {
 import { cn } from '../lib/utils';
 
 export function ServicesPage() {
+  const { user } = useAuthStore();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -31,16 +34,19 @@ export function ServicesPage() {
     hourlyRate: 0,
     tmo: 0,
   });
+  const canManageServices = user?.role === 'MASTER' || user?.role === 'ADMIN';
 
   useEffect(() => {
     loadServices();
   }, []);
 
   const loadServices = async () => {
+    setErrorMessage(null);
     try {
       const response = await servicesApi.getAll();
       setServices(response.data);
-    } catch (error) {
+    } catch (error: any) {
+      setErrorMessage(error?.response?.data?.message || 'Nao foi possivel carregar o catalogo de servicos.');
       console.error('Falha ao carregar serviços:', error);
     } finally {
       setLoading(false);
@@ -49,6 +55,10 @@ export function ServicesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canManageServices) {
+      alert('Voce nao tem permissao para cadastrar ou editar servicos.');
+      return;
+    }
     try {
       if (editingService) {
         await servicesApi.update(editingService.id, formData);
@@ -58,7 +68,8 @@ export function ServicesPage() {
       setShowModal(false);
       resetForm();
       loadServices();
-    } catch (error) {
+    } catch (error: any) {
+      alert(error?.response?.data?.message || 'Falha ao salvar servico.');
       console.error('Falha ao salvar serviço:', error);
     }
   };
@@ -78,11 +89,16 @@ export function ServicesPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!canManageServices) {
+      alert('Voce nao tem permissao para excluir servicos.');
+      return;
+    }
     if (confirm('Tem certeza que deseja excluir este serviço?')) {
       try {
         await servicesApi.delete(id);
         loadServices();
-      } catch (error) {
+      } catch (error: any) {
+        alert(error?.response?.data?.message || 'Falha ao excluir servico.');
         console.error('Falha ao excluir serviço:', error);
       }
     }
@@ -116,6 +132,10 @@ export function ServicesPage() {
         </div>
         <button
           onClick={() => {
+            if (!canManageServices) {
+              alert('Voce nao tem permissao para cadastrar servicos.');
+              return;
+            }
             resetForm();
             setShowModal(true);
           }}
@@ -125,6 +145,12 @@ export function ServicesPage() {
           Novo Serviço
         </button>
       </div>
+
+      {errorMessage && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800 text-sm font-semibold">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row items-center gap-4 bg-slate-50/50">

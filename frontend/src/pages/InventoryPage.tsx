@@ -236,6 +236,7 @@ export function InventoryPage() {
   const planName = tenant?.subscription?.plan?.name || 'START';
   const canManageParts = user?.role === 'MASTER' || user?.role === 'ADMIN';
   const canUseInventory = planName === 'PRO' || planName === 'REDE';
+  const hasInventoryAccess = canUseInventory && canManageParts;
 
   useEffect(() => { loadAll(); }, []);
 
@@ -346,6 +347,14 @@ export function InventoryPage() {
       {errorMessage && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800 text-sm font-semibold">
           {errorMessage}
+        </div>
+      )}
+
+      {!hasInventoryAccess && (
+        <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sky-900 text-sm font-semibold">
+          {!canUseInventory
+            ? 'Seu plano atual nao permite cadastro de pecas. Faca upgrade para PRO ou REDE.'
+            : 'Seu usuario nao tem permissao para cadastrar ou editar pecas. Use MASTER ou ADMIN.'}
         </div>
       )}
 
