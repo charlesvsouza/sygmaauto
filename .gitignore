@@ -20,3 +20,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Claude Code memory
+.claude/
