@@ -3,7 +3,7 @@ import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi,
 import {
   ClipboardList, Plus, Search, Car, User, Clock, CheckCircle, XCircle,
   Wrench, Package, FileText, DollarSign, Play, Trash2, Layout, X,
-  Printer, Save, Zap, Loader2,
+  Printer, Save, Zap, Loader2, RefreshCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -93,6 +93,8 @@ export function ServiceOrdersPage() {
   const [catalogSearch, setCatalogSearch] = useState('');
   const [quickAdd, setQuickAdd] = useState({ description: '', unitPrice: '', quantity: '1' });
   const [partQties, setPartQties] = useState<Record<string, number>>({});
+  const [pendingQtyByItem, setPendingQtyByItem] = useState<Record<string, number>>({});
+  const [syncingTotals, setSyncingTotals] = useState(false);
 
   useEffect(() => { loadOrders(); loadBasics(); }, []);
 
@@ -135,21 +137,58 @@ export function ServiceOrdersPage() {
         notes: o.notes || '',
         paymentMethod: o.paymentMethod || '',
       });
+      setPendingQtyByItem({});
     } catch (err) {
       console.error(err);
     }
   };
 
-  const saveDetails = async () => {
+  const saveDetails = async (closeAfterSave = false) => {
     if (!selectedOrder) return;
     try {
       await serviceOrdersApi.update(selectedOrder.id, edit);
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
       loadOrders();
+      if (closeAfterSave) {
+        setSelectedOrder(null);
+      }
       alert('Salvo com sucesso!');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Erro ao salvar. Verifique o status da OS.');
+    }
+  };
+
+  const recalculateTotals = async () => {
+    if (!selectedOrder) return;
+
+    const changedEntries = Object.entries(pendingQtyByItem).filter(([itemId, newQty]) => {
+      const current = selectedOrder.items?.find((i: any) => i.id === itemId);
+      return current && Number(newQty) > 0 && Number(newQty) !== Number(current.quantity);
+    });
+
+    if (changedEntries.length === 0) {
+      alert('Nenhuma alteracao de quantidade pendente.');
+      return;
+    }
+
+    setSyncingTotals(true);
+    try {
+      await Promise.all(
+        changedEntries.map(([itemId, newQty]) =>
+          serviceOrdersApi.updateItem(selectedOrder.id, itemId, { quantity: Number(newQty) })
+        )
+      );
+
+      const res = await serviceOrdersApi.getById(selectedOrder.id);
+      setSelectedOrder(res.data);
+      setPendingQtyByItem({});
+      loadOrders();
+      alert('Calculos atualizados com sucesso.');
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Erro ao atualizar calculos da O.S.');
+    } finally {
+      setSyncingTotals(false);
     }
   };
 
@@ -594,13 +633,27 @@ export function ServiceOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  onClick={recalculateTotals}
+                  disabled={syncingTotals}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all disabled:opacity-60"
+                >
+                  {syncingTotals ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                  Atualizar cálculos
+                </button>
+                <button
                   onClick={() => window.print()}
                   className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
                 >
                   <Printer size={15} /> Imprimir OS
                 </button>
                 <button
-                  onClick={saveDetails}
+                  onClick={() => saveDetails(true)}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
+                >
+                  <X size={15} /> Salvar e sair
+                </button>
+                <button
+                  onClick={() => saveDetails(false)}
                   className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg"
                 >
                   <Save size={15} /> Salvar
@@ -706,8 +759,8 @@ export function ServiceOrdersPage() {
                           <input
                             type="number" step="0.5" min="0.5"
                             className="w-16 bg-slate-50 border border-transparent hover:border-slate-200 rounded-md px-2 py-1 text-center font-bold text-xs"
-                            defaultValue={item.quantity}
-                            onBlur={(e) => updateItem(item.id, { quantity: Number(e.target.value) })}
+                            value={pendingQtyByItem[item.id] ?? item.quantity}
+                            onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
                         <td className="px-5 py-3 text-slate-600">R$ {fmtBR(item.unitPrice)}</td>
@@ -758,8 +811,8 @@ export function ServiceOrdersPage() {
                           <input
                             type="number" min="1"
                             className="w-16 bg-slate-50 border border-transparent hover:border-slate-200 rounded-md px-2 py-1 text-center font-bold text-xs"
-                            defaultValue={item.quantity}
-                            onBlur={(e) => updateItem(item.id, { quantity: Number(e.target.value) })}
+                            value={pendingQtyByItem[item.id] ?? item.quantity}
+                            onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
                         <td className="px-5 py-3 text-slate-600">R$ {fmtBR(item.unitPrice)}</td>
