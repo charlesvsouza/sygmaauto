@@ -1,7 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-// import { UserRole } from '@prisma/client'; // Removed for SQLite
-
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -20,16 +19,15 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: UserRole, required: false, default: 'PRODUTIVO' })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(UserRole)
+  role?: UserRole;
+
   @ApiProperty({ required: false })
   @IsOptional()
   isActive?: boolean;
-
 }
-
 
 export class UpdateUserDto {
   @ApiProperty({ required: false })
@@ -37,10 +35,10 @@ export class UpdateUserDto {
   @IsString()
   name?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: UserRole, required: false })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(UserRole)
+  role?: UserRole;
 
 
   @ApiProperty({ required: false })

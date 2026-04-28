@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto/user.dto';
-// import { UserRole } from '@prisma/client'; // Removed for SQLite
 
 
 @Injectable()
@@ -60,7 +60,7 @@ export class UsersService {
         name: dto.name,
         email: dto.email,
         passwordHash: await bcrypt.hash(dto.password, 10),
-        role: dto.role || 'PRODUTIVO',
+        role: dto.role || UserRole.PRODUTIVO,
         isActive: dto.isActive !== undefined ? dto.isActive : true,
       },
       select: {
@@ -71,7 +71,6 @@ export class UsersService {
         isActive: true,
       },
     });
-
   }
 
   async update(tenantId: string, userId: string, dto: UpdateUserDto) {

@@ -142,32 +142,42 @@ async function main() {
 
   console.log('✅ Demo tenant + subscription created');
 
-  // ─── Usuários Demo ─────────────────────────────────────────────────────────
-  const [adminPwd, mecPwd, recPwd] = await Promise.all([
+  // ─── Usuários Demo (com 4 roles) ──────────────────────────────────────────
+  const [masterPwd, adminPwd, tecPwd, finPwd] = await Promise.all([
+    bcrypt.hash('master123', 10),
     bcrypt.hash('admin123', 10),
-    bcrypt.hash('mecanico123', 10),
-    bcrypt.hash('recepcao123', 10),
+    bcrypt.hash('tecnico123', 10),
+    bcrypt.hash('financeiro123', 10),
   ]);
 
   await Promise.all([
+    // MASTER - Proprietário
+    prisma.user.upsert({
+      where: { tenantId_email: { tenantId: demoTenant.id, email: 'master@demo.com' } },
+      update: {},
+      create: { tenantId: demoTenant.id, email: 'master@demo.com', passwordHash: masterPwd, name: 'Master Demo', role: 'MASTER' },
+    }),
+    // ADMIN - Gerenciador operacional
     prisma.user.upsert({
       where: { tenantId_email: { tenantId: demoTenant.id, email: 'admin@demo.com' } },
       update: {},
-      create: { tenantId: demoTenant.id, email: 'admin@demo.com', passwordHash: adminPwd, name: 'Admin Demo', role: 'MASTER' },
+      create: { tenantId: demoTenant.id, email: 'admin@demo.com', passwordHash: adminPwd, name: 'Admin Demo', role: 'ADMIN' },
     }),
+    // PRODUTIVO - Técnico/Executor
     prisma.user.upsert({
-      where: { tenantId_email: { tenantId: demoTenant.id, email: 'mecanico@demo.com' } },
+      where: { tenantId_email: { tenantId: demoTenant.id, email: 'tecnico@demo.com' } },
       update: {},
-      create: { tenantId: demoTenant.id, email: 'mecanico@demo.com', passwordHash: mecPwd, name: 'Mecânico Demo', role: 'PRODUTIVO' },
+      create: { tenantId: demoTenant.id, email: 'tecnico@demo.com', passwordHash: tecPwd, name: 'Técnico Demo', role: 'PRODUTIVO' },
     }),
+    // FINANCEIRO - Administrativo/Cobrança
     prisma.user.upsert({
-      where: { tenantId_email: { tenantId: demoTenant.id, email: 'recepcao@demo.com' } },
+      where: { tenantId_email: { tenantId: demoTenant.id, email: 'financeiro@demo.com' } },
       update: {},
-      create: { tenantId: demoTenant.id, email: 'recepcao@demo.com', passwordHash: recPwd, name: 'Recepção Demo', role: 'PRODUTIVO' },
+      create: { tenantId: demoTenant.id, email: 'financeiro@demo.com', passwordHash: finPwd, name: 'Financeiro Demo', role: 'FINANCEIRO' },
     }),
   ]);
 
-  console.log('✅ Demo users created');
+  console.log('✅ Demo users (4 roles) created');
 
   // ─── Clientes Demo ─────────────────────────────────────────────────────────
   const [c1, c2] = await Promise.all([
@@ -225,9 +235,15 @@ async function main() {
 ║  • REDE   — R$ 397/mês (ilimitado, multi-unidades)   ║
 ╠══════════════════════════════════════════════════════╣
 ║  ACESSO DEMO (plano PRO — trial 14 dias):            ║
-║  • admin@demo.com     / admin123    (MASTER)         ║
-║  • mecanico@demo.com  / mecanico123 (PRODUTIVO)      ║
-║  • recepcao@demo.com  / recepcao123 (PRODUTIVO)      ║
+║  • master@demo.com    / master123   (MASTER)        ║
+║  • admin@demo.com     / admin123    (ADMIN)         ║
+║  • tecnico@demo.com   / tecnico123  (PRODUTIVO)     ║
+║  • financeiro@demo.com / financeiro123 (FINANCEIRO) ║
+╠══════════════════════════════════════════════════════╣
+║  QUOTAS DE O.S. (por mês):                           ║
+║  • START:  50 O.S. / mês                             ║
+║  • PRO:    150 O.S. / mês                            ║
+║  • REDE:   250 O.S. / mês                            ║
 ╚══════════════════════════════════════════════════════╝
   `);
 }
