@@ -16,4 +16,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "echo '--- Starting Oficina360 ---' && echo 'DATABASE_URL set:' $DATABASE_URL && npx prisma db push --accept-data-loss && echo '--- Schema pushed ---' && node dist/main"]
