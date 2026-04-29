@@ -50,6 +50,12 @@ export class CreatePartDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  currentStock?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
   location?: string;
 
@@ -105,6 +111,12 @@ export class UpdatePartDto {
   @IsInt()
   @Min(0)
   minStock?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  currentStock?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -23,6 +23,7 @@ export function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'price'>('name');
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -117,11 +118,20 @@ export function ServicesPage() {
     });
   };
 
-  const filteredServices = services.filter(
-    (s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.category?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredServices = services
+    .filter(
+      (s) =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.category?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === 'price') {
+        const priceA = Number((a.tmo > 0 && a.hourlyRate > 0) ? a.tmo * a.hourlyRate : a.basePrice || 0);
+        const priceB = Number((b.tmo > 0 && b.hourlyRate > 0) ? b.tmo * b.hourlyRate : b.basePrice || 0);
+        return priceB - priceA;
+      }
+      return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR');
+    });
 
   return (
     <div className="space-y-6">
@@ -163,6 +173,17 @@ export function ServicesPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm bg-white"
             />
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Ordenar</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
+              className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            >
+              <option value="name">Nome (A-Z)</option>
+              <option value="price">Preço (maior)</option>
+            </select>
           </div>
         </div>
 

@@ -43,7 +43,7 @@ const UNITS = [
 const EMPTY_FORM = {
   name: '', internalCode: '', sku: '', category: '',
   description: '', unitPrice: 0, costPrice: 0,
-  unit: 'un', minStock: 0, location: '', supplierId: '',
+  unit: 'un', minStock: 0, currentStock: 0, location: '', supplierId: '',
 };
 
 // ─── Helper: gera código interno ──────────────────────────────────────────────
@@ -260,7 +260,7 @@ export function InventoryPage() {
       sku: part.sku || '', category: part.category || '',
       description: part.description || '', unitPrice: Number(part.unitPrice),
       costPrice: Number(part.costPrice || 0), unit: part.unit || 'un',
-      minStock: part.minStock || 0, location: part.location || '',
+      minStock: part.minStock || 0, currentStock: Number(part.currentStock || 0), location: part.location || '',
       supplierId: part.supplierId || '',
     });
     setShowModal(true);
@@ -589,12 +589,18 @@ export function InventoryPage() {
                 </div>
 
                 {/* Estoque mínimo + localização */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Estoque Mínimo</label>
                     <input type="number" min="0" value={formData.minStock}
                       onChange={e => setFormData({...formData, minStock: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Quantidade em Estoque</label>
+                    <input type="number" min="0" value={formData.currentStock}
+                      onChange={e => setFormData({...formData, currentStock: Number(e.target.value)})}
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Localização</label>
