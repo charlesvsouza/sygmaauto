@@ -17,7 +17,13 @@ export class ImportService {
 
   async parseEstimatePdf(fileBuffer: Buffer) {
     try {
-      const data = await (pdf as any)(fileBuffer);
+      // Tenta chamar como função direta ou via .default (compatibilidade CJS/ESM)
+      const parse = typeof pdf === 'function' ? pdf : pdf.default;
+      if (typeof parse !== 'function') {
+        throw new Error('Biblioteca pdf-parse não foi carregada corretamente como função.');
+      }
+      
+      const data = await parse(fileBuffer);
       const text = data.text;
 
       if (!this.genAI) {
