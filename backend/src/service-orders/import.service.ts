@@ -17,13 +17,27 @@ export class ImportService {
 
   async parseEstimatePdf(fileBuffer: Buffer) {
     try {
-      // Tenta chamar como função direta ou via .default (compatibilidade CJS/ESM)
-      const parse = typeof pdf === 'function' ? pdf : pdf.default;
-      if (typeof parse !== 'function') {
-        throw new Error('Biblioteca pdf-parse não foi carregada corretamente como função.');
+      // Tenta múltiplas formas de obter a função de parse (CJS, ESM, Bundled)
+      let parseFunc: any = pdf;
+      if (typeof parseFunc !== 'function' && (pdf as any).default) {
+        parseFunc = (pdf as any).default;
       }
       
-      const data = await parse(fileBuffer);
+      if (typeof parseFunc !== 'function') {
+        // Fallback final para require caso o import tenha falhado em resolver a função
+        try {
+          const reqPdf = require('pdf-parse');
+          parseFunc = typeof reqPdf === 'function' ? reqPdf : reqPdf.default;
+        } catch (e) {
+          console.error('Falha ao dar require no pdf-parse:', e);
+        }
+      }
+
+      if (typeof parseFunc !== 'function') {
+        throw new Error(`O módulo pdf-parse não exportou uma função válida. Tipo recebido: ${typeof parseFunc}`);
+      }
+      
+      const data = await parseFunc(fileBuffer);
       const text = data.text;
 
       if (!this.genAI) {
