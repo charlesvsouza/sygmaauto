@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, Post, Query } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 
@@ -13,6 +13,7 @@ export class SubscriptionsWebhookController {
   }
 
   @Post()
+  @HttpCode(200)
   async receive(
     @Body() payload: any,
     @Query() query: Record<string, any>,
