@@ -43,6 +43,11 @@ export class SubscriptionsService {
   }
 
   async changePlan(tenantId: string, dto: ChangePlanDto) {
+    const allowInternalPlanChange = this.isTruthy(this.configService.get<string>('ALLOW_INTERNAL_PLAN_CHANGE'));
+    if (!allowInternalPlanChange) {
+      throw new ForbiddenException('Troca interna desabilitada. Use checkout online para alterar o plano.');
+    }
+
     const subscription = await this.findByTenant(tenantId);
     const newPlan = await this.prisma.subscriptionPlan.findUnique({
       where: { name: dto.plan },
@@ -116,11 +121,22 @@ export class SubscriptionsService {
     }
 
     const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://sigmaauto.com.br').replace(/\/+$/, '');
-    const successUrl = dto.successUrl || this.configService.get<string>('CHECKOUT_SUCCESS_URL') || `${frontendUrl}/settings?checkout=success`;
-    const cancelUrl = dto.cancelUrl || this.configService.get<string>('CHECKOUT_CANCEL_URL') || `${frontendUrl}/settings?checkout=cancel`;
+    const defaultSuccessUrl = this.configService.get<string>('CHECKOUT_SUCCESS_URL') || `${frontendUrl}/settings?checkout=success`;
+    const defaultCancelUrl = this.configService.get<string>('CHECKOUT_CANCEL_URL') || `${frontendUrl}/settings?checkout=cancel`;
+    const allowedReturnOrigins = new Set<string>([
+      this.toUrlOrigin(frontendUrl),
+      ...String(this.configService.get<string>('CHECKOUT_ALLOWED_RETURN_ORIGINS') || '')
+        .split(',')
+        .map((value) => this.toUrlOrigin(value.trim()))
+        .filter((value): value is string => Boolean(value)),
+    ]);
+
+    const successUrl = this.sanitizeCheckoutReturnUrl(dto.successUrl, defaultSuccessUrl, allowedReturnOrigins);
+    const cancelUrl = this.sanitizeCheckoutReturnUrl(dto.cancelUrl, defaultCancelUrl, allowedReturnOrigins);
 
     const mercadoPagoToken = this.configService.get<string>('MP_ACCESS_TOKEN');
     const mercadoPagoMode = (this.configService.get<string>('MP_MODE') || 'production').toLowerCase();
+    const webhookUrl = this.resolveMercadoPagoWebhookUrl();
 
     // Preferred flow: create Mercado Pago preference dynamically.
     if (mercadoPagoToken) {
@@ -147,6 +163,7 @@ export class SubscriptionsService {
           failure: cancelUrl,
         },
         auto_return: 'approved',
+        ...(webhookUrl ? { notification_url: webhookUrl } : {}),
       };
 
       const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
@@ -207,6 +224,13 @@ export class SubscriptionsService {
 
   async processMercadoPagoWebhook(payload: any, query?: Record<string, any>, headers?: Record<string, any>) {
     const webhookSecret = this.configService.get<string>('MP_WEBHOOK_SECRET');
+    const webhookToken = this.configService.get<string>('MP_WEBHOOK_TOKEN');
+    const isProduction = (this.configService.get<string>('NODE_ENV') || '').toLowerCase() === 'production';
+
+    if (isProduction && !webhookSecret && !webhookToken) {
+      throw new ForbiddenException('Webhook security is not configured');
+    }
+
     if (webhookSecret) {
       const signatureOk = this.validateMercadoPagoSignature(headers || {}, query || {}, payload || {}, webhookSecret);
       if (!signatureOk) {
@@ -214,7 +238,6 @@ export class SubscriptionsService {
       }
     }
 
-    const webhookToken = this.configService.get<string>('MP_WEBHOOK_TOKEN');
     if (webhookToken) {
       const receivedToken = headers?.['x-webhook-token'] || headers?.['X-Webhook-Token'];
       if (receivedToken !== webhookToken) {
@@ -285,9 +308,30 @@ export class SubscriptionsService {
       throw new NotFoundException('Plan not found for webhook processing');
     }
 
-    const now = new Date();
-    const currentPeriodEnd = new Date(now);
+    const approvedAt = paymentData?.date_approved || paymentData?.date_created;
+    const currentPeriodStart = approvedAt ? new Date(approvedAt) : new Date();
+    if (Number.isNaN(currentPeriodStart.getTime())) {
+      throw new InternalServerErrorException('Invalid payment approval date');
+    }
+    const currentPeriodEnd = new Date(currentPeriodStart);
     currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+
+    const currentSubscription = await this.findByTenant(tenantId);
+    const currentEnd = currentSubscription.currentPeriodEnd ? new Date(currentSubscription.currentPeriodEnd) : null;
+    const isDuplicateApprovedPayment =
+      currentSubscription.plan.name === plan.name &&
+      currentSubscription.status === 'ACTIVE' &&
+      currentEnd !== null &&
+      currentEnd.getTime() >= currentPeriodEnd.getTime();
+
+    if (isDuplicateApprovedPayment) {
+      return {
+        received: true,
+        ignored: true,
+        reason: 'payment already applied',
+        paymentId: String(paymentId),
+      };
+    }
 
     const updated = await this.prisma.subscription.update({
       where: { tenantId },
@@ -296,7 +340,7 @@ export class SubscriptionsService {
         status: 'ACTIVE',
         cancelAtPeriodEnd: false,
         trialEndsAt: null,
-        currentPeriodStart: now,
+        currentPeriodStart,
         currentPeriodEnd,
       },
       include: { plan: true },
@@ -380,5 +424,60 @@ export class SubscriptionsService {
     } catch {
       return false;
     }
+  }
+
+  private sanitizeCheckoutReturnUrl(
+    candidateUrl: string | undefined,
+    fallbackUrl: string,
+    allowedOrigins: Set<string>,
+  ) {
+    if (!candidateUrl) {
+      return fallbackUrl;
+    }
+
+    try {
+      const parsed = new URL(candidateUrl);
+      if (allowedOrigins.has(parsed.origin)) {
+        return parsed.toString();
+      }
+      return fallbackUrl;
+    } catch {
+      return fallbackUrl;
+    }
+  }
+
+  private resolveMercadoPagoWebhookUrl() {
+    const explicitWebhookUrl = this.configService.get<string>('MP_WEBHOOK_URL');
+    if (explicitWebhookUrl) {
+      return explicitWebhookUrl;
+    }
+
+    const backendPublicUrl = this.configService.get<string>('BACKEND_PUBLIC_URL');
+    if (backendPublicUrl) {
+      return `${backendPublicUrl.replace(/\/+$/, '')}/webhooks/mercadopago`;
+    }
+
+    const railwayPublicDomain = this.configService.get<string>('RAILWAY_PUBLIC_DOMAIN');
+    if (railwayPublicDomain) {
+      return `https://${railwayPublicDomain.replace(/\/+$/, '')}/webhooks/mercadopago`;
+    }
+
+    return undefined;
+  }
+
+  private toUrlOrigin(value: string) {
+    if (!value) {
+      return null;
+    }
+
+    try {
+      return new URL(value).origin;
+    } catch {
+      return null;
+    }
+  }
+
+  private isTruthy(value: string | undefined) {
+    return ['1', 'true', 'yes', 'on'].includes(String(value || '').toLowerCase());
   }
 }

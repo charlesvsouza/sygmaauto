@@ -27,7 +27,7 @@ export class SubscriptionsController {
   }
 
   @Post('change-plan')
-  @Roles('ADMIN')
+  @Roles('MASTER')
   @ApiOperation({ summary: 'Change subscription plan' })
   async changePlan(@Tenant() tenant: { tenantId: string }, @Body() dto: ChangePlanDto) {
     return this.subscriptionsService.changePlan(tenant.tenantId, dto);

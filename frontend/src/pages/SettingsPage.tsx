@@ -189,17 +189,6 @@ export function SettingsPage() {
     }
   };
 
-  const handleChangePlan = async (planName: string) => {
-    if (confirm(`Deseja migrar para o plano ${planName}?`)) {
-      try {
-        await subscriptionsApi.changePlan(planName);
-        loadData();
-      } catch (error) {
-        console.error('Falha ao trocar plano:', error);
-      }
-    }
-  };
-
   const handleCheckoutPlan = async (planName: string) => {
     setCheckoutLoadingPlan(planName);
     try {
@@ -622,14 +611,7 @@ export function SettingsPage() {
                       }
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => currentPlan !== plan.name && handleChangePlan(plan.name)}
-                        disabled={currentPlan === plan.name}
-                        className="h-10 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-black uppercase tracking-wide transition-all"
-                      >
-                        Troca interna
-                      </button>
+                    <div className="grid grid-cols-1 gap-2">
                       <button
                         onClick={() => currentPlan !== plan.name && handleCheckoutPlan(plan.name)}
                         disabled={currentPlan === plan.name || checkoutLoadingPlan === plan.name}
