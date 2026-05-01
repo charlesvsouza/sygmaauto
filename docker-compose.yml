@@ -20,8 +20,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: oficina360-backend
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/oficina360?schema=public"
