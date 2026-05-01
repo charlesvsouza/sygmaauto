@@ -137,9 +137,9 @@ export function LoginPage() {
 
           <div className="mt-10 pt-8 border-t border-white/5 text-center">
             <p className="text-slate-400 text-sm">
-              Ainda não tem acesso?{' '}
-              <Link to="/register" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
-                Crie sua conta premium
+              Conheça os planos?{' '}
+              <Link to="/" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+                Ver planos e preços
               </Link>
             </p>
           </div>
