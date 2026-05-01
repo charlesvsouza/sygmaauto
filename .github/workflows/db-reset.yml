@@ -32,42 +32,30 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Resolve public DATABASE_URL from Railway
-        id: db-url
+      - name: Validate DATABASE_PUBLIC_URL
         run: |
-          # Railway injeta variáveis localmente via "railway run env" usando o token
-          # DATABASE_PUBLIC_URL é a URL acessível fora da rede interna do Railway
-          DB_URL=$(railway variables --service sygmaauto-api 2>/dev/null \
-            | grep -E "^DATABASE_PUBLIC_URL" | head -1 \
-            | sed 's/^DATABASE_PUBLIC_URL[[:space:]]*=[[:space:]]*//')
-
-          if [ -z "$DB_URL" ]; then
-            # Fallback: tenta POSTGRES_URL ou DATABASE_URL sem sufixo se não encontrar
-            DB_URL=$(railway variables --service sygmaauto-api 2>/dev/null \
-              | grep -E "^POSTGRES_URL|^DATABASE_URL" | grep -v "internal" | head -1 \
-              | sed 's/^[^=]*=[[:space:]]*//')
-          fi
-
-          if [ -z "$DB_URL" ]; then
-            echo "::error::Não foi possível resolver DATABASE_PUBLIC_URL do Railway."
-            echo "Adicione a secret DATABASE_PUBLIC_URL no repositório com a URL pública do PostgreSQL."
-            railway variables --service sygmaauto-api 2>/dev/null | grep -i "data\|postgres\|db" || true
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_PUBLIC_URL está vazio."
+            echo ""
+            echo "Para obter a URL pública do Railway PostgreSQL:"
+            echo "1. Railway dashboard → projeto → serviço PostgreSQL → Settings"
+            echo "2. Em 'Networking', clique em 'Generate Domain' para ativar o proxy público"
+            echo "3. Copie a DATABASE_PUBLIC_URL gerada"
+            echo "4. Adicione/atualize a secret DATABASE_PUBLIC_URL no GitHub"
             exit 1
           fi
-
-          echo "DATABASE_URL=$DB_URL" >> "$GITHUB_ENV"
-          echo "URL resolvida com sucesso (primeiros 30 chars): ${DB_URL:0:30}..."
+          echo "DATABASE_URL configurada corretamente."
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
 
       - name: Drop and recreate all tables
         run: npx prisma migrate reset --force --skip-seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
 
       - name: Run seed (planos + superadmin + tenants)
         run: npx ts-node prisma/seed.ts
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
           SEED_SUPERADMIN_PASSWORD: ${{ secrets.SEED_SUPERADMIN_PASSWORD }}
           SEED_MASTER_PASSWORD: ${{ secrets.SEED_MASTER_PASSWORD }}
