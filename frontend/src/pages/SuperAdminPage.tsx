@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { superAdminApi } from '../api/client';
 import { ProvisionTenantModal } from '../components/ProvisionTenantModal';
 import {
-  Shield, Building, Users, FileText, Package, TrendingUp,
+  Shield, Building, Users, FileText, Package,
   Trash2, Eye, LogOut, RefreshCw, Loader2, AlertCircle,
   CheckCircle2, X, AlertTriangle,
-  BarChart3, DollarSign, Plus,
+  BarChart3, DollarSign, Plus, Mail, Copy,
 } from 'lucide-react';
 
 export function SuperAdminPage() {
@@ -25,6 +25,9 @@ export function SuperAdminPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showProvisionModal, setShowProvisionModal] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'active'>('all');
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const superAdminInfo = (() => {
     try { return JSON.parse(localStorage.getItem('superAdminInfo') || 'null'); } catch { return null; }
@@ -82,6 +85,42 @@ export function SuperAdminPage() {
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  const handleResendInvite = async (tenantId: string) => {
+    setResendingId(tenantId);
+    try {
+      await superAdminApi.resendInvite(tenantId);
+      setSuccessMsg('Convite reenviado com sucesso!');
+      loadData();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao reenviar convite');
+    } finally {
+      setResendingId(null);
+    }
+  };
+
+  const getTenantStatusBadge = (tenant: any) => {
+    if (tenant.status === 'PENDING_SETUP') {
+      const isExpired = tenant.setupInviteExpiresAt && new Date(tenant.setupInviteExpiresAt) < new Date();
+      if (isExpired) return { label: 'EXPIRADO', cls: 'bg-red-500/10 text-red-400' };
+      return { label: 'PENDENTE SETUP', cls: 'bg-amber-500/10 text-amber-400' };
+    }
+    if (tenant.subscription?.status === 'ACTIVE') return { label: 'ATIVO', cls: 'bg-emerald-500/10 text-emerald-400' };
+    if (tenant.subscription?.status === 'TRIALING') return { label: 'TRIAL', cls: 'bg-sky-500/10 text-sky-400' };
+    return { label: tenant.subscription?.status ?? 'SEM PLANO', cls: 'bg-slate-700 text-slate-400' };
+  };
+
+  const filteredTenants = tenants.filter((t) => {
+    if (filterStatus === 'pending') return t.status === 'PENDING_SETUP';
+    if (filterStatus === 'active') return t.status !== 'PENDING_SETUP' && t.subscription?.status === 'ACTIVE';
+    return true;
+  });
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleLogout = () => {
@@ -153,15 +192,25 @@ export function SuperAdminPage() {
         )}
 
         <div>
-          <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-            <BarChart3 className="text-blue-400 w-5 h-5" /> Tenants Cadastrados
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <h2 className="text-lg font-black text-white flex items-center gap-2">
+              <BarChart3 className="text-blue-400 w-5 h-5" /> Tenants Cadastrados
+            </h2>
+            <div className="flex gap-2 sm:ml-auto">
+              {(['all', 'pending', 'active'] as const).map((f) => (
+                <button key={f} onClick={() => setFilterStatus(f)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+                  {f === 'all' ? `Todos (${tenants.length})` : f === 'pending' ? `Pendentes (${tenants.filter(t => t.status === 'PENDING_SETUP').length})` : `Ativos (${tenants.filter(t => t.status !== 'PENDING_SETUP' && t.subscription?.status === 'ACTIVE').length})`}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {loading ? (
             <div className="flex justify-center py-20"><Loader2 className="animate-spin text-blue-500" size={36} /></div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tenants.map((tenant) => (
+              {filteredTenants.map((tenant) => (
                 <motion.div key={tenant.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
                   className="bg-slate-900/40 border border-white/10 p-5 rounded-2xl">
                   <div className="flex items-start justify-between mb-4">
@@ -174,14 +223,9 @@ export function SuperAdminPage() {
                         <p className="text-xs text-slate-500">{tenant.id.substring(0, 8)}...</p>
                       </div>
                     </div>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
-                      tenant.status === 'PENDING_SETUP' ? 'bg-sky-500/10 text-sky-400' :
-                      tenant.subscription?.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400' :
-                      tenant.subscription?.status === 'TRIALING' ? 'bg-amber-500/10 text-amber-400' :
-                      'bg-slate-700 text-slate-400'
-                    }`}>
-                      {tenant.status === 'PENDING_SETUP' ? 'PENDENTE SETUP' : (tenant.subscription?.status ?? 'SEM PLANO')}
-                    </span>
+                    {(() => { const b = getTenantStatusBadge(tenant); return (
+                      <span className={`text-xs font-bold px-2 py-1 rounded-lg ${b.cls}`}>{b.label}</span>
+                    ); })()}
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
@@ -203,11 +247,17 @@ export function SuperAdminPage() {
                     Criado em {new Date(tenant.createdAt).toLocaleDateString('pt-BR')} · Plano: {tenant.subscription?.plan?.name ?? 'N/A'}
                   </p>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleViewDetails(tenant)}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold py-2 rounded-xl transition-all">
                       <Eye size={13} /> Detalhes
                     </button>
+                    {tenant.status === 'PENDING_SETUP' && (
+                      <button onClick={() => handleResendInvite(tenant.id)} disabled={resendingId === tenant.id}
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
+                        {resendingId === tenant.id ? <Loader2 size={13} className="animate-spin" /> : <Mail size={13} />} Reenviar
+                      </button>
+                    )}
                     <button onClick={() => { setPendingDelete({ id: tenant.id, name: tenant.name }); setDeleteConfirmText(''); }}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold py-2 rounded-xl transition-all">
                       <Trash2 size={13} /> Excluir
@@ -239,7 +289,34 @@ export function SuperAdminPage() {
                     <h3 className="text-xl font-black text-white">{selectedTenant.name}</h3>
                     <p className="text-slate-400 text-sm">{selectedTenant.email ?? 'sem email'}</p>
                     <p className="text-slate-500 text-xs mt-1">ID: {selectedTenant.id}</p>
+                    {(() => { const b = getTenantStatusBadge(selectedTenant); return (
+                      <span className={`inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-lg ${b.cls}`}>{b.label}</span>
+                    ); })()}
                   </div>
+
+                  {selectedTenant.status === 'PENDING_SETUP' && (
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 space-y-2">
+                      <p className="text-amber-400 text-xs font-bold flex items-center gap-2"><Mail size={13} /> Convite Pendente</p>
+                      <p className="text-slate-400 text-xs">Email: <span className="text-white">{selectedTenant.setupInviteEmail ?? '—'}</span></p>
+                      {selectedTenant.setupInviteExpiresAt && (
+                        <p className="text-slate-400 text-xs">Expira em: <span className={`font-bold ${new Date(selectedTenant.setupInviteExpiresAt) < new Date() ? 'text-red-400' : 'text-white'}`}>{new Date(selectedTenant.setupInviteExpiresAt).toLocaleString('pt-BR')}</span></p>
+                      )}
+                      {selectedTenant.setupInviteToken && (
+                        <div className="flex gap-2 mt-2">
+                          <input readOnly value={`https://oficina360-pink.vercel.app/activate/${selectedTenant.setupInviteToken}`}
+                            className="flex-1 bg-slate-950 border border-white/10 rounded-xl text-xs text-slate-300 px-3 py-2 outline-none min-w-0" />
+                          <button onClick={() => copyToClipboard(`https://oficina360-pink.vercel.app/activate/${selectedTenant.setupInviteToken}`)}
+                            className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-xs text-white flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
+                            {copiedLink ? <CheckCircle2 size={13} className="text-emerald-400" /> : <Copy size={13} />} {copiedLink ? 'Copiado!' : 'Copiar'}
+                          </button>
+                        </div>
+                      )}
+                      <button onClick={() => handleResendInvite(selectedTenant.id)} disabled={resendingId === selectedTenant.id}
+                        className="w-full mt-1 flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50">
+                        {resendingId === selectedTenant.id ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />} Reenviar Convite
+                      </button>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     {[

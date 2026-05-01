@@ -221,6 +221,8 @@ export const superAdminApi = {
     axios.get(`${SA_BASE}/superadmin/tenants/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   deleteTenant: (id: string) =>
     axios.delete(`${SA_BASE}/superadmin/tenants/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
+  resendInvite: (id: string) =>
+    axios.post(`${SA_BASE}/superadmin/tenants/${id}/resend-invite`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
 };
 
 
