@@ -129,17 +129,25 @@ export function LandingPage() {
           Plataforma para oficinas mecânicas
         </motion.div>
 
-        {/* Marca com glow */}
+        {/* Marca com glow pulsante */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-[clamp(3.5rem,10vw,7rem)] font-black leading-none tracking-[0.12em] uppercase"
-          style={{
-            textShadow:
+          animate={{
+            opacity: 1,
+            y: 0,
+            textShadow: [
               '0 0 40px rgba(255,123,47,0.55), 0 0 80px rgba(255,123,47,0.25), 0 0 160px rgba(255,123,47,0.12)',
-            letterSpacing: '0.14em',
+              '0 0 60px rgba(255,123,47,0.80), 0 0 120px rgba(255,123,47,0.45), 0 0 220px rgba(255,123,47,0.22)',
+              '0 0 40px rgba(255,123,47,0.55), 0 0 80px rgba(255,123,47,0.25), 0 0 160px rgba(255,123,47,0.12)',
+            ],
           }}
+          transition={{
+            opacity: { duration: 0.6, delay: 0.1 },
+            y: { duration: 0.6, delay: 0.1 },
+            textShadow: { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+          }}
+          className="text-[clamp(3.5rem,10vw,7rem)] font-black leading-none tracking-[0.12em] uppercase"
+          style={{ letterSpacing: '0.14em' }}
         >
           <span className="text-white">Sygma</span>
           <span className="text-[#ff7b2f]"> Auto</span>
