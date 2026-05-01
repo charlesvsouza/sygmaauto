@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { tenantsApi, subscriptionsApi, usersApi } from '../api/client';
 import {
@@ -41,6 +41,8 @@ type TenantForm = {
 export function SettingsPage() {
   const { user, updateTenant } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const autoCheckoutHandledRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingOps, setSavingOps] = useState(false);
@@ -66,6 +68,7 @@ export function SettingsPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<string | null>(null);
   const [users, setUsers] = useState<any[]>([]);
+  const currentPlan = subscription?.plan?.name || 'START';
 
   const isMaster = user?.role === 'MASTER';
   const canManageUsers = user?.role === 'MASTER' || user?.role === 'ADMIN';
@@ -211,6 +214,32 @@ export function SettingsPage() {
     }
   };
 
+  useEffect(() => {
+    if (loading || autoCheckoutHandledRef.current) return;
+
+    const requestedPlan = (searchParams.get('autocheckout') || '').toUpperCase();
+    if (!requestedPlan) return;
+
+    autoCheckoutHandledRef.current = true;
+    const requested = plans.find((plan) => String(plan.name || '').toUpperCase() === requestedPlan);
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('autocheckout');
+    setSearchParams(nextParams, { replace: true });
+
+    if (!requested) {
+      alert('Plano solicitado nao encontrado.');
+      return;
+    }
+
+    if (currentPlan === requested.name) {
+      alert('Este ja e o seu plano atual.');
+      return;
+    }
+
+    void handleCheckoutPlan(requested.name);
+  }, [currentPlan, loading, plans, searchParams, setSearchParams]);
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
@@ -219,8 +248,6 @@ export function SettingsPage() {
       </div>
     );
   }
-
-  const currentPlan = subscription?.plan?.name || 'START';
 
   return (
     <div className="space-y-8 pb-10">

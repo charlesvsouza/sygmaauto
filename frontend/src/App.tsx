@@ -4,6 +4,7 @@ import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 import { SuperAdminRoute } from './components/SuperAdminRoute';
 import { Layout } from './components/Layout';
 import { InitialSplash } from './pages/InitialSplash';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
@@ -25,8 +26,9 @@ export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        {/* Splash Inicial que leva ao Login */}
-        <Route path="/" element={<InitialSplash />} />
+        {/* Landing comercial */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/splash" element={<InitialSplash />} />
         
         {/* Área de Gestão Global — protegida por token de super admin */}
         <Route path="/admin/login" element={<SuperAdminLoginPage />} />

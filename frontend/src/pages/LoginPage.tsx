@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { authApi } from '../api/client';
@@ -12,6 +12,7 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +37,12 @@ export function LoginPage() {
         refreshToken
       );
       
-      navigate('/welcome');
+      const nextPath = searchParams.get('next');
+      if (nextPath && nextPath.startsWith('/')) {
+        navigate(nextPath, { replace: true });
+      } else {
+        navigate('/welcome');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Credenciais inválidas');
     } finally {
