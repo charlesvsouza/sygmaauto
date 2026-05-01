@@ -153,6 +153,7 @@ export function ServiceOrdersPage() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
+  const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { loadOrders(); loadBasics(); }, []);
@@ -239,7 +240,7 @@ export function ServiceOrdersPage() {
 
     setSyncingTotals(true);
     try {
-      // Aplica alterações de quantidade pendentes (se houver)
+      // 1. Aplica alterações de quantidade pendentes (se houver)
       if (changedEntries.length > 0) {
         await Promise.all(
           changedEntries.map(([itemId, newQty]) =>
@@ -249,12 +250,19 @@ export function ServiceOrdersPage() {
         setPendingQtyByItem({});
       }
 
-      // Sempre recarrega OS atual, lista de OSs e dados da empresa
-      const [res, tRes] = await Promise.all([
+      // 2. Sincroniza preços do catálogo (peças, serviços, perfil da oficina)
+      await serviceOrdersApi.syncPrices(selectedOrder.id);
+
+      // 3. Recarrega OS, clientes, veículos e dados da empresa
+      const [res, cRes, vRes, tRes] = await Promise.all([
         serviceOrdersApi.getById(selectedOrder.id),
+        customersApi.getAll(),
+        vehiclesApi.getAll(),
         tenantsApi.getMe(),
       ]);
       setSelectedOrder(res.data);
+      setCustomers(cRes.data);
+      setVehicles(vRes.data);
       setTenantFullData(tRes.data);
       loadOrders();
     } catch (err: any) {
@@ -271,6 +279,7 @@ export function ServiceOrdersPage() {
 
   const openDeleteModal = () => {
     setDeleteConfirmInput('');
+    setDeleteReason('');
     setShowDeleteModal(true);
   };
 
@@ -280,7 +289,7 @@ export function ServiceOrdersPage() {
     if (deleteConfirmInput.trim().toUpperCase() !== expectedCode) return;
     setDeleting(true);
     try {
-      await serviceOrdersApi.delete(selectedOrder.id);
+      await serviceOrdersApi.delete(selectedOrder.id, deleteReason.trim() || undefined);
       setShowDeleteModal(false);
       setSelectedOrder(null);
       loadOrders();
@@ -1414,11 +1423,14 @@ export function ServiceOrdersPage() {
                     );
                     if (openForVehicle.length === 0) return null;
                     return (
-                      <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 font-medium">
-                        ⚠️ Este veículo já possui <strong>{openForVehicle.length}</strong> O.S/orçamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
-                        {openForVehicle.map((o: any) => (
-                          <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
-                        ))}
+                      <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 font-medium space-y-1">
+                        <p>
+                          ⚠️ Este veículo já possui <strong>{openForVehicle.length}</strong> O.S/orçamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
+                          {openForVehicle.map((o: any) => (
+                            <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
+                          ))}
+                        </p>
+                        <p className="text-amber-600">Você pode criar múltiplos orçamentos/OSs para o mesmo veículo. Verifique se não é duplicata.</p>
                       </div>
                     );
                   })()}
@@ -1480,6 +1492,17 @@ export function ServiceOrdersPage() {
               <p><span className="font-black">Total:</span> R$ {fmtBR(selectedOrder.totalCost)}</p>
             </div>
 
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-600 uppercase tracking-wider">
+                Motivo da exclusão (opcional)
+              </label>
+              <textarea
+                value={deleteReason}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                placeholder="Ex: Orçamento duplicado, erro de cadastro..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none h-16 focus:outline-none focus:ring-2 focus:ring-red-300"
+              />
+            </div>
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-600 uppercase tracking-wider">
                 Digite o número da O.S. para confirmar:

@@ -167,6 +167,16 @@ export class ServiceOrdersController {
     return this.serviceOrdersService.delete(tenant.tenantId, id, user.userId, reason);
   }
 
+  @Post(':id/sync-prices')
+  @Roles('ADMIN', 'PRODUTIVO')
+  @ApiOperation({ summary: 'Sincronizar preços dos itens com o catálogo atual' })
+  async syncPrices(
+    @Tenant() tenant: { tenantId: string },
+    @Param('id') id: string,
+  ) {
+    return this.serviceOrdersService.syncPrices(tenant.tenantId, id);
+  }
+
   @Post(':id/items')
   @Roles('ADMIN', 'PRODUTIVO')
   @ApiOperation({ summary: 'Adicionar item à ordem' })

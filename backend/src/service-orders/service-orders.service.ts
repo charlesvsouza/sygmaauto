@@ -771,6 +771,56 @@ export class ServiceOrdersService {
 
   }
 
+  async syncPrices(tenantId: string, id: string) {
+    const order = await this.findById(tenantId, id);
+
+    if (['ENTREGUE', 'CANCELADO'].includes(order.status)) {
+      throw new BadRequestException('Não é possível sincronizar uma OS finalizada ou cancelada');
+    }
+
+    const updates: Promise<any>[] = [];
+
+    for (const item of order.items as any[]) {
+      let newUnitPrice: number = Number(item.unitPrice);
+      let newDescription: string = item.description;
+
+      if (item.type === 'part' && item.partId) {
+        const part = await this.prisma.part.findFirst({
+          where: { id: item.partId, tenantId, isActive: true },
+          select: { unitPrice: true, name: true },
+        });
+        if (part) {
+          newUnitPrice = Number(part.unitPrice);
+        }
+      } else if (item.type === 'service' && item.serviceId) {
+        const svc = await this.prisma.service.findFirst({
+          where: { id: item.serviceId, tenantId },
+          select: { hourlyRate: true, name: true, tmo: true },
+        });
+        if (svc && svc.hourlyRate) {
+          newUnitPrice = Number(svc.hourlyRate);
+          if (svc.tmo) {
+            newDescription = `${svc.name} (TMO: ${svc.tmo}h x R$ ${svc.hourlyRate}/h)`;
+          }
+        }
+      }
+
+      const newTotal = newUnitPrice * Number(item.quantity) - Number(item.discount);
+      updates.push(
+        this.prisma.serviceOrderItem.update({
+          where: { id: item.id },
+          data: { unitPrice: newUnitPrice, totalPrice: newTotal, description: newDescription },
+        }),
+      );
+    }
+
+    await Promise.all(updates);
+    await this.recalculateTotals(id);
+    await this.createTimeline(id, 'SYNC_PRICES', 'Preços sincronizados com catálogo atual', undefined);
+
+    return this.findById(tenantId, id);
+  }
+
   async getApprovalPage(token: string) {
     const order = await this.prisma.serviceOrder.findFirst({
       where: { approvalToken: token },
