@@ -59,10 +59,10 @@ export function LandingPage() {
     // Lê o estado no momento do clique — evita problema de hidratação do Zustand
     const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
-    // Usuário não logado: redireciona para login com next para retornar aqui
+    // Usuário não logado: salva plano no sessionStorage e redireciona para login
     if (!isAuthenticated) {
-      const nextPath = encodeURIComponent(`/settings?autocheckout=${planName}`);
-      navigate(`/login?next=${nextPath}`);
+      sessionStorage.setItem('pendingCheckoutPlan', planName);
+      navigate('/login');
       return;
     }
 

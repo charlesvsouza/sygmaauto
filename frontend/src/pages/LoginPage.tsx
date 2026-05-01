@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
-import { authApi } from '../api/client';
+import { authApi, subscriptionsApi } from '../api/client';
 import { Wrench, Mail, Lock, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export function LoginPage() {
@@ -38,6 +38,26 @@ export function LoginPage() {
       );
       
       const nextPath = searchParams.get('next');
+
+      // Se há plano pendente (vindo da landing page), faz checkout direto
+      const pendingPlan = sessionStorage.getItem('pendingCheckoutPlan');
+      if (pendingPlan) {
+        sessionStorage.removeItem('pendingCheckoutPlan');
+        try {
+          const origin = window.location.origin;
+          const successUrl = `${origin}/settings?checkout=success&plan=${pendingPlan}`;
+          const cancelUrl = `${origin}/settings?checkout=cancel`;
+          const res = await subscriptionsApi.createCheckout(pendingPlan, successUrl, cancelUrl);
+          const checkoutUrl = res.data?.checkoutUrl;
+          if (checkoutUrl) {
+            window.location.href = checkoutUrl;
+            return;
+          }
+        } catch {
+          // Se falhar, segue para dashboard normalmente
+        }
+      }
+
       if (nextPath && nextPath.startsWith('/')) {
         navigate(nextPath, { replace: true });
       } else {

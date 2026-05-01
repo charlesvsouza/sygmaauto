@@ -229,15 +229,12 @@ export function SettingsPage() {
     setSearchParams(nextParams, { replace: true });
 
     if (!requested) {
-      alert('Plano solicitado nao encontrado.');
+      // Plano não encontrado — ignora silenciosamente (não interrompe o usuário)
       return;
     }
 
-    if (currentPlan === requested.name) {
-      alert('Este ja e o seu plano atual.');
-      return;
-    }
-
+    // Não bloquear checkout mesmo que o plano seja o atual
+    // (usuário pode estar saindo do trial para pagamento ou renovando)
     void handleCheckoutPlan(requested.name);
   }, [currentPlan, loading, plans, searchParams, setSearchParams]);
 
