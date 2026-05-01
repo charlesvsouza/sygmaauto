@@ -1,5 +1,13 @@
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { useAuthStore } from '../store/authStore';
+
+type DecodedToken = {
+  sub?: string;
+  email?: string;
+  role?: string;
+  tenantId?: string;
+};
 
 const PROD_API_FALLBACK = 'https://oficina360-api.railway.app';
 const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_API_FALLBACK : 'http://localhost:3000')).replace(/\/+$/, '');
@@ -32,9 +40,27 @@ api.interceptors.response.use(
             refreshToken,
           });
           const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+          const state = useAuthStore.getState();
+          const currentUser = state.user;
+          const decoded = jwtDecode<DecodedToken>(accessToken);
+          const syncedUser = currentUser
+            ? {
+                ...currentUser,
+                userId: decoded.sub ?? currentUser.userId,
+                email: decoded.email ?? currentUser.email,
+                role: decoded.role ?? currentUser.role,
+                tenantId: decoded.tenantId ?? currentUser.tenantId,
+              }
+            : null;
+
+          if (!syncedUser || !state.tenant) {
+            throw new Error('Sessao invalida para refresh');
+          }
+
           useAuthStore.getState().login(
-            useAuthStore.getState().user!,
-            useAuthStore.getState().tenant!,
+            syncedUser,
+            state.tenant,
             accessToken,
             newRefreshToken
           );
