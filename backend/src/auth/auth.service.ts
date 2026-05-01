@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../notifications/email.service';
 import {
   RegisterDto,
   LoginDto,
@@ -18,6 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthTokens & { user: any }> {
@@ -183,13 +185,23 @@ export class AuthService {
       },
     });
 
+    const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://oficina360-pink.vercel.app').replace(/\/+$/, '');
+    const resetLink = `${frontendUrl}/forgot-password?token=${token}`;
+    const emailSent = await this.emailService.sendPasswordResetEmail(savedRecovery, {
+      resetLink,
+      resetToken: token,
+      expiresAt,
+    });
+
     const response: Record<string, string> = {
-      message:
-        'Revalidação concluída. Use o token para redefinir sua senha nos próximos 15 minutos.',
+      message: emailSent
+        ? 'Revalidação concluída. Enviamos as instruções para o e-mail de recuperação cadastrado.'
+        : 'Revalidação concluída. O ambiente ainda não está configurado para envio de e-mail; use o token para redefinir a senha.',
     };
 
-    if ((this.configService.get('NODE_ENV') || '').trim() !== 'production') {
+    if ((this.configService.get('NODE_ENV') || '').trim() !== 'production' || !emailSent) {
       response.token = token;
+      response.resetLink = resetLink;
     }
 
     return response;

@@ -16,6 +16,7 @@ import { ManagementModule } from './management/management.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { SuperAdminModule } from './superadmin/superadmin.module';
+import { OnboardingModule } from './onboarding/onboarding.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -46,6 +47,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     ManagementModule,
     SuppliersModule,
     SuperAdminModule,
+    OnboardingModule,
   ],
   providers: [TenantMiddleware],
 })
@@ -59,6 +61,7 @@ export class AppModule implements NestModule {
         { path: 'auth/refresh', method: RequestMethod.ALL },
         { path: 'auth/forgot-password/request', method: RequestMethod.ALL },
         { path: 'auth/forgot-password/reset', method: RequestMethod.ALL },
+        { path: 'onboarding/(.*)', method: RequestMethod.ALL },
         { path: 'service-orders/approval/:token', method: RequestMethod.ALL },
         { path: 'superadmin/(.*)', method: RequestMethod.ALL },
       )

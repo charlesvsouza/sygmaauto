@@ -21,6 +21,7 @@ enum UserRole {
 model Tenant {
   id        String   @id @default(uuid())
   name      String
+  status    String   @default("ACTIVE")
   document  String   @unique
   taxId     String?  // CNPJ, MEI or CPF
   companyType String @default("CNPJ") // CNPJ, MEI, CPF
@@ -33,6 +34,10 @@ model Tenant {
 
   phone     String?
   email     String?
+  setupInviteEmail String?
+  setupInviteToken String? @unique
+  setupInviteExpiresAt DateTime?
+  setupCompletedAt DateTime?
   logo            String?
   laborHourlyRate Float?   @default(120)
   diagnosticHours Float?   @default(0.5)  // horas padrão para serviço de diagnóstico

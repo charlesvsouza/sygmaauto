@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { SuperAdminService } from './superadmin.service';
 import { SuperAdminGuard } from './guards/superadmin.guard';
-import { SuperAdminLoginDto, CreateSuperAdminDto } from './dto/superadmin.dto';
+import { SuperAdminLoginDto, CreateSuperAdminDto, ProvisionTenantDto } from './dto/superadmin.dto';
 
 @Controller('superadmin')
 export class SuperAdminController {
@@ -35,10 +35,22 @@ export class SuperAdminController {
     return this.superAdminService.getSystemStats();
   }
 
+  @Get('plans')
+  @UseGuards(SuperAdminGuard)
+  getPlans() {
+    return this.superAdminService.getPlans();
+  }
+
   @Get('tenants')
   @UseGuards(SuperAdminGuard)
   listTenants() {
     return this.superAdminService.listTenants();
+  }
+
+  @Post('tenants/provision')
+  @UseGuards(SuperAdminGuard)
+  provisionTenant(@Body() dto: ProvisionTenantDto) {
+    return this.superAdminService.provisionTenant(dto);
   }
 
   @Get('tenants/:id')

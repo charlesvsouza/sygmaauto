@@ -7,6 +7,7 @@ import { InitialSplash } from './pages/InitialSplash';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ActivateTenantPage } from './pages/ActivateTenantPage';
 import WelcomePage from './pages/WelcomePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CustomersPage } from './pages/CustomersPage';
@@ -32,6 +33,8 @@ export default function App() {
         <Route element={<SuperAdminRoute />}>
           <Route path="/admin" element={<SuperAdminPage />} />
         </Route>
+
+        <Route path="/activate/:token" element={<ActivateTenantPage />} />
 
         
         <Route element={<PublicOnlyRoute />}>

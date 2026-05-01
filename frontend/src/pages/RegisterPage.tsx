@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { authApi } from '../api/client';
-import { Wrench, Mail, Lock, User, Building, Loader2, ArrowRight } from 'lucide-react';
+import { Wrench, Mail, Lock, User, Building, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { formatCpfCnpj } from '../lib/masks';
 
 export function RegisterPage() {
@@ -11,6 +11,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('');
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [tenantName, setTenantName] = useState('');
   const [taxId, setTaxId] = useState('');
   const [companyType, setCompanyType] = useState('CNPJ');
@@ -235,14 +236,17 @@ export function RegisterPage() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-dark pl-10"
+                  className="input-dark pl-10 pr-12"
                   placeholder="Mínimo 6 caracteres"
                   minLength={6}
                   required
                 />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
 

@@ -8,8 +8,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
-import { SuperAdminLoginDto, CreateSuperAdminDto } from './dto/superadmin.dto';
+import { EmailService } from '../notifications/email.service';
+import { SuperAdminLoginDto, CreateSuperAdminDto, ProvisionTenantDto } from './dto/superadmin.dto';
 
 @Injectable()
 export class SuperAdminService {
@@ -17,6 +19,7 @@ export class SuperAdminService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async login(dto: SuperAdminLoginDto) {
@@ -84,6 +87,79 @@ export class SuperAdminService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async getPlans() {
+    return this.prisma.subscriptionPlan.findMany({
+      where: { isActive: true },
+      orderBy: { price: 'asc' },
+    });
+  }
+
+  async provisionTenant(dto: ProvisionTenantDto) {
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email: dto.inviteEmail.toLowerCase().trim() },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Este email já está vinculado a um usuário');
+    }
+
+    const plan = await this.prisma.subscriptionPlan.findUnique({
+      where: { name: dto.planName || 'START' },
+    });
+
+    if (!plan) {
+      throw new NotFoundException('Plano não encontrado');
+    }
+
+    const tenantId = uuidv4();
+    const subscriptionId = uuidv4();
+    const setupInviteToken = uuidv4();
+    const setupInviteExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000);
+    const currentPeriodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    const tenant = await this.prisma.$transaction(async (tx) => {
+      const createdTenant = await tx.tenant.create({
+        data: {
+          id: tenantId,
+          name: dto.tenantName,
+          status: 'PENDING_SETUP',
+          document: dto.document || `PENDING-${tenantId.slice(0, 8)}`,
+          setupInviteEmail: dto.inviteEmail.toLowerCase().trim(),
+          setupInviteToken,
+          setupInviteExpiresAt,
+        },
+      });
+
+      await tx.subscription.create({
+        data: {
+          id: subscriptionId,
+          tenantId,
+          planId: plan.id,
+          status: 'ACTIVE',
+          currentPeriodEnd,
+        },
+      });
+
+      return createdTenant;
+    });
+
+    const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://oficina360-pink.vercel.app').replace(/\/+$/, '');
+    const activationLink = `${frontendUrl}/activate/${setupInviteToken}`;
+    const emailSent = await this.emailService.sendTenantSetupEmail(dto.inviteEmail.toLowerCase().trim(), {
+      companyName: dto.tenantName,
+      activationLink,
+      expiresAt: setupInviteExpiresAt,
+    });
+
+    return {
+      tenant,
+      activationLink,
+      inviteEmail: dto.inviteEmail.toLowerCase().trim(),
+      emailSent,
+      expiresAt: setupInviteExpiresAt,
+    };
   }
 
   async getTenantDetails(tenantId: string) {

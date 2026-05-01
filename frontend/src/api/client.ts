@@ -90,6 +90,11 @@ export const authApi = {
     api.post('/auth/refresh', { refreshToken }),
 };
 
+export const onboardingApi = {
+  getInvite: (token: string) => api.get(`/onboarding/${token}`),
+  completeSetup: (token: string, data: any) => api.post(`/onboarding/${token}/complete`, data),
+};
+
 export const tenantsApi = {
   getMe: () => api.get('/tenants/me'),
   update: (data: any) => api.patch('/tenants/me', data),
@@ -204,10 +209,14 @@ export const superAdminApi = {
     axios.post(`${SA_BASE}/superadmin/auth/login`, { email, password }),
   create: (data: { email: string; name: string; password: string; bootstrapSecret: string }) =>
     axios.post(`${SA_BASE}/superadmin/auth/create`, data),
+  getPlans: () =>
+    axios.get(`${SA_BASE}/superadmin/plans`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   getStats: () =>
     axios.get(`${SA_BASE}/superadmin/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   listTenants: () =>
     axios.get(`${SA_BASE}/superadmin/tenants`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
+  provisionTenant: (data: { tenantName: string; inviteEmail: string; planName?: string; document?: string }) =>
+    axios.post(`${SA_BASE}/superadmin/tenants/provision`, data, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   getTenantDetails: (id: string) =>
     axios.get(`${SA_BASE}/superadmin/tenants/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   deleteTenant: (id: string) =>

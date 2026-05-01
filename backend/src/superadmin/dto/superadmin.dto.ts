@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class SuperAdminLoginDto {
   @IsEmail()
@@ -24,4 +24,21 @@ export class CreateSuperAdminDto {
   @IsString()
   @IsNotEmpty()
   bootstrapSecret: string; // segredo de ambiente para criar o primeiro super admin
+}
+
+export class ProvisionTenantDto {
+  @IsString()
+  @IsNotEmpty()
+  tenantName: string;
+
+  @IsEmail()
+  inviteEmail: string;
+
+  @IsOptional()
+  @IsString()
+  planName?: string;
+
+  @IsOptional()
+  @IsString()
+  document?: string;
 }

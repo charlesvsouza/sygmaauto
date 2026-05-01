@@ -1,26 +1,23 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SuperAdminController } from './superadmin.controller';
-import { SuperAdminService } from './superadmin.service';
-import { SuperAdminGuard } from './guards/superadmin.guard';
 import { PrismaModule } from '../prisma/prisma.module';
-import { NotificationsModule } from '../notifications/notifications.module';
+import { OnboardingController } from './onboarding.controller';
+import { OnboardingService } from './onboarding.service';
 
 @Module({
   imports: [
     PrismaModule,
-    NotificationsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET') || 'oficina360-secret-key',
-        signOptions: { expiresIn: '8h' },
+        signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
     }),
   ],
-  controllers: [SuperAdminController],
-  providers: [SuperAdminService, SuperAdminGuard],
+  controllers: [OnboardingController],
+  providers: [OnboardingService],
 })
-export class SuperAdminModule {}
+export class OnboardingModule {}

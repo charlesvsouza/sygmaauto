@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { superAdminApi } from '../api/client';
+import { ProvisionTenantModal } from '../components/ProvisionTenantModal';
 import {
   Shield, Building, Users, FileText, Package, TrendingUp,
   Trash2, Eye, LogOut, RefreshCw, Loader2, AlertCircle,
   CheckCircle2, X, AlertTriangle,
-  BarChart3, DollarSign,
+  BarChart3, DollarSign, Plus,
 } from 'lucide-react';
 
 export function SuperAdminPage() {
@@ -23,6 +24,7 @@ export function SuperAdminPage() {
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showProvisionModal, setShowProvisionModal] = useState(false);
 
   const superAdminInfo = (() => {
     try { return JSON.parse(localStorage.getItem('superAdminInfo') || 'null'); } catch { return null; }
@@ -101,6 +103,9 @@ export function SuperAdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={() => setShowProvisionModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all text-sm font-bold">
+            <Plus size={16} /> Novo Tenant
+          </button>
           <button onClick={loadData} className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
             <RefreshCw size={16} />
           </button>
@@ -170,11 +175,12 @@ export function SuperAdminPage() {
                       </div>
                     </div>
                     <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
+                      tenant.status === 'PENDING_SETUP' ? 'bg-sky-500/10 text-sky-400' :
                       tenant.subscription?.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400' :
                       tenant.subscription?.status === 'TRIALING' ? 'bg-amber-500/10 text-amber-400' :
                       'bg-slate-700 text-slate-400'
                     }`}>
-                      {tenant.subscription?.status ?? 'SEM PLANO'}
+                      {tenant.status === 'PENDING_SETUP' ? 'PENDENTE SETUP' : (tenant.subscription?.status ?? 'SEM PLANO')}
                     </span>
                   </div>
 
@@ -333,6 +339,13 @@ export function SuperAdminPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {showProvisionModal && (
+        <ProvisionTenantModal
+          onClose={() => setShowProvisionModal(false)}
+          onCreated={() => loadData()}
+        />
+      )}
     </div>
   );
 }
