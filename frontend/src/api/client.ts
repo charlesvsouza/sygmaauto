@@ -9,7 +9,7 @@ type DecodedToken = {
   tenantId?: string;
 };
 
-const PROD_API_FALLBACK = 'https://api.sigmaauto.com.br';
+const PROD_API_FALLBACK = 'https://sygmaauto-api-production.up.railway.app';
 const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_API_FALLBACK : 'http://localhost:3000')).replace(/\/+$/, '');
 
 export const api = axios.create({
