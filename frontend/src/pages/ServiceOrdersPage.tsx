@@ -437,9 +437,9 @@ export function ServiceOrdersPage() {
                     <div style={{ fontSize: '15pt', fontWeight: 900, lineHeight: 1.1 }}>
                       {tenantFullData?.name ?? ''}
                     </div>
-                    {tenantFullData?.document && (
+                    {(tenantFullData?.taxId || tenantFullData?.document) && (
                       <div style={{ fontSize: '8.5pt', marginTop: '2px' }}>
-                        {tenantFullData.companyType ?? 'CNPJ'}: {tenantFullData.document}
+                        {tenantFullData?.companyType ?? 'CNPJ'}: {tenantFullData?.taxId || tenantFullData?.document}
                       </div>
                     )}
                     {tenantFullData?.address && (

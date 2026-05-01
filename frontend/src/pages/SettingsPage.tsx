@@ -70,31 +70,40 @@ export function SettingsPage() {
 
   const loadData = async () => {
     try {
-      const [subRes, plansRes, tenantRes, usersRes] = await Promise.all([
+      const [tenantResult, subResult, plansResult, usersResult] = await Promise.allSettled([
+        tenantsApi.getMe(),
         subscriptionsApi.getCurrent(),
         subscriptionsApi.getPlans(),
-        tenantsApi.getMe(),
         usersApi.getAll(),
       ]);
-      setSubscription(subRes.data);
-      setPlans(plansRes.data);
-      const t = tenantRes.data;
-      setTenantData({
-        taxId: t.taxId || '',
-        legalNature: t.legalNature || 'PJ',
-        name: t.name || '',
-        legalName: t.legalName || '',
-        tradeName: t.tradeName || '',
-        stateRegistration: t.stateRegistration || '',
-        municipalRegistration: t.municipalRegistration || '',
-        phone: t.phone || '',
-        email: t.email || '',
-        address: t.address || '',
-      });
-      setOpsData({ laborHourlyRate: t.laborHourlyRate ?? 120 });
-      setUsers(usersRes.data);
-    } catch (error) {
-      console.error('Falha ao carregar configurações:', error);
+
+      if (tenantResult.status === 'fulfilled') {
+        const t = tenantResult.value.data;
+        setTenantData({
+          taxId: t.taxId || '',
+          legalNature: t.legalNature || 'PJ',
+          name: t.name || '',
+          legalName: t.legalName || '',
+          tradeName: t.tradeName || '',
+          stateRegistration: t.stateRegistration || '',
+          municipalRegistration: t.municipalRegistration || '',
+          phone: t.phone || '',
+          email: t.email || '',
+          address: t.address || '',
+        });
+        setOpsData({ laborHourlyRate: t.laborHourlyRate ?? 120 });
+      } else {
+        console.error('Falha ao carregar dados da oficina:', tenantResult.reason);
+      }
+
+      if (subResult.status === 'fulfilled') setSubscription(subResult.value.data);
+      else console.warn('Assinatura indisponível:', subResult.reason);
+
+      if (plansResult.status === 'fulfilled') setPlans(plansResult.value.data);
+      else console.warn('Planos indisponíveis:', plansResult.reason);
+
+      if (usersResult.status === 'fulfilled') setUsers(usersResult.value.data);
+      else console.warn('Usuários indisponíveis:', usersResult.reason);
     } finally {
       setLoading(false);
     }
