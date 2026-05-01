@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { usersApi } from '../api/client';
+import { useAuthStore } from '../store/authStore';
 import {
   Users,
   Plus,
@@ -20,6 +22,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function UsersPage() {
+  const { user } = useAuthStore();
+  const canManageUsers = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -36,8 +40,16 @@ export function UsersPage() {
   });
 
   useEffect(() => {
+    if (!canManageUsers) {
+      setLoading(false);
+      return;
+    }
     loadUsers();
-  }, []);
+  }, [canManageUsers]);
+
+  if (!canManageUsers) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const loadUsers = async () => {
     try {

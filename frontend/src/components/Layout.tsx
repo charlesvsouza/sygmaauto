@@ -26,6 +26,7 @@ export function Layout() {
   const { user, tenant, logout } = useAuthStore();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const canViewUsers = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
 
   const handleLogout = () => {
     logout();
@@ -37,7 +38,7 @@ export function Layout() {
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Painel' },
     { to: '/customers', icon: Users, label: 'Clientes' },
-    { to: '/users', icon: UserCheck, label: 'Usuários' },
+    ...(canViewUsers ? [{ to: '/users', icon: UserCheck, label: 'Usuários' }] : []),
     { to: '/vehicles', icon: Car, label: 'Veículos' },
 
     { to: '/service-orders', icon: ClipboardList, label: 'Ordens de Serviço' },
