@@ -389,12 +389,19 @@ export class ServiceOrdersService {
     const currentStatus = order.status;
     const newStatus = dto.status;
 
-    // Valida transição
+    // Valida transição (ADMIN/MASTER podem fazer override do fluxo)
     const allowed = this.STATUS_FLOW[currentStatus] || [];
     if (!allowed.includes(newStatus)) {
-      throw new BadRequestException(
-        `Não é possível alterar de ${currentStatus} para ${newStatus}. Status permitidos: ${allowed.join(', ')}`
-      );
+      if (dto.adminOverride) {
+        const actor = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!actor || !['MASTER', 'ADMIN'].includes(actor.role)) {
+          throw new BadRequestException('Permissão insuficiente para sobrescrever o fluxo de status');
+        }
+      } else {
+        throw new BadRequestException(
+          `Não é possível alterar de ${currentStatus} para ${newStatus}. Status permitidos: ${allowed.join(', ')}`
+        );
+      }
     }
 
     const updateData: any = { status: newStatus };

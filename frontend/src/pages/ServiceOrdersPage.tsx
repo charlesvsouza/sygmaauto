@@ -3,7 +3,7 @@ import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi,
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
-  Printer, Save, Zap, Loader2, RefreshCw, FileUp,
+  Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -124,11 +124,13 @@ export function ServiceOrdersPage() {
   const { user } = useAuthStore();
   const canManageStock = user?.role === 'MASTER' || user?.role === 'ADMIN';
   const canDelete = user?.role === 'MASTER';
+  const canChangeStatus = user?.role === 'MASTER' || user?.role === 'ADMIN';
   const CLOSED_STATUSES = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
   const isReprovado = selectedOrder?.status === 'REPROVADO';
   const isClosed = CLOSED_STATUSES.includes(selectedOrder?.status ?? '');
   const printContentRef = useRef<HTMLDivElement>(null);
   const printFrameRef = useRef<HTMLIFrameElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -161,6 +163,18 @@ export function ServiceOrdersPage() {
   const [deleting, setDeleting] = useState(false);
   const [showDiagBanner, setShowDiagBanner] = useState(false);
   const [creatingDiagOrder, setCreatingDiagOrder] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!showStatusDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setShowStatusDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showStatusDropdown]);
 
   useEffect(() => { loadOrders(); loadBasics(); }, []);
 
@@ -344,12 +358,13 @@ export function ServiceOrdersPage() {
     return idx >= 0 ? idx : 0;
   };
 
-  const changeStatus = async (status: string) => {
+  const changeStatus = async (status: string, adminOverride = false) => {
     if (!selectedOrder) return;
     try {
-      await serviceOrdersApi.updateStatus(selectedOrder.id, { status });
+      await serviceOrdersApi.updateStatus(selectedOrder.id, { status, ...(adminOverride && { adminOverride: true }) });
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
+      setShowDiagBanner(res.data.status === 'REPROVADO');
       loadOrders();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Erro ao alterar status');
@@ -799,9 +814,55 @@ export function ServiceOrdersPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">OS</span>
-                    <span className={cn('text-[9px] px-2 py-0.5 rounded-md font-black', statusConfig[selectedOrder.status]?.color)}>
-                      {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}
-                    </span>
+                    <div className="relative" ref={statusDropdownRef}>
+                      {canChangeStatus ? (
+                        <button
+                          onClick={() => setShowStatusDropdown((v) => !v)}
+                          title="Clique para alterar o status"
+                          className={cn(
+                            'text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 cursor-pointer',
+                            statusConfig[selectedOrder.status]?.color
+                          )}
+                        >
+                          {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}
+                          <ChevronDown size={9} className={cn('transition-transform', showStatusDropdown && 'rotate-180')} />
+                        </button>
+                      ) : (
+                        <span className={cn('text-[9px] px-2 py-0.5 rounded-md font-black', statusConfig[selectedOrder.status]?.color)}>
+                          {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}
+                        </span>
+                      )}
+
+                      {showStatusDropdown && (
+                        <div className="absolute top-full left-0 mt-1.5 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl p-1.5 min-w-[210px]">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-3 py-1.5 border-b border-slate-100 mb-1">
+                            Alterar Status
+                          </p>
+                          {Object.entries(statusConfig)
+                            .filter(([key]) => key !== selectedOrder.status && key !== 'ORCAMENTO')
+                            .map(([key, cfg]) => {
+                              const isNegative = key === 'CANCELADO' || key === 'REPROVADO';
+                              return (
+                                <button
+                                  key={key}
+                                  onClick={async () => {
+                                    setShowStatusDropdown(false);
+                                    if (isNegative && !confirm(`Confirmar mudança para: ${cfg.label}?`)) return;
+                                    await changeStatus(key, true);
+                                  }}
+                                  className={cn(
+                                    'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:bg-slate-50 text-left',
+                                    isNegative ? 'text-red-600 hover:bg-red-50' : 'text-slate-700'
+                                  )}
+                                >
+                                  <span className={cn('w-2 h-2 rounded-full flex-shrink-0', cfg.color.split(' ')[0])} />
+                                  {cfg.label}
+                                </button>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">
                     #{selectedOrder.id.slice(0, 8).toUpperCase()}

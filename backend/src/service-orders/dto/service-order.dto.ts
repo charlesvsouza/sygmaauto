@@ -222,6 +222,11 @@ export class UpdateStatusDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiProperty({ required: false, description: 'Bypass de fluxo — exclusivo para ADMIN/MASTER' })
+  @IsOptional()
+  @IsBoolean()
+  adminOverride?: boolean;
 }
 
 export class AprovarOrcamentoDto {
