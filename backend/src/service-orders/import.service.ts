@@ -78,7 +78,7 @@ export class ImportService {
         throw new BadRequestException('Google API Key (GOOGLE_API_KEY) não configurada no .env');
       }
 
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
       const prompt = `
         Você é um especialista em sistemas de gestão de oficinas mecânicas.
