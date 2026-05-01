@@ -3,11 +3,11 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: oficina360-db
+    container_name: sygmaauto-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: oficina360
+      POSTGRES_DB: sygmaauto
     ports:
       - "5432:5432"
     volumes:
@@ -22,11 +22,11 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: oficina360-backend
+    container_name: sygmaauto-backend
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/oficina360?schema=public"
-      JWT_SECRET: "oficina360-secret-key-change-in-production"
-      JWT_REFRESH_SECRET: "oficina360-refresh-secret-change-in-production"
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/sygmaauto?schema=public"
+      JWT_SECRET: "sygmaauto-secret-key-change-in-production"
+      JWT_REFRESH_SECRET: "sygmaauto-refresh-secret-change-in-production"
       FRONTEND_URL: "http://localhost:5173"
       PORT: "3000"
     ports:
@@ -42,7 +42,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: oficina360-frontend
+    container_name: sygmaauto-frontend
     environment:
       VITE_API_URL: "http://localhost:3000"
     ports:
