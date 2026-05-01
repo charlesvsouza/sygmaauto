@@ -32,17 +32,14 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Drop and recreate all tables (migrate reset)
-        run: railway run --service sygmaauto-api npx prisma migrate reset --force --skip-seed
+      - name: Drop and recreate all tables
+        run: npx prisma migrate reset --force --skip-seed
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
 
       - name: Run seed (planos + superadmin + tenants)
-        run: railway run --service sygmaauto-api npx ts-node prisma/seed.ts
+        run: npx ts-node prisma/seed.ts
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
           SEED_SUPERADMIN_PASSWORD: ${{ secrets.SEED_SUPERADMIN_PASSWORD }}
           SEED_MASTER_PASSWORD: ${{ secrets.SEED_MASTER_PASSWORD }}
