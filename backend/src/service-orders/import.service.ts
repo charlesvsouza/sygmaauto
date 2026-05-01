@@ -6,6 +6,27 @@ import { ConfigService } from '@nestjs/config';
 export class ImportService {
   private genAI: GoogleGenerativeAI;
 
+  private readonly basePrompt = `
+Você é um especialista em sistemas de gestão de oficinas mecânicas.
+Sua tarefa é extrair os dados de um orçamento e formatá-los em JSON rigoroso para importação.
+
+Retorne SOMENTE JSON válido com a estrutura:
+{
+  "customer": { "name": "", "document": "", "phone": "", "email": "", "address": "" },
+  "vehicle": { "brand": "", "model": "", "plate": "", "year": "", "km": null, "vin": "", "color": "" },
+  "items": [
+    { "type": "part|service", "description": "", "quantity": 1, "unitPrice": 0, "internalCode": "" }
+  ],
+  "totals": { "parts": 0, "services": 0, "labor": 0, "total": 0 }
+}
+
+Regras:
+1. Se não encontrar um campo, use string vazia, null ou 0.
+2. No campo "type", use "part" para peça/produto e "service" para mão de obra/serviço.
+3. Valores numéricos devem ser número, não string.
+4. Não inclua markdown, explicações nem texto fora do JSON.
+`;
+
   private isNodeVersionAtLeast(minMajor: number, minMinor: number): boolean {
     const [majorStr, minorStr] = process.versions.node.split('.');
     const major = Number(majorStr);
@@ -63,6 +84,79 @@ export class ImportService {
     );
   }
 
+  private parseModelJson(rawText: string): any {
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
+
+    try {
+      return JSON.parse(cleaned);
+    } catch {
+      const start = cleaned.indexOf('{');
+      const end = cleaned.lastIndexOf('}');
+
+      if (start >= 0 && end > start) {
+        const jsonSlice = cleaned.slice(start, end + 1);
+        return JSON.parse(jsonSlice);
+      }
+
+      throw new Error('A IA não retornou um JSON válido.');
+    }
+  }
+
+  private hasMeaningfulData(value: unknown): boolean {
+    if (value === null || value === undefined) {
+      return false;
+    }
+
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    if (typeof value === 'number') {
+      return Number.isFinite(value) && value > 0;
+    }
+
+    if (Array.isArray(value)) {
+      return value.some((entry) => this.hasMeaningfulData(entry));
+    }
+
+    if (typeof value === 'object') {
+      return Object.values(value as Record<string, unknown>).some((entry) => this.hasMeaningfulData(entry));
+    }
+
+    return false;
+  }
+
+  private async parseWithText(model: any, text: string): Promise<any> {
+    const prompt = `${this.basePrompt}\n\nTexto extraído do PDF:\n${text}`;
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return this.parseModelJson(response.text());
+  }
+
+  private async parseWithPdf(model: any, fileBuffer: Buffer): Promise<any> {
+    const pdfBase64 = fileBuffer.toString('base64');
+
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: this.basePrompt },
+            {
+              inlineData: {
+                mimeType: 'application/pdf',
+                data: pdfBase64,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const response = await result.response;
+    return this.parseModelJson(response.text());
+  }
+
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('GOOGLE_API_KEY');
     if (apiKey) {
@@ -72,44 +166,34 @@ export class ImportService {
 
   async parseEstimatePdf(fileBuffer: Buffer) {
     try {
-      const text = await this.extractTextFromPdf(fileBuffer);
-
       if (!this.genAI) {
         throw new BadRequestException('Google API Key (GOOGLE_API_KEY) não configurada no .env');
       }
 
       const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      let text = '';
+      try {
+        text = await this.extractTextFromPdf(fileBuffer);
+      } catch (extractError) {
+        console.warn('Falha ao extrair texto com pdf-parse, seguindo com fallback multimodal:', extractError);
+      }
 
-      const prompt = `
-        Você é um especialista em sistemas de gestão de oficinas mecânicas.
-        Abaixo está o texto extraído de um PDF de orçamento de terceiros.
-        Sua tarefa é extrair os dados e formatá-los em um JSON rigoroso para que possamos importar para nosso sistema.
+      if (text.trim().length >= 80) {
+        const parsedFromText = await this.parseWithText(model, text);
+        if (this.hasMeaningfulData(parsedFromText)) {
+          return parsedFromText;
+        }
+      }
 
-        Campos necessários:
-        - customer: { name: string, document: string (CPF/CNPJ), phone: string, email: string, address: string }
-        - vehicle: { brand: string, model: string, plate: string, year: string, km: number, vin: string, color: string }
-        - items: Array of { type: 'part' | 'service', description: string, quantity: number, unitPrice: number, internalCode: string }
-        - totals: { parts: number, services: number, labor: number, total: number }
+      const parsedFromPdf = await this.parseWithPdf(model, fileBuffer);
+      if (this.hasMeaningfulData(parsedFromPdf)) {
+        return parsedFromPdf;
+      }
 
-        Regras:
-        1. Se não encontrar um campo, deixe nulo ou string vazia.
-        2. No campo "type" de itens, use 'part' para peças/produtos e 'service' para mão de obra ou serviços.
-        3. Certifique-se de que os valores numéricos sejam números, não strings.
-        4. No campo "plate", formate como ABC1D23 ou ABC-1234 conforme encontrado.
-        5. O JSON deve ser o único conteúdo da sua resposta. Não inclua markdown.
-
-        Texto do PDF:
-        ${text}
-      `;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const jsonStr = response.text().replace(/```json|```/g, '').trim();
-      
-      return JSON.parse(jsonStr);
+      throw new Error('Não foi possível extrair dados úteis do PDF.');
     } catch (e) {
       console.error('Error parsing PDF with AI:', e);
-      throw new BadRequestException('Falha ao processar orçamento: ' + e.message);
+      throw new BadRequestException('Falha ao processar orçamento: ' + (e as Error).message);
     }
   }
 }
