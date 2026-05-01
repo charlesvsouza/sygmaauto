@@ -197,7 +197,7 @@ export const managementApi = {
 
 // ─── Super Admin API (token separado, sem tenant) ────────────────────────────
 const PROD_API_FALLBACK_SA = 'https://oficina360-production.up.railway.app';
-const SA_BASE = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_API_FALLBACK_SA : 'http://localhost:3000')).replace(/\/+$/, '');
+const SA_BASE = (import.meta.env.VITE_SUPERADMIN_API_URL || (import.meta.env.PROD ? PROD_API_FALLBACK_SA : 'http://localhost:3000')).replace(/\/+$/, '');
 
 export const superAdminApi = {
   login: (email: string, password: string) =>
