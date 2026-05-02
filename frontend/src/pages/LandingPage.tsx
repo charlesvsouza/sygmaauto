@@ -741,7 +741,8 @@ export function LandingPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* ── Planos ── */} className="relative z-10 max-w-5xl mx-auto px-6 pb-24">
+      {/* ── Planos ── */}
+      <section id="planos" className="relative z-10 max-w-5xl mx-auto px-6 pb-24">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
           <h2 className="text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
