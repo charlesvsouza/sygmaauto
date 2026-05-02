@@ -58,7 +58,7 @@ export function LandingPage() {
     if (useAuthStore.getState().isAuthenticated) {
       navigate('/dashboard');
     } else {
-      navigate('/login');
+      navigate('/splash');
     }
   };
 
