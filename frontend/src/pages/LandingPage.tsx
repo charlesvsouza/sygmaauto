@@ -93,8 +93,8 @@ export function LandingPage() {
 
     try {
       const origin = window.location.origin;
-      const successUrl = `${origin}/?checkout=success&plan=${publicCheckoutPlan}`;
-      const cancelUrl = `${origin}/?checkout=cancel`;
+      const successUrl = `${origin}/checkout/success?plan=${publicCheckoutPlan}`;
+      const cancelUrl = `${origin}/checkout/cancel`;
       const response = await subscriptionsApi.createPublicCheckout({
         plan: publicCheckoutPlan,
         billingCycle: publicForm.billingCycle,
