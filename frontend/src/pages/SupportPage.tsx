@@ -1,4 +1,5 @@
 import { ChevronRight, LifeBuoy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { MarketingPageHero } from '../components/marketing/MarketingPageHero';
 import { MarketingShell } from '../components/marketing/MarketingShell';
 import { supportChannels, supportFaq } from '../data/marketingContent';
@@ -26,13 +27,34 @@ export function SupportPage() {
             ? 'border-[#ff7b2f]/25 bg-[#ff7b2f]/6 hover:border-[#ff7b2f]/50'
             : 'border-white/8 bg-white/4 hover:border-white/20';
 
+          const cardClassName = `rounded-3xl border p-6 flex flex-col transition-all ${accentClass}`;
+
+          if (!external) {
+            return (
+              <Link
+                key={title}
+                to={href}
+                className={cardClassName}
+              >
+                <div className="w-11 h-11 rounded-xl bg-white/8 flex items-center justify-center mb-4">
+                  <Icon size={22} className={accent === 'orange' ? 'text-[#ff7b2f]' : 'text-white/70'} />
+                </div>
+                <h2 className="text-lg font-black text-white">{title}</h2>
+                <p className="mt-3 text-sm text-white/55 leading-relaxed flex-1">{description}</p>
+                <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-[#ff7b2f]">
+                  Acessar <ChevronRight size={13} />
+                </div>
+              </Link>
+            );
+          }
+
           return (
             <a
               key={title}
               href={href}
               target={external ? '_blank' : undefined}
               rel={external ? 'noopener noreferrer' : undefined}
-              className={`rounded-3xl border p-6 flex flex-col transition-all ${accentClass}`}
+              className={cardClassName}
             >
               <div className="w-11 h-11 rounded-xl bg-white/8 flex items-center justify-center mb-4">
                 <Icon size={22} className={accent === 'orange' ? 'text-[#ff7b2f]' : 'text-white/70'} />

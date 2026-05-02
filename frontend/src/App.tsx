@@ -12,6 +12,7 @@ import { AboutPage } from './pages/AboutPage';
 import { DifferentialsPage } from './pages/DifferentialsPage';
 import { ContactPage } from './pages/ContactPage';
 import { SupportPage } from './pages/SupportPage';
+import { UserManualPage } from './pages/UserManualPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/diferenciais" element={<DifferentialsPage />} />
         <Route path="/contato" element={<ContactPage />} />
         <Route path="/suporte" element={<SupportPage />} />
+        <Route path="/manual" element={<UserManualPage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />
         <Route path="/splash" element={<InitialSplash />} />
         

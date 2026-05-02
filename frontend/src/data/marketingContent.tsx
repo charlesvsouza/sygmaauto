@@ -197,8 +197,8 @@ export const supportChannels = [
   {
     title: 'Manual do Usuário',
     description: 'Guia completo com passo a passo de ordens de serviço, clientes, financeiro, estoque e usuários.',
-    href: 'https://github.com/charlesvsouza/sygmaauto/blob/master/MANUAL_USUARIO.md',
-    external: true,
+    href: '/manual',
+    external: false,
     icon: BookOpen,
     accent: 'orange',
   },
