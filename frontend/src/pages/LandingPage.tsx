@@ -48,16 +48,26 @@ export function LandingPage() {
           Sistema para oficinas mecânicas
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-8 text-[clamp(3.4rem,10vw,7rem)] font-black leading-none tracking-[0.12em] uppercase"
-          style={{ letterSpacing: '0.14em' }}
-        >
-          <span className="text-white">Sigma</span>
-          <span className="text-[#ff7b2f]"> Auto</span>
-        </motion.h1>
+        <div className="relative mt-8 inline-block">
+          <motion.div
+            className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
+            animate={{ scale: [1, 1.08, 1], opacity: [0.24, 0.42, 0.24] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="w-[115%] h-[115%] rounded-full bg-[#ff7b2f]/25 blur-[34px]" />
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="relative z-10 text-[clamp(3.4rem,10vw,7rem)] font-black leading-none tracking-[0.12em] uppercase"
+            style={{ letterSpacing: '0.14em' }}
+          >
+            <span className="text-white">Sigma</span>
+            <span className="text-[#ff7b2f]"> Auto</span>
+          </motion.h1>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 8 }}

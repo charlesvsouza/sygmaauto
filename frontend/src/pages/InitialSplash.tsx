@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wrench, Shield, Zap, Database, Cpu } from 'lucide-react';
+import { EcgPulse } from '../components/marketing/EcgPulse';
 
 const steps = [
   { id: 1, text: 'Iniciando sistema...', icon: Cpu },
@@ -15,6 +16,7 @@ export function InitialSplash() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
+  const progress = Math.min(currentStep / steps.length, 1);
 
   useEffect(() => {
     if (currentStep < steps.length) {
@@ -83,14 +85,17 @@ export function InitialSplash() {
 
         {/* Barra de progresso */}
         <div className="w-72 md:w-96">
-          <div className="h-[2px] w-full bg-white/10 rounded-full overflow-hidden mb-5">
-            <motion.div
-              initial={{ width: '0%' }}
-              animate={{ width: `${(currentStep / steps.length) * 100}%` }}
-              transition={{ ease: 'easeOut' }}
-              className="h-full bg-[#ff7b2f] shadow-[0_0_12px_rgba(255,123,47,0.6)]"
-            />
-          </div>
+          <EcgPulse
+            className="h-7 w-full rounded-full border border-[#ff7b2f]/25 bg-[#0d1220]/45 overflow-hidden relative mb-3"
+            lineColor="#fb923c"
+            pointColor="#fdba74"
+            waveDuration={2.6}
+            travelDuration={3.6}
+            pointProgress={progress}
+          />
+          <p className="text-[10px] text-white/35 uppercase tracking-[0.16em] text-center mb-4">
+            Carregando {Math.round(progress * 100)}%
+          </p>
 
           {/* Step atual */}
           <div className="h-5 flex items-center justify-center">
