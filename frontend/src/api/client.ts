@@ -252,3 +252,11 @@ export const suppliersApi = {
   update: (id: string, data: any) => api.patch(`/suppliers/${id}`, data),
   delete: (id: string) => api.delete(`/suppliers/${id}`),
 };
+
+export const checklistApi = {
+  get: (serviceOrderId: string) => api.get(`/checklist/${serviceOrderId}`),
+  upsert: (serviceOrderId: string, type: 'ENTRADA' | 'SAIDA', data: any) =>
+    api.post(`/checklist/${serviceOrderId}/${type}`, data),
+  remove: (serviceOrderId: string, type: 'ENTRADA' | 'SAIDA') =>
+    api.delete(`/checklist/${serviceOrderId}/${type}`),
+};

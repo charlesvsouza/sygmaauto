@@ -17,6 +17,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { SuperAdminModule } from './superadmin/superadmin.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
+import { ChecklistModule } from './checklist/checklist.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -48,6 +49,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     SuppliersModule,
     SuperAdminModule,
     OnboardingModule,
+    ChecklistModule,
   ],
   providers: [TenantMiddleware],
 })

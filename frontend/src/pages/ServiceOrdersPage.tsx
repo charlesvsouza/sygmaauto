@@ -4,11 +4,13 @@ import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
   Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
+  ClipboardCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
+import { ChecklistModal } from '../components/ChecklistModal';
 
 const statusConfig: Record<string, { label: string; color: string; icon?: string }> = {
   ABERTA:               { label: 'Aberta',                color: 'bg-slate-100 text-slate-700' },
@@ -156,6 +158,7 @@ export function ServiceOrdersPage() {
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -889,6 +892,21 @@ export function ServiceOrdersPage() {
                 >
                   <Printer size={15} /> Visualizar / Imprimir OS
                 </button>
+                {/* Botões de Checklist */}
+                <button
+                  onClick={() => setChecklistModal('ENTRADA')}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all"
+                  title="Checklist de entrada do veículo"
+                >
+                  <ClipboardCheck size={15} /> Entrada
+                </button>
+                <button
+                  onClick={() => setChecklistModal('SAIDA')}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 transition-all"
+                  title="Checklist de saída do veículo"
+                >
+                  <ClipboardCheck size={15} /> Saída
+                </button>
                 <button
                   onClick={() => saveDetails(true)}
                   disabled={isClosed}
@@ -1604,6 +1622,16 @@ export function ServiceOrdersPage() {
             loadOrders();
             alert('OS Importada com sucesso!');
           }} 
+        />
+      )}
+
+      {/* Modais de Checklist */}
+      {checklistModal && selectedOrder && (
+        <ChecklistModal
+          serviceOrderId={selectedOrder.id}
+          orderNumber={selectedOrder.orderNumber}
+          type={checklistModal}
+          onClose={() => setChecklistModal(null)}
         />
       )}
 

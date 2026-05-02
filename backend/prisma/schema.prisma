@@ -56,6 +56,7 @@ model Tenant {
   financialTransactions FinancialTransaction[]
   messages              Message[]
   auditLogs             AuditLog[]
+  checklists            VehicleChecklist[]
 
   @@map("tenants")
 }
@@ -315,8 +316,9 @@ model ServiceOrder {
   tenant    Tenant           @relation(fields: [tenantId], references: [id])
   customer  Customer         @relation(fields: [customerId], references: [id])
   vehicle   Vehicle          @relation(fields: [vehicleId], references: [id])
-  items     ServiceOrderItem[]
-  timeline  ServiceOrderTimeline[]
+  items      ServiceOrderItem[]
+  timeline   ServiceOrderTimeline[]
+  checklists VehicleChecklist[]
 
   @@map("service_orders")
 }
@@ -421,4 +423,54 @@ model AuditLog {
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@map("audit_logs")
+}
+
+// ────────────────────────────────────────────
+// Checklist de Entrada/Saída de Veículo
+// ────────────────────────────────────────────
+
+model VehicleChecklist {
+  id             String    @id @default(uuid())
+  tenantId       String
+  serviceOrderId String
+  type           String    // ENTRADA | SAIDA
+  fuelLevel      Int       @default(0) // 0-8 (oitavos do tanque)
+  observations   String?
+  completedAt    DateTime?
+  completedBy    String?   // nome do responsável
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  items        ChecklistItem[]
+
+  @@unique([serviceOrderId, type])
+  @@map("vehicle_checklists")
+}
+
+model ChecklistItem {
+  id          String   @id @default(uuid())
+  checklistId String
+  area        String   // CAPO, TETO, PORTA_LD_DIANT, etc.
+  condition   String   // OK | RISCO | AMASSADO | QUEBRADO | AUSENTE
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  checklist VehicleChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  photos    ChecklistPhoto[]
+
+  @@map("checklist_items")
+}
+
+model ChecklistPhoto {
+  id        String   @id @default(uuid())
+  itemId    String
+  data      String   // base64 ou URL
+  mimeType  String   @default("image/jpeg")
+  createdAt DateTime @default(now())
+
+  item ChecklistItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_photos")
 }
