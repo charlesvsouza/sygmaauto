@@ -254,7 +254,6 @@ export class SubscriptionsService {
     }
 
     const normalizedDocument = (dto.document || '').trim();
-    const payerIdentification = this.toMercadoPagoIdentification(normalizedDocument);
     if (normalizedDocument) {
       const existingByDocument = await this.prisma.tenant.findUnique({ where: { document: normalizedDocument } });
       if (existingByDocument && existingByDocument.status !== 'PENDING_SETUP') {
@@ -291,6 +290,11 @@ export class SubscriptionsService {
     const mercadoPagoToken = this.configService.get<string>('MP_ACCESS_TOKEN');
     const mercadoPagoMode = (this.configService.get<string>('MP_MODE') || 'production').toLowerCase();
     const webhookUrl = this.resolveMercadoPagoWebhookUrl();
+    const payerPayload = this.buildMercadoPagoPayer({
+      email: inviteEmail,
+      fullName: dto.tenantName,
+      document: normalizedDocument,
+    });
 
     if (mercadoPagoToken) {
       const preferencePayload = {
@@ -303,10 +307,7 @@ export class SubscriptionsService {
             description: `Assinatura ${cycleLabel.toLowerCase()} do plano ${selectedPlan.name}`,
           },
         ],
-        payer: {
-          email: inviteEmail,
-          ...payerIdentification,
-        },
+        payer: payerPayload,
         external_reference: `${pendingTenant.id}:${selectedPlan.name}:${billingCycle}:${Date.now()}`,
         metadata: {
           tenantId: pendingTenant.id,
@@ -687,22 +688,32 @@ export class SubscriptionsService {
     return undefined;
   }
 
+  private buildMercadoPagoPayer(input: { email: string; fullName?: string; document?: string }) {
+    const nameParts = String(input.fullName || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const firstName = nameParts[0] || 'Cliente';
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'SigmaAuto';
+    const identification = this.toMercadoPagoIdentification(input.document || '');
+
+    return {
+      email: input.email,
+      first_name: firstName,
+      last_name: lastName,
+      ...identification,
+    };
+  }
+
   private toMercadoPagoIdentification(document: string) {
     const digits = String(document || '').replace(/\D/g, '');
 
+    // Checkout Pro para pagador pessoa fisica funciona melhor com CPF.
+    // CNPJ continua armazenado no tenant, mas nao preenche identificacao do payer.
     if (digits.length === 11) {
       return {
         identification: {
           type: 'CPF',
-          number: digits,
-        },
-      };
-    }
-
-    if (digits.length === 14) {
-      return {
-        identification: {
-          type: 'CNPJ',
           number: digits,
         },
       };

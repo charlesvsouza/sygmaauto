@@ -225,12 +225,12 @@ export function PlansCheckoutPage() {
                 </label>
 
                 <label className="text-sm text-white/80">
-                  CPF/CNPJ (opcional, mas recomendado)
+                  CPF do pagador (opcional, recomendado para cartao)
                   <input
                     value={document}
                     onChange={(e) => setDocument(e.target.value)}
                     className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
-                    placeholder="Somente numeros ou formatado"
+                    placeholder="Ex.: 123.456.789-00"
                   />
                 </label>
               </div>
