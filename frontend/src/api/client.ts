@@ -192,8 +192,17 @@ export const subscriptionsApi = {
   getCurrent: () => api.get('/subscriptions/current'),
   getPlans: () => api.get('/subscriptions/plans'),
   changePlan: (plan: string) => api.post('/subscriptions/change-plan', { plan }),
-  createCheckout: (plan: string, successUrl?: string, cancelUrl?: string) =>
-    api.post('/subscriptions/checkout', { plan, successUrl, cancelUrl }),
+  createCheckout: (plan: string, successUrl?: string, cancelUrl?: string, billingCycle: 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL' = 'MONTHLY') =>
+    api.post('/subscriptions/checkout', { plan, successUrl, cancelUrl, billingCycle }),
+  createPublicCheckout: (data: {
+    plan: 'START' | 'PRO' | 'REDE';
+    billingCycle: 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL';
+    tenantName: string;
+    inviteEmail: string;
+    document?: string;
+    successUrl?: string;
+    cancelUrl?: string;
+  }) => axios.post(`${API_URL}/public/subscriptions/checkout`, data),
   cancel: () => api.post('/subscriptions/cancel'),
 };
 

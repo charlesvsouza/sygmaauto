@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Gauge, Loader2, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Gauge, Loader2, ShieldCheck, X, Zap } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { subscriptionsApi } from '../api/client';
 
@@ -14,6 +14,8 @@ type Plan = {
   highlights: string[];
   featured?: boolean;
 };
+
+type BillingCycle = 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL';
 
 const plans: Plan[] = [
   {
@@ -50,23 +52,82 @@ const features = [
   { icon: Zap, title: 'Estoque inteligente', desc: 'Alertas de reposicao e rastreio de pecas por ordem.' },
 ];
 
+const billingCycleOptions: Array<{ value: BillingCycle; label: string; months: number; badge?: string }> = [
+  { value: 'MONTHLY', label: 'Mensal', months: 1 },
+  { value: 'QUARTERLY', label: 'Trimestral', months: 3, badge: '3x mensal' },
+  { value: 'SEMIANNUAL', label: 'Semestral', months: 6, badge: '6x mensal' },
+  { value: 'ANNUAL', label: 'Anual', months: 12, badge: '12x mensal' },
+];
+
 export function LandingPage() {
   const navigate = useNavigate();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [publicCheckoutPlan, setPublicCheckoutPlan] = useState<Plan['name'] | null>(null);
+  const [publicCheckoutOpen, setPublicCheckoutOpen] = useState(false);
+  const [publicCheckoutLoading, setPublicCheckoutLoading] = useState(false);
+  const [publicCheckoutError, setPublicCheckoutError] = useState<string | null>(null);
+  const [publicForm, setPublicForm] = useState({
+    tenantName: '',
+    inviteEmail: '',
+    document: '',
+    billingCycle: 'MONTHLY' as BillingCycle,
+  });
+
+  const openPublicCheckout = (planName: Plan['name']) => {
+    setPublicCheckoutPlan(planName);
+    setPublicCheckoutError(null);
+    setPublicCheckoutOpen(true);
+  };
+
+  const closePublicCheckout = () => {
+    if (publicCheckoutLoading) return;
+    setPublicCheckoutOpen(false);
+    setPublicCheckoutError(null);
+  };
+
+  const submitPublicCheckout = async () => {
+    if (!publicCheckoutPlan) return;
+    setPublicCheckoutLoading(true);
+    setPublicCheckoutError(null);
+
+    try {
+      const origin = window.location.origin;
+      const successUrl = `${origin}/?checkout=success&plan=${publicCheckoutPlan}`;
+      const cancelUrl = `${origin}/?checkout=cancel`;
+      const response = await subscriptionsApi.createPublicCheckout({
+        plan: publicCheckoutPlan,
+        billingCycle: publicForm.billingCycle,
+        tenantName: publicForm.tenantName.trim(),
+        inviteEmail: publicForm.inviteEmail.trim().toLowerCase(),
+        document: publicForm.document.trim() || undefined,
+        successUrl,
+        cancelUrl,
+      });
+
+      const checkoutUrl = response.data?.checkoutUrl;
+      if (!checkoutUrl) {
+        throw new Error('Checkout indisponível para este plano');
+      }
+      window.location.href = checkoutUrl;
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Falha ao iniciar checkout público';
+      setPublicCheckoutError(msg);
+      setPublicCheckoutLoading(false);
+    }
+  };
 
   const startPlanCheckout = async (planName: Plan['name']) => {
-    // Salva o plano ANTES de qualquer chamada — garante que o LoginPage
-    // recupere o plano pendente mesmo se o token expirar (401) durante o checkout
-    // e o interceptor redirecionar para /login sem passar pelo catch do React.
-    sessionStorage.setItem('pendingCheckoutPlan', planName);
-
     const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
     if (!isAuthenticated) {
-      navigate('/login');
+      openPublicCheckout(planName);
       return;
     }
+
+    // Mantém compatibilidade para sessão expirada no fluxo autenticado:
+    // se der 401 e redirecionar para login, o plano continua pendente.
+    sessionStorage.setItem('pendingCheckoutPlan', planName);
 
     // Usuário logado: chama a API diretamente e redireciona para o MP
     setCheckoutLoading(planName);
@@ -82,8 +143,12 @@ export function LandingPage() {
       sessionStorage.removeItem('pendingCheckoutPlan');
       window.location.href = checkoutUrl;
     } catch (err: any) {
-      // Se não for 401 (que já redirecionou via interceptor), mostra erro na tela
-      if (err?.response?.status !== 401) {
+      if (err?.response?.status === 401) {
+        // Token inválido sem refresh token → limpa estado e redireciona para login
+        // pendingCheckoutPlan já está no sessionStorage (setado acima)
+        useAuthStore.getState().logout();
+        navigate('/login');
+      } else {
         sessionStorage.removeItem('pendingCheckoutPlan');
         const msg = err?.response?.data?.message || err?.message || 'Falha ao iniciar checkout';
         setCheckoutError(msg);
@@ -255,8 +320,8 @@ export function LandingPage() {
       <section id="planos" className="relative z-10 max-w-5xl mx-auto px-6 pb-24">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
-          <h2 className="text-3xl md:text-4xl font-black">Escolha e va direto para o checkout</h2>
-          <p className="mt-3 text-white/45 text-sm">Ao clicar, o sistema ja abre o fluxo de assinatura.</p>
+          <h2 className="text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
+          <p className="mt-3 text-white/45 text-sm">Sem conta? voce conclui o pagamento e recebe convite de ativacao no email.</p>
         </div>
 
         {checkoutError && (
@@ -327,6 +392,101 @@ export function LandingPage() {
           © {new Date().getFullYear()} SygmaAuto · sigmaauto.com.br · Todos os direitos reservados
         </p>
       </footer>
+
+      {publicCheckoutOpen && publicCheckoutPlan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/75" onClick={closePublicCheckout} />
+          <div className="relative w-full max-w-xl rounded-3xl border border-white/15 bg-[#101826] p-6 md:p-7 shadow-2xl">
+            <button
+              type="button"
+              onClick={closePublicCheckout}
+              className="absolute right-4 top-4 w-8 h-8 rounded-lg border border-white/15 text-white/70 hover:text-white hover:border-white/40 inline-flex items-center justify-center"
+            >
+              <X size={16} />
+            </button>
+
+            <p className="text-xs uppercase tracking-[0.22em] text-[#ff7b2f]/80 font-bold">Checkout publico</p>
+            <h3 className="mt-2 text-2xl font-black">Plano {publicCheckoutPlan}</h3>
+            <p className="mt-2 text-sm text-white/55">
+              Informe os dados para pagamento. A ativacao do MASTER chega por email apos confirmacao do Mercado Pago.
+            </p>
+
+            {publicCheckoutError && (
+              <p className="mt-4 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
+                {publicCheckoutError}
+              </p>
+            )}
+
+            <div className="mt-5 grid gap-4">
+              <label className="text-sm text-white/80">
+                Nome da oficina
+                <input
+                  value={publicForm.tenantName}
+                  onChange={(e) => setPublicForm((prev) => ({ ...prev, tenantName: e.target.value }))}
+                  className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                  placeholder="Ex.: Oficina Almeida"
+                />
+              </label>
+
+              <label className="text-sm text-white/80">
+                Email para convite do MASTER
+                <input
+                  type="email"
+                  value={publicForm.inviteEmail}
+                  onChange={(e) => setPublicForm((prev) => ({ ...prev, inviteEmail: e.target.value }))}
+                  className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                  placeholder="responsavel@empresa.com"
+                />
+              </label>
+
+              <label className="text-sm text-white/80">
+                Documento (opcional)
+                <input
+                  value={publicForm.document}
+                  onChange={(e) => setPublicForm((prev) => ({ ...prev, document: e.target.value }))}
+                  className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                  placeholder="CNPJ/CPF"
+                />
+              </label>
+
+              <label className="text-sm text-white/80">
+                Periodicidade
+                <select
+                  value={publicForm.billingCycle}
+                  onChange={(e) => setPublicForm((prev) => ({ ...prev, billingCycle: e.target.value as BillingCycle }))}
+                  className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                >
+                  {billingCycleOptions.map((option) => (
+                    <option key={option.value} value={option.value} className="bg-[#0f172a] text-white">
+                      {option.label} {option.badge ? `(${option.badge})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <button
+              type="button"
+              onClick={submitPublicCheckout}
+              disabled={
+                publicCheckoutLoading ||
+                !publicForm.tenantName.trim() ||
+                !publicForm.inviteEmail.trim()
+              }
+              className="mt-6 h-12 w-full rounded-xl bg-[#ff7b2f] text-white font-black hover:bg-[#f06820] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+            >
+              {publicCheckoutLoading ? (
+                <><Loader2 size={16} className="animate-spin" /> Abrindo checkout...</>
+              ) : (
+                <>
+                  Ir para Mercado Pago
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

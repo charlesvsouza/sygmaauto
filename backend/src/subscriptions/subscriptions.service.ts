@@ -3,11 +3,13 @@ import {
   NotFoundException,
   ForbiddenException,
   InternalServerErrorException,
+  ConflictException,
 } from '@nestjs/common';
-import { createHmac, timingSafeEqual } from 'crypto';
+import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
-import { ChangePlanDto, CreateCheckoutDto } from './dto/subscription.dto';
+import { EmailService } from '../notifications/email.service';
+import { BillingCycle, ChangePlanDto, CreateCheckoutDto, PublicCheckoutDto } from './dto/subscription.dto';
 export enum PlanType {
   START = 'START',
   PRO = 'PRO',
@@ -27,6 +29,7 @@ export class SubscriptionsService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async findByTenant(tenantId: string) {
@@ -124,6 +127,10 @@ export class SubscriptionsService {
       throw new NotFoundException('Tenant not found');
     }
 
+    const billingCycle = dto.billingCycle || BillingCycle.MONTHLY;
+    const charge = this.calculateCharge(selectedPlan.price, billingCycle);
+    const cycleLabel = this.getBillingCycleLabel(billingCycle);
+
     const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://sigmaauto.com.br').replace(/\/+$/, ''); // dominio canonico: sigmaauto.com.br
     const defaultSuccessUrl = this.configService.get<string>('CHECKOUT_SUCCESS_URL') || `${frontendUrl}/settings?checkout=success`;
     const defaultCancelUrl = this.configService.get<string>('CHECKOUT_CANCEL_URL') || `${frontendUrl}/settings?checkout=cancel`;
@@ -147,18 +154,21 @@ export class SubscriptionsService {
       const preferencePayload = {
         items: [
           {
-            title: `Sigma Auto Plano ${selectedPlan.name}`,
+            title: `Sigma Auto Plano ${selectedPlan.name} (${cycleLabel})`,
             quantity: 1,
-            unit_price: Number(selectedPlan.price),
+            unit_price: charge.amount,
             currency_id: 'BRL',
-            description: `Assinatura mensal do plano ${selectedPlan.name}`,
+            description: `Assinatura ${cycleLabel.toLowerCase()} do plano ${selectedPlan.name}`,
           },
         ],
-        external_reference: `${tenant.id}:${selectedPlan.name}:${Date.now()}`,
+        external_reference: `${tenant.id}:${selectedPlan.name}:${billingCycle}:${Date.now()}`,
         metadata: {
           tenantId: tenant.id,
           tenantName: tenant.name,
           plan: selectedPlan.name,
+          billingCycle,
+          billingMonths: charge.months,
+          amountCharged: charge.amount,
           currentPlan: subscription?.plan?.name ?? 'NONE',
         },
         back_urls: {
@@ -195,6 +205,8 @@ export class SubscriptionsService {
         provider: 'mercado_pago',
         mode: mercadoPagoMode,
         plan: dto.plan,
+        billingCycle,
+        amount: charge.amount,
         checkoutUrl,
       };
     }
@@ -214,6 +226,8 @@ export class SubscriptionsService {
     checkoutUrl.searchParams.set('tenantId', tenant.id);
     checkoutUrl.searchParams.set('tenantName', tenant.name);
     checkoutUrl.searchParams.set('plan', dto.plan);
+    checkoutUrl.searchParams.set('billingCycle', billingCycle);
+    checkoutUrl.searchParams.set('amount', String(charge.amount));
     checkoutUrl.searchParams.set('currentPlan', subscription?.plan?.name ?? 'NONE');
 
     if (successUrl) checkoutUrl.searchParams.set('success_url', successUrl);
@@ -222,8 +236,128 @@ export class SubscriptionsService {
     return {
       provider: 'external_checkout',
       plan: dto.plan,
+      billingCycle,
+      amount: charge.amount,
       checkoutUrl: checkoutUrl.toString(),
     };
+  }
+
+  async createPublicCheckoutLink(dto: PublicCheckoutDto) {
+    const inviteEmail = String(dto.inviteEmail || '').toLowerCase().trim();
+    if (!inviteEmail.includes('@')) {
+      throw new ConflictException('Informe um email válido para receber o convite de ativação');
+    }
+
+    const selectedPlan = await this.prisma.subscriptionPlan.findUnique({ where: { name: dto.plan } });
+    if (!selectedPlan) {
+      throw new NotFoundException('Plan not found');
+    }
+
+    const normalizedDocument = (dto.document || '').trim();
+    if (normalizedDocument) {
+      const existingByDocument = await this.prisma.tenant.findUnique({ where: { document: normalizedDocument } });
+      if (existingByDocument && existingByDocument.status !== 'PENDING_SETUP') {
+        throw new ConflictException('Já existe um tenant ativo com este documento');
+      }
+    }
+
+    const billingCycle = dto.billingCycle || BillingCycle.MONTHLY;
+    const charge = this.calculateCharge(selectedPlan.price, billingCycle);
+    const cycleLabel = this.getBillingCycleLabel(billingCycle);
+
+    const pendingTenant = await this.findOrCreatePendingTenant({
+      tenantName: dto.tenantName,
+      inviteEmail,
+      document: normalizedDocument,
+    });
+
+    await this.upsertPendingSubscription(pendingTenant.id, selectedPlan.id);
+
+    const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://sigmaauto.com.br').replace(/\/+$/, '');
+    const defaultSuccessUrl = this.configService.get<string>('CHECKOUT_SUCCESS_URL') || `${frontendUrl}/?checkout=success`;
+    const defaultCancelUrl = this.configService.get<string>('CHECKOUT_CANCEL_URL') || `${frontendUrl}/?checkout=cancel`;
+    const allowedOriginsList = [
+      this.toUrlOrigin(frontendUrl),
+      ...String(this.configService.get<string>('CHECKOUT_ALLOWED_RETURN_ORIGINS') || '')
+        .split(',')
+        .map((value) => this.toUrlOrigin(value.trim())),
+    ].filter((value): value is string => Boolean(value));
+    const allowedReturnOrigins = new Set<string>(allowedOriginsList);
+
+    const successUrl = this.sanitizeCheckoutReturnUrl(dto.successUrl, defaultSuccessUrl, allowedReturnOrigins);
+    const cancelUrl = this.sanitizeCheckoutReturnUrl(dto.cancelUrl, defaultCancelUrl, allowedReturnOrigins);
+
+    const mercadoPagoToken = this.configService.get<string>('MP_ACCESS_TOKEN');
+    const mercadoPagoMode = (this.configService.get<string>('MP_MODE') || 'production').toLowerCase();
+    const webhookUrl = this.resolveMercadoPagoWebhookUrl();
+
+    if (mercadoPagoToken) {
+      const preferencePayload = {
+        items: [
+          {
+            title: `Sigma Auto Plano ${selectedPlan.name} (${cycleLabel})`,
+            quantity: 1,
+            unit_price: charge.amount,
+            currency_id: 'BRL',
+            description: `Assinatura ${cycleLabel.toLowerCase()} do plano ${selectedPlan.name}`,
+          },
+        ],
+        payer: {
+          email: inviteEmail,
+        },
+        external_reference: `${pendingTenant.id}:${selectedPlan.name}:${billingCycle}:${Date.now()}`,
+        metadata: {
+          tenantId: pendingTenant.id,
+          tenantName: pendingTenant.name,
+          plan: selectedPlan.name,
+          billingCycle,
+          billingMonths: charge.months,
+          amountCharged: charge.amount,
+          inviteEmail,
+          publicCheckout: true,
+        },
+        back_urls: {
+          success: successUrl,
+          pending: cancelUrl,
+          failure: cancelUrl,
+        },
+        auto_return: 'approved',
+        ...(webhookUrl ? { notification_url: webhookUrl } : {}),
+      };
+
+      const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${mercadoPagoToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferencePayload),
+      });
+
+      if (!mpResponse.ok) {
+        const errorText = await mpResponse.text();
+        throw new InternalServerErrorException(`Mercado Pago checkout error: ${errorText}`);
+      }
+
+      const mpData = await mpResponse.json() as { init_point?: string; sandbox_init_point?: string };
+      const checkoutUrl = mercadoPagoMode === 'sandbox' ? (mpData.sandbox_init_point || mpData.init_point) : (mpData.init_point || mpData.sandbox_init_point);
+
+      if (!checkoutUrl) {
+        throw new InternalServerErrorException('Mercado Pago did not return checkout URL');
+      }
+
+      return {
+        provider: 'mercado_pago',
+        mode: mercadoPagoMode,
+        tenantId: pendingTenant.id,
+        plan: dto.plan,
+        billingCycle,
+        amount: charge.amount,
+        checkoutUrl,
+      };
+    }
+
+    throw new NotFoundException('Configure MP_ACCESS_TOKEN para habilitar checkout público');
   }
 
   async processMercadoPagoWebhook(payload: any, query?: Record<string, any>, headers?: Record<string, any>) {
@@ -317,12 +451,15 @@ export class SubscriptionsService {
     const metadata = paymentData?.metadata || {};
     let tenantId: string | undefined = metadata?.tenantId;
     let planName: string | undefined = metadata?.plan;
+    let billingCycle: BillingCycle | undefined = metadata?.billingCycle;
+    let inviteEmail: string | undefined = metadata?.inviteEmail;
 
     const externalReference = String(paymentData?.external_reference || '');
     if ((!tenantId || !planName) && externalReference.includes(':')) {
-      const [refTenantId, refPlan] = externalReference.split(':');
+      const [refTenantId, refPlan, refCycle] = externalReference.split(':');
       tenantId = tenantId || refTenantId;
       planName = planName || refPlan;
+      billingCycle = billingCycle || this.parseBillingCycle(refCycle);
     }
 
     if (!tenantId || !planName) {
@@ -339,8 +476,9 @@ export class SubscriptionsService {
     if (Number.isNaN(currentPeriodStart.getTime())) {
       throw new InternalServerErrorException('Invalid payment approval date');
     }
+    const monthsToAdd = this.getBillingCycleMonths(billingCycle || BillingCycle.MONTHLY);
     const currentPeriodEnd = new Date(currentPeriodStart);
-    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + monthsToAdd);
 
     const currentSubscription = await this.findByTenant(tenantId);
     const currentEnd = currentSubscription.currentPeriodEnd ? new Date(currentSubscription.currentPeriodEnd) : null;
@@ -372,12 +510,43 @@ export class SubscriptionsService {
       include: { plan: true },
     });
 
+    const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!tenant) {
+      throw new NotFoundException('Tenant not found during webhook processing');
+    }
+
+    if (tenant.status === 'PENDING_SETUP') {
+      const setupInviteToken = tenant.setupInviteToken || randomUUID();
+      const setupInviteExpiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000);
+      const finalInviteEmail = (inviteEmail || tenant.setupInviteEmail || tenant.email || '').toLowerCase().trim();
+
+      if (finalInviteEmail) {
+        await this.prisma.tenant.update({
+          where: { id: tenant.id },
+          data: {
+            setupInviteEmail: finalInviteEmail,
+            setupInviteToken,
+            setupInviteExpiresAt,
+          },
+        });
+
+        const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://sigmaauto.com.br').replace(/\/+$/, '');
+        const activationLink = `${frontendUrl}/activate/${setupInviteToken}`;
+        await this.emailService.sendTenantSetupEmail(finalInviteEmail, {
+          companyName: tenant.name,
+          activationLink,
+          expiresAt: setupInviteExpiresAt,
+        });
+      }
+    }
+
     return {
       received: true,
       processed: true,
       paymentId: String(paymentId),
       tenantId,
       plan: updated.plan.name,
+      billingCycle: billingCycle || BillingCycle.MONTHLY,
       status: updated.status,
     };
   }
@@ -407,6 +576,102 @@ export class SubscriptionsService {
     }
 
     return true;
+  }
+
+  private async findOrCreatePendingTenant(input: { tenantName: string; inviteEmail: string; document?: string }) {
+    const existingPending = await this.prisma.tenant.findFirst({
+      where: {
+        setupInviteEmail: input.inviteEmail,
+        status: 'PENDING_SETUP',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existingPending) {
+      return this.prisma.tenant.update({
+        where: { id: existingPending.id },
+        data: {
+          name: input.tenantName,
+          document: input.document || existingPending.document,
+          setupInviteEmail: input.inviteEmail,
+        },
+      });
+    }
+
+    const document = input.document || `PENDING-${randomUUID().slice(0, 8)}`;
+    return this.prisma.tenant.create({
+      data: {
+        name: input.tenantName,
+        status: 'PENDING_SETUP',
+        document,
+        setupInviteEmail: input.inviteEmail,
+      },
+    });
+  }
+
+  private async upsertPendingSubscription(tenantId: string, planId: string) {
+    const now = new Date();
+    return this.prisma.subscription.upsert({
+      where: { tenantId },
+      update: {
+        planId,
+        status: 'PAST_DUE',
+        currentPeriodStart: now,
+        currentPeriodEnd: now,
+      },
+      create: {
+        tenantId,
+        planId,
+        status: 'PAST_DUE',
+        currentPeriodStart: now,
+        currentPeriodEnd: now,
+      },
+      include: { plan: true },
+    });
+  }
+
+  private calculateCharge(baseMonthlyPrice: number, cycle: BillingCycle) {
+    const months = this.getBillingCycleMonths(cycle);
+    const gross = Number(baseMonthlyPrice) * months;
+    return {
+      months,
+      amount: Math.round(gross * 100) / 100,
+    };
+  }
+
+  private getBillingCycleMonths(cycle: BillingCycle) {
+    switch (cycle) {
+      case BillingCycle.QUARTERLY:
+        return 3;
+      case BillingCycle.SEMIANNUAL:
+        return 6;
+      case BillingCycle.ANNUAL:
+        return 12;
+      default:
+        return 1;
+    }
+  }
+
+  private getBillingCycleLabel(cycle: BillingCycle) {
+    switch (cycle) {
+      case BillingCycle.QUARTERLY:
+        return 'Trimestral';
+      case BillingCycle.SEMIANNUAL:
+        return 'Semestral';
+      case BillingCycle.ANNUAL:
+        return 'Anual';
+      default:
+        return 'Mensal';
+    }
+  }
+
+  private parseBillingCycle(raw: string | undefined): BillingCycle | undefined {
+    const normalized = String(raw || '').toUpperCase();
+    if (normalized === BillingCycle.MONTHLY) return BillingCycle.MONTHLY;
+    if (normalized === BillingCycle.QUARTERLY) return BillingCycle.QUARTERLY;
+    if (normalized === BillingCycle.SEMIANNUAL) return BillingCycle.SEMIANNUAL;
+    if (normalized === BillingCycle.ANNUAL) return BillingCycle.ANNUAL;
+    return undefined;
   }
 
   private validateMercadoPagoSignature(
