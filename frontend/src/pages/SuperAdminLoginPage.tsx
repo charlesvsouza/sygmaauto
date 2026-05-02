@@ -61,7 +61,7 @@ export function SuperAdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
-                  placeholder="admin@sigmaauto.com.br"
+                  placeholder="sigmaauto@sigmaauto.com.br"
                   required
                 />
               </div>

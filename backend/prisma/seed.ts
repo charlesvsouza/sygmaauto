@@ -102,16 +102,16 @@ async function main() {
   // ─── SuperAdmin ───────────────────────────────────────────────────────────
   const superAdminPwd = process.env.SEED_SUPERADMIN_PASSWORD || 'SygmaAdmin@2026!';
   await prisma.superAdmin.upsert({
-    where: { email: 'charlesvsouza@hotmail.com' },
+    where: { email: 'sigmaauto@sigmaauto.com.br' },
     update: {},
     create: {
-      email: 'charlesvsouza@hotmail.com',
-      name: 'Charles Vasconcelos de Souza',
+      email: 'sigmaauto@sigmaauto.com.br',
+      name: 'Sigma Auto Super Admin',
       passwordHash: await bcrypt.hash(superAdminPwd, 12),
     },
   });
 
-  console.log('✅ SuperAdmin criado: charlesvsouza@hotmail.com');
+  console.log('✅ SuperAdmin criado: sigmaauto@sigmaauto.com.br');
 
   // ─── Tenant Owner (conta do dono do produto, plano PRO ativo) ─────────────
   const ownerPwd = process.env.SEED_MASTER_PASSWORD || 'SygmaMaster@2026!';
@@ -124,7 +124,7 @@ async function main() {
     create: {
       name: 'Sygma Auto',
       document: '00.000.000/0001-00',
-      email: 'charlesvsouza@hotmail.com',
+      email: 'assine@sigmaauto.com.br',
     },
   });
 
@@ -141,18 +141,18 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { tenantId_email: { tenantId: ownerTenant.id, email: 'charles@sygmaauto.com' } },
+    where: { tenantId_email: { tenantId: ownerTenant.id, email: 'assine@sigmaauto.com.br' } },
     update: {},
     create: {
       tenantId: ownerTenant.id,
-      email: 'charles@sygmaauto.com',
+      email: 'assine@sigmaauto.com.br',
       passwordHash: await bcrypt.hash(ownerPwd, 10),
-      name: 'Charles Vasconcelos de Souza',
+      name: 'Master Sigma Auto',
       role: 'MASTER',
     },
   });
 
-  console.log('✅ Tenant owner criado: charles@sygmaauto.com (MASTER / PRO ativo)');
+  console.log('✅ Tenant owner criado: assine@sigmaauto.com.br (MASTER / PRO ativo)');
 
   // ─── Tenant Demo (para testes de fluxo com múltiplos papéis) ─────────────
   const trialEnds = new Date();
@@ -225,10 +225,10 @@ async function main() {
 ║  • REDE   — R$ 599/mês                                  ║
 ╠══════════════════════════════════════════════════════════╣
 ║  SUPERADMIN (painel /superadmin):                        ║
-║  • charlesvsouza@hotmail.com  /  SygmaAdmin@2026!       ║
+║  • sigmaauto@sigmaauto.com.br /  SygmaAdmin@2026!       ║
 ╠══════════════════════════════════════════════════════════╣
 ║  OWNER — Tenant "Sygma Auto" (PRO ativo, 1 ano):        ║
-║  • charles@sygmaauto.com      /  SygmaMaster@2026!      ║
+║  • assine@sigmaauto.com.br    /  SygmaMaster@2026!      ║
 ╠══════════════════════════════════════════════════════════╣
 ║  DEMO — Oficina Demo (PRO trial 30 dias):                ║
 ║  • master@demo.com       /  master123    (MASTER)        ║
