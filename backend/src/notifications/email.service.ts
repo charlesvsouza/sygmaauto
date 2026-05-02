@@ -37,7 +37,10 @@ export class EmailService {
       return false;
     }
 
-    const fromEmail = this.configService.get<string>('SMTP_FROM_EMAIL') || this.configService.get<string>('SMTP_USER');
+    const fromEmail =
+      this.configService.get<string>('SMTP_FROM_EMAIL') ||
+      this.configService.get<string>('GENERAL_EMAIL') ||
+      this.configService.get<string>('SMTP_USER');
     const fromName = this.configService.get<string>('SMTP_FROM_NAME') || 'Sigma Auto';
 
     await transporter.sendMail({
@@ -67,7 +70,10 @@ export class EmailService {
       return false;
     }
 
-    const fromEmail = this.configService.get<string>('SMTP_FROM_EMAIL') || this.configService.get<string>('SMTP_USER');
+    const fromEmail =
+      this.configService.get<string>('SMTP_FROM_EMAIL') ||
+      this.configService.get<string>('GENERAL_EMAIL') ||
+      this.configService.get<string>('SMTP_USER');
     const fromName = this.configService.get<string>('SMTP_FROM_NAME') || 'Sigma Auto';
 
     await transporter.sendMail({

@@ -6,6 +6,12 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting seed...');
 
+  const superAdminEmail = process.env.SEED_SUPERADMIN_EMAIL || 'sigmaauto@sigmaauto.com.br';
+  const superAdminName = process.env.SEED_SUPERADMIN_NAME || 'Sigma Auto Super Admin';
+  const tenantOwnerEmail = process.env.SEED_TENANT_OWNER_EMAIL || 'assine@sigmaauto.com.br';
+  const tenantOwnerName = process.env.SEED_TENANT_OWNER_NAME || 'Master Sigma Auto';
+  const tenantOwnerContactEmail = process.env.SEED_TENANT_OWNER_CONTACT_EMAIL || tenantOwnerEmail;
+
   // ─── Planos (preços alinhados com a landing page) ─────────────────────────
   const startPlan = await prisma.subscriptionPlan.upsert({
     where: { name: 'START' },
@@ -102,16 +108,16 @@ async function main() {
   // ─── SuperAdmin ───────────────────────────────────────────────────────────
   const superAdminPwd = process.env.SEED_SUPERADMIN_PASSWORD || 'SygmaAdmin@2026!';
   await prisma.superAdmin.upsert({
-    where: { email: 'sigmaauto@sigmaauto.com.br' },
+    where: { email: superAdminEmail },
     update: {},
     create: {
-      email: 'sigmaauto@sigmaauto.com.br',
-      name: 'Sigma Auto Super Admin',
+      email: superAdminEmail,
+      name: superAdminName,
       passwordHash: await bcrypt.hash(superAdminPwd, 12),
     },
   });
 
-  console.log('✅ SuperAdmin criado: sigmaauto@sigmaauto.com.br');
+  console.log(`✅ SuperAdmin criado: ${superAdminEmail}`);
 
   // ─── Tenant Owner (conta do dono do produto, plano PRO ativo) ─────────────
   const ownerPwd = process.env.SEED_MASTER_PASSWORD || 'SygmaMaster@2026!';
@@ -124,7 +130,7 @@ async function main() {
     create: {
       name: 'Sygma Auto',
       document: '00.000.000/0001-00',
-      email: 'assine@sigmaauto.com.br',
+      email: tenantOwnerContactEmail,
     },
   });
 
@@ -141,18 +147,18 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { tenantId_email: { tenantId: ownerTenant.id, email: 'assine@sigmaauto.com.br' } },
+    where: { tenantId_email: { tenantId: ownerTenant.id, email: tenantOwnerEmail } },
     update: {},
     create: {
       tenantId: ownerTenant.id,
-      email: 'assine@sigmaauto.com.br',
+      email: tenantOwnerEmail,
       passwordHash: await bcrypt.hash(ownerPwd, 10),
-      name: 'Master Sigma Auto',
+      name: tenantOwnerName,
       role: 'MASTER',
     },
   });
 
-  console.log('✅ Tenant owner criado: assine@sigmaauto.com.br (MASTER / PRO ativo)');
+  console.log(`✅ Tenant owner criado: ${tenantOwnerEmail} (MASTER / PRO ativo)`);
 
   // ─── Tenant Demo (para testes de fluxo com múltiplos papéis) ─────────────
   const trialEnds = new Date();
@@ -225,10 +231,10 @@ async function main() {
 ║  • REDE   — R$ 599/mês                                  ║
 ╠══════════════════════════════════════════════════════════╣
 ║  SUPERADMIN (painel /superadmin):                        ║
-║  • sigmaauto@sigmaauto.com.br /  SygmaAdmin@2026!       ║
+║  • ${superAdminEmail.padEnd(30, ' ')} /  SygmaAdmin@2026!       ║
 ╠══════════════════════════════════════════════════════════╣
 ║  OWNER — Tenant "Sygma Auto" (PRO ativo, 1 ano):        ║
-║  • assine@sigmaauto.com.br    /  SygmaMaster@2026!      ║
+║  • ${tenantOwnerEmail.padEnd(30, ' ')} /  SygmaMaster@2026!      ║
 ╠══════════════════════════════════════════════════════════╣
 ║  DEMO — Oficina Demo (PRO trial 30 dias):                ║
 ║  • master@demo.com       /  master123    (MASTER)        ║
