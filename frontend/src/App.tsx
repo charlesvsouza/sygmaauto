@@ -6,6 +6,12 @@ import { Layout } from './components/Layout';
 import { InitialSplash } from './pages/InitialSplash';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { NewsPage } from './pages/NewsPage';
+import { SolutionsPage } from './pages/SolutionsPage';
+import { AboutPage } from './pages/AboutPage';
+import { DifferentialsPage } from './pages/DifferentialsPage';
+import { ContactPage } from './pages/ContactPage';
+import { SupportPage } from './pages/SupportPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
@@ -32,6 +38,12 @@ export default function App() {
       <Routes>
         {/* Landing comercial */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/noticias" element={<NewsPage />} />
+        <Route path="/solucoes" element={<SolutionsPage />} />
+        <Route path="/quem-somos" element={<AboutPage />} />
+        <Route path="/diferenciais" element={<DifferentialsPage />} />
+        <Route path="/contato" element={<ContactPage />} />
+        <Route path="/suporte" element={<SupportPage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />
         <Route path="/splash" element={<InitialSplash />} />
         

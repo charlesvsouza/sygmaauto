@@ -1,6 +1,13 @@
 User-agent: *
 Allow: /
 Allow: /planos
+Allow: /noticias
+Allow: /solucoes
+Allow: /quem-somos
+Allow: /diferenciais
+Allow: /contato
+Allow: /suporte
+Allow: /privacidade
 Allow: /login
 Allow: /register
 Allow: /forgot-password
