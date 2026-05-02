@@ -254,6 +254,7 @@ export class SubscriptionsService {
     }
 
     const normalizedDocument = (dto.document || '').trim();
+    const payerIdentification = this.toMercadoPagoIdentification(normalizedDocument);
     if (normalizedDocument) {
       const existingByDocument = await this.prisma.tenant.findUnique({ where: { document: normalizedDocument } });
       if (existingByDocument && existingByDocument.status !== 'PENDING_SETUP') {
@@ -304,6 +305,7 @@ export class SubscriptionsService {
         ],
         payer: {
           email: inviteEmail,
+          ...payerIdentification,
         },
         external_reference: `${pendingTenant.id}:${selectedPlan.name}:${billingCycle}:${Date.now()}`,
         metadata: {
@@ -633,10 +635,21 @@ export class SubscriptionsService {
   private calculateCharge(baseMonthlyPrice: number, cycle: BillingCycle) {
     const months = this.getBillingCycleMonths(cycle);
     const gross = Number(baseMonthlyPrice) * months;
+    const discountRate = this.getBillingCycleDiscountRate(cycle);
+    const net = gross * (1 - discountRate);
     return {
       months,
-      amount: Math.round(gross * 100) / 100,
+      discountRate,
+      amount: Math.round(net * 100) / 100,
     };
+  }
+
+  private getBillingCycleDiscountRate(cycle: BillingCycle) {
+    if (cycle === BillingCycle.ANNUAL) {
+      return 0.15;
+    }
+
+    return 0;
   }
 
   private getBillingCycleMonths(cycle: BillingCycle) {
@@ -672,6 +685,30 @@ export class SubscriptionsService {
     if (normalized === BillingCycle.SEMIANNUAL) return BillingCycle.SEMIANNUAL;
     if (normalized === BillingCycle.ANNUAL) return BillingCycle.ANNUAL;
     return undefined;
+  }
+
+  private toMercadoPagoIdentification(document: string) {
+    const digits = String(document || '').replace(/\D/g, '');
+
+    if (digits.length === 11) {
+      return {
+        identification: {
+          type: 'CPF',
+          number: digits,
+        },
+      };
+    }
+
+    if (digits.length === 14) {
+      return {
+        identification: {
+          type: 'CNPJ',
+          number: digits,
+        },
+      };
+    }
+
+    return {};
   }
 
   private validateMercadoPagoSignature(

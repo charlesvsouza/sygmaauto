@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ActivateTenantPage } from './pages/ActivateTenantPage';
 import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutCancelPage } from './pages/CheckoutCancelPage';
+import { PlansCheckoutPage } from './pages/PlansCheckoutPage';
 import WelcomePage from './pages/WelcomePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CustomersPage } from './pages/CustomersPage';
@@ -39,6 +40,7 @@ export default function App() {
         </Route>
 
         <Route path="/activate/:token" element={<ActivateTenantPage />} />
+        <Route path="/planos" element={<PlansCheckoutPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
 
