@@ -20,6 +20,7 @@ import {
   Search,
   Bell,
   Tv2,
+  MessageCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -44,6 +45,7 @@ export function Layout() {
 
     { to: '/service-orders', icon: ClipboardList, label: 'Ordens de Serviço' },
     { to: '/kanban', icon: Tv2, label: 'Kanban de Pátio', premium: true },
+    { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true },
     { to: '/services', icon: Wrench, label: 'Serviços' },
     {
       to: '/inventory',

@@ -31,6 +31,7 @@ import { FinancialPage } from './pages/FinancialPage';
 import { UsersPage } from './pages/UsersPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { KanbanPage } from './pages/KanbanPage';
+import { WhatsappPage } from './pages/WhatsappPage';
 import { SuperAdminPage } from './pages/SuperAdminPage';
 import { SuperAdminLoginPage } from './pages/SuperAdminLoginPage';
 import { ImpersonationBanner } from './components/ImpersonationBanner';
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/financial" element={<FinancialPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/whatsapp" element={<WhatsappPage />} />
           </Route>
         </Route>
         

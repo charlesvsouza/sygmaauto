@@ -2,12 +2,14 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
-
-
+import { WhatsappService } from '../notifications/whatsapp.service';
 
 @Injectable()
 export class ServiceOrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private whatsapp: WhatsappService,
+  ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
   private readonly STATUS_FLOW: Record<string, string[]> = {
@@ -454,6 +456,38 @@ export class ServiceOrdersService {
     });
 
     await this.createTimeline(id, newStatus, dto.notes || `Status alterado para ${newStatus}`, userId);
+
+    // Notificações WhatsApp (fire-and-forget)
+    if (this.whatsapp.isConfigured()) {
+      const c = updated.customer as any;
+      const v = updated.vehicle as any;
+      const phone: string = c?.phone ?? '';
+      if (phone) {
+        const payload = {
+          customerName: c.name ?? '',
+          customerPhone: phone,
+          orderNumber: (updated as any).orderNumber ?? updated.id.slice(0, 8),
+          vehicleBrand: v?.brand ?? '',
+          vehicleModel: v?.model ?? '',
+          plate: v?.plate ?? '',
+          approvalLink: (updated as any).approvalToken
+            ? `${process.env.FRONTEND_URL ?? 'https://sigmaauto.com.br'}/aprovacao/${(updated as any).approvalToken}`
+            : undefined,
+          totalCost: (updated as any).totalCost,
+        };
+        if (newStatus === 'AGUARDANDO_APROVACAO') {
+          this.whatsapp.notifyOrcamentoPronto(payload);
+        } else if (newStatus === 'APROVADO') {
+          this.whatsapp.notifyAprovado(payload);
+        } else if (newStatus === 'PRONTO_ENTREGA') {
+          this.whatsapp.notifyProntoEntrega(payload);
+        } else if (newStatus === 'ENTREGUE') {
+          this.whatsapp.notifyEntregue(payload);
+        } else if (newStatus === 'CANCELADO') {
+          this.whatsapp.notifyCancelado(payload);
+        }
+      }
+    }
 
     return updated;
   }
