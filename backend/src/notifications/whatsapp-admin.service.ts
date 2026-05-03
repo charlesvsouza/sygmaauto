@@ -174,6 +174,26 @@ export class WhatsappAdminService {
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private async syncWebhook(instanceApiKey: string | null, webhookUrl?: string): Promise<void> {
+    if (!webhookUrl) return;
+
+    await this.withAuthRetry(
+      (headers) =>
+        axios.post(
+          `${this.apiUrl}/webhook/set/${this.instance}`,
+          {
+            url: webhookUrl,
+            enabled: true,
+            webhookByEvents: true,
+            webhookBase64: true,
+            events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
+          },
+          { headers, timeout: 8000 },
+        ),
+      instanceApiKey ?? undefined,
+    );
+  }
+
   async getStatus() {
     if (!this.isConfigured()) {
       return { configured: false, connected: false, state: 'unknown', instanceName: this.instance };
@@ -219,43 +239,30 @@ export class WhatsappAdminService {
         const currentStatus = (existing?.connectionStatus ?? existing?.status ?? 'close').toLowerCase();
         this.logger.log(`Instância encontrada: status=${currentStatus} token=${instanceApiKey ? 'ok' : 'ausente'}`);
 
-        // RESET AGRESSIVO: Se não estiver conectado, deletamos para garantir uma sessão fresca
-        if (currentStatus !== 'open') {
+        // Mantém a instância e tenta recuperar estado sem apagar sessão.
+        if (currentStatus !== 'open' && currentStatus !== 'connecting') {
           try {
-            this.logger.log(`Estado '${currentStatus}' detectado. Realizando DELETE para reset total da sessão...`);
+            this.logger.log(`Estado '${currentStatus}' detectado. Tentando restart da instância...`);
             await this.withAuthRetry(
               (headers) =>
-                axios.delete(`${this.apiUrl}/instance/delete/${this.instance}`, { headers, timeout: 10000 }),
+                axios.put(`${this.apiUrl}/instance/restart/${this.instance}`, {}, { headers, timeout: 10000 }),
               instanceApiKey ?? undefined,
-            ).catch(() => {}); 
-            existing = null; // Força entrar no bloco de criação abaixo
-            await this.wait(2000);
-          } catch (err) {
-            existing = null;
+            );
+            await this.wait(1500);
+          } catch (err: any) {
+            this.logger.warn(`Restart não disponível/falhou: ${err?.response?.status ?? 'n/a'}`);
           }
-        } else {
-          // Se estiver 'open', apenas garante que o webhook está configurado corretamente
-          if (webhookUrl) {
-            try {
-              await this.withAuthRetry(
-                (headers) =>
-                  axios.post(
-                    `${this.apiUrl}/instance/update/${this.instance}`,
-                    {
-                      webhook: {
-                        url: webhookUrl,
-                        enabled: true,
-                        byEvents: true,
-                        base64: true,
-                        events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
-                      },
-                    },
-                    { headers, timeout: 8000 },
-                  ),
-                instanceApiKey ?? undefined,
-              ).catch(() => {});
-            } catch { /* ignora */ }
-          }
+        }
+
+        // Sempre garante webhook com endpoint oficial da v2.
+        try {
+          await this.syncWebhook(instanceApiKey, webhookUrl);
+        } catch (err: any) {
+          this.logger.warn(
+            `Falha ao sincronizar webhook: ${err?.response?.status ?? 'n/a'} ${JSON.stringify(
+              err?.response?.data ?? err?.message,
+            ).substring(0, 180)}`,
+          );
         }
       }
 
