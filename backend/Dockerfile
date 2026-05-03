@@ -3,11 +3,9 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-# CACHEBUST value must change on every push to invalidate COPY + prisma generate layers
-ARG CACHEBUST=20260503T133500
-RUN echo "Cache bust: $CACHEBUST"
 COPY backend/. .
-RUN npx prisma generate
+# Timestamp abaixo muda a cada deploy para garantir prisma generate sempre roda
+RUN echo "prisma-gen: 20260503T103422" && npx prisma generate
 RUN npm run build
 
 # Production stage
