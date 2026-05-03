@@ -225,9 +225,9 @@ export class WhatsappAdminService {
       createPayload['webhook'] = {
         url: webhookUrl,
         enabled: true,
-        byEvents: true,
+        byEvents: false,   // recebe TODOS os eventos (diagnóstico de sessão)
         base64: true,
-        events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
+        events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE'],
       };
     }
 
