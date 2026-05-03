@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 
 function buildDatabaseUrl(): string {
   const base = process.env.DATABASE_URL ?? '';
-  // Append connection pool limits to avoid exhausting free-tier DB connections
+  // Keep pool tiny to avoid exhausting Railway free-tier Postgres max_connections (~20)
   const separator = base.includes('?') ? '&' : '?';
   if (base.includes('connection_limit')) return base;
-  return `${base}${separator}connection_limit=5&pool_timeout=20`;
+  return `${base}${separator}connection_limit=2&pool_timeout=10&connect_timeout=10`;
 }
 
 @Injectable()
