@@ -23,13 +23,6 @@ export class UsersService {
         email: true,
         recoveryEmail: true,
         role: true,
-        jobFunction: true,
-        workshopArea: true,
-        commissionPercent: true,
-        chiefId: true,
-        chief: {
-          select: { id: true, name: true },
-        },
         isActive: true,
         lastLoginAt: true,
         passwordUpdatedAt: true,
@@ -47,13 +40,6 @@ export class UsersService {
         email: true,
         recoveryEmail: true,
         role: true,
-        jobFunction: true,
-        workshopArea: true,
-        commissionPercent: true,
-        chiefId: true,
-        chief: {
-          select: { id: true, name: true },
-        },
         isActive: true,
         lastLoginAt: true,
         passwordUpdatedAt: true,
@@ -77,16 +63,6 @@ export class UsersService {
       throw new ConflictException('Email already exists in this tenant');
     }
 
-    if (dto.chiefId) {
-      const chief = await this.prisma.user.findFirst({
-        where: { id: dto.chiefId, tenantId },
-        select: { id: true },
-      });
-      if (!chief) {
-        throw new NotFoundException('Chefe de oficina não encontrado para este tenant');
-      }
-    }
-
     return this.prisma.user.create({
       data: {
         tenantId,
@@ -95,10 +71,6 @@ export class UsersService {
         recoveryEmail: dto.recoveryEmail?.toLowerCase().trim(),
         passwordHash: await bcrypt.hash(dto.password, 10),
         role: dto.role || UserRole.PRODUTIVO,
-        jobFunction: dto.jobFunction,
-        workshopArea: dto.workshopArea,
-        commissionPercent: dto.commissionPercent,
-        chiefId: dto.chiefId,
         isActive: dto.isActive !== undefined ? dto.isActive : true,
         passwordUpdatedAt: new Date(),
       },
@@ -108,10 +80,6 @@ export class UsersService {
         email: true,
         recoveryEmail: true,
         role: true,
-        jobFunction: true,
-        workshopArea: true,
-        commissionPercent: true,
-        chiefId: true,
         isActive: true,
       },
     });
@@ -120,26 +88,12 @@ export class UsersService {
   async update(tenantId: string, userId: string, dto: UpdateUserDto) {
     await this.findById(tenantId, userId);
 
-    if (dto.chiefId) {
-      const chief = await this.prisma.user.findFirst({
-        where: { id: dto.chiefId, tenantId },
-        select: { id: true },
-      });
-      if (!chief) {
-        throw new NotFoundException('Chefe de oficina não encontrado para este tenant');
-      }
-    }
-
     return this.prisma.user.update({
       where: { id: userId },
       data: {
         name: dto.name,
         recoveryEmail: dto.recoveryEmail?.toLowerCase().trim(),
         role: dto.role,
-        jobFunction: dto.jobFunction,
-        workshopArea: dto.workshopArea,
-        commissionPercent: dto.commissionPercent,
-        chiefId: dto.chiefId,
         isActive: dto.isActive,
       },
       select: {
@@ -148,13 +102,8 @@ export class UsersService {
         email: true,
         recoveryEmail: true,
         role: true,
-        jobFunction: true,
-        workshopArea: true,
-        commissionPercent: true,
-        chiefId: true,
         isActive: true,
       },
-
     });
   }
 

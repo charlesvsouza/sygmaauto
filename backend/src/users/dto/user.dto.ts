@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, MinLength, IsNumber, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole, JobFunction, WorkshopArea } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -30,27 +30,6 @@ export class CreateUserDto {
   @IsEnum(UserRole)
   role?: UserRole;
 
-  @ApiProperty({ enum: JobFunction, required: false })
-  @IsOptional()
-  @IsEnum(JobFunction)
-  jobFunction?: JobFunction;
-
-  @ApiProperty({ enum: WorkshopArea, required: false })
-  @IsOptional()
-  @IsEnum(WorkshopArea)
-  workshopArea?: WorkshopArea;
-
-  @ApiProperty({ required: false, minimum: 0 })
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  commissionPercent?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  chiefId?: string;
-
   @ApiProperty({ required: false })
   @IsOptional()
   isActive?: boolean;
@@ -72,28 +51,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-
-  @ApiProperty({ enum: JobFunction, required: false })
-  @IsOptional()
-  @IsEnum(JobFunction)
-  jobFunction?: JobFunction;
-
-  @ApiProperty({ enum: WorkshopArea, required: false })
-  @IsOptional()
-  @IsEnum(WorkshopArea)
-  workshopArea?: WorkshopArea;
-
-  @ApiProperty({ required: false, minimum: 0 })
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  commissionPercent?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  chiefId?: string;
-
 
   @ApiProperty({ required: false })
   @IsOptional()

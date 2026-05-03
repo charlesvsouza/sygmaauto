@@ -5,7 +5,7 @@ COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 COPY backend/. .
 # Timestamp abaixo muda a cada deploy para garantir prisma generate sempre roda
-RUN echo "prisma-gen: 20260503T103422" && npx prisma generate
+RUN echo "prisma-gen: 20260503T104049" && npx prisma generate
 RUN npm run build
 
 # Production stage

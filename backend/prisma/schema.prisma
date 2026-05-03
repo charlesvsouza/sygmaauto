@@ -20,28 +20,6 @@ enum UserRole {
   PRODUTIVO   // Legado — equivalente a MECANICO (mantido para compatibilidade)
 }
 
-enum JobFunction {
-  MECANICO
-  ELETRICISTA
-  APRENDIZ
-  PINTOR
-  PREPARADOR
-  COLABORADOR_SERVICOS_GERAIS
-  FUNILEIRO
-  LAVADOR
-  MARTELINHO_OURO
-  EMBELEZADOR_AUTOMOTIVO
-  CHEFE_OFICINA
-}
-
-enum WorkshopArea {
-  MECANICA
-  ELETRICA
-  FUNILARIA_PINTURA
-  LAVACAO
-  HIGIENIZACAO_EMBELEZAMENTO
-}
-
 model Tenant {
   id        String   @id @default(uuid())
   name      String
@@ -65,7 +43,6 @@ model Tenant {
   logo            String?
   laborHourlyRate Float?   @default(120)
   diagnosticHours Float?   @default(0.5)  // horas padrão para serviço de diagnóstico
-  defaultCommissionPercent Float @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -82,7 +59,6 @@ model Tenant {
   messages              Message[]
   auditLogs             AuditLog[]
   checklists            VehicleChecklist[]
-  mechanicCommissions   MechanicCommission[]
 
   @@map("tenants")
 }
@@ -149,10 +125,6 @@ model User {
   passwordUpdatedAt DateTime?
   name         String
   role         UserRole @default(PRODUTIVO)
-  jobFunction  JobFunction?
-  workshopArea WorkshopArea?
-  commissionPercent Float?
-  chiefId      String?
   invitedBy    String?  // Email de quem convidou (auditoria)
   isActive     Boolean  @default(true)
   lastLoginAt   DateTime?
@@ -160,13 +132,8 @@ model User {
   updatedAt    DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
-  chief User?   @relation("UserChief", fields: [chiefId], references: [id])
-  teamMembers User[] @relation("UserChief")
   serviceOrders ServiceOrder[]
   timeline      ServiceOrderTimeline[]
-  assignedItems ServiceOrderItem[] @relation("ItemAssignee")
-  mechanicCommissions MechanicCommission[] @relation("CommissionUser")
-  paidCommissions MechanicCommission[] @relation("CommissionPaidBy")
 
   @@unique([tenantId, email])
   @@map("users")
@@ -362,7 +329,6 @@ model ServiceOrder {
   items      ServiceOrderItem[]
   timeline   ServiceOrderTimeline[]
   checklists VehicleChecklist[]
-  mechanicCommissions MechanicCommission[]
 
   @@map("service_orders")
 }
@@ -372,7 +338,6 @@ model ServiceOrderItem {
   serviceOrderId  String
   serviceId       String?
   partId          String?
-  assignedUserId  String?
   description     String
   quantity        Float    @default(1)
   unitPrice       Float
@@ -386,8 +351,6 @@ model ServiceOrderItem {
   serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id])
   service      Service?     @relation(fields: [serviceId], references: [id])
   part         Part?        @relation(fields: [partId], references: [id])
-  assignedUser User?        @relation("ItemAssignee", fields: [assignedUserId], references: [id])
-  mechanicCommissions MechanicCommission[]
 
   @@map("service_order_items")
 }
@@ -440,32 +403,6 @@ model FinancialTransaction {
 }
 
 model MechanicCommission {
-  id                 String   @id @default(uuid())
-  tenantId           String
-  userId             String
-  serviceOrderId     String
-  serviceOrderItemId String
-  commissionPercent  Float
-  baseValue          Float
-  commissionValue    Float
-  status             String   @default("PENDENTE")
-  paidAt             DateTime?
-  paidBy             String?
-  createdAt          DateTime @default(now())
-
-  tenant             Tenant           @relation(fields: [tenantId], references: [id])
-  user               User             @relation("CommissionUser", fields: [userId], references: [id])
-  serviceOrder       ServiceOrder     @relation(fields: [serviceOrderId], references: [id])
-  serviceOrderItem   ServiceOrderItem @relation(fields: [serviceOrderItemId], references: [id])
-  paidByUser         User?            @relation("CommissionPaidBy", fields: [paidBy], references: [id])
-
-  @@index([tenantId, userId])
-  @@index([tenantId, status])
-  @@index([serviceOrderId])
-  @@index([serviceOrderItemId])
-  @@map("mechanic_commissions")
-}
-
 model Message {
   id         String   @id @default(uuid())
   tenantId   String
