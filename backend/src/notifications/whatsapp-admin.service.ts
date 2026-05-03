@@ -216,30 +216,60 @@ export class WhatsappAdminService {
 
       if (existing) {
         instanceApiKey = this.instanceToken(existing);
-        const currentStatus = existing?.connectionStatus ?? existing?.status ?? 'n/a';
+        const currentStatus = (existing?.connectionStatus ?? existing?.status ?? 'close').toLowerCase();
         this.logger.log(`Instância encontrada: status=${currentStatus} token=${instanceApiKey ? 'ok' : 'ausente'}`);
+
+        // Se a instância estiver "close", tentamos um logout para "resetar" o processo Baileys antes de conectar
+        if (currentStatus === 'close' || currentStatus === 'disconnected') {
+          try {
+            this.logger.log(`Limpando sessão anterior para resetar Baileys...`);
+            await this.withAuthRetry(
+              (headers) =>
+                axios.delete(`${this.apiUrl}/instance/logout/${this.instance}`, { headers, timeout: 8000 }),
+              instanceApiKey ?? undefined,
+            ).catch(() => {}); // Ignora erro no logout
+            await this.wait(1000);
+          } catch (err) {
+            // Ignora erro
+          }
+        }
 
         // Força atualização do webhook para garantir que aponta para a URL correta
         if (webhookUrl) {
           try {
+            // Tenta o endpoint genérico de update que é mais compatível
             await this.withAuthRetry(
               (headers) =>
                 axios.post(
-                  `${this.apiUrl}/webhook/set/${this.instance}`,
+                  `${this.apiUrl}/instance/update/${this.instance}`,
                   {
-                    url: webhookUrl,
-                    enabled: true,
-                    byEvents: true,
-                    base64: true, // Garante que o QR venha em base64 no webhook
-                    events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
+                    webhook: {
+                      url: webhookUrl,
+                      enabled: true,
+                      byEvents: true,
+                      base64: true,
+                      events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
+                    },
                   },
                   { headers, timeout: 8000 },
                 ),
               instanceApiKey ?? undefined,
-            );
-            this.logger.log(`Webhook atualizado para instância existente: ${webhookUrl}`);
+            ).catch(async (err) => {
+              // Fallback para o endpoint de webhook específico se o update falhar
+              const headers = this.authHeadersList(instanceApiKey ?? undefined)[0];
+              return axios.post(
+                `${this.apiUrl}/webhook/set/${this.instance}`,
+                {
+                  url: webhookUrl,
+                  enabled: true,
+                  base64: true,
+                },
+                { headers, timeout: 5000 },
+              );
+            });
+            this.logger.log(`Webhook sincronizado para instância existente: ${webhookUrl}`);
           } catch (err: any) {
-            this.logger.warn(`Falha ao atualizar webhook (pode ser versão antiga da API): ${err.message}`);
+            this.logger.warn(`Falha ao sincronizar webhook: ${err.message}`);
           }
         }
       } else {
