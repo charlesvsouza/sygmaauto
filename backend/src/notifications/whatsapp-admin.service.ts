@@ -74,6 +74,20 @@ export class WhatsappAdminService {
     return item?.connectionStatus ?? item?.instance?.state ?? 'unknown';
   }
 
+  private async getConnectionState(): Promise<{ state: string; statusReason?: number } | null> {
+    try {
+      const res = await axios.get(
+        `${this.apiUrl}/instance/connectionState/${this.instanceName}`,
+        { headers: this.globalHeaders, timeout: 8000 },
+      );
+      const state = res.data?.instance?.state ?? res.data?.state ?? 'unknown';
+      const statusReason = res.data?.instance?.statusReason ?? res.data?.statusReason;
+      return { state, statusReason };
+    } catch {
+      return null;
+    }
+  }
+
   async getStatus() {
     if (!this.isConfigured()) {
       return { configured: false, connected: false, state: 'unknown' };
@@ -142,6 +156,18 @@ export class WhatsappAdminService {
       if (stored) {
         this.logger.log(`QR obtido via webhook após ${pollCount} polls`);
         return { qrCode: stored };
+      }
+
+      // Check connection state to fail fast on known WhatsApp rejections
+      const conn = await this.getConnectionState();
+      if (conn) {
+        this.logger.log(`[poll ${pollCount + 1}] state=${conn.state} statusReason=${conn.statusReason ?? 'n/a'}`);
+        if (conn.state === 'close' && (conn.statusReason === 405 || conn.statusReason === 401)) {
+          return {
+            qrCode: null,
+            error: `WhatsApp recusou a conexão (statusReason ${conn.statusReason}). Aguarde 30-60 minutos e tente novamente.`,
+          };
+        }
       }
 
       // Poll /connect directly — returns QR base64 once Baileys has it
