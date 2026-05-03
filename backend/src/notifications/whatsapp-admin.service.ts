@@ -5,112 +5,156 @@ import axios from 'axios';
 @Injectable()
 export class WhatsappAdminService {
   private readonly logger = new Logger(WhatsappAdminService.name);
+  private readonly qrStore = new Map<string, string>();
 
   constructor(private readonly config: ConfigService) {}
 
   private get apiUrl(): string {
-    return (
-      this.config.get<string>('WHAPI_API_URL') ??
-      'https://gate.whapi.cloud'
-    );
+    return this.config.get<string>('EVOLUTION_API_URL') ?? '';
   }
 
-  private get token(): string | undefined {
-    return this.config.get<string>('WHAPI_TOKEN');
+  private get globalApiKey(): string {
+    return this.config.get<string>('EVOLUTION_API_KEY') ?? '';
+  }
+
+  private get instanceName(): string {
+    return this.config.get<string>('EVOLUTION_INSTANCE') ?? 'sygmaauto';
+  }
+
+  private get backendUrl(): string {
+    return this.config.get<string>('BACKEND_PUBLIC_URL') ?? '';
   }
 
   isConfigured(): boolean {
-    return !!this.token;
+    return !!(this.apiUrl && this.globalApiKey);
   }
 
-  private get headers() {
-    return {
-      Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
-    };
+  private get globalHeaders(): Record<string, string> {
+    return { apikey: this.globalApiKey, 'Content-Type': 'application/json' };
   }
 
-  /** Chamado pelo webhook controller (mantido para compatibilidade futura). */
-  storeQrFromWebhook(_payload: any): void {}
+  private instanceHeaders(instanceToken: string): Record<string, string> {
+    return { apikey: instanceToken, 'Content-Type': 'application/json' };
+  }
+
+  /** Stores QR code received via webhook from Evolution API. */
+  storeQrFromWebhook(payload: any): void {
+    const event: string = (payload?.event ?? payload?.type ?? '').toUpperCase();
+    const base64: string | undefined =
+      payload?.data?.qrcode?.base64 ??
+      payload?.data?.base64 ??
+      payload?.qrcode?.base64 ??
+      payload?.base64;
+
+    if (event.includes('QR') && base64) {
+      const qr = base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`;
+      this.qrStore.set(this.instanceName, qr);
+      this.logger.log(`QR armazenado via webhook para instância ${this.instanceName}`);
+    }
+  }
+
+  private async fetchCurrentInstance(): Promise<any | null> {
+    try {
+      const res = await axios.get(
+        `${this.apiUrl}/instance/fetchInstances`,
+        { headers: this.globalHeaders, timeout: 8000 },
+      );
+      const list: any[] = Array.isArray(res.data) ? res.data : [];
+      return list.find((item) => (item?.name ?? item?.instance?.instanceName) === this.instanceName) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private instanceToken(item: any): string | null {
+    return item?.token ?? item?.hash ?? item?.apikey ?? item?.instance?.token ?? null;
+  }
+
+  private instanceStatus(item: any): string {
+    return item?.connectionStatus ?? item?.instance?.state ?? 'unknown';
+  }
 
   async getStatus() {
     if (!this.isConfigured()) {
       return { configured: false, connected: false, state: 'unknown' };
     }
 
-    try {
-      const res = await axios.get(`${this.apiUrl}/health`, {
-        headers: this.headers,
-        timeout: 6000,
-      });
+    const item = await this.fetchCurrentInstance();
+    if (!item) return { configured: true, connected: false, state: 'not_found' };
 
-      // code 1 = INIT, 2 = LAUNCH (conectado), 3 = QR (aguardando scan), 5 = ERROR
-      const code: number = res.data?.health?.status?.code ?? 0;
-      const connected = code === 2;
-      const state = connected ? 'open' : code === 3 ? 'qr' : 'connecting';
-
-      return { configured: true, connected, state };
-    } catch {
-      return { configured: true, connected: false, state: 'close' };
-    }
+    const state = this.instanceStatus(item);
+    return { configured: true, connected: state === 'open', state };
   }
 
   async getQrCode(): Promise<{ qrCode: string | null; error?: string }> {
-    if (!this.isConfigured()) return { qrCode: null, error: 'Whapi não configurado — defina WHAPI_TOKEN' };
-
-    try {
-      const res = await axios.get(`${this.apiUrl}/users/login`, {
-        headers: this.headers,
-        params: { size: 280 },
-        timeout: 15000,
-        responseType: 'json',
-      });
-
-      const data = res.data;
-
-      // Resposta pode ser string base64 pura ou objeto com campo image/qr
-      if (typeof data === 'string' && data.length > 50) {
-        return {
-          qrCode: data.startsWith('data:') ? data : `data:image/png;base64,${data}`,
-        };
-      }
-
-      const image: string | undefined =
-        data?.image ?? data?.qr ?? data?.base64 ?? data?.qrCode ?? data?.data?.image;
-
-      if (typeof image === 'string' && image.length > 50) {
-        return {
-          qrCode: image.startsWith('data:') ? image : `data:image/png;base64,${image}`,
-        };
-      }
-
-      this.logger.warn(`Resposta inesperada de /users/login: ${JSON.stringify(data).substring(0, 200)}`);
-      return { qrCode: null, error: 'QR não disponível. Tente novamente em instantes.' };
-    } catch (err: any) {
-      const status = err?.response?.status;
-
-      if (status === 409) {
-        return { qrCode: null, error: 'WhatsApp já está conectado neste canal.' };
-      }
-
-      const msg: string = err?.response?.data?.message ?? err?.response?.data?.error ?? err.message;
-      this.logger.error(`Erro ao obter QR Whapi: ${status ?? 'n/a'} — ${msg}`);
-      return { qrCode: null, error: msg };
+    if (!this.isConfigured()) {
+      return { qrCode: null, error: 'Evolution API não configurada — defina EVOLUTION_API_URL e EVOLUTION_API_KEY' };
     }
+
+    this.qrStore.delete(this.instanceName);
+
+    // Delete any existing instance to start clean
+    try {
+      await axios.delete(
+        `${this.apiUrl}/instance/delete/${this.instanceName}`,
+        { headers: this.globalHeaders, timeout: 8000 },
+      );
+      this.logger.log(`Instância ${this.instanceName} deletada`);
+      await new Promise((r) => setTimeout(r, 2000));
+    } catch {
+      // Instance may not exist yet — continue
+    }
+
+    // Create fresh instance with webhook
+    const webhookUrl = `${this.backendUrl}/whatsapp/qr-webhook`;
+    try {
+      await axios.post(
+        `${this.apiUrl}/instance/create`,
+        {
+          instanceName: this.instanceName,
+          qrcode: true,
+          integration: 'WHATSAPP-BAILEYS',
+          webhook: {
+            url: webhookUrl,
+            byEvents: false,
+            base64: true,
+          },
+        },
+        { headers: this.globalHeaders, timeout: 15000 },
+      );
+      this.logger.log(`Instância ${this.instanceName} criada com webhook ${webhookUrl}`);
+    } catch (err: any) {
+      const msg: string = err?.response?.data?.message ?? err?.response?.data?.error ?? err.message;
+      this.logger.error(`Erro ao criar instância: ${msg}`);
+      return { qrCode: null, error: `Erro ao criar instância: ${msg}` };
+    }
+
+    // Poll for QR from webhook store (up to 40s)
+    const deadline = Date.now() + 40_000;
+    while (Date.now() < deadline) {
+      const qr = this.qrStore.get(this.instanceName);
+      if (qr) return { qrCode: qr };
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+
+    return { qrCode: null, error: 'QR não chegou via webhook em 40s. Verifique BACKEND_PUBLIC_URL e tente novamente.' };
   }
 
   async disconnect(): Promise<void> {
     if (!this.isConfigured()) return;
+
+    const item = await this.fetchCurrentInstance();
+    const token = item ? this.instanceToken(item) : null;
+    const headers = token ? this.instanceHeaders(token) : this.globalHeaders;
+
     try {
-      await axios.post(
-        `${this.apiUrl}/users/logout`,
-        {},
-        { headers: this.headers, timeout: 6000 },
+      await axios.delete(
+        `${this.apiUrl}/instance/logout/${this.instanceName}`,
+        { headers, timeout: 8000 },
       );
+      this.logger.log(`WhatsApp desconectado (logout)`);
     } catch (err: any) {
-      this.logger.error(
-        `Erro ao desconectar Whapi: ${err?.response?.data?.message ?? err.message}`,
-      );
+      this.logger.error(`Erro ao desconectar: ${err?.response?.data?.message ?? err.message}`);
     }
   }
 }
