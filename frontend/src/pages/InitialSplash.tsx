@@ -4,14 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Wrench, Shield, Zap, Database, Cpu } from 'lucide-react';
 import { EcgPulse } from '../components/marketing/EcgPulse';
 
-const ECG_PATH_MM = 50;
-const ECG_SLOW_PATH_MM = 30;
-const ECG_SLOW_SPEED_MM_S = 2;
-const ECG_FAST_SPEED_MM_S = 3;
-const ECG_PHASE_ONE_SECONDS = ECG_SLOW_PATH_MM / ECG_SLOW_SPEED_MM_S;
-const ECG_TOTAL_SECONDS =
-  ECG_PHASE_ONE_SECONDS +
-  (ECG_PATH_MM - ECG_SLOW_PATH_MM) / ECG_FAST_SPEED_MM_S;
+const SPLASH_DURATION_MS = 10000;
 
 const steps = [
   { id: 1, text: 'Iniciando sistema...', icon: Cpu },
@@ -37,21 +30,10 @@ export function InitialSplash() {
 
     const startedAt = performance.now();
     const interval = window.setInterval(() => {
-      const elapsedSeconds = (performance.now() - startedAt) / 1000;
-
-      const traveledMm = elapsedSeconds <= ECG_PHASE_ONE_SECONDS
-        ? elapsedSeconds * ECG_SLOW_SPEED_MM_S
-        : ECG_SLOW_PATH_MM + (elapsedSeconds - ECG_PHASE_ONE_SECONDS) * ECG_FAST_SPEED_MM_S;
-
-      const nextProgress = Math.min(traveledMm / ECG_PATH_MM, 1);
+      const nextProgress = Math.min((performance.now() - startedAt) / SPLASH_DURATION_MS, 1);
       setProgress(nextProgress);
-
-      const nextStep = Math.min(Math.floor(nextProgress * steps.length), steps.length);
-      setCurrentStep(nextStep);
-
-      if (nextProgress >= 1) {
-        setComplete(true);
-      }
+      setCurrentStep(Math.min(Math.floor(nextProgress * steps.length), steps.length));
+      if (nextProgress >= 1) setComplete(true);
     }, 100);
 
     return () => window.clearInterval(interval);
@@ -117,9 +99,7 @@ export function InitialSplash() {
             travelDuration={3.6}
             pointProgress={progress}
           />
-          <p className="text-[10px] text-white/35 uppercase tracking-[0.16em] text-center mb-4">
-            Carregando {Math.round(progress * 100)}%
-          </p>
+          <p className="text-[10px] text-white/35 uppercase tracking-[0.16em] text-center mb-4"></p>
 
           {/* Step atual */}
           <div className="h-5 flex items-center justify-center">

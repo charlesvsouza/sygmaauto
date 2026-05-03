@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { authApi, subscriptionsApi } from '../api/client';
 import { Wrench, Mail, Lock, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
-import { EcgPulse } from '../components/marketing/EcgPulse';
-
 const LOGIN_PROGRESS_DURATION_MS = 30000;
 
 export function LoginPage() {
@@ -15,7 +13,7 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [checkoutError, setCheckoutError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(0); // mantido para não quebrar o useEffect
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuthStore();
@@ -205,25 +203,7 @@ export function LoginPage() {
               )}
             </button>
 
-            {loading ? (
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="pt-2"
-              >
-                <EcgPulse
-                  className="h-6 w-full rounded-full border border-blue-400/25 bg-slate-950/35 overflow-hidden relative"
-                  lineColor="#60a5fa"
-                  pointColor="#93c5fd"
-                  waveDuration={2.1}
-                  travelDuration={3.1}
-                  pointProgress={loadingProgress}
-                />
-                <p className="mt-2 text-[11px] uppercase tracking-[0.12em] text-slate-400 text-center">
-                  Conectando... {Math.round(loadingProgress * 100)}%
-                </p>
-              </motion.div>
-            ) : null}
+
           </form>
 
           <div className="mt-10 pt-8 border-t border-white/5 text-center">
