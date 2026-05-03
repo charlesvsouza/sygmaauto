@@ -1,6 +1,6 @@
 # SigmaAuto — Roadmap & Estratégia Comercial
 
-**Última atualização:** 01/05/2026
+**Última atualização:** 03/05/2026
 **Produto:** SigmaAuto — SaaS multi-tenant para gestão de oficinas mecânicas
 **Domínio:** sigmaauto.com.br
 
@@ -60,6 +60,7 @@
 | Frontend | Vercel | https://sigmaauto.com.br |
 | Backend API | Railway | https://sygmaauto-api-production.up.railway.app |
 | Banco de Dados | Railway PostgreSQL | Provisionado automaticamente |
+| Evolution API (WhatsApp) | Railway — sygmaauto-wa-region-b | https://evolution-api-r2-production.up.railway.app |
 | CI/CD | GitHub Actions | Push master → deploy automático |
 
 ---
@@ -87,15 +88,23 @@
 
 ---
 
-### 🚀 Sprint 1 — Diferenciais START → PRO
+### ✅ Sprint 1 — Diferenciais START → PRO (concluído)
 
-- [ ] **Kanban de Pátio** — board visual por status, projetável em TV
-- [ ] **Checklist de Entrada/Saída com Fotos** — proteção jurídica + upsell
-- [ ] **WhatsApp Automático por evento da OS**
-  - Orçamento pronto → link de aprovação
-  - OS aprovada → confirmação de início
-  - Pronto para entrega → notificação automática
-  - Pós-venda (7 dias após entrega)
+- [x] **Kanban de Pátio** — board visual por status, projetável em TV *(implementado)*
+- [x] **Checklist de Entrada/Saída com Fotos** — proteção jurídica + upsell *(implementado)*
+- [x] **WhatsApp Automático por evento da OS** *(concluído em 03/05/2026)*
+  - [x] Integração com Evolution API v2.3.7 (Baileys 7.0.0-rc.9 + suporte LID)
+  - [x] Orçamento pronto → link de aprovação ao cliente
+  - [x] OS aprovada → confirmação de início dos trabalhos
+  - [x] Pronto para entrega → notificação automática
+  - [x] Entregue → mensagem de agradecimento pós-serviço
+  - [x] Cancelado → informativo ao cliente
+  - [x] QR Code na interface administrativa para pareamento
+  - [x] Status de conexão em tempo real na WhatsappPage
+
+> **Infra WhatsApp:** Evolution API v2.3.7 (`evoapicloud/evolution-api:v2.3.7`) hospedada em
+> projeto Railway separado (`sygmaauto-wa-region-b`, região `us-east4`) com schema PostgreSQL
+> isolado (`evolution_r2`). Ver guia completo em `c:/dev/evolution-api-setup.md`.
 
 ---
 
