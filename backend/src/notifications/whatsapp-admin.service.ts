@@ -24,7 +24,7 @@ export class WhatsappAdminService {
     return !!(this.apiUrl && this.apiKey);
   }
 
-  private authHeadersList() {
+  private authHeadersList(): Array<Record<string, string>> {
     const key = this.apiKey ?? '';
     return [
       { apikey: key, 'Content-Type': 'application/json' },
@@ -42,7 +42,7 @@ export class WhatsappAdminService {
 
     for (const headers of headersOptions) {
       try {
-        return await runner(headers);
+        return runner(headers);
       } catch (err: any) {
         lastError = err;
         const status = err?.response?.status;
