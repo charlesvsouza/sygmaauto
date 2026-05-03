@@ -173,7 +173,7 @@ export class WhatsappAdminService {
 
       const maxPollAttempts = 10;
       const pollIntervalMs = 1500;
-      let restarted = false;
+      let recoveryAttempted = false;
 
       for (const attempt of attempts) {
         for (let i = 1; i <= maxPollAttempts; i += 1) {
@@ -190,18 +190,34 @@ export class WhatsappAdminService {
             }
 
             const count = this.extractQrCount(res.data);
-            if (count === 0 && !restarted && i >= 4) {
-              await this.withAuthRetry((headers) => axios.put(
-                `${this.apiUrl}/instance/restart/${this.instance}`,
-                {},
-                { headers, timeout: 10000 },
-              )).then(() => {
-                restarted = true;
-                this.logger.warn(`QR travado em count=0. Restart executado para ${this.instance}.`);
-              }).catch((restartErr: any) => {
+            if (
+              count === 0
+              && !recoveryAttempted
+              && i >= 4
+              && attempt.method === 'get'
+              && attempt.path.startsWith('/instance/connect/')
+            ) {
+              recoveryAttempted = true;
+              this.logger.warn(`QR travado em count=0. Executando recuperação (logout + create) para ${this.instance}.`);
+
+              await this.withAuthRetry((headers) => axios.delete(
+                `${this.apiUrl}/instance/logout/${this.instance}`,
+                { headers, timeout: 8000 },
+              )).catch((logoutErr: any) => {
                 this.logger.warn(
-                  `Falha ao restart ${this.instance}: ${restartErr?.response?.status ?? 'n/a'} ${JSON.stringify(restartErr?.response?.data ?? restartErr.message)}`,
+                  `Falha no logout ${this.instance}: ${logoutErr?.response?.status ?? 'n/a'} ${JSON.stringify(logoutErr?.response?.data ?? logoutErr.message)}`,
                 );
+              });
+
+              await this.wait(1200);
+
+              await this.withAuthRetry((headers) => axios.post(
+                `${this.apiUrl}/instance/create`,
+                { instanceName: this.instance, qrcode: true, integration: 'WHATSAPP-BAILEYS' },
+                { headers, timeout: 10000 },
+              )).catch((createErr: any) => {
+                const payload = JSON.stringify(createErr?.response?.data ?? createErr.message);
+                this.logger.warn(`Falha no create pós-recuperação ${this.instance}: ${createErr?.response?.status ?? 'n/a'} ${payload}`);
               });
             }
 
