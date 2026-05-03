@@ -24,8 +24,64 @@ export class WhatsappAdminService {
     return !!(this.apiUrl && this.apiKey);
   }
 
-  private headers() {
-    return { apikey: this.apiKey, 'Content-Type': 'application/json' };
+  private authHeadersList() {
+    const key = this.apiKey ?? '';
+    return [
+      { apikey: key, 'Content-Type': 'application/json' },
+      { apiKey: key, 'Content-Type': 'application/json' },
+      { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    ];
+  }
+
+  private async withAuthRetry<T>(
+    runner: (headers: Record<string, string>) => Promise<T>,
+  ): Promise<T> {
+    const headersOptions = this.authHeadersList();
+    let lastError: any;
+
+    for (const headers of headersOptions) {
+      try {
+        return await runner(headers);
+      } catch (err: any) {
+        lastError = err;
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError;
+  }
+
+  private normalizeQr(raw: string | null): string | null {
+    if (!raw || typeof raw !== 'string') return null;
+    return raw.startsWith('data:') ? raw : `data:image/png;base64,${raw}`;
+  }
+
+  private extractQrCode(data: any): string | null {
+    const candidates = [
+      data?.base64,
+      data?.qrcode?.base64,
+      data?.Qrcode?.base64,
+      data?.qrcode,
+      data?.qr,
+      data?.code,
+      data?.data?.base64,
+      data?.data?.qrcode?.base64,
+      data?.data?.qr,
+      data?.data?.code,
+    ];
+
+    for (const candidate of candidates) {
+      if (typeof candidate === 'string' && candidate.length > 20) {
+        return this.normalizeQr(candidate);
+      }
+    }
+
+    return null;
   }
 
   async getStatus() {
@@ -34,9 +90,9 @@ export class WhatsappAdminService {
     }
 
     try {
-      const res = await axios.get(
+      const res = await this.withAuthRetry((headers) => axios.get(
         `${this.apiUrl}/instance/connectionState/${this.instance}`,
-        { headers: this.headers(), timeout: 6000 },
+        { headers, timeout: 6000 },
       );
       const state = res.data?.instance?.state ?? 'unknown';
       return {
@@ -54,56 +110,55 @@ export class WhatsappAdminService {
     if (!this.isConfigured()) return { qrCode: null, error: 'Evolution API não configurada' };
 
     try {
-      // 1. Apaga a instância existente para garantir estado limpo
-      this.logger.log(`Deletando instância ${this.instance} para forçar novo QR...`);
-      await axios.delete(
-        `${this.apiUrl}/instance/delete/${this.instance}`,
-        { headers: this.headers(), timeout: 8000 },
-      ).catch((e) => this.logger.warn(`delete: ${e?.response?.status} ${e?.response?.data?.message ?? e.message}`));
-
-      // 2. Recria a instância — o QR vem direto na resposta
-      this.logger.log(`Criando instância ${this.instance}...`);
-      const createRes = await axios.post(
+      // Tenta criar (sem falhar fluxo se não tiver permissão)
+      const createRes = await this.withAuthRetry((headers) => axios.post(
         `${this.apiUrl}/instance/create`,
         { instanceName: this.instance, qrcode: true, integration: 'WHATSAPP-BAILEYS' },
-        { headers: this.headers(), timeout: 10000 },
-      );
+        { headers, timeout: 10000 },
+      )).catch((err: any) => {
+        this.logger.warn(`create instance: ${err?.response?.status ?? 'n/a'} ${err?.response?.data?.message ?? err.message}`);
+        return null;
+      });
 
-      this.logger.log(`create response: ${JSON.stringify(createRes.data)}`);
-
-      const rawQr =
-        createRes.data?.qrcode?.base64 ??
-        createRes.data?.base64 ??
-        createRes.data?.qr ??
-        null;
-
-      if (rawQr) {
-        const qrCode = rawQr.startsWith('data:') ? rawQr : `data:image/png;base64,${rawQr}`;
+      const qrFromCreate = this.extractQrCode(createRes?.data);
+      if (qrFromCreate) {
         this.logger.log('QR Code obtido via create');
-        return { qrCode };
+        return { qrCode: qrFromCreate };
       }
 
-      // 3. Se o create não trouxe o QR, tenta o connect
-      this.logger.log('QR não veio no create, tentando connect...');
-      const qrRes = await axios.get(
-        `${this.apiUrl}/instance/connect/${this.instance}`,
-        { headers: this.headers(), timeout: 8000 },
-      );
+      // Fallbacks para versões diferentes da Evolution API
+      const attempts: Array<{ method: 'get' | 'post'; path: string }> = [
+        { method: 'get', path: `/instance/connect/${this.instance}` },
+        { method: 'post', path: `/instance/connect/${this.instance}` },
+        { method: 'get', path: `/instance/qrcode/${this.instance}` },
+        { method: 'get', path: `/instance/qrbase64/${this.instance}` },
+      ];
 
-      this.logger.log(`connect response: ${JSON.stringify(qrRes.data)}`);
+      for (const attempt of attempts) {
+        try {
+          const url = `${this.apiUrl}${attempt.path}`;
+          const res = attempt.method === 'get'
+            ? await this.withAuthRetry((headers) => axios.get(url, { headers, timeout: 10000 }))
+            : await this.withAuthRetry((headers) => axios.post(url, {}, { headers, timeout: 10000 }));
 
-      const rawQr2 =
-        qrRes.data?.base64 ??
-        qrRes.data?.qrcode?.base64 ??
-        qrRes.data?.code ??
-        null;
+          const qr = this.extractQrCode(res.data);
+          if (qr) {
+            this.logger.log(`QR Code obtido via ${attempt.method.toUpperCase()} ${attempt.path}`);
+            return { qrCode: qr };
+          }
 
-      if (!rawQr2) {
-        return { qrCode: null, error: `QR não disponível. create: ${JSON.stringify(createRes.data)} | connect: ${JSON.stringify(qrRes.data)}` };
+          this.logger.warn(`Sem QR em ${attempt.method.toUpperCase()} ${attempt.path}: ${JSON.stringify(res.data)}`);
+        } catch (err: any) {
+          this.logger.warn(
+            `Falha em ${attempt.method.toUpperCase()} ${attempt.path}: ${err?.response?.status ?? 'n/a'} ${JSON.stringify(err?.response?.data ?? err.message)}`,
+          );
+        }
       }
 
-      const qrCode2 = rawQr2.startsWith('data:') ? rawQr2 : `data:image/png;base64,${rawQr2}`;
-      return { qrCode: qrCode2 };
+      return {
+        qrCode: null,
+        error: 'Não foi possível obter QR da Evolution API. Verifique EVOLUTION_API_KEY, EVOLUTION_INSTANCE e permissões da chave.',
+      };
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? err.message;
       this.logger.error(`Erro ao obter QR Code: ${msg} — status: ${err?.response?.status} — data: ${JSON.stringify(err?.response?.data)}`);
@@ -114,10 +169,10 @@ export class WhatsappAdminService {
   async disconnect(): Promise<void> {
     if (!this.isConfigured()) return;
     try {
-      await axios.delete(
+      await this.withAuthRetry((headers) => axios.delete(
         `${this.apiUrl}/instance/logout/${this.instance}`,
-        { headers: this.headers(), timeout: 6000 },
-      );
+        { headers, timeout: 6000 },
+      ));
     } catch (err: any) {
       this.logger.error(`Erro ao desconectar: ${err?.response?.data?.message ?? err.message}`);
     }
