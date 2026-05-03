@@ -52,7 +52,6 @@ export class ServiceOrdersService {
     }
   }
 
-  private async getActor(tenantId: string, userId: string) {
   private async applyStockMovement(
     tenantId: string,
     partId: string,
