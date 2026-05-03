@@ -44,7 +44,7 @@ export class WhatsappAdminService {
 
     for (const headers of headersOptions) {
       try {
-        return runner(headers);
+        return await runner(headers);
       } catch (err: any) {
         lastError = err;
         const status = err?.response?.status;
