@@ -133,35 +133,41 @@ export class WhatsappAdminService {
       return { qrCode: null, error: `Erro ao criar instância: ${detail}` };
     }
 
-    // Trigger Baileys to generate QR by calling /connect
-    try {
-      const connectRes = await axios.get(
-        `${this.apiUrl}/instance/connect/${this.instanceName}`,
-        { headers: this.globalHeaders, timeout: 15000 },
-      );
-      this.logger.log(`Connect chamado — resposta: ${JSON.stringify(connectRes.data)}`);
-      // If connect returned a QR directly, store it
-      const directBase64: string | undefined =
-        connectRes.data?.qrcode?.base64 ??
-        connectRes.data?.base64;
-      if (directBase64) {
-        const qr = directBase64.startsWith('data:') ? directBase64 : `data:image/png;base64,${directBase64}`;
-        this.qrStore.set(this.instanceName, qr);
-        this.logger.log(`QR obtido diretamente via /connect`);
-      }
-    } catch (err: any) {
-      this.logger.warn(`Aviso ao chamar /connect: ${JSON.stringify(err?.response?.data ?? err.message)}`);
-    }
-
-    // Poll for QR from webhook store (up to 40s)
-    const deadline = Date.now() + 40_000;
+    // Poll /connect directly (returns QR when Baileys is ready) AND check webhook store — race
+    const deadline = Date.now() + 45_000;
+    let pollCount = 0;
     while (Date.now() < deadline) {
-      const qr = this.qrStore.get(this.instanceName);
-      if (qr) return { qrCode: qr };
-      await new Promise((r) => setTimeout(r, 2000));
+      // Check webhook store first
+      const stored = this.qrStore.get(this.instanceName);
+      if (stored) {
+        this.logger.log(`QR obtido via webhook após ${pollCount} polls`);
+        return { qrCode: stored };
+      }
+
+      // Poll /connect directly — returns QR base64 once Baileys has it
+      try {
+        const connectRes = await axios.get(
+          `${this.apiUrl}/instance/connect/${this.instanceName}`,
+          { headers: this.globalHeaders, timeout: 10000 },
+        );
+        const d = connectRes.data;
+        const count: number = d?.count ?? d?.qrcode?.count ?? 0;
+        const base64: string | undefined = d?.base64 ?? d?.qrcode?.base64;
+        this.logger.log(`[poll ${++pollCount}] /connect count=${count} hasBase64=${!!base64}`);
+        if (base64 && count > 0) {
+          const qr = base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`;
+          this.logger.log(`QR obtido via polling /connect`);
+          return { qrCode: qr };
+        }
+      } catch (err: any) {
+        this.logger.warn(`[poll ${pollCount + 1}] /connect erro: ${JSON.stringify(err?.response?.data ?? err.message)}`);
+        pollCount++;
+      }
+
+      await new Promise((r) => setTimeout(r, 3000));
     }
 
-    return { qrCode: null, error: 'QR não chegou via webhook em 40s. Verifique BACKEND_PUBLIC_URL e tente novamente.' };
+    return { qrCode: null, error: 'QR não chegou em 45s — WhatsApp pode estar bloqueando o IP. Aguarde alguns minutos e tente novamente.' };
   }
 
   async disconnect(): Promise<void> {
