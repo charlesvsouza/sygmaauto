@@ -42,6 +42,10 @@ export class WhatsappService {
     return `55${digits}`;
   }
 
+  async sendText(to: string, message: string): Promise<void> {
+    return this.send(to, message);
+  }
+
   private async send(to: string, message: string): Promise<void> {
     if (!this.isConfigured()) {
       this.logger.warn(`WhatsApp não configurado — mensagem para ${to} descartada`);

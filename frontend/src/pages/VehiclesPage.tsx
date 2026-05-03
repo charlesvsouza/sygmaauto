@@ -9,7 +9,9 @@ import {
   Trash2,
   Loader2,
   User,
-  X
+  X,
+  Bell,
+  Wrench
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -30,7 +32,24 @@ export function VehiclesPage() {
     km: '',
     vin: '',
     notes: '',
+    lastMaintenanceKm: '',
+    lastMaintenanceDate: '',
+    maintenanceIntervalKm: '',
+    maintenanceIntervalDays: '',
   });
+
+  const isMaintenanceDue = (vehicle: any): boolean => {
+    const today = new Date();
+    if (vehicle.maintenanceIntervalKm && vehicle.km != null && vehicle.lastMaintenanceKm != null) {
+      if (vehicle.km >= vehicle.lastMaintenanceKm + vehicle.maintenanceIntervalKm) return true;
+    }
+    if (vehicle.maintenanceIntervalDays && vehicle.lastMaintenanceDate) {
+      const nextDate = new Date(vehicle.lastMaintenanceDate);
+      nextDate.setDate(nextDate.getDate() + vehicle.maintenanceIntervalDays);
+      if (today >= nextDate) return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     loadData();
@@ -58,6 +77,10 @@ export function VehiclesPage() {
         ...formData,
         year: formData.year ? parseInt(formData.year) : undefined,
         km: formData.km ? parseInt(formData.km) : undefined,
+        lastMaintenanceKm: formData.lastMaintenanceKm ? parseInt(formData.lastMaintenanceKm) : undefined,
+        lastMaintenanceDate: formData.lastMaintenanceDate || undefined,
+        maintenanceIntervalKm: formData.maintenanceIntervalKm ? parseInt(formData.maintenanceIntervalKm) : undefined,
+        maintenanceIntervalDays: formData.maintenanceIntervalDays ? parseInt(formData.maintenanceIntervalDays) : undefined,
       };
       if (editingVehicle) {
         await vehiclesApi.update(editingVehicle.id, data);
@@ -84,6 +107,10 @@ export function VehiclesPage() {
       km: vehicle.km?.toString() || '',
       vin: vehicle.vin || '',
       notes: vehicle.notes || '',
+      lastMaintenanceKm: vehicle.lastMaintenanceKm?.toString() || '',
+      lastMaintenanceDate: vehicle.lastMaintenanceDate ? vehicle.lastMaintenanceDate.split('T')[0] : '',
+      maintenanceIntervalKm: vehicle.maintenanceIntervalKm?.toString() || '',
+      maintenanceIntervalDays: vehicle.maintenanceIntervalDays?.toString() || '',
     });
     setShowModal(true);
   };
@@ -111,6 +138,10 @@ export function VehiclesPage() {
       km: '',
       vin: '',
       notes: '',
+      lastMaintenanceKm: '',
+      lastMaintenanceDate: '',
+      maintenanceIntervalKm: '',
+      maintenanceIntervalDays: '',
     });
   };
 
@@ -128,6 +159,12 @@ export function VehiclesPage() {
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Veículos</h1>
           <p className="text-slate-500 font-medium">{vehicles.length} veículos cadastrados na frota</p>
         </div>
+        {vehicles.filter(isMaintenanceDue).length > 0 && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-xl text-orange-700 text-sm font-semibold">
+            <Bell className="w-4 h-4" />
+            {vehicles.filter(isMaintenanceDue).length} veículo(s) com manutenção vencida
+          </div>
+        )}
         <button
           onClick={() => {
             resetForm();
@@ -198,8 +235,17 @@ export function VehiclesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-sm text-slate-700 font-medium">{vehicle.year || '-'}</div>
-                      <div className="text-xs text-slate-500">{vehicle.km?.toLocaleString('pt-BR')} km</div>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="text-sm text-slate-700 font-medium">{vehicle.year || '-'}</div>
+                          <div className="text-xs text-slate-500">{vehicle.km?.toLocaleString('pt-BR')} km</div>
+                        </div>
+                        {isMaintenanceDue(vehicle) && (
+                          <span title="Manutenção vencida" className="flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-lg text-xs font-bold">
+                            <Wrench className="w-3 h-3" /> Vencida
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -358,6 +404,55 @@ export function VehiclesPage() {
                     />
                   </div>
                 </div>
+
+                {/* Manutenção Preventiva */}
+                <div className="pt-4 border-t border-slate-100">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5" /> Manutenção Preventiva
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">KM na Última Revisão</label>
+                      <input
+                        type="number"
+                        value={formData.lastMaintenanceKm}
+                        onChange={(e) => setFormData({ ...formData, lastMaintenanceKm: e.target.value })}
+                        placeholder="Ex: 45000"
+                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Data da Última Revisão</label>
+                      <input
+                        type="date"
+                        value={formData.lastMaintenanceDate}
+                        onChange={(e) => setFormData({ ...formData, lastMaintenanceDate: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Intervalo (km)</label>
+                      <input
+                        type="number"
+                        value={formData.maintenanceIntervalKm}
+                        onChange={(e) => setFormData({ ...formData, maintenanceIntervalKm: e.target.value })}
+                        placeholder="Ex: 10000"
+                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Intervalo (dias)</label>
+                      <input
+                        type="number"
+                        value={formData.maintenanceIntervalDays}
+                        onChange={(e) => setFormData({ ...formData, maintenanceIntervalDays: e.target.value })}
+                        placeholder="Ex: 180"
+                        className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
                   <button
                     type="button"

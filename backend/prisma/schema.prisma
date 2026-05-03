@@ -175,6 +175,14 @@ model Vehicle {
   vin         String?
   km         Int?
   notes       String?
+
+  // Manutenção Preventiva
+  lastMaintenanceKm      Int?
+  lastMaintenanceDate    DateTime?
+  maintenanceIntervalKm  Int?       // Ex: 10000 (a cada 10.000 km)
+  maintenanceIntervalDays Int?      // Ex: 180 (a cada 6 meses)
+  reminderSentAt         DateTime?  // Última vez que o lembrete foi enviado
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

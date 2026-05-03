@@ -19,6 +19,7 @@ import { SuperAdminModule } from './superadmin/superadmin.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { ChecklistModule } from './checklist/checklist.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -52,6 +53,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     OnboardingModule,
     ChecklistModule,
     WhatsappModule,
+    MaintenanceModule,
   ],
   providers: [TenantMiddleware],
 })

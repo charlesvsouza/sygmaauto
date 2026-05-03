@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsInt, Min } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsInt, Min, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVehicleDto {
@@ -47,6 +47,27 @@ export class CreateVehicleDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  // Manutenção Preventiva
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  lastMaintenanceKm?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  lastMaintenanceDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  maintenanceIntervalKm?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  maintenanceIntervalDays?: number;
 }
 
 export class UpdateVehicleDto {
@@ -90,4 +111,25 @@ export class UpdateVehicleDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  // Manutenção Preventiva
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  lastMaintenanceKm?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  lastMaintenanceDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  maintenanceIntervalKm?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  maintenanceIntervalDays?: number;
 }
