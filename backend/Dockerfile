@@ -1,11 +1,11 @@
-# Build stage -- bust cache: 20260503f
+# Build stage -- bust cache: 20260503g
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 COPY backend/. .
 # Timestamp abaixo muda a cada deploy para garantir prisma generate sempre roda
-RUN echo "prisma-gen: 20260503T104049" && npx prisma generate
+RUN echo "prisma-gen: 20260503T160000" && npx prisma generate
 RUN npm run build
 
 # Production stage
