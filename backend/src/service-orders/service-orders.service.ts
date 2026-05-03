@@ -110,6 +110,7 @@ export class ServiceOrdersService {
           include: {
             service: true,
             part: true,
+            assignedUser: { select: { id: true, name: true, role: true } },
           },
         },
       },
@@ -127,6 +128,7 @@ export class ServiceOrdersService {
           include: {
             service: true,
             part: true,
+            assignedUser: { select: { id: true, name: true, role: true } },
           },
         },
         timeline: { orderBy: { createdAt: 'desc' } },
@@ -722,6 +724,7 @@ export class ServiceOrdersService {
         serviceOrderId: orderId,
         serviceId: dto.serviceId,
         partId: finalPartId,
+        assignedUserId: dto.assignedUserId,
         description,
         quantity: qty,
         unitPrice,
@@ -843,6 +846,7 @@ export class ServiceOrdersService {
         unitPrice,
         discount,
         totalPrice,
+        ...(dto.assignedUserId !== undefined && { assignedUserId: dto.assignedUserId }),
       },
     });
 

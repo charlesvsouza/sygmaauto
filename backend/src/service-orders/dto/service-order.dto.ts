@@ -43,6 +43,11 @@ export class CreateOrUpdateItemDto {
   @IsOptional()
   @IsNumber()
   discount?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  assignedUserId?: string;
 }
 
 export class UpdateServiceOrderItemDto {
@@ -81,6 +86,11 @@ export class UpdateServiceOrderItemDto {
   @IsOptional()
   @IsNumber()
   discount?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  assignedUserId?: string;
 }
 
 export class CreateOrcamentoDto {

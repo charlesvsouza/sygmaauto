@@ -156,8 +156,9 @@ model User {
   updatedAt    DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
-  serviceOrders ServiceOrder[]
-  timeline      ServiceOrderTimeline[]
+  serviceOrders  ServiceOrder[]
+  timeline       ServiceOrderTimeline[]
+  assignedItems  ServiceOrderItem[] @relation("AssignedItems")
 
   @@unique([tenantId, email])
   @@map("users")
@@ -362,19 +363,21 @@ model ServiceOrderItem {
   serviceOrderId  String
   serviceId       String?
   partId          String?
+  assignedUserId  String?
   description     String
   quantity        Float    @default(1)
   unitPrice       Float
   totalPrice      Float
-  discount       Float  @default(0)
+  discount        Float    @default(0)
 
   type            String
-  applied        Boolean  @default(false)  // Se baixa de estoque foi aplicada
+  applied         Boolean  @default(false)
   createdAt       DateTime @default(now())
 
   serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id])
   service      Service?     @relation(fields: [serviceId], references: [id])
   part         Part?        @relation(fields: [partId], references: [id])
+  assignedUser User?        @relation("AssignedItems", fields: [assignedUserId], references: [id])
 
   @@map("service_order_items")
 }
