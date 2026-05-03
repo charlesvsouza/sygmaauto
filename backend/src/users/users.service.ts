@@ -95,6 +95,8 @@ export class UsersService {
         recoveryEmail: dto.recoveryEmail?.toLowerCase().trim(),
         role: dto.role,
         isActive: dto.isActive,
+        workshopArea: dto.workshopArea,
+        jobFunction: dto.jobFunction,
       },
       select: {
         id: true,
@@ -103,6 +105,8 @@ export class UsersService {
         recoveryEmail: true,
         role: true,
         isActive: true,
+        workshopArea: true,
+        jobFunction: true,
       },
     });
   }

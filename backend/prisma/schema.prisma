@@ -9,6 +9,28 @@ datasource db {
 }
 
 // Enum para definir os níveis de acesso
+enum WorkshopArea {
+  MECANICA
+  ELETRICA
+  FUNILARIA_PINTURA
+  LAVACAO
+  HIGIENIZACAO_EMBELEZAMENTO
+}
+
+enum JobFunction {
+  MECANICO
+  ELETRICISTA
+  APRENDIZ
+  PINTOR
+  PREPARADOR
+  COLABORADOR_SERVICOS_GERAIS
+  FUNILEIRO
+  LAVADOR
+  MARTELINHO_OURO
+  EMBELEZADOR_AUTOMOTIVO
+  CHEFE_OFICINA
+}
+
 enum UserRole {
   MASTER      // Proprietário - 1 por tenant, acesso total
   ADMIN       // Gerenciador - cria equipe, configura a oficina
@@ -127,6 +149,8 @@ model User {
   role         UserRole @default(PRODUTIVO)
   invitedBy    String?  // Email de quem convidou (auditoria)
   isActive     Boolean  @default(true)
+  workshopArea WorkshopArea?
+  jobFunction  JobFunction?
   lastLoginAt   DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

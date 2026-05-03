@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, MinLength, IsNumber, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
+import { UserRole, WorkshopArea, JobFunction } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -55,6 +55,16 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   isActive?: boolean;
+
+  @ApiProperty({ enum: WorkshopArea, required: false })
+  @IsOptional()
+  @IsEnum(WorkshopArea)
+  workshopArea?: WorkshopArea;
+
+  @ApiProperty({ enum: JobFunction, required: false })
+  @IsOptional()
+  @IsEnum(JobFunction)
+  jobFunction?: JobFunction;
 }
 
 export class ChangePasswordDto {
