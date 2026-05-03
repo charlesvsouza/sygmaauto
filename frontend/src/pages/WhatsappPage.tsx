@@ -70,9 +70,12 @@ export function WhatsappPage() {
       if (res.data.qrCode) {
         setQrCode(res.data.qrCode);
         startPolling();
+      } else {
+        const msg = res.data.error ?? 'QR Code não disponível. Verifique os logs do servidor.';
+        alert(msg);
       }
-    } catch {
-      alert('Erro ao gerar QR Code. Verifique se a Evolution API está configurada no servidor.');
+    } catch (e: any) {
+      alert(e?.response?.data?.message ?? 'Erro ao gerar QR Code. Verifique se a Evolution API está configurada no servidor.');
     } finally {
       setLoadingQr(false);
     }

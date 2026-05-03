@@ -50,36 +50,55 @@ export class WhatsappAdminService {
     }
   }
 
-  async getQrCode(): Promise<{ qrCode: string | null }> {
-    if (!this.isConfigured()) return { qrCode: null };
+  async getQrCode(): Promise<{ qrCode: string | null; error?: string }> {
+    if (!this.isConfigured()) return { qrCode: null, error: 'Evolution API não configurada' };
 
     try {
-      // Garante que a instância existe, cria se necessário
-      await axios.get(`${this.apiUrl}/instance/fetchInstances`, {
-        headers: this.headers(), timeout: 6000,
-      }).catch(() => null);
-
-      // Solicita conexão (caso não exista)
-      await axios.post(
+      // 1. Tenta criar instância (ignora erro se já existir)
+      const createRes = await axios.post(
         `${this.apiUrl}/instance/create`,
         { instanceName: this.instance, qrcode: true, integration: 'WHATSAPP-BAILEYS' },
         { headers: this.headers(), timeout: 8000 },
-      ).catch(() => null); // ignora erro se já existir
+      ).catch((e) => {
+        this.logger.warn(`create instance: ${e?.response?.data?.message ?? e.message}`);
+        return null;
+      });
 
-      // Obtém QR
+      // Se o create já trouxe QR, usa direto
+      const createQr = createRes?.data?.qrcode?.base64 ?? createRes?.data?.base64 ?? null;
+      if (createQr) {
+        const qrCode = createQr.startsWith('data:') ? createQr : `data:image/png;base64,${createQr}`;
+        this.logger.log('QR Code obtido via create');
+        return { qrCode };
+      }
+
+      // 2. Chama connect para obter QR
       const qrRes = await axios.get(
         `${this.apiUrl}/instance/connect/${this.instance}`,
         { headers: this.headers(), timeout: 8000 },
       );
-      const rawQr = qrRes.data?.base64 ?? qrRes.data?.qrcode?.base64 ?? null;
-      // Garante que o retorno sempre é uma data URL válida
-      const qrCode = rawQr
-        ? (rawQr.startsWith('data:') ? rawQr : `data:image/png;base64,${rawQr}`)
-        : null;
+
+      this.logger.log(`connect response keys: ${JSON.stringify(Object.keys(qrRes.data ?? {}))}`);
+
+      // Cobre todos os formatos conhecidos da Evolution API v1/v2
+      const rawQr =
+        qrRes.data?.base64 ??
+        qrRes.data?.qrcode?.base64 ??
+        qrRes.data?.Qrcode?.base64 ??
+        qrRes.data?.qr ??
+        null;
+
+      if (!rawQr) {
+        this.logger.error(`QR não encontrado. Resposta: ${JSON.stringify(qrRes.data)}`);
+        return { qrCode: null, error: 'QR Code não disponível na resposta da API' };
+      }
+
+      const qrCode = rawQr.startsWith('data:') ? rawQr : `data:image/png;base64,${rawQr}`;
       return { qrCode };
     } catch (err: any) {
-      this.logger.error(`Erro ao obter QR Code: ${err?.response?.data?.message ?? err.message}`);
-      return { qrCode: null };
+      const msg = err?.response?.data?.message ?? err.message;
+      this.logger.error(`Erro ao obter QR Code: ${msg} — status: ${err?.response?.status}`);
+      return { qrCode: null, error: msg };
     }
   }
 
