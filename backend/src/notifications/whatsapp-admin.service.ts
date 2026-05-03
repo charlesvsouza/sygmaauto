@@ -25,8 +25,8 @@ export class WhatsappAdminService {
     return !!(this.apiUrl && this.apiKey);
   }
 
-  private authHeadersList(): Array<Record<string, string>> {
-    const key = this.apiKey ?? '';
+  private authHeadersList(apiKeyOverride?: string): Array<Record<string, string>> {
+    const key = apiKeyOverride ?? this.apiKey ?? '';
     return [
       { apikey: key, 'Content-Type': 'application/json' },
       { apiKey: key, 'Content-Type': 'application/json' },
@@ -37,8 +37,9 @@ export class WhatsappAdminService {
 
   private async withAuthRetry<T>(
     runner: (headers: Record<string, string>) => Promise<T>,
+    apiKeyOverride?: string,
   ): Promise<T> {
-    const headersOptions = this.authHeadersList();
+    const headersOptions = this.authHeadersList(apiKeyOverride);
     let lastError: any;
 
     for (const headers of headersOptions) {
@@ -57,6 +58,44 @@ export class WhatsappAdminService {
     throw lastError;
   }
 
+  private async getInstanceApiKey(): Promise<string | null> {
+    try {
+      const res = await this.withAuthRetry((headers) => axios.get(
+        `${this.apiUrl}/instance/fetchInstances`,
+        { headers, timeout: 8000 },
+      ));
+
+      const data = res.data;
+      const instances: any[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.response)
+          ? data.response
+          : Array.isArray(data?.data)
+            ? data.data
+            : [];
+
+      const current = instances.find((item) => {
+        const name = item?.instance?.instanceName ?? item?.instanceName;
+        return name === this.instance;
+      });
+
+      const instanceKey =
+        current?.instance?.apikey ??
+        current?.apikey ??
+        current?.instance?.token ??
+        current?.token ??
+        null;
+
+      if (instanceKey) {
+        this.logger.log(`Usando apikey da instância ${this.instance} para connect/logout.`);
+      }
+
+      return instanceKey;
+    } catch {
+      return null;
+    }
+  }
+
   private async extractQrCode(data: any): Promise<string | null> {
     const imageCandidates = [
       data?.base64,
@@ -64,6 +103,8 @@ export class WhatsappAdminService {
       data?.Qrcode?.base64,
       data?.data?.base64,
       data?.data?.qrcode?.base64,
+      data?.response?.base64,
+      data?.response?.qrcode?.base64,
     ];
 
     for (const candidate of imageCandidates) {
@@ -79,6 +120,9 @@ export class WhatsappAdminService {
       data?.data?.code,
       data?.data?.qr,
       data?.data?.pairingCode,
+      data?.response?.code,
+      data?.response?.qr,
+      data?.response?.pairingCode,
     ];
 
     for (const candidate of payloadCandidates) {
@@ -140,6 +184,8 @@ export class WhatsappAdminService {
     if (!this.isConfigured()) return { qrCode: null, error: 'Evolution API não configurada' };
 
     try {
+      const instanceApiKey = await this.getInstanceApiKey();
+
       // Tenta criar; se já existir, segue o fluxo normalmente.
       const createRes = await this.withAuthRetry((headers) => axios.post(
         `${this.apiUrl}/instance/create`,
@@ -180,8 +226,8 @@ export class WhatsappAdminService {
           try {
             const url = `${this.apiUrl}${attempt.path}`;
             const res = attempt.method === 'get'
-              ? await this.withAuthRetry((headers) => axios.get(url, { headers, timeout: 10000 }))
-              : await this.withAuthRetry((headers) => axios.post(url, {}, { headers, timeout: 10000 }));
+              ? await this.withAuthRetry((headers) => axios.get(url, { headers, timeout: 10000 }), instanceApiKey ?? undefined)
+              : await this.withAuthRetry((headers) => axios.post(url, {}, { headers, timeout: 10000 }), instanceApiKey ?? undefined);
 
             const qr = await this.extractQrCode(res.data);
             if (qr) {
@@ -203,7 +249,7 @@ export class WhatsappAdminService {
               await this.withAuthRetry((headers) => axios.delete(
                 `${this.apiUrl}/instance/logout/${this.instance}`,
                 { headers, timeout: 8000 },
-              )).catch((logoutErr: any) => {
+              ), instanceApiKey ?? undefined).catch((logoutErr: any) => {
                 this.logger.warn(
                   `Falha no logout ${this.instance}: ${logoutErr?.response?.status ?? 'n/a'} ${JSON.stringify(logoutErr?.response?.data ?? logoutErr.message)}`,
                 );
