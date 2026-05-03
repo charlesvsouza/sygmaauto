@@ -108,25 +108,29 @@ export class WhatsappAdminService {
     // Create fresh instance with webhook
     const webhookUrl = `${this.backendUrl}/whatsapp/qr-webhook`;
     try {
-      await axios.post(
-        `${this.apiUrl}/instance/create`,
-        {
-          instanceName: this.instanceName,
-          qrcode: true,
-          integration: 'WHATSAPP-BAILEYS',
-          webhook: {
-            url: webhookUrl,
-            byEvents: false,
-            base64: true,
-          },
+      const createPayload = {
+        instanceName: this.instanceName,
+        qrcode: true,
+        integration: 'WHATSAPP-BAILEYS',
+        webhook: {
+          enabled: true,
+          url: webhookUrl,
+          byEvents: false,
+          base64: true,
+          events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE'],
         },
+      };
+      this.logger.log(`Criando instância com payload: ${JSON.stringify(createPayload)}`);
+      const createRes = await axios.post(
+        `${this.apiUrl}/instance/create`,
+        createPayload,
         { headers: this.globalHeaders, timeout: 15000 },
       );
-      this.logger.log(`Instância ${this.instanceName} criada com webhook ${webhookUrl}`);
+      this.logger.log(`Instância ${this.instanceName} criada — resposta: ${JSON.stringify(createRes.data)}`);
     } catch (err: any) {
-      const msg: string = err?.response?.data?.message ?? err?.response?.data?.error ?? err.message;
-      this.logger.error(`Erro ao criar instância: ${msg}`);
-      return { qrCode: null, error: `Erro ao criar instância: ${msg}` };
+      const detail = JSON.stringify(err?.response?.data ?? err.message);
+      this.logger.error(`Erro ao criar instância: ${detail}`);
+      return { qrCode: null, error: `Erro ao criar instância: ${detail}` };
     }
 
     // Poll for QR from webhook store (up to 40s)
