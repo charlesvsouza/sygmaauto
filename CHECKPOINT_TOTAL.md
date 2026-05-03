@@ -53,6 +53,10 @@
 | Super Admin | ✅ | Painel de gestão de todos os tenants |
 | Onboarding | ✅ | Fluxo de ativação por token |
 | Notificações | ✅ (base) | Estrutura de notificações implementada |
+| Kanban de Pátio | ✅ | Board visual por status com modo TV fullscreen |
+| Checklist Entrada/Saída | ✅ | 15 áreas, 5 condições, fotos comprimidas, nível de combustível |
+| WhatsApp Automático | ✅ | 5 templates por evento de OS via Evolution API |
+| WhatsApp Admin UI | ✅ | Tela `/whatsapp` com status, QR Code e desconexão — **ONLINE** |
 
 ---
 
@@ -117,11 +121,11 @@ Dashboard (/dashboard)
 ## Commits Recentes (git log)
 
 ```
+eae6701 fix(backend): add axios dependency for WhatsApp Evolution API integration
+8fe69fe feat(whatsapp): WhatsApp Automático via Evolution API
+1d79fb3 feat(checklist): Checklist de Entrada/Saída com fotos
+ac61ac0 feat(kanban): Kanban de Pátio com modo TV
 4247027 feat: block plan downgrade in settings, only allow upgrade until current plan expires
-80438a3 feat: redesign splash screen with landing page style and route access buttons through splash
-1097ed8 feat: add tagline on WelcomePage and fix LexGen -> Sigma Auto references
-e26c9fa fix: update page title for SEO and fix SygmaAuto -> SigmaAuto in footer
-1c76bd4 feat: add sitemap.xml and robots.txt for SEO
 ```
 
 ---
@@ -158,6 +162,10 @@ FRONTEND_URL=https://sigmaauto.com.br
 NODE_ENV=production
 PORT=3000
 MERCADOPAGO_ACCESS_TOKEN=...
+EVOLUTION_API_URL=https://evolution-api-production-1c86a.up.railway.app
+EVOLUTION_API_KEY=SygmaEvolution@2026!
+EVOLUTION_INSTANCE=sygmaauto
+```
 CHECKOUT_SUCCESS_URL=https://sigmaauto.com.br/settings?checkout=success
 CHECKOUT_CANCEL_URL=https://sigmaauto.com.br/settings?checkout=cancel
 BACKEND_PUBLIC_URL=https://sygmaauto-api-production.up.railway.app
@@ -190,13 +198,17 @@ Rota:  /admin/login
 
 ## Próximos Passos (Roadmap Priorizado)
 
-1. **Kanban de Pátio** — board visual por status (START → PRO diferencial)
-2. **WhatsApp automático por evento de OS** — via Evolution API ou Z-API
-3. **Checklist de entrada/saída com fotos** — proteção jurídica
-4. **Lembrete de manutenção preventiva** — retenção de clientes
-5. **DRE completo** — Demonstrativo de Resultado (plano REDE)
+### ✅ Sprint 1 — Concluído (02/05/2026)
+1. ✅ **Kanban de Pátio** — board visual por status com modo TV
+2. ✅ **Checklist de entrada/saída com fotos** — 15 áreas, fotos comprimidas, nível combustível
+3. ✅ **WhatsApp automático por evento de OS** — 5 templates via Evolution API
+4. ✅ **Tela de configuração WhatsApp** — `/whatsapp` com QR Code e status — **ONLINE**
+
+### Sprint 2 — Próximo
+5. **Financeiro avançado / DRE** — Demonstrativo de Resultado
 6. **Comissão de mecânicos** — % por serviço executado
-7. **Agendamento online público** — aquisição de novos clientes
-8. **Portal do cliente (PWA)** — acompanhamento em tempo real
-9. **Multi-unidades** — plano REDE / franquias
-10. **Emissão NF-e / NFS-e** — integração fiscal
+7. **Lembrete de manutenção preventiva** — retenção de clientes
+8. **Self-Service Checkout** — agendamento online público
+9. **Portal do cliente (PWA)** — acompanhamento em tempo real
+10. **Multi-unidades** — plano REDE / franquias
+11. **Emissão NF-e / NFS-e** — integração fiscal
