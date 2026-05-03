@@ -19,20 +19,19 @@ export class WhatsappService {
 
   constructor(private readonly config: ConfigService) {}
 
-  private get apiUrl(): string | undefined {
-    return this.config.get<string>('EVOLUTION_API_URL');
+  private get apiUrl(): string {
+    return (
+      this.config.get<string>('WHAPI_API_URL') ??
+      'https://gate.whapi.cloud'
+    );
   }
 
-  private get apiKey(): string | undefined {
-    return this.config.get<string>('EVOLUTION_API_KEY');
-  }
-
-  private get instance(): string {
-    return this.config.get<string>('EVOLUTION_INSTANCE') ?? 'sygmaauto';
+  private get token(): string | undefined {
+    return this.config.get<string>('WHAPI_TOKEN');
   }
 
   isConfigured(): boolean {
-    return !!(this.apiUrl && this.apiKey);
+    return !!this.token;
   }
 
   /** Normaliza número para formato E.164 (55 + DDD + número) */
@@ -52,11 +51,11 @@ export class WhatsappService {
 
     try {
       await axios.post(
-        `${this.apiUrl}/message/sendText/${this.instance}`,
-        { number: phone, text: message },
+        `${this.apiUrl}/messages/text`,
+        { to: phone, body: message },
         {
           headers: {
-            apikey: this.apiKey,
+            Authorization: `Bearer ${this.token}`,
             'Content-Type': 'application/json',
           },
           timeout: 8000,
@@ -64,7 +63,6 @@ export class WhatsappService {
       );
       this.logger.log(`WhatsApp enviado para ${phone}`);
     } catch (err: any) {
-      // Nunca lança exceção para não quebrar o fluxo principal
       this.logger.error(
         `Falha ao enviar WhatsApp para ${phone}: ${err?.response?.data?.message ?? err.message}`,
       );
