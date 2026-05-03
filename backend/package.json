@@ -11,6 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
     "prisma:seed": "ts-node prisma/seed.ts",
+    "db:reset:admins": "ts-node scripts/reset-and-bootstrap-admins.ts",
     "test:mercadopago": "ts-node scripts/test-mercadopago.ts",
     "upsert-superadmin": "ts-node scripts/upsert-superadmin.ts"
   },
