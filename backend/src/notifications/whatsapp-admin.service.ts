@@ -90,35 +90,36 @@ export class WhatsappAdminService {
     throw lastError;
   }
 
-  private async getInstanceApiKey(): Promise<string | null> {
+  private normalizeInstances(data: any): any[] {
+    return Array.isArray(data) ? data
+      : Array.isArray(data?.response) ? data.response
+      : Array.isArray(data?.data) ? data.data
+      : [];
+  }
+
+  private instanceName(item: any): string | undefined {
+    return item?.name ?? item?.instance?.instanceName ?? item?.instanceName;
+  }
+
+  private instanceToken(item: any): string | null {
+    return (
+      item?.token ??
+      item?.instance?.apikey ??
+      item?.apikey ??
+      item?.hash ??
+      item?.instance?.token ??
+      null
+    );
+  }
+
+  private async fetchCurrentInstance(): Promise<any | null> {
     try {
       const res = await this.withAuthRetry((headers) => axios.get(
         `${this.apiUrl}/instance/fetchInstances`,
         { headers, timeout: 8000 },
       ));
-
-      const data = res.data;
-      const instances: any[] = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.response)
-          ? data.response
-          : Array.isArray(data?.data)
-            ? data.data
-            : [];
-
-      const current = instances.find((item) => {
-        const name = item?.instance?.instanceName ?? item?.instanceName;
-        return name === this.instance;
-      });
-
-      return (
-        current?.instance?.apikey ??
-        current?.apikey ??
-        current?.hash ??
-        current?.instance?.token ??
-        current?.token ??
-        null
-      );
+      const list = this.normalizeInstances(res.data);
+      return list.find((item) => this.instanceName(item) === this.instance) ?? null;
     } catch {
       return null;
     }
@@ -196,74 +197,85 @@ export class WhatsappAdminService {
     if (!this.isConfigured()) return { qrCode: null, error: 'Evolution API não configurada' };
 
     try {
-      // Limpa QR anterior e apaga instância para estado limpo.
       this.qrStore.delete(this.instance);
-      const oldKey = await this.getInstanceApiKey();
 
-      await this.withAuthRetry(
-        (headers) => axios.delete(`${this.apiUrl}/instance/delete/${this.instance}`, { headers, timeout: 8000 }),
-        oldKey ?? undefined,
-      ).catch((err: any) => {
-        this.logger.log(`delete: ${err?.response?.status ?? 'n/a'}`);
-      });
-
-      await this.wait(1500);
-
-      // Monta payload com webhook se BACKEND_PUBLIC_URL estiver configurado.
       const webhookUrl = this.backendUrl
         ? `${this.backendUrl}/whatsapp/qr-webhook`
         : undefined;
 
-      const createPayload: Record<string, any> = {
-        instanceName: this.instance,
-        qrcode: true,
-        integration: 'WHATSAPP-BAILEYS',
-      };
-
-      if (webhookUrl) {
-        createPayload['webhook'] = {
-          url: webhookUrl,
-          enabled: true,
-          byEvents: true,
-          events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE'],
-        };
-        this.logger.log(`Webhook configurado: ${webhookUrl}`);
-      } else {
+      if (!webhookUrl) {
         this.logger.warn('BACKEND_PUBLIC_URL não configurado — webhook desabilitado');
       }
 
-      const createRes = await this.withAuthRetry((headers) => axios.post(
-        `${this.apiUrl}/instance/create`,
-        createPayload,
-        { headers, timeout: 10000 },
-      )).catch((err: any) => {
-        this.logger.warn(`create: ${err?.response?.status ?? 'n/a'} ${JSON.stringify(err?.response?.data ?? err.message)}`);
-        return null;
-      });
+      // Verifica se instância já existe.
+      let existing = await this.fetchCurrentInstance();
+      let instanceApiKey: string | null = null;
 
-      this.logger.log(`create: ${JSON.stringify(createRes?.data ?? {}).substring(0, 600)}`);
+      if (existing) {
+        instanceApiKey = this.instanceToken(existing);
+        this.logger.log(`Instância encontrada: status=${existing?.connectionStatus ?? existing?.status ?? 'n/a'} token=${instanceApiKey ? 'ok' : 'ausente'}`);
+      } else {
+        // Cria instância fresca com webhook.
+        const createPayload: Record<string, any> = {
+          instanceName: this.instance,
+          qrcode: true,
+          integration: 'WHATSAPP-BAILEYS',
+        };
 
-      const qrFromCreate = await this.extractQrCode(createRes?.data);
-      if (qrFromCreate) {
-        this.logger.log('QR obtido via create');
-        return { qrCode: qrFromCreate };
+        if (webhookUrl) {
+          createPayload['webhook'] = {
+            url: webhookUrl,
+            enabled: true,
+            byEvents: true,
+            events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE'],
+          };
+          this.logger.log(`Criando instância com webhook: ${webhookUrl}`);
+        }
+
+        const createRes = await this.withAuthRetry((headers) => axios.post(
+          `${this.apiUrl}/instance/create`,
+          createPayload,
+          { headers, timeout: 10000 },
+        )).catch((err: any) => {
+          this.logger.warn(`create: ${err?.response?.status ?? 'n/a'} ${JSON.stringify(err?.response?.data ?? err.message)}`);
+          return null;
+        });
+
+        this.logger.log(`create: ${JSON.stringify(createRes?.data ?? {}).substring(0, 400)}`);
+
+        const qrFromCreate = await this.extractQrCode(createRes?.data);
+        if (qrFromCreate) return { qrCode: qrFromCreate };
+
+        instanceApiKey = createRes?.data?.hash ?? null;
+        await this.wait(1000);
+        existing = await this.fetchCurrentInstance();
+        this.logger.log(`fetchInstances pós-create: ${JSON.stringify(existing ?? {}).substring(0, 200)}`);
       }
 
-      const instanceApiKey = createRes?.data?.hash ?? await this.getInstanceApiKey();
+      // Dispara connect para iniciar geração do QR.
+      try {
+        const connectRes = await this.withAuthRetry(
+          (headers) => axios.get(`${this.apiUrl}/instance/connect/${this.instance}`, { headers, timeout: 10000 }),
+          instanceApiKey ?? undefined,
+        );
+        this.logger.log(`connect inicial: ${JSON.stringify(connectRes.data ?? {}).substring(0, 200)}`);
+        const qrFromConnect = await this.extractQrCode(connectRes.data);
+        if (qrFromConnect) return { qrCode: qrFromConnect };
+      } catch (err: any) {
+        this.logger.warn(`connect inicial: ${err?.response?.status ?? 'n/a'}`);
+      }
 
-      // Polling: verifica store (webhook), connect e fetchInstances.
+      // Polling: webhook store tem prioridade, depois connect.
       for (let i = 1; i <= 20; i++) {
         await this.wait(2000);
 
-        // 1. QR já chegou via webhook?
         const stored = this.qrStore.get(this.instance);
         if (stored) {
-          this.logger.log(`QR obtido do webhook store (tentativa ${i})`);
+          this.logger.log(`QR obtido via webhook (poll ${i})`);
           this.qrStore.delete(this.instance);
           return { qrCode: stored };
         }
 
-        // 2. Endpoint connect.
         try {
           const res = await this.withAuthRetry(
             (headers) => axios.get(`${this.apiUrl}/instance/connect/${this.instance}`, { headers, timeout: 10000 }),
@@ -271,49 +283,20 @@ export class WhatsappAdminService {
           );
           const qr = await this.extractQrCode(res.data);
           if (qr) {
-            this.logger.log(`QR obtido via connect (tentativa ${i})`);
+            this.logger.log(`QR obtido via connect (poll ${i})`);
             return { qrCode: qr };
           }
-          this.logger.log(`connect (${i}/20): ${JSON.stringify(res.data ?? {}).substring(0, 150)}`);
+          this.logger.log(`connect poll (${i}/20): ${JSON.stringify(res.data ?? {}).substring(0, 100)}`);
         } catch { /* continua */ }
-
-        // 3. fetchInstances — loga raw para diagnosticar estrutura.
-        try {
-          const fetchRes = await this.withAuthRetry(
-            (headers) => axios.get(`${this.apiUrl}/instance/fetchInstances`, { headers, timeout: 8000 }),
-          );
-
-          const rawFetch = JSON.stringify(fetchRes.data ?? {});
-          this.logger.log(`fetchInstances raw (${i}/20): ${rawFetch.substring(0, 400)}`);
-
-          const list: any[] = Array.isArray(fetchRes.data) ? fetchRes.data
-            : Array.isArray(fetchRes.data?.response) ? fetchRes.data.response
-            : Array.isArray(fetchRes.data?.data) ? fetchRes.data.data : [];
-
-          const current = list.find((item) => {
-            const name = item?.instance?.instanceName ?? item?.instanceName;
-            return name === this.instance;
-          });
-
-          if (current) {
-            const qr = await this.extractQrCode(current) ?? await this.extractQrCode(current?.qrcode);
-            if (qr) {
-              this.logger.log(`QR obtido via fetchInstances (tentativa ${i})`);
-              return { qrCode: qr };
-            }
-          }
-        } catch (err: any) {
-          this.logger.warn(`fetchInstances (${i}): ${err?.response?.status ?? 'n/a'}`);
-        }
       }
 
       return {
         qrCode: null,
-        error: 'QR não disponível após 40 segundos. Configure BACKEND_PUBLIC_URL para habilitar entrega por webhook.',
+        error: 'QR não gerado. Verifique se a Evolution API consegue conectar aos servidores do WhatsApp.',
       };
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? err.message;
-      this.logger.error(`Erro QR: ${msg} — ${JSON.stringify(err?.response?.data)}`);
+      this.logger.error(`Erro QR: ${msg}`);
       return { qrCode: null, error: msg };
     }
   }
