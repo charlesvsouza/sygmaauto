@@ -12,12 +12,16 @@ import {
   Request,
 } from '@nestjs/common';
 import { SuperAdminService } from './superadmin.service';
+import { SeedService } from './seed.service';
 import { SuperAdminGuard } from './guards/superadmin.guard';
 import { SuperAdminLoginDto, CreateSuperAdminDto, ProvisionTenantDto } from './dto/superadmin.dto';
 
 @Controller('superadmin')
 export class SuperAdminController {
-  constructor(private readonly superAdminService: SuperAdminService) {}
+  constructor(
+    private readonly superAdminService: SuperAdminService,
+    private readonly seedService: SeedService,
+  ) {}
 
   @Post('auth/login')
   @HttpCode(HttpStatus.OK)
@@ -104,5 +108,13 @@ export class SuperAdminController {
     @Body() body: { days: number },
   ) {
     return this.superAdminService.extendSubscription(id, body.days);
+  }
+
+  /** Popula dados demo (OS, executores, comissões) para análise de KPI */
+  @Post('tenants/:id/seed-demo')
+  @UseGuards(SuperAdminGuard)
+  @HttpCode(HttpStatus.OK)
+  seedDemo(@Param('id') id: string) {
+    return this.seedService.runDemo(id);
   }
 }

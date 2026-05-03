@@ -20,6 +20,7 @@ import { OnboardingModule } from './onboarding/onboarding.module';
 import { ChecklistModule } from './checklist/checklist.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
+import { CommissionsModule } from './commissions/commissions.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -54,6 +55,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     ChecklistModule,
     WhatsappModule,
     MaintenanceModule,
+    CommissionsModule,
   ],
   providers: [TenantMiddleware],
 })

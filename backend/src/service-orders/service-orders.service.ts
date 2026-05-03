@@ -3,12 +3,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
+import { CommissionsService } from '../commissions/commissions.service';
 
 @Injectable()
 export class ServiceOrdersService {
   constructor(
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
+    private commissions: CommissionsService,
   ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
@@ -458,6 +460,7 @@ export class ServiceOrdersService {
 
     if (newStatus === 'FATURADO') {
       updateData.paidAt = new Date();
+      this.commissions.generateForOrder(tenantId, id).catch(() => {});
     }
 
     if (newStatus === 'ENTREGUE') {

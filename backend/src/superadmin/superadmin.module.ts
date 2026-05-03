@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SuperAdminController } from './superadmin.controller';
 import { SuperAdminService } from './superadmin.service';
+import { SeedService } from './seed.service';
 import { SuperAdminGuard } from './guards/superadmin.guard';
 import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationsModule } from '../notifications/notifications.module';
@@ -21,6 +22,6 @@ import { NotificationsModule } from '../notifications/notifications.module';
     }),
   ],
   controllers: [SuperAdminController],
-  providers: [SuperAdminService, SuperAdminGuard],
+  providers: [SuperAdminService, SuperAdminGuard, SeedService],
 })
 export class SuperAdminModule {}
