@@ -196,6 +196,17 @@ export const commissionsApi = {
   markAsPaid: (id: string) => api.patch(`/commissions/${id}/pay`),
 };
 
+export const reportsApi = {
+  getOSReport: (params?: { startDate?: string; endDate?: string; status?: string }) =>
+    api.get('/financial/os-report', { params: params || {} }),
+  getDRE: (year: number, month: number) =>
+    api.get('/financial/dre', { params: { year, month } }),
+  getCommissions: (params?: { startDate?: string; endDate?: string; workshopArea?: string }) =>
+    api.get('/commissions', { params: params || {} }),
+  getPurchaseProjection: () =>
+    api.get('/inventory/purchase-projection'),
+};
+
 export const subscriptionsApi = {
   getCurrent: () => api.get('/subscriptions/current'),
   getPlans: () => api.get('/subscriptions/plans'),

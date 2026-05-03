@@ -22,6 +22,7 @@ import {
   Tv2,
   MessageCircle,
   BarChart3,
+  FileText,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -69,6 +70,12 @@ export function Layout() {
       to: '/dre',
       icon: BarChart3,
       label: 'DRE',
+      premium: true,
+    },
+    {
+      to: '/reports',
+      icon: FileText,
+      label: 'Relatórios',
       premium: true,
     },
     { to: '/settings', icon: Settings, label: 'Configurações' },

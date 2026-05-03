@@ -139,4 +139,79 @@ export class InventoryService {
       needsRestock: (p.currentStock ?? 0) <= p.minStock,
     }));
   }
+
+  async getPurchaseProjection(tenantId: string) {
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+    const parts = await this.prisma.part.findMany({
+      where: { tenantId, isActive: true },
+      include: {
+        supplier: { select: { id: true, name: true, phone: true, email: true } },
+        inventoryMovements: {
+          where: { type: 'EXIT', createdAt: { gte: ninetyDaysAgo } },
+          select: { quantity: true },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    const projected = parts
+      .map((p) => {
+        const currentStock = p.currentStock ?? 0;
+        const totalExits90d = p.inventoryMovements.reduce((s, m) => s + m.quantity, 0);
+        const avgMonthlyExit = totalExits90d / 3;
+        const monthsCoverage =
+          avgMonthlyExit > 0 ? Math.round((currentStock / avgMonthlyExit) * 10) / 10 : null;
+        const suggestedQty = Math.max(
+          Math.ceil(p.minStock * 2 - currentStock),
+          Math.ceil(avgMonthlyExit * 2),
+          1,
+        );
+        const urgency: 'CRITICO' | 'URGENTE' | 'ATENCAO' | 'OK' =
+          currentStock === 0
+            ? 'CRITICO'
+            : currentStock <= p.minStock
+            ? 'URGENTE'
+            : monthsCoverage !== null && monthsCoverage < 1.5
+            ? 'ATENCAO'
+            : 'OK';
+
+        return {
+          id: p.id,
+          name: p.name,
+          internalCode: p.internalCode,
+          sku: p.sku,
+          category: p.category,
+          unit: p.unit,
+          currentStock,
+          minStock: p.minStock,
+          avgMonthlyExit: Math.round(avgMonthlyExit * 10) / 10,
+          monthsCoverage,
+          suggestedQty,
+          unitPrice: p.unitPrice,
+          costPrice: p.costPrice,
+          estimatedCost: Math.round(suggestedQty * (p.costPrice ?? p.unitPrice) * 100) / 100,
+          supplier: p.supplier,
+          urgency,
+        };
+      })
+      .filter((p) => p.urgency !== 'OK')
+      .sort((a, b) => {
+        const order: Record<string, number> = { CRITICO: 0, URGENTE: 1, ATENCAO: 2 };
+        if (order[a.urgency] !== order[b.urgency]) return order[a.urgency] - order[b.urgency];
+        return (a.monthsCoverage ?? 99) - (b.monthsCoverage ?? 99);
+      });
+
+    return {
+      items: projected,
+      summary: {
+        total: projected.length,
+        criticalCount: projected.filter((p) => p.urgency === 'CRITICO').length,
+        urgentCount: projected.filter((p) => p.urgency === 'URGENTE').length,
+        attentionCount: projected.filter((p) => p.urgency === 'ATENCAO').length,
+        totalEstimatedCost: Math.round(projected.reduce((s, p) => s + p.estimatedCost, 0) * 100) / 100,
+        generatedAt: new Date().toISOString(),
+      },
+    };
+  }
 }

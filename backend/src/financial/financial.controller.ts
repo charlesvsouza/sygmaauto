@@ -43,6 +43,17 @@ export class FinancialController {
     );
   }
 
+  @Get('os-report')
+  @ApiOperation({ summary: 'Relatório de Ordens de Serviço por período' })
+  async getOSReport(
+    @Tenant() tenant: { tenantId: string },
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.financialService.getOSReport(tenant.tenantId, { startDate, endDate, status });
+  }
+
   @Get('summary')
   @ApiOperation({ summary: 'Get financial summary' })
   async getSummary(

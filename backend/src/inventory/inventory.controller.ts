@@ -69,6 +69,12 @@ export class InventoryController {
     return this.inventoryService.getStockReport(tenant.tenantId);
   }
 
+  @Get('purchase-projection')
+  @ApiOperation({ summary: 'Projeção de pedido de compra baseado em estoque mínimo e giro (90 dias)' })
+  async getPurchaseProjection(@Tenant() tenant: { tenantId: string }) {
+    return this.inventoryService.getPurchaseProjection(tenant.tenantId);
+  }
+
   @Post('import-nf/preview')
   @Roles('MASTER', 'ADMIN')
   @UseInterceptors(FileInterceptor('file'))

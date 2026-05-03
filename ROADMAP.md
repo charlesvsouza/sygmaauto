@@ -108,12 +108,55 @@
 
 ---
 
-### � Sprint 2 — Fidelização e Relatórios *(em andamento — iniciado em 03/05/2026)*
+### 🔄 Sprint 2 — Fidelização e Relatórios *(em andamento — iniciado em 03/05/2026)*
 
-- [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data *(próxima entrega)*
-- [ ] **DRE — Demonstrativo de Resultado** — Receita, CMV, Margem, EBITDA
-- [ ] **Comissão de Mecânicos** — % por serviço, relatório por funcionário
+- [x] **Comissão de Mecânicos** — backend 100% implementado (CommissionsModule, CommissionRate, Commission)
+  - Modelos `CommissionRate` e `Commission` adicionados ao schema Prisma
+  - Campo `assignedUserId` em `ServiceOrderItem` para vincular executor
+  - `CommissionsService`: cálculo automático ao faturar OS, relatório com leaderboard
+  - `CommissionsController`: GET /commissions, PATCH /:id/pay, GET/POST /rates
+  - Taxas padrão: MECANICO/ELETRICISTA 10%, FUNILEIRO/PINTOR/PREPARADOR 8%, LAVADOR/EMBELEZADOR 6%
+  - **BLOQUEIO:** tabelas `commission_rates` e `commissions` não criadas em produção (ver seção abaixo)
+- [ ] **Seed de Dados Demo** — 48 OS + 10 executores + comissões *(bloqueado — ver abaixo)*
+- [x] **Relatórios Gerenciais com PDF** — página `/reports`, 4 tipos de relatório, visualização e impressão *(implementado em 03/05/2026)*
+  - **Relatório de OS por Período** — filtros: data início/fim + status, KPIs, lista de OS, top clientes
+    - Backend: `GET /financial/os-report?startDate=&endDate=&status=`
+  - **DRE — Demonstrativo de Resultado** — mês/ano, receita bruta, CMV, margem, despesas por categoria, EBITDA, histórico 6 meses
+    - Usa endpoint existente `GET /financial/dre?year=&month=`
+  - **Relatório de Comissões** — filtros: período + área, ranking/leaderboard, totais pendente/pago
+    - Usa endpoint existente `GET /commissions?startDate=&endDate=&workshopArea=`
+  - **Projeção de Pedido de Compra** — análise de giro (90 dias), urgência CRÍTICO/URGENTE/ATENÇÃO, qtd sugerida, custo estimado
+    - Backend: `GET /inventory/purchase-projection`
+  - Visualização inline (modal preview A4) + impressão `window.print()` com CSS dedicado
+  - Layout consistente com FinancialPage e ServiceOrdersPage (mesma filosofia visual)
+- [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data
 - [ ] **NPS Automático** — pesquisa pós-entrega, dashboard de satisfação
+
+---
+
+### ⚠️ Bloqueio Atual — Tabelas de Comissão não Criadas em Produção
+
+**Problema:** As tabelas `commission_rates` e `commissions` existem no `schema.prisma` mas não são criadas no banco de produção (Railway PostgreSQL).
+
+**Tentativas realizadas (03/05/2026):**
+
+| # | Tentativa | Resultado |
+|---|---|---|
+| 1 | `SEED_DEMO=true` env var + `release.js` rodando seed no deploy | Env var não chegou ou seed silenciosamente falhou |
+| 2 | Endpoint `POST /management/seed-demo` HTTP (key: `sygma-seed-2026`) | 500 — `commission_rates` table does not exist |
+| 3 | Bust cache Dockerfile (timestamp `20260503g`) para forçar `prisma generate` + `prisma db push` | Tabelas ainda não criadas |
+| 4 | `release.js`: `ensureMissingTables()` via raw SQL (`CREATE TABLE IF NOT EXISTS`) antes do `prisma db push` | Tabelas ainda não criadas — função pode estar falhando silenciosamente |
+| 5 | `PrismaService.onModuleInit()`: `$executeRawUnsafe` para criar tabelas no boot do app | Tabelas ainda não criadas |
+
+**Diagnóstico provável:**
+- O `railway.toml` tem `releaseCommand = "node release.js"` mas pode não estar sendo executado no Railway
+- O `prisma db push` pode estar rodando com schema cacheado (sem os novos modelos)
+- O `PrismaService.onModuleInit()` pode estar falhando antes de logar o erro
+
+**Próximos passos para desbloquear:**
+1. Verificar nos logs do Railway se o `releaseCommand` aparece sendo executado
+2. Verificar se `[prisma] applyMissingMigrations: OK` aparece nos logs do app
+3. Como alternativa definitiva: executar o SQL diretamente via Railway Database → Query console
 
 ---
 

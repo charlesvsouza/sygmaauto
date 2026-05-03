@@ -98,6 +98,67 @@ export class FinancialService {
     };
   }
 
+  async getOSReport(tenantId: string, filters: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+  }) {
+    const where: any = { tenantId };
+    if (filters.startDate || filters.endDate) {
+      where.createdAt = {};
+      if (filters.startDate) where.createdAt.gte = new Date(filters.startDate);
+      if (filters.endDate) {
+        const end = new Date(filters.endDate);
+        end.setHours(23, 59, 59, 999);
+        where.createdAt.lte = end;
+      }
+    }
+    if (filters.status) where.status = filters.status;
+
+    const orders = await this.prisma.serviceOrder.findMany({
+      where,
+      include: {
+        customer: { select: { name: true } },
+        vehicle: { select: { plate: true, model: true, brand: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const revenueOrders = orders.filter((o) =>
+      ['ENTREGUE', 'FATURADO'].includes(o.status),
+    );
+    const totalRevenue = revenueOrders.reduce((s, o) => s + Number(o.totalCost ?? 0), 0);
+    const ticketMedio = revenueOrders.length > 0 ? totalRevenue / revenueOrders.length : 0;
+
+    const statusBreakdown: Record<string, number> = {};
+    for (const o of orders) {
+      statusBreakdown[o.status] = (statusBreakdown[o.status] ?? 0) + 1;
+    }
+
+    const customerRevMap: Record<string, { name: string; count: number; total: number }> = {};
+    for (const o of revenueOrders) {
+      const name = (o.customer as any)?.name ?? 'Desconhecido';
+      if (!customerRevMap[name]) customerRevMap[name] = { name, count: 0, total: 0 };
+      customerRevMap[name].count++;
+      customerRevMap[name].total += Number(o.totalCost ?? 0);
+    }
+    const topCustomers = Object.values(customerRevMap)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10);
+
+    return {
+      orders,
+      summary: {
+        total: orders.length,
+        delivered: revenueOrders.length,
+        totalRevenue,
+        ticketMedio,
+      },
+      statusBreakdown,
+      topCustomers,
+    };
+  }
+
   /**
    * DRE — Demonstrativo de Resultado do Exercício
    * Estrutura: Receita Bruta → Deduções → Receita Líquida → CMV → Margem Bruta
