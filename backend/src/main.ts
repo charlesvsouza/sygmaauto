@@ -38,6 +38,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
   
   const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', service: 'sygmaauto-api' });
+  });
   httpAdapter.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
