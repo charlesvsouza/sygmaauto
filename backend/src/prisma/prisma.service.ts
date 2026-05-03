@@ -6,7 +6,7 @@ function buildDatabaseUrl(): string {
   // Keep pool reasonable for Railway Pro (max_connections ~100)
   const separator = base.includes('?') ? '&' : '?';
   if (base.includes('connection_limit')) return base;
-  return `${base}${separator}connection_limit=2&pool_timeout=30&connect_timeout=15`;
+  return `${base}${separator}connection_limit=15&pool_timeout=30&connect_timeout=15`;
 }
 
 @Injectable()
