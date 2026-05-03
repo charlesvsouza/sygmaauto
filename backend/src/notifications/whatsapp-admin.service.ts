@@ -133,6 +133,26 @@ export class WhatsappAdminService {
       return { qrCode: null, error: `Erro ao criar instância: ${detail}` };
     }
 
+    // Trigger Baileys to generate QR by calling /connect
+    try {
+      const connectRes = await axios.get(
+        `${this.apiUrl}/instance/connect/${this.instanceName}`,
+        { headers: this.globalHeaders, timeout: 15000 },
+      );
+      this.logger.log(`Connect chamado — resposta: ${JSON.stringify(connectRes.data)}`);
+      // If connect returned a QR directly, store it
+      const directBase64: string | undefined =
+        connectRes.data?.qrcode?.base64 ??
+        connectRes.data?.base64;
+      if (directBase64) {
+        const qr = directBase64.startsWith('data:') ? directBase64 : `data:image/png;base64,${directBase64}`;
+        this.qrStore.set(this.instanceName, qr);
+        this.logger.log(`QR obtido diretamente via /connect`);
+      }
+    } catch (err: any) {
+      this.logger.warn(`Aviso ao chamar /connect: ${JSON.stringify(err?.response?.data ?? err.message)}`);
+    }
+
     // Poll for QR from webhook store (up to 40s)
     const deadline = Date.now() + 40_000;
     while (Date.now() < deadline) {
