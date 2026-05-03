@@ -402,7 +402,6 @@ model FinancialTransaction {
   @@map("financial_transactions")
 }
 
-model MechanicCommission {
 model Message {
   id         String   @id @default(uuid())
   tenantId   String
