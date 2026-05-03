@@ -211,7 +211,7 @@ export function WhatsappPage() {
           {qrCode ? (
             <div className="flex flex-col items-center gap-3">
               <img
-                src={`data:image/png;base64,${qrCode}`}
+                src={qrCode}
                 alt="QR Code WhatsApp"
                 className="w-56 h-56 rounded-xl border border-slate-200"
               />

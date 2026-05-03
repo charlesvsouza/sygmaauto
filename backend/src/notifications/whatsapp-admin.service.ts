@@ -71,10 +71,12 @@ export class WhatsappAdminService {
         `${this.apiUrl}/instance/connect/${this.instance}`,
         { headers: this.headers(), timeout: 8000 },
       );
-      const qrCode = qrRes.data?.base64 ?? qrRes.data?.qrcode?.base64 ?? null;
-      // Remove prefixo data:image/... se vier junto
-      const clean = qrCode ? qrCode.replace(/^data:image\/[a-z]+;base64,/, '') : null;
-      return { qrCode: clean };
+      const rawQr = qrRes.data?.base64 ?? qrRes.data?.qrcode?.base64 ?? null;
+      // Garante que o retorno sempre é uma data URL válida
+      const qrCode = rawQr
+        ? (rawQr.startsWith('data:') ? rawQr : `data:image/png;base64,${rawQr}`)
+        : null;
+      return { qrCode };
     } catch (err: any) {
       this.logger.error(`Erro ao obter QR Code: ${err?.response?.data?.message ?? err.message}`);
       return { qrCode: null };
