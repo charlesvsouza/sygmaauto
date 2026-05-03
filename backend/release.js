@@ -87,6 +87,14 @@ async function main() {
 
   console.log('[release] Running prisma db push...');
   execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
+
+  if (process.env.SEED_DEMO === 'true') {
+    console.log('[release] SEED_DEMO=true — executando seed de dados demo...');
+    const { runSeed } = require('./seed-demo.js');
+    await runSeed();
+    console.log('[release] Seed concluído.');
+  }
+
   console.log('[release] Done.');
 }
 

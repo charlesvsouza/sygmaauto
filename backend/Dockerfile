@@ -18,6 +18,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY backend/release.js ./release.js
+COPY backend/seed-demo.js ./seed-demo.js
 EXPOSE 3000
 # prisma db push + idle connection cleanup run via release.js (Railway releaseCommand)
 CMD ["node", "dist/main"]
