@@ -1,0 +1,1 @@
+ALTER TABLE evolution_r2."Setting" ADD COLUMN IF NOT EXISTS "wavoipToken" TEXT DEFAULT NULL;

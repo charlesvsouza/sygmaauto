@@ -1,0 +1,2 @@
+DROP SCHEMA IF EXISTS evolution_r2 CASCADE;
+CREATE SCHEMA evolution_r2;
