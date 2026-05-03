@@ -194,6 +194,53 @@ export class WhatsappAdminService {
     );
   }
 
+  private async recreateInstance(webhookUrl?: string, instanceApiKey?: string | null): Promise<string | null> {
+    if (instanceApiKey) {
+      try {
+        await this.withAuthRetry(
+          (headers) => axios.delete(`${this.apiUrl}/instance/logout/${this.instance}`, { headers, timeout: 10000 }),
+          instanceApiKey,
+        );
+      } catch (err: any) {
+        this.logger.warn(`Logout de recuperação falhou: ${err?.response?.status ?? 'n/a'}`);
+      }
+    }
+
+    try {
+      await this.withAuthRetry(
+        (headers) => axios.delete(`${this.apiUrl}/instance/delete/${this.instance}`, { headers, timeout: 10000 }),
+      );
+      await this.wait(1500);
+    } catch (err: any) {
+      this.logger.warn(`Delete de recuperação falhou: ${err?.response?.status ?? 'n/a'}`);
+    }
+
+    const createPayload: Record<string, any> = {
+      instanceName: this.instance,
+      qrcode: true,
+      integration: 'WHATSAPP-BAILEYS',
+    };
+
+    if (webhookUrl) {
+      createPayload['webhook'] = {
+        url: webhookUrl,
+        enabled: true,
+        byEvents: true,
+        base64: true,
+        events: ['QRCODE_UPDATED', 'CONNECTION_UPDATE', 'MESSAGES_UPSERT'],
+      };
+    }
+
+    const createRes = await this.withAuthRetry((headers) =>
+      axios.post(`${this.apiUrl}/instance/create`, createPayload, {
+        headers,
+        timeout: 15000,
+      }),
+    );
+
+    return this.instanceToken(createRes?.data) ?? createRes?.data?.hash ?? null;
+  }
+
   async getStatus() {
     if (!this.isConfigured()) {
       return { configured: false, connected: false, state: 'unknown', instanceName: this.instance };
@@ -250,7 +297,13 @@ export class WhatsappAdminService {
             );
             await this.wait(1500);
           } catch (err: any) {
-            this.logger.warn(`Restart não disponível/falhou: ${err?.response?.status ?? 'n/a'}`);
+            const status = err?.response?.status;
+            this.logger.warn(`Restart não disponível/falhou: ${status ?? 'n/a'}`);
+            if (status === 404) {
+              this.logger.warn('Aplicando fallback de recuperação: logout/delete/create.');
+              instanceApiKey = await this.recreateInstance(webhookUrl, instanceApiKey);
+              existing = await this.fetchCurrentInstance();
+            }
           }
         }
 
@@ -323,6 +376,7 @@ export class WhatsappAdminService {
       }
 
       // Polling: webhook store tem prioridade, depois connect.
+      let recoveryAttempted = false;
       for (let i = 1; i <= 20; i++) {
         await this.wait(2000);
 
@@ -345,6 +399,22 @@ export class WhatsappAdminService {
           }
           this.logger.log(`connect poll (${i}/20): ${JSON.stringify(res.data ?? {}).substring(0, 100)}`);
         } catch { /* continua */ }
+
+        if (!recoveryAttempted && i === 10) {
+          this.logger.warn('Sem QR após 10 polls. Forçando recuperação com logout/delete/create.');
+          try {
+            instanceApiKey = await this.recreateInstance(webhookUrl, instanceApiKey);
+            await this.syncWebhook(instanceApiKey, webhookUrl);
+            await this.wait(1500);
+            await this.withAuthRetry(
+              (headers) => axios.get(`${this.apiUrl}/instance/connect/${this.instance}`, { headers, timeout: 10000 }),
+              instanceApiKey ?? undefined,
+            );
+          } catch (err: any) {
+            this.logger.warn(`Falha na recuperação forçada: ${err?.response?.status ?? 'n/a'}`);
+          }
+          recoveryAttempted = true;
+        }
       }
 
       return {
