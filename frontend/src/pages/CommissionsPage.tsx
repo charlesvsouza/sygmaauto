@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { commissionsApi, usersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
-import { Loader2, DollarSign, CheckCircle2, Download, Trophy } from 'lucide-react';
+import { Loader2, DollarSign, CheckCircle2, Download, FileSpreadsheet, Trophy } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 const money = (value: number) =>
   Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -59,6 +68,29 @@ export function CommissionsPage() {
     [users],
   );
 
+  const trendData = useMemo(() => {
+    const buckets: Record<string, { mes: string; valor: number; quantidade: number }> = {};
+
+    data.forEach((row: any) => {
+      if (!row.createdAt) return;
+      const d = new Date(row.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!buckets[key]) {
+        buckets[key] = {
+          mes: d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+          valor: 0,
+          quantidade: 0,
+        };
+      }
+      buckets[key].valor += Number(row.commissionValue || 0);
+      buckets[key].quantidade += 1;
+    });
+
+    return Object.entries(buckets)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, v]) => v);
+  }, [data]);
+
   const markAsPaid = async (id: string) => {
     if (!canMarkAsPaid) return;
     setPayingId(id);
@@ -114,6 +146,27 @@ export function CommissionsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const exportXlsx = async () => {
+    const rows = data.map((row) => ({
+      Executor: row.user?.name || '',
+      Area: row.user?.workshopArea || '',
+      Item: row.serviceOrderItem?.description || '',
+      OS: String(row.serviceOrderId || '').slice(0, 8).toUpperCase(),
+      Base: Number(row.baseValue || 0),
+      Percentual: Number(row.commissionPercent || 0),
+      Comissao: Number(row.commissionValue || 0),
+      Status: row.status || '',
+      CriadoEm: row.createdAt ? new Date(row.createdAt).toLocaleString('pt-BR') : '',
+      PagoEm: row.paidAt ? new Date(row.paidAt).toLocaleString('pt-BR') : '',
+    }));
+
+    const xlsx = await import('xlsx');
+    const ws = xlsx.utils.json_to_sheet(rows);
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, 'Comissoes');
+    xlsx.writeFile(wb, `comissoes_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -126,6 +179,12 @@ export function CommissionsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
         >
           <Download size={16} /> Exportar CSV
+        </button>
+        <button
+          onClick={exportXlsx}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-500"
+        >
+          <FileSpreadsheet size={16} /> Exportar XLSX
         </button>
       </div>
 
@@ -215,6 +274,31 @@ export function CommissionsPage() {
           </div>
         </div>
       )}
+
+      <div className="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
+        <p className="text-xs text-slate-500 mb-4">Valor total de comissões geradas por mês</p>
+        {trendData.length === 0 ? (
+          <p className="text-sm text-slate-400 py-8 text-center">Sem dados suficientes para montar a tendência.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={trendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              <XAxis dataKey="mes" tick={{ fontSize: 11, fontWeight: 700, fill: '#64748b' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#cbd5e1' }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: 12, fontWeight: 700 }}
+                formatter={(v: any, key: any) => {
+                  if (key === 'valor') return [money(Number(v)), 'Comissões'];
+                  return [Number(v), 'Quantidade'];
+                }}
+              />
+              <Line type="monotone" dataKey="valor" stroke="#0f172a" strokeWidth={3} dot={{ r: 4, fill: '#0f172a' }} />
+              <Line type="monotone" dataKey="quantidade" stroke="#16a34a" strokeWidth={2} dot={{ r: 3, fill: '#16a34a' }} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
         {loading ? (
