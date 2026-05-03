@@ -3,8 +3,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-# Force cache invalidation for source copy (ARG changes every push via commit timestamp)
-ARG CACHEBUST=1
+# CACHEBUST value must change on every push to invalidate COPY + prisma generate layers
+ARG CACHEBUST=20260503T133500
 RUN echo "Cache bust: $CACHEBUST"
 COPY backend/. .
 RUN npx prisma generate
