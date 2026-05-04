@@ -4,9 +4,10 @@ import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
-  Cog, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, Package, Ruler,
+  Cog, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, Package, Ruler, FileText,
 } from 'lucide-react';
 import { MetrologiaModal, type MetrologiaData } from '../components/MetrologiaModal';
+import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
 const KANBAN_COLUMNS = [
@@ -82,11 +83,13 @@ function RetificaCard({
   onAdvance,
   advancing,
   tvMode,
+  onLaudo,
 }: {
   os: any;
   onAdvance: (id: string, nextStatus: string) => void;
   advancing: string | null;
   tvMode: boolean;
+  onLaudo: (os: any) => void;
 }) {
   const next = NEXT_STATUS[os.status];
   const isAdv = advancing === os.id;
@@ -188,6 +191,16 @@ function RetificaCard({
           {isAdv ? <Loader2 size={11} className="animate-spin" /> : <>→ Avançar</>}
         </button>
       )}
+
+      {/* Laudo — disponível a partir da Metrologia */}
+      {hasMetrologia && (
+        <button
+          onClick={() => onLaudo(os)}
+          className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 font-semibold transition-all flex items-center justify-center gap-1.5 text-[10px]"
+        >
+          <FileText size={10} /> Laudo PDF
+        </button>
+      )}
     </motion.div>
   );
 }
@@ -205,6 +218,8 @@ export function KanbanRetificaPage() {
 
   // Modal de metrologia
   const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null } | null>(null);
+  // Modal de laudo
+  const [laudoTarget, setLaudoTarget] = useState<any | null>(null);
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -357,6 +372,7 @@ export function KanbanRetificaPage() {
                             onAdvance={handleAdvance}
                             advancing={advancing}
                             tvMode={tvMode}
+                            onLaudo={setLaudoTarget}
                           />
                         ))
                       )}
@@ -375,6 +391,15 @@ export function KanbanRetificaPage() {
           <Cog size={40} className="opacity-30" />
           <p className="text-sm">Nenhum motor em fluxo de retífica no momento.</p>
         </div>
+      )}
+
+      {/* Modal de Laudo PDF */}
+      {laudoTarget && (
+        <LaudoRetificaModal
+          os={laudoTarget}
+          tenant={tenant}
+          onClose={() => setLaudoTarget(null)}
+        />
       )}
 
       {/* Modal de Metrologia */}
