@@ -282,7 +282,7 @@ export function LandingPage() {
               <tbody>
                 {planCapabilities.map((row) => {
                   const renderCell = (value: string) => {
-                    const enabled = value === 'Sim' || value === 'Ilimitado';
+                    const enabled = value !== 'Nao';
                     return (
                       <span className={`inline-flex items-center gap-1.5 ${enabled ? 'text-emerald-300' : 'text-white/60'}`}>
                         {enabled ? <CheckCircle2 size={13} className="shrink-0" /> : <CircleSlash size={13} className="shrink-0" />}

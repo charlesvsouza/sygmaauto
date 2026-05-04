@@ -4,6 +4,7 @@ import { InventoryService } from './inventory.service';
 import { CreatePartDto, UpdatePartDto, CreateMovementDto, ConfirmNFImportDto } from './dto/inventory.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Tenant } from '../common/decorators/tenant.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -12,7 +13,8 @@ import { ImportNfService } from './import-nf.service';
 @ApiTags('Inventory')
 @Controller('inventory')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PlanGuard)
+@RequirePlan('PRO')
 export class InventoryController {
   constructor(
     private inventoryService: InventoryService,

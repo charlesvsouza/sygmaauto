@@ -4,13 +4,15 @@ import { FinancialService } from './financial.service';
 import { CreateTransactionDto } from './dto/financial.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Tenant } from '../common/decorators/tenant.decorator';
 
 @ApiTags('Financial')
 @Controller('financial')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PlanGuard)
+@RequirePlan('PRO')
 export class FinancialController {
   constructor(private financialService: FinancialService) {}
 
@@ -29,6 +31,7 @@ export class FinancialController {
   }
 
   @Get('dre')
+  @RequirePlan('REDE')
   @ApiOperation({ summary: 'DRE — Demonstrativo de Resultado do Exercício' })
   async getDRE(
     @Tenant() tenant: { tenantId: string },
@@ -44,6 +47,7 @@ export class FinancialController {
   }
 
   @Get('dre-anual')
+  @RequirePlan('REDE')
   @ApiOperation({ summary: 'DRE consolidado anual' })
   async getDREAnual(
     @Tenant() tenant: { tenantId: string },
@@ -57,6 +61,7 @@ export class FinancialController {
   }
 
   @Get('indicadores')
+  @RequirePlan('REDE')
   @ApiOperation({ summary: 'KPIs financeiros: mês atual, trimestre, semestre, semestre anterior, anual' })
   async getIndicadores(@Tenant() tenant: { tenantId: string }) {
     return this.financialService.getIndicadores(tenant.tenantId);

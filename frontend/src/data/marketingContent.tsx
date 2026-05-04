@@ -68,7 +68,7 @@ export const plans: Plan[] = [
     price: 'R$ 299',
     period: '/mes',
     description: 'Aceleracao com operacao completa, visao gerencial e produtividade.',
-    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'Kanban e KPI em tempo real', 'Ate 15 usuarios'],
+    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'WhatsApp automatico', 'Ate 15 usuarios'],
     featured: true,
   },
   {
@@ -88,9 +88,9 @@ export const planCapabilities: PlanCapability[] = [
   { feature: 'Financeiro e Fluxo de Caixa', start: 'Nao', pro: 'Sim', rede: 'Sim' },
   { feature: 'Estoque e Reserva de Pecas', start: 'Nao', pro: 'Sim', rede: 'Sim' },
   { feature: 'Checklist Entrada/Saida', start: 'Nao', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Kanban Patio + Recepcao TV', start: 'Nao', pro: 'Sim', rede: 'Sim' },
-  { feature: 'DRE, KPI e Relatorios', start: 'Nao', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Comissoes e Ranking tecnico', start: 'Nao', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Kanban Patio + Recepcao TV', start: 'Nao', pro: 'Nao', rede: 'Sim' },
+  { feature: 'DRE, KPI e Relatorios', start: 'Nao', pro: 'Nao', rede: 'Sim' },
+  { feature: 'Comissoes e Ranking tecnico', start: 'Nao', pro: 'Nao', rede: 'Sim' },
   { feature: 'Multiunidade', start: 'Nao', pro: 'Nao', rede: 'Sim' },
   { feature: 'WhatsApp automatico', start: 'Nao', pro: 'Sim', rede: 'Sim' },
 ];

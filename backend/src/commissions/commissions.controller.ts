@@ -2,13 +2,15 @@ import { Controller, Get, Patch, Post, Body, Param, Query, UseGuards } from '@ne
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Tenant } from '../common/decorators/tenant.decorator';
 import { CommissionsService } from './commissions.service';
 
 @ApiTags('Commissions')
 @Controller('commissions')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PlanGuard)
+@RequirePlan('REDE')
 export class CommissionsController {
   constructor(private readonly service: CommissionsService) {}
 
