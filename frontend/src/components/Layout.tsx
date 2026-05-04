@@ -96,7 +96,7 @@ export function Layout() {
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-midnight-950 to-midnight-900 min-h-screen fixed left-0 top-0 z-30">
+      <aside className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-midnight-950 to-midnight-900 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
         <div className="p-5 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export function Layout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 overflow-y-auto">
+        <nav className="flex-1 min-h-0 p-4 overflow-y-auto">
           {navGroups.map((group, gi) => (
             <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-white/5' : ''}>
               {group.label && (
@@ -151,7 +151,7 @@ export function Layout() {
         </nav>
 
         {/* User section */}
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 shrink-0">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-white">
