@@ -136,6 +136,12 @@
   - [x] Relatório **Indicadores KPI** — 5 períodos em paralelo: mês atual, trimestre, semestre, semestre anterior, anual → endpoint `GET /financial/indicadores`
   - [x] KPIs por período: Receita Bruta, Receita Líquida, Margem Bruta (%), EBITDA (%), OS Entregues, Ticket Médio
   - [x] Disponíveis como relatório imprimível em `/reports` (2 novos tipos: DRE Anual + Indicadores KPI)
+- [x] **Página KPI's (Gestão à Vista)** *(implementado em 03/05/2026)*
+  - [x] Menu lateral: item **KPI's** posicionado logo abaixo de **DRE**
+  - [x] Nova rota: `/kpis`
+  - [x] Painel temático para leitura rápida: Financeiro, Operações, Estoque e Pessoas
+  - [x] Gráficos de alto entendimento (barras e pizza) e KPIs executivos em cards
+  - [x] Dados consolidados de endpoints já existentes: financeiro, OS, estoque e comissões
 - [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data
 - [ ] **NPS Automático** — pesquisa pós-entrega, dashboard de satisfação
 

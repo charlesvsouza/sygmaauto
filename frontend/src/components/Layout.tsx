@@ -24,6 +24,7 @@ import {
   PanelsTopLeft,
   MessageCircle,
   BarChart3,
+  Gauge,
   FileText,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -73,6 +74,12 @@ export function Layout() {
       to: '/dre',
       icon: BarChart3,
       label: 'DRE',
+      premium: true,
+    },
+    {
+      to: '/kpis',
+      icon: Gauge,
+      label: "KPI's",
       premium: true,
     },
     {

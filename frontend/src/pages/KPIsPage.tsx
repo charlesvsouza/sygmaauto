@@ -1,0 +1,435 @@
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import { commissionsApi, inventoryApi, reportsApi, serviceOrdersApi } from '../api/client';
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  DollarSign,
+  Gauge,
+  Loader2,
+  Package,
+  Users,
+} from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { cn } from '../lib/utils';
+
+const money = (v: number) =>
+  Number(v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+const pct = (v: number) => `${Number(v ?? 0).toFixed(1)}%`;
+
+type PeriodKey = 'mesAtual' | 'trimestre' | 'semestre' | 'semestreAnterior' | 'anual';
+
+const PERIOD_KEYS: PeriodKey[] = ['mesAtual', 'trimestre', 'semestre', 'semestreAnterior', 'anual'];
+
+const STATUS_GROUPS = {
+  entrada: ['ABERTA', 'EM_DIAGNOSTICO'],
+  orcamento: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO', 'REPROVADO'],
+  execucao: ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO'],
+  pronto: ['PRONTO_ENTREGA', 'FATURADO', 'ENTREGUE'],
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  ABERTA: 'Aberta',
+  EM_DIAGNOSTICO: 'Diagnóstico',
+  ORCAMENTO_PRONTO: 'Orçamento pronto',
+  AGUARDANDO_APROVACAO: 'Ag. aprovação',
+  APROVADO: 'Aprovado',
+  REPROVADO: 'Reprovado',
+  AGUARDANDO_PECAS: 'Ag. peças',
+  EM_EXECUCAO: 'Em execução',
+  PRONTO_ENTREGA: 'Pronto entrega',
+  FATURADO: 'Faturado',
+  ENTREGUE: 'Entregue',
+  CANCELADO: 'Cancelado',
+};
+
+export function KPIsPage() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>('mesAtual');
+  const [kpiData, setKpiData] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [parts, setParts] = useState<any[]>([]);
+  const [commissions, setCommissions] = useState<any>({ totals: { total: 0, pending: 0, paid: 0 }, leadership: [] });
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [kpiRes, ordersRes, partsRes, commRes] = await Promise.all([
+        reportsApi.getIndicadores(),
+        serviceOrdersApi.getAll(),
+        inventoryApi.getAllParts(),
+        commissionsApi.getAll(),
+      ]);
+      setKpiData(kpiRes.data ?? null);
+      setOrders(Array.isArray(ordersRes.data) ? ordersRes.data : []);
+      setParts(Array.isArray(partsRes.data) ? partsRes.data : []);
+      setCommissions({
+        totals: commRes.data?.totals || { total: 0, pending: 0, paid: 0 },
+        leadership: Array.isArray(commRes.data?.leadership?.leaderboard) ? commRes.data.leadership.leaderboard : [],
+      });
+    } catch (e) {
+      console.error(e);
+      setError('Não foi possível carregar os KPI\'s. Tente novamente em instantes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const periodos = kpiData?.periodos ?? {};
+  const atual = periodos[selectedPeriod] ?? {
+    label: 'Período',
+    receitaBruta: 0,
+    receitaLiquida: 0,
+    cmv: 0,
+    margemBruta: 0,
+    margemBrutaPerc: 0,
+    despesas: 0,
+    ebitda: 0,
+    ebitdaPerc: 0,
+    resultado: 0,
+    osEntregues: 0,
+    osAbertas: 0,
+    ticketMedio: 0,
+  };
+
+  const periodChart = useMemo(
+    () =>
+      PERIOD_KEYS.map((key) => {
+        const p = periodos[key] || {};
+        return {
+          name: p.label || key,
+          receita: Number(p.receitaLiquida || 0),
+          ebitda: Number(p.ebitda || 0),
+          margem: Number(p.margemBrutaPerc || 0),
+        };
+      }),
+    [periodos],
+  );
+
+  const financeiroEstrutura = [
+    { name: 'Receita líquida', value: Number(atual.receitaLiquida || 0), color: '#0f766e' },
+    { name: 'CMV', value: Number(atual.cmv || 0) * -1, color: '#ef4444' },
+    { name: 'Despesas', value: Number(atual.despesas || 0) * -1, color: '#f97316' },
+    { name: 'EBITDA', value: Number(atual.ebitda || 0), color: '#2563eb' },
+  ];
+
+  const statusCount = useMemo(() => {
+    const map: Record<string, number> = {};
+    orders.forEach((o: any) => {
+      map[o.status] = (map[o.status] || 0) + 1;
+    });
+    return map;
+  }, [orders]);
+
+  const funilData = [
+    { name: 'Entrada', value: STATUS_GROUPS.entrada.reduce((s, st) => s + (statusCount[st] || 0), 0), color: '#818cf8' },
+    { name: 'Orçamento', value: STATUS_GROUPS.orcamento.reduce((s, st) => s + (statusCount[st] || 0), 0), color: '#f59e0b' },
+    { name: 'Execução', value: STATUS_GROUPS.execucao.reduce((s, st) => s + (statusCount[st] || 0), 0), color: '#06b6d4' },
+    { name: 'Pronto/Entrega', value: STATUS_GROUPS.pronto.reduce((s, st) => s + (statusCount[st] || 0), 0), color: '#10b981' },
+  ];
+
+  const statusPieData = useMemo(
+    () =>
+      Object.entries(statusCount)
+        .filter(([, value]) => Number(value) > 0)
+        .map(([status, value], i) => ({
+          name: STATUS_LABEL[status] || status,
+          value,
+          color: ['#6366f1', '#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#8b5cf6', '#64748b'][i % 7],
+        })),
+    [statusCount],
+  );
+
+  const aprovados = Number(statusCount.APROVADO || 0) + Number(statusCount.EM_EXECUCAO || 0) + Number(statusCount.PRONTO_ENTREGA || 0) + Number(statusCount.ENTREGUE || 0);
+  const emAprovacao = Number(statusCount.ORCAMENTO_PRONTO || 0) + Number(statusCount.AGUARDANDO_APROVACAO || 0) + Number(statusCount.REPROVADO || 0);
+  const taxaAprovacao = emAprovacao > 0 ? (aprovados / emAprovacao) * 100 : 0;
+
+  const lowStock = useMemo(
+    () => parts.filter((p: any) => Number(p.currentStock || 0) <= Number(p.minStock || 0)),
+    [parts],
+  );
+
+  const estoqueValor = useMemo(
+    () => parts.reduce((sum: number, p: any) => sum + Number(p.currentStock || 0) * Number(p.costPrice || 0), 0),
+    [parts],
+  );
+
+  const riscoEstoque = useMemo(
+    () =>
+      lowStock
+        .map((p: any) => ({
+          name: p.name,
+          atual: Number(p.currentStock || 0),
+          minimo: Number(p.minStock || 0),
+          falta: Math.max(Number(p.minStock || 0) - Number(p.currentStock || 0), 0),
+        }))
+        .sort((a: any, b: any) => b.falta - a.falta)
+        .slice(0, 8),
+    [lowStock],
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96 gap-3">
+        <Loader2 className="animate-spin text-slate-400" />
+        <span className="text-slate-500 font-semibold">Carregando painel de KPI\'s...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">KPI\'s de Gestão à Vista</h1>
+          <p className="text-sm text-slate-500 font-medium mt-1">
+            Indicadores organizados por tema para decisão rápida em concessionárias e grandes autocenters.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {PERIOD_KEYS.map((key) => {
+            const active = selectedPeriod === key;
+            const label = periodos[key]?.label || key;
+            return (
+              <button
+                key={key}
+                onClick={() => setSelectedPeriod(key)}
+                className={cn(
+                  'px-3 py-2 rounded-xl text-xs font-black transition-all border',
+                  active
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50',
+                )}
+              >
+                {label}
+              </button>
+            );
+          })}
+          <button
+            onClick={load}
+            className="px-3 py-2 rounded-xl text-xs font-black border border-slate-200 text-slate-600 hover:bg-slate-50"
+          >
+            Atualizar
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm font-semibold">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        {[
+          { title: 'Receita líquida', value: money(atual.receitaLiquida), icon: DollarSign, tone: 'text-emerald-600' },
+          { title: 'Margem bruta', value: `${money(atual.margemBruta)} (${pct(atual.margemBrutaPerc)})`, icon: TrendingIcon, tone: atual.margemBruta >= 0 ? 'text-emerald-600' : 'text-red-600' },
+          { title: 'EBITDA', value: `${money(atual.ebitda)} (${pct(atual.ebitdaPerc)})`, icon: Activity, tone: atual.ebitda >= 0 ? 'text-emerald-600' : 'text-red-600' },
+          { title: 'OS entregues', value: String(atual.osEntregues || 0), icon: Gauge, tone: 'text-slate-900' },
+          { title: 'Ticket médio', value: money(atual.ticketMedio), icon: BarChart3, tone: 'text-blue-600' },
+        ].map((kpi) => (
+          <motion.div
+            key={kpi.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm"
+          >
+            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-3">
+              <kpi.icon size={18} />
+            </div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.title}</p>
+            <p className={cn('text-lg font-black mt-1', kpi.tone)}>{kpi.value}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Tema 1 · Financeiro</h3>
+          <p className="text-xs text-slate-500 mb-4">Visão de estrutura do resultado para o período selecionado.</p>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={financeiroEstrutura} layout="vertical" margin={{ left: 18, right: 18 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+              <XAxis type="number" tickFormatter={(v) => `R$ ${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} width={115} />
+              <Tooltip formatter={(v: any) => money(Number(v))} />
+              <Bar dataKey="value" radius={[0, 8, 8, 0]}>
+                {financeiroEstrutura.map((d) => (
+                  <Cell key={d.name} fill={d.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Tema 2 · Comparativo de períodos</h3>
+          <p className="text-xs text-slate-500 mb-4">Receita líquida e EBITDA para leitura de tendência.</p>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={periodChart} margin={{ left: 8, right: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700 }} />
+              <YAxis tickFormatter={(v) => `R$ ${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} width={60} />
+              <Tooltip formatter={(v: any, n: any) => [money(Number(v)), n === 'receita' ? 'Receita líquida' : 'EBITDA']} />
+              <Bar dataKey="receita" fill="#0ea5e9" radius={[6, 6, 0, 0]} name="receita" />
+              <Bar dataKey="ebitda" fill="#10b981" radius={[6, 6, 0, 0]} name="ebitda" />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 xl:col-span-2">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Tema 3 · Operações de oficina</h3>
+          <p className="text-xs text-slate-500 mb-4">Fluxo de OS por etapa para gestão do gargalo operacional.</p>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={funilData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
+              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+              <Tooltip formatter={(v: any) => [Number(v), 'OS']} />
+              <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                {funilData.map((d) => (
+                  <Cell key={d.name} fill={d.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <InfoCard title="Taxa de aprovação" value={pct(taxaAprovacao)} hint="Aprovadas sobre orçamentos no funil" />
+            <InfoCard title="OS abertas" value={String(atual.osAbertas || 0)} hint="Total em andamento" />
+            <InfoCard title="OS entregues" value={String(atual.osEntregues || 0)} hint="Concluídas no período" />
+          </div>
+        </section>
+
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Status da fila</h3>
+          <p className="text-xs text-slate-500 mb-4">Distribuição por status atual.</p>
+          <ResponsiveContainer width="100%" height={260}>
+            <PieChart>
+              <Pie data={statusPieData} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                {statusPieData.map((d) => (
+                  <Cell key={d.name} fill={d.color} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(v: any) => [Number(v), 'OS']} />
+            </PieChart>
+          </ResponsiveContainer>
+        </section>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Tema 4 · Estoque e suprimentos</h3>
+          <p className="text-xs text-slate-500 mb-4">Itens com risco de ruptura e impacto no caixa.</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <InfoCard title="Itens abaixo do mínimo" value={String(lowStock.length)} hint="Necessitam reposição" icon={AlertTriangle} tone="amber" />
+            <InfoCard title="Valor em estoque" value={money(estoqueValor)} hint="Custo total aproximado" icon={Package} tone="blue" />
+            <InfoCard title="Comissões pendentes" value={money(commissions.totals.pending)} hint="Impacto no caixa" icon={Users} tone="purple" />
+          </div>
+
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={riscoEstoque}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-18} textAnchor="end" height={50} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+              <Tooltip formatter={(v: any, n: any) => [Number(v), n === 'falta' ? 'Faltante' : 'Estoque atual']} />
+              <Bar dataKey="atual" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="falta" fill="#ef4444" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Tema 5 · Pessoas e performance</h3>
+          <p className="text-xs text-slate-500 mb-4">Comissões como leitura rápida de produtividade técnica.</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <InfoCard title="Comissão total" value={money(commissions.totals.total)} hint="Período consultado" />
+            <InfoCard title="Comissão paga" value={money(commissions.totals.paid)} hint="Já liquidada" tone="green" />
+            <InfoCard title="Comissão pendente" value={money(commissions.totals.pending)} hint="A pagar" tone="amber" />
+          </div>
+
+          <div className="space-y-2">
+            {(commissions.leadership || []).slice(0, 6).map((p: any, idx: number) => (
+              <div key={p.userId} className="flex items-center gap-3 rounded-xl border border-slate-100 p-3">
+                <span className="w-8 h-8 rounded-lg bg-slate-900 text-white text-xs font-black flex items-center justify-center">{idx + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-800 truncate">{p.name}</p>
+                  <p className="text-xs text-slate-400">{p.count} OS executadas</p>
+                </div>
+                <span className="text-sm font-black text-emerald-600">{money(p.total)}</span>
+              </div>
+            ))}
+            {(commissions.leadership || []).length === 0 && (
+              <div className="rounded-xl border border-slate-100 p-4 text-sm text-slate-400">
+                Sem dados de liderança de comissões no momento.
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function TrendingIcon({ size = 18 }: { size?: number }) {
+  return <DollarSign size={size} />;
+}
+
+function InfoCard({
+  title,
+  value,
+  hint,
+  icon: Icon,
+  tone = 'slate',
+}: {
+  title: string;
+  value: string;
+  hint: string;
+  icon?: any;
+  tone?: 'slate' | 'green' | 'amber' | 'blue' | 'purple';
+}) {
+  const toneClasses: Record<string, string> = {
+    slate: 'text-slate-900 bg-slate-100',
+    green: 'text-emerald-700 bg-emerald-100',
+    amber: 'text-amber-700 bg-amber-100',
+    blue: 'text-blue-700 bg-blue-100',
+    purple: 'text-purple-700 bg-purple-100',
+  };
+
+  return (
+    <div className="rounded-xl border border-slate-200 p-3">
+      <div className="flex items-center gap-2 mb-1">
+        {Icon && (
+          <span className={cn('w-6 h-6 rounded-md flex items-center justify-center', toneClasses[tone])}>
+            <Icon size={14} />
+          </span>
+        )}
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+      </div>
+      <p className="text-base font-black text-slate-900 leading-tight">{value}</p>
+      <p className="text-[11px] text-slate-400 mt-1">{hint}</p>
+    </div>
+  );
+}

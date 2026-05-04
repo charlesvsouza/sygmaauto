@@ -482,6 +482,35 @@ Além do módulo de Relatórios, o sistema possui uma página exclusiva do DRE a
 
 ---
 
+## 13B. KPI's — Gestão à Vista
+
+Nova página gerencial acessível no menu lateral, logo abaixo de **DRE**, com foco em leitura rápida para gestores de concessionárias e autocenters.
+
+### O que a página KPI's mostra
+
+- **Tema 1: Financeiro**
+   - Estrutura do resultado no período selecionado (Receita Líquida, CMV, Despesas e EBITDA)
+- **Tema 2: Comparativo de períodos**
+   - Comparação entre mês atual, trimestre, semestre, semestre anterior e anual
+- **Tema 3: Operações de oficina**
+   - Funil por etapa (Entrada, Orçamento, Execução, Pronto/Entrega)
+   - Taxa de aprovação e volume de OS abertas/entregues
+- **Tema 4: Estoque e suprimentos**
+   - Itens abaixo do mínimo, valor total em estoque e itens com maior risco de ruptura
+- **Tema 5: Pessoas e performance**
+   - Totais de comissões (total, pago, pendente) e ranking de executores
+
+### Como usar
+
+1. Clique em **KPI's** no menu lateral
+2. Escolha o período no topo (mês, trimestre, semestre, semestre anterior ou anual)
+3. Leia os temas em sequência para identificar gargalos e oportunidades
+4. Clique em **Atualizar** para recarregar dados em tempo real
+
+> Dica: utilize o painel KPI's na reunião diária da oficina para decisões rápidas de produtividade, estoque e margem.
+
+---
+
 ## 14. Usuários
 
 > Disponível apenas para perfis **MASTER** e **ADMIN**.

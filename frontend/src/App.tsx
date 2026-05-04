@@ -29,6 +29,7 @@ import { ServicesPage } from './pages/ServicesPage';
 import { InventoryPage } from './pages/InventoryPage';
 import { FinancialPage } from './pages/FinancialPage';
 import { DREPage } from './pages/DREPage';
+import { KPIsPage } from './pages/KPIsPage';
 import { CommissionsPage } from './pages/CommissionsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { UsersPage } from './pages/UsersPage';
@@ -89,6 +90,7 @@ export default function App() {
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/financial" element={<FinancialPage />} />
             <Route path="/dre" element={<DREPage />} />
+            <Route path="/kpis" element={<KPIsPage />} />
             <Route path="/commissions" element={<CommissionsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
