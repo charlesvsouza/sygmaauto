@@ -207,10 +207,7 @@ export class ServiceOrdersService {
       include: {
         customer: true,
         vehicle: true,
-        items: {
-          include: {
-          },
-        },
+        items: true,
       },
     });
 

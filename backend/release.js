@@ -115,6 +115,14 @@ async function ensureMissingTables(url) {
     await client.query(`
       ALTER TABLE "ServiceOrderItem" ADD COLUMN IF NOT EXISTS "assignedUserId" TEXT;
     `);
+    // Campos adicionados na feature de alertas + reserva de peças
+    await client.query(`
+      ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "statusChangedAt" TIMESTAMPTZ;
+      ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "partsReserved" BOOLEAN NOT NULL DEFAULT false;
+      ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "partsCheckedAt" TIMESTAMPTZ;
+      ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "expectedPartsDate" TIMESTAMPTZ;
+      ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "purchaseOrderNumber" TEXT;
+    `);
     console.log('[release] ensureMissingTables: OK');
   } catch (err) {
     console.warn('[release] ensureMissingTables error (non-fatal):', err.message);

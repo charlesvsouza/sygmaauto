@@ -1872,7 +1872,7 @@ export function ServiceOrdersPage() {
                   setNewOrder({ customerId: '', vehicleId: '', complaint: '', kmEntrada: 0, reserveStock: false, orderType: 'ORCAMENTO' });
                   loadOrders();
                   selectOrder(res.data);
-                } catch { alert('Erro ao criar OS. Verifique os dados.'); }
+                } catch (err: any) { alert('Erro ao criar OS: ' + (err?.response?.data?.message || err?.message || 'Verifique os dados.')); }
               }}>
                 {/* Tipo de documento */}
                 <div className="grid grid-cols-2 gap-2">
