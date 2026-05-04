@@ -3,11 +3,39 @@ name: Deploy
 on:
   push:
     branches: [master]
+    paths:
+      - backend/**
+      - frontend/**
+      - .github/workflows/deploy.yml
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-master
+  cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect Changed Areas
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
   # ─── Backend: type-check ──────────────────────────────────────────────────
   backend-check:
     name: Backend Type Check
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,6 +54,8 @@ jobs:
   # ─── Frontend: build check ────────────────────────────────────────────────
   frontend-check:
     name: Frontend Build Check
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,7 +75,8 @@ jobs:
   # ─── Deploy: Railway (backend) ───────────────────────────────────────────
   deploy-backend:
     name: Deploy Backend → Railway
-    needs: backend-check
+    needs: [detect-changes, backend-check]
+    if: needs.detect-changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +90,8 @@ jobs:
   # ─── Deploy: Vercel (frontend) ────────────────────────────────────────────
   deploy-frontend:
     name: Deploy Frontend → Vercel
-    needs: frontend-check
+    needs: [detect-changes, frontend-check]
+    if: needs.detect-changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
