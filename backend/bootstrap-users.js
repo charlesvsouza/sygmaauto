@@ -28,10 +28,15 @@ const SUPER_EMAIL    = process.env.BOOTSTRAP_SUPERADMIN_EMAIL    || 'superadmin@
 const SUPER_NAME     = process.env.BOOTSTRAP_SUPERADMIN_NAME     || 'Super Admin SygmaAuto';
 const SUPER_PASSWORD = process.env.BOOTSTRAP_SUPERADMIN_PASSWORD || 'SygmaMaster@2026!';
 
-// Mantém charles@sygmaauto.com também como superadmin alternativo
+// charles@sygmaauto.com → login principal
 const CHARLES_EMAIL    = process.env.BOOTSTRAP_CHARLES_EMAIL    || 'charles@sygmaauto.com';
 const CHARLES_NAME     = process.env.BOOTSTRAP_CHARLES_NAME     || 'Charles Souza';
 const CHARLES_PASSWORD = process.env.BOOTSTRAP_CHARLES_PASSWORD || 'SygmaMaster@2026!';
+
+// charlesvsouza@sigmaauto.com.br → email legado (mantém acesso)
+const LEGACY_EMAIL    = 'charlesvsouza@sigmaauto.com.br';
+const LEGACY_NAME     = 'Charles Souza (legado)';
+const LEGACY_PASSWORD = 'SygmaMaster@2026!';
 
 const REDE_EMAIL    = process.env.BOOTSTRAP_REDE_EMAIL    || 'master.rede@sygmaauto.com';
 const REDE_NAME     = process.env.BOOTSTRAP_REDE_NAME     || 'Master Rede SygmaAuto';
@@ -155,9 +160,13 @@ async function main() {
   const sa1 = await upsertSuperAdmin(SUPER_EMAIL, SUPER_NAME, SUPER_PASSWORD);
   console.log(`[bootstrap] SuperAdmin: ${sa1.email} ✓`);
 
-  // 2. charles@sygmaauto.com também como SuperAdmin (login que parou)
+  // 2. charles@sygmaauto.com como SuperAdmin (login principal)
   const sa2 = await upsertSuperAdmin(CHARLES_EMAIL, CHARLES_NAME, CHARLES_PASSWORD);
   console.log(`[bootstrap] SuperAdmin (charles): ${sa2.email} ✓`);
+
+  // 3. charlesvsouza@sigmaauto.com.br → email legado (mantém senha atualizada)
+  const sa3 = await upsertSuperAdmin(LEGACY_EMAIL, LEGACY_NAME, LEGACY_PASSWORD);
+  console.log(`[bootstrap] SuperAdmin (legado): ${sa3.email} ✓`);
 
   // 3. Tenant REDE + MASTER
   const rede = await ensureTenantWithPlan(
