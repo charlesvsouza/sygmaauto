@@ -181,7 +181,7 @@ export function UserManualPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#ff7b2f]/35 bg-[#ff7b2f]/10 text-sm font-bold text-[#ffb489] hover:text-white hover:border-[#ff7b2f]/80 hover:bg-[#ff7b2f]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generatingPdf ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-          {generatingPdf ? 'Gerando PDF...' : 'Baixar PDF'}
+          {generatingPdf ? 'Gerando este manual em PDF...' : 'Gerar este manual em PDF'}
         </button>
       </section>
 

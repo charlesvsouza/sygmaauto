@@ -24,6 +24,7 @@ import {
   Award,
 } from 'lucide-react';
 import { useState } from 'react';
+import { canAccessFeature, type PlanFeatureKey } from '../lib/planAccess';
 
 export function Layout() {
   const { user, tenant, logout } = useAuthStore();
@@ -39,15 +40,23 @@ export function Layout() {
 
   const planName = tenant?.subscription?.plan?.name || 'START';
 
-  const adminItems = [
+  type NavItem = {
+    to: string;
+    icon: any;
+    label: string;
+    premium: boolean;
+    feature?: PlanFeatureKey;
+  };
+
+  const adminItems: NavItem[] = [
     ...(canViewUsers ? [{ to: '/users', icon: UserCheck, label: 'Usuários', premium: false }] : []),
     { to: '/settings', icon: Settings, label: 'Configurações', premium: false },
   ];
 
-  const navGroups = [
+  const navGroups: Array<{ label: string | null; items: NavItem[] }> = [
     {
       label: null as string | null,
-      items: [{ to: '/dashboard', icon: LayoutDashboard, label: 'Painel', premium: false }],
+      items: [{ to: '/dashboard', icon: LayoutDashboard, label: 'Painel', premium: false } as NavItem],
     },
     {
       label: 'Atendimento',
@@ -62,29 +71,29 @@ export function Layout() {
       items: [
         { to: '/services', icon: Wrench, label: 'Serviços', premium: false },
         { to: '/inventory', icon: Package, label: 'Estoque', premium: false },
-        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true },
+        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true, feature: 'WHATSAPP' },
       ],
     },
     {
       label: 'Painéis',
       items: [
-        { to: '/kanban', icon: Tv2, label: 'Kanban de Pátio', premium: true },
-        { to: '/kanban-recepcao', icon: Monitor, label: 'Recepção / TV', premium: true },
+        { to: '/kanban', icon: Tv2, label: 'Kanban de Pátio', premium: true, feature: 'KANBAN_PATIO' },
+        { to: '/kanban-recepcao', icon: Monitor, label: 'Recepção / TV', premium: true, feature: 'KANBAN_RECEPCAO' },
       ],
     },
     {
       label: 'Financeiro',
       items: [
-        { to: '/financial', icon: DollarSign, label: 'Fluxo de Caixa', premium: true },
-        { to: '/commissions', icon: Award, label: 'Comissões', premium: true },
-        { to: '/dre', icon: BarChart3, label: 'DRE', premium: true },
+        { to: '/financial', icon: DollarSign, label: 'Fluxo de Caixa', premium: false },
+        { to: '/commissions', icon: Award, label: 'Comissões', premium: true, feature: 'COMISSOES' },
+        { to: '/dre', icon: BarChart3, label: 'DRE', premium: true, feature: 'DRE_KPI_RELATORIOS' },
       ],
     },
     {
       label: 'Análise',
       items: [
-        { to: '/kpis', icon: Gauge, label: 'Indicadores', premium: true },
-        { to: '/reports', icon: FileText, label: 'Relatórios', premium: true },
+        { to: '/kpis', icon: Gauge, label: 'Indicadores', premium: true, feature: 'DRE_KPI_RELATORIOS' },
+        { to: '/reports', icon: FileText, label: 'Relatórios', premium: true, feature: 'DRE_KPI_RELATORIOS' },
       ],
     },
     {
@@ -126,12 +135,16 @@ export function Layout() {
                 </p>
               )}
               <div className="space-y-px">
-                {group.items.map((item) => (
+                {group.items.map((item) => {
+                  const blockedByPlan = item.feature ? !canAccessFeature(planName, item.feature) : false;
+                  return (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    to={blockedByPlan ? '/settings' : item.to}
                     className={({ isActive }) =>
                       `sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all ${
+                        blockedByPlan ? 'opacity-70' : ''
+                      } ${
                         isActive
                           ? 'sidebar-nav-link-active font-medium'
                           : 'text-slate-300 hover:text-white'
@@ -140,11 +153,12 @@ export function Layout() {
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
                     <span className="sidebar-nav-label leading-tight">{item.label}</span>
-                    {item.premium && planName === 'START' && (
+                    {blockedByPlan && (
                       <span className="sidebar-pro-badge ml-auto text-[10px] px-1.5 py-0.5 rounded">PRO</span>
                     )}
                   </NavLink>
-                ))}
+                );
+              })}
               </div>
             </div>
           ))}
@@ -206,13 +220,17 @@ export function Layout() {
                 </p>
               )}
               <div className="space-y-0.5">
-                {group.items.map((item) => (
+                {group.items.map((item) => {
+                  const blockedByPlan = item.feature ? !canAccessFeature(planName, item.feature) : false;
+                  return (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    to={blockedByPlan ? '/settings' : item.to}
                     onClick={() => setSidebarOpen(false)}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
+                        blockedByPlan ? 'opacity-70' : ''
+                      } ${
                         isActive
                           ? 'bg-primary-500/20 text-primary-400 font-medium'
                           : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -221,11 +239,12 @@ export function Layout() {
                   >
                     <item.icon className="w-5 h-5" />
                     <span className="text-sm">{item.label}</span>
-                    {item.premium && planName === 'START' && (
+                    {blockedByPlan && (
                       <span className="ml-auto text-xs bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">PRO</span>
                     )}
                   </NavLink>
-                ))}
+                );
+              })}
               </div>
             </div>
           ))}

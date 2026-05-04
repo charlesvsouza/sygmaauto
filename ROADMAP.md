@@ -1,6 +1,6 @@
 # SigmaAuto — Roadmap & Estratégia Comercial
 
-**Última atualização:** 03/05/2026
+**Última atualização:** 04/05/2026
 **Produto:** SigmaAuto — SaaS multi-tenant para gestão de oficinas mecânicas
 **Domínio:** sigmaauto.com.br
 
@@ -19,7 +19,7 @@
 | **Clientes e Veículos** | ✅ | ✅ | ✅ |
 | **Catálogo de Serviços** | ✅ | ✅ | ✅ |
 | **Financeiro** | ✅ | ✅ | ✅ |
-| **Estoque de Peças** | básico | ✅ | ✅ |
+| **Estoque de Peças + Reserva de Peças** | ✅ | ✅ | ✅ |
 | **Aprovação de Orçamento por Link** | ❌ | ✅ | ✅ |
 | **Checklist com Fotos** | ❌ | ✅ | ✅ |
 | **Kanban de Pátio** | ❌ | ✅ | ✅ |

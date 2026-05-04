@@ -12,6 +12,7 @@ import { cn } from '../lib/utils';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
 import { ChecklistModal } from '../components/ChecklistModal';
+import { canAccessFeature } from '../lib/planAccess';
 
 const statusConfig: Record<string, { label: string; color: string; icon?: string }> = {
   ABERTA:               { label: 'Aberta',                color: 'bg-slate-100 text-slate-700' },
@@ -124,8 +125,10 @@ function fmtBR(v: number | string | undefined, dec = 2) {
 }
 
 export function ServiceOrdersPage() {
-  const { user } = useAuthStore();
+  const { user, tenant } = useAuthStore();
   const navigate = useNavigate();
+  const planName = tenant?.subscription?.plan?.name || 'START';
+  const canUseChecklist = canAccessFeature(planName, 'CHECKLIST');
   const canManageStock = ['MASTER', 'ADMIN', 'MECANICO', 'PRODUTIVO'].includes(user?.role ?? '');
   const canDelete = user?.role === 'MASTER';
   const canChangeStatus = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA'].includes(user?.role ?? '');
@@ -242,13 +245,17 @@ export function ServiceOrdersPage() {
       });
       setPendingQtyByItem({});
           // Carrega status dos checklists
-          checklistApi.get(order.id).then((cr) => {
-            const data = Array.isArray(cr.data) ? cr.data : [];
-            setChecklistFlags({
-              ENTRADA: data.some((c: any) => c.type === 'ENTRADA'),
-              SAIDA: data.some((c: any) => c.type === 'SAIDA'),
-            });
-          }).catch(() => {});
+          if (canUseChecklist) {
+            checklistApi.get(order.id).then((cr) => {
+              const data = Array.isArray(cr.data) ? cr.data : [];
+              setChecklistFlags({
+                ENTRADA: data.some((c: any) => c.type === 'ENTRADA'),
+                SAIDA: data.some((c: any) => c.type === 'SAIDA'),
+              });
+            }).catch(() => {});
+          } else {
+            setChecklistFlags({ ENTRADA: false, SAIDA: false });
+          }
     } catch (err) {
       console.error(err);
     }
@@ -969,32 +976,38 @@ export function ServiceOrdersPage() {
                 </button>
                 {/* Botões de Checklist — verde quando já preenchido */}
                 <button
-                  onClick={() => setChecklistModal('ENTRADA')}
+                  onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}
+                  disabled={!canUseChecklist}
                   className={cn(
                     'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
-                    checklistFlags.ENTRADA
+                    !canUseChecklist
+                      ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : checklistFlags.ENTRADA
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
                   )}
-                  title={checklistFlags.ENTRADA ? 'Checklist de entrada preenchido — clique para editar' : 'Preencher checklist de entrada'}
+                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido — clique para editar' : 'Preencher checklist de entrada'}
                 >
                   <ClipboardCheck size={15} />
                   Entrada
-                  {checklistFlags.ENTRADA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
+                  {canUseChecklist && checklistFlags.ENTRADA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
                 <button
-                  onClick={() => setChecklistModal('SAIDA')}
+                  onClick={() => canUseChecklist && setChecklistModal('SAIDA')}
+                  disabled={!canUseChecklist}
                   className={cn(
                     'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
-                    checklistFlags.SAIDA
+                    !canUseChecklist
+                      ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : checklistFlags.SAIDA
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100',
                   )}
-                  title={checklistFlags.SAIDA ? 'Checklist de saída preenchido — clique para editar' : 'Preencher checklist de saída'}
+                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saída preenchido — clique para editar' : 'Preencher checklist de saída'}
                 >
                   <ClipboardCheck size={15} />
                   Saída
-                  {checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
+                  {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
                 <button
                   onClick={() => navigate('/service-orders')}
@@ -1978,7 +1991,7 @@ export function ServiceOrdersPage() {
       )}
 
       {/* Modais de Checklist */}
-      {checklistModal && selectedOrder && (
+      {canUseChecklist && checklistModal && selectedOrder && (
         <ChecklistModal
           serviceOrderId={selectedOrder.id}
           orderNumber={selectedOrder.orderNumber}

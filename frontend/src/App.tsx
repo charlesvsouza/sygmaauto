@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 import { SuperAdminRoute } from './components/SuperAdminRoute';
+import { PlanFeatureRoute } from './components/PlanFeatureRoute';
 import { Layout } from './components/Layout';
 import { InitialSplash } from './pages/InitialSplash';
 import { LandingPage } from './pages/LandingPage';
@@ -89,19 +90,19 @@ export default function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/financial" element={<FinancialPage />} />
-            <Route path="/dre" element={<DREPage />} />
-            <Route path="/kpis" element={<KPIsPage />} />
-            <Route path="/commissions" element={<CommissionsPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/dre" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><DREPage /></PlanFeatureRoute>} />
+            <Route path="/kpis" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><KPIsPage /></PlanFeatureRoute>} />
+            <Route path="/commissions" element={<PlanFeatureRoute feature="COMISSOES"><CommissionsPage /></PlanFeatureRoute>} />
+            <Route path="/reports" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><ReportsPage /></PlanFeatureRoute>} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/whatsapp" element={<WhatsappPage />} />
+            <Route path="/whatsapp" element={<PlanFeatureRoute feature="WHATSAPP"><WhatsappPage /></PlanFeatureRoute>} />
           </Route>
         </Route>
         
         {/* Kanban e Recepção — sem sidebar (tela cheia / modo TV) */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/kanban" element={<KanbanPage />} />
-          <Route path="/kanban-recepcao" element={<KanbanRecepcaoPage />} />
+          <Route path="/kanban" element={<PlanFeatureRoute feature="KANBAN_PATIO"><KanbanPage /></PlanFeatureRoute>} />
+          <Route path="/kanban-recepcao" element={<PlanFeatureRoute feature="KANBAN_RECEPCAO"><KanbanRecepcaoPage /></PlanFeatureRoute>} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
