@@ -24,14 +24,14 @@ import {
   Award,
 } from 'lucide-react';
 import { useState } from 'react';
-import { canAccessFeature, featureLabel, getFeatureMinPlan, type PlanFeatureKey } from '../lib/planAccess';
+import { canAccessFeature, featureLabel, getFeatureMinPlan, getFeatureUpgradeMessage, type PlanFeatureKey } from '../lib/planAccess';
 
 export function Layout() {
   const { user, tenant, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [upgradeModal, setUpgradeModal] = useState<{ label: string; requiredPlan: string } | null>(null);
+  const [upgradeModal, setUpgradeModal] = useState<{ feature: PlanFeatureKey } | null>(null);
   const canViewUsers = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
 
   const handleLogout = () => {
@@ -142,7 +142,7 @@ export function Layout() {
                     return (
                       <button
                         key={item.to}
-                        onClick={() => setUpgradeModal({ label: featureLabel(item.feature!), requiredPlan: getFeatureMinPlan(item.feature!) })}
+                        onClick={() => setUpgradeModal({ feature: item.feature! })}
                         className="sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all opacity-60 text-slate-300 hover:text-white hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-4 h-4 shrink-0" />
@@ -235,7 +235,7 @@ export function Layout() {
                     return (
                       <button
                         key={item.to}
-                        onClick={() => { setSidebarOpen(false); setUpgradeModal({ label: featureLabel(item.feature!), requiredPlan: getFeatureMinPlan(item.feature!) }); }}
+                        onClick={() => { setSidebarOpen(false); setUpgradeModal({ feature: item.feature! }); }}
                         className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all opacity-60 text-slate-400 hover:text-white hover:bg-white/5 hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-5 h-5" />
@@ -350,13 +350,11 @@ export function Layout() {
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Recurso Premium</p>
-                <h3 className="font-bold text-slate-900">{upgradeModal.label}</h3>
+                <h3 className="font-bold text-slate-900">{featureLabel(upgradeModal.feature)}</h3>
               </div>
             </div>
             <p className="text-sm text-slate-600 mb-5">
-              Este recurso está disponível a partir do plano{' '}
-              <span className="font-bold text-slate-900">{upgradeModal.requiredPlan}</span>.
-              Faça upgrade para desbloquear {upgradeModal.label} e outros recursos avançados.
+              {getFeatureUpgradeMessage(upgradeModal.feature)}
             </p>
             <div className="flex gap-3">
               <button

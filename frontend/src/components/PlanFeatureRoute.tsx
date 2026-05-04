@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { canAccessFeature, featureLabel, getFeatureMinPlan, type PlanFeatureKey } from '../lib/planAccess';
+import { canAccessFeature, featureLabel, getFeatureUpgradeMessage, type PlanFeatureKey } from '../lib/planAccess';
 
 type PlanFeatureRouteProps = {
   feature: PlanFeatureKey;
@@ -12,15 +12,13 @@ export function PlanFeatureRoute({ feature, children }: PlanFeatureRouteProps) {
   const planName = tenant?.subscription?.plan?.name || 'START';
 
   if (!canAccessFeature(planName, feature)) {
-    const requiredPlan = getFeatureMinPlan(feature);
     return (
       <div className="min-h-[40vh] flex items-center justify-center px-4">
         <div className="max-w-xl w-full bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Recurso bloqueado</p>
           <h2 className="text-xl font-bold text-slate-900 mt-2">{featureLabel(feature)}</h2>
           <p className="text-sm text-slate-600 mt-3">
-            Seu plano atual não inclui este recurso. Para ativar esta funcionalidade,
-            migre para o plano <span className="font-bold text-slate-900">{requiredPlan}</span> ou superior.
+            {getFeatureUpgradeMessage(feature)}
           </p>
           <div className="mt-5 flex gap-3">
             <Link to="/dashboard" className="btn bg-slate-100 text-slate-700 hover:bg-slate-200">

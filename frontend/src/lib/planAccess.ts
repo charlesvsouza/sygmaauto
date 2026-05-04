@@ -53,3 +53,9 @@ export function featureLabel(feature: PlanFeatureKey): string {
 export function getFeatureMinPlan(feature: PlanFeatureKey): PlanName {
   return FEATURE_MIN_PLAN[feature];
 }
+
+export function getFeatureUpgradeMessage(feature: PlanFeatureKey): string {
+  const requiredPlan = getFeatureMinPlan(feature);
+  const label = featureLabel(feature);
+  return `Este recurso está disponível a partir do plano ${requiredPlan}. Faça upgrade para desbloquear ${label} e outros recursos avançados.`;
+}
