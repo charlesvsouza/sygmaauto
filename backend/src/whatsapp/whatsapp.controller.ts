@@ -3,12 +3,14 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { WhatsappAdminService } from '../notifications/whatsapp-admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('WhatsApp')
 @Controller('whatsapp')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PlanGuard)
+@RequirePlan('PRO')
 export class WhatsappController {
   constructor(private whatsappAdmin: WhatsappAdminService) {}
 

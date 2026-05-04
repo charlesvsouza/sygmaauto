@@ -71,7 +71,7 @@ export function Layout() {
       items: [
         { to: '/services', icon: Wrench, label: 'Serviços', premium: false },
         { to: '/inventory', icon: Package, label: 'Estoque', premium: false },
-        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: false },
+        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true, feature: 'WHATSAPP' },
       ],
     },
     {

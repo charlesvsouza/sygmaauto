@@ -60,7 +60,7 @@ export const plans: Plan[] = [
     price: 'R$ 149',
     period: '/mes',
     description: 'Para oficinas iniciando com o fluxo essencial do dia a dia.',
-    highlights: ['Ate 50 O.S./mes', 'Financeiro, estoque e WhatsApp', 'Clientes e Veiculos', 'Ate 3 usuarios'],
+    highlights: ['Ate 50 O.S./mes', 'Financeiro, estoque inclusos', 'Clientes e Veiculos', 'Ate 3 usuarios'],
   },
   {
     name: 'PRO',
@@ -92,7 +92,7 @@ export const planCapabilities: PlanCapability[] = [
   { feature: 'DRE, KPI e Relatorios', start: 'Nao', pro: 'Nao', rede: 'Sim' },
   { feature: 'Comissoes e Ranking tecnico', start: 'Nao', pro: 'Nao', rede: 'Sim' },
   { feature: 'Multiunidade', start: 'Nao', pro: 'Nao', rede: 'Sim' },
-  { feature: 'WhatsApp automatico', start: 'Sim', pro: 'Sim', rede: 'Sim' },
+  { feature: 'WhatsApp automatico', start: 'Nao', pro: 'Sim', rede: 'Sim' },
 ];
 
 export const features: IconCard[] = [
