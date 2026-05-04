@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ChevronRight, CircleSlash } from 'lucide-react';
+import { ArrowRight, CheckCircle, CheckCircle2, ChevronRight, CircleSlash } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MarketingShell } from '../components/marketing/MarketingShell';
 import { EcgPulse } from '../components/marketing/EcgPulse';
@@ -285,7 +285,7 @@ export function LandingPage() {
                     const enabled = value !== 'Nao';
                     return (
                       <span className={`inline-flex items-center gap-1.5 ${enabled ? 'text-emerald-300' : 'text-white/60'}`}>
-                        {enabled ? <CheckCircle2 size={13} className="shrink-0" /> : <CircleSlash size={13} className="shrink-0" />}
+                        {enabled ? <CheckCircle size={15} className="shrink-0" /> : <CircleSlash size={15} className="shrink-0" />}
                         {value}
                       </span>
                     );
