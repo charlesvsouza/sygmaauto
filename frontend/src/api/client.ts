@@ -222,7 +222,7 @@ export const subscriptionsApi = {
   createCheckout: (plan: string, successUrl?: string, cancelUrl?: string, billingCycle: 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL' = 'MONTHLY') =>
     api.post('/subscriptions/checkout', { plan, successUrl, cancelUrl, billingCycle }),
   createPublicCheckout: (data: {
-    plan: 'START' | 'PRO' | 'REDE';
+    plan: 'START' | 'PRO' | 'REDE' | 'RETIFICA_PRO' | 'RETIFICA_REDE';
     billingCycle: 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL';
     tenantName: string;
     inviteEmail: string;

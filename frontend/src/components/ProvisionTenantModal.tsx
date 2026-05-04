@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, Building, CheckCircle2, Copy, Loader2, Mail, Package2, X } from 'lucide-react';
 import { superAdminApi } from '../api/client';
+import { getPlanLabel } from '../lib/planAccess';
 
 export function ProvisionTenantModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [tenantName, setTenantName] = useState('');
@@ -117,7 +118,7 @@ export function ProvisionTenantModal({ onClose, onCreated }: { onClose: () => vo
                   <div className="relative">
                     <Package2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <select value={planName} onChange={(e) => setPlanName(e.target.value)} disabled={loadingPlans} className="w-full bg-slate-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm outline-none focus:ring-2 focus:ring-blue-500/40">
-                      {plans.map((plan) => <option key={plan.id} value={plan.name}>{plan.name} · R$ {Number(plan.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</option>)}
+                      {plans.map((plan) => <option key={plan.id} value={plan.name}>{getPlanLabel(plan.name)} · R$ {Number(plan.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</option>)}
                       {!plans.length && <option value="START">START</option>}
                     </select>
                   </div>

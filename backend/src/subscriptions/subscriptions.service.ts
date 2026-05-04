@@ -14,6 +14,8 @@ export enum PlanType {
   START = 'START',
   PRO = 'PRO',
   REDE = 'REDE',
+  RETIFICA_PRO = 'RETIFICA_PRO',
+  RETIFICA_REDE = 'RETIFICA_REDE',
 }
 
 export enum SubscriptionStatus {
@@ -215,6 +217,8 @@ export class SubscriptionsService {
       START: this.configService.get<string>('CHECKOUT_URL_START'),
       PRO: this.configService.get<string>('CHECKOUT_URL_PRO'),
       REDE: this.configService.get<string>('CHECKOUT_URL_REDE'),
+      RETIFICA_PRO: this.configService.get<string>('CHECKOUT_URL_RETIFICA_PRO'),
+      RETIFICA_REDE: this.configService.get<string>('CHECKOUT_URL_RETIFICA_REDE'),
     };
 
     const configuredCheckout = checkoutByPlan[dto.plan];

@@ -103,6 +103,68 @@ async function main() {
     },
   });
 
+  await prisma.subscriptionPlan.upsert({
+    where: { name: 'RETIFICA_PRO' },
+    update: { price: 499.00 },
+    create: {
+      name: 'RETIFICA_PRO',
+      description: 'Modo Retifica de Motores para operacao PRO com oficina e retifica integradas.',
+      price: 499.00,
+      features: JSON.stringify({
+        customers: true,
+        vehicles: true,
+        serviceOrders: true,
+        manualFinancial: true,
+        serviceApprovalLink: true,
+        inventory: true,
+        whatsappNotifications: true,
+        checklist: true,
+        kanban: true,
+        mechanicCommission: true,
+        maintenanceReminder: true,
+        dre: false,
+        multiUnit: false,
+        nfe: false,
+        clientPortal: false,
+        aiAssist: false,
+        nps: true,
+        retificaMode: true,
+      }),
+      limits: JSON.stringify({ serviceOrdersPerMonth: -1, users: 15, storage: '40GB' }),
+    },
+  });
+
+  await prisma.subscriptionPlan.upsert({
+    where: { name: 'RETIFICA_REDE' },
+    update: { price: 899.00 },
+    create: {
+      name: 'RETIFICA_REDE',
+      description: 'Modo Retifica de Motores com multiunidade e governanca de rede.',
+      price: 899.00,
+      features: JSON.stringify({
+        customers: true,
+        vehicles: true,
+        serviceOrders: true,
+        manualFinancial: true,
+        serviceApprovalLink: true,
+        inventory: true,
+        whatsappNotifications: true,
+        checklist: true,
+        kanban: true,
+        mechanicCommission: true,
+        maintenanceReminder: true,
+        dre: true,
+        multiUnit: true,
+        nfe: true,
+        clientPortal: true,
+        aiAssist: true,
+        nps: true,
+        retificaMode: true,
+      }),
+      limits: JSON.stringify({ serviceOrdersPerMonth: -1, users: -1, storage: '150GB' }),
+    },
+  });
+
   console.log('✅ Planos criados: START R$149 / PRO R$299 / REDE R$599');
 
   // ─── SuperAdmin ───────────────────────────────────────────────────────────

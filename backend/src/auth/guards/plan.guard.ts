@@ -28,6 +28,8 @@ export class PlanGuard implements CanActivate {
       START: 1,
       PRO: 2,
       REDE: 3,
+      RETIFICA_PRO: 2,
+      RETIFICA_REDE: 3,
     };
 
     const requiredLevel = planHierarchy[requiredPlan] || 0;

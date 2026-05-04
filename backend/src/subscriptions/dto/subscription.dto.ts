@@ -1,6 +1,9 @@
 import { IsNotEmpty, IsOptional, IsString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+const PLAN_NAMES = ['START', 'PRO', 'REDE', 'RETIFICA_PRO', 'RETIFICA_REDE'] as const;
+type SubscriptionPlanName = (typeof PLAN_NAMES)[number];
+
 export enum BillingCycle {
   MONTHLY = 'MONTHLY',
   QUARTERLY = 'QUARTERLY',
@@ -9,17 +12,17 @@ export enum BillingCycle {
 }
 
 export class ChangePlanDto {
-  @ApiProperty({ enum: ['START', 'PRO', 'REDE'] })
+  @ApiProperty({ enum: PLAN_NAMES })
   @IsNotEmpty()
-  @IsEnum(['START', 'PRO', 'REDE'])
-  plan: 'START' | 'PRO' | 'REDE';
+  @IsEnum(PLAN_NAMES)
+  plan: SubscriptionPlanName;
 }
 
 export class CreateCheckoutDto {
-  @ApiProperty({ enum: ['START', 'PRO', 'REDE'] })
+  @ApiProperty({ enum: PLAN_NAMES })
   @IsNotEmpty()
-  @IsEnum(['START', 'PRO', 'REDE'])
-  plan: 'START' | 'PRO' | 'REDE';
+  @IsEnum(PLAN_NAMES)
+  plan: SubscriptionPlanName;
 
   @ApiProperty({ enum: BillingCycle, required: false, default: BillingCycle.MONTHLY })
   @IsOptional()
@@ -38,10 +41,10 @@ export class CreateCheckoutDto {
 }
 
 export class PublicCheckoutDto {
-  @ApiProperty({ enum: ['START', 'PRO', 'REDE'] })
+  @ApiProperty({ enum: PLAN_NAMES })
   @IsNotEmpty()
-  @IsEnum(['START', 'PRO', 'REDE'])
-  plan: 'START' | 'PRO' | 'REDE';
+  @IsEnum(PLAN_NAMES)
+  plan: SubscriptionPlanName;
 
   @ApiProperty({ enum: BillingCycle })
   @IsNotEmpty()

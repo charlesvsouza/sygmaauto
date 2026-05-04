@@ -3,9 +3,9 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { subscriptionsApi } from '../api/client';
+import { type PlanName } from '../lib/planAccess';
 import { useAuthStore } from '../store/authStore';
 
-type PlanName = 'START' | 'PRO' | 'REDE';
 type BillingCycle = 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUAL' | 'ANNUAL';
 
 type PlanDef = {
@@ -19,6 +19,8 @@ const plans: PlanDef[] = [
   { name: 'START', label: 'Start', monthlyPrice: 149, description: 'Ideal para oficinas iniciando com controle completo.' },
   { name: 'PRO', label: 'Pro', monthlyPrice: 299, description: 'Financeiro, estoque e produtividade para crescer com previsibilidade.' },
   { name: 'REDE', label: 'Rede', monthlyPrice: 599, description: 'Governanca de unidades e operacao padronizada em escala.' },
+  { name: 'RETIFICA_PRO', label: 'Modo Retifica Pro', monthlyPrice: 499, description: 'Operacao completa de oficina com fluxo tecnico de retifica de motores.' },
+  { name: 'RETIFICA_REDE', label: 'Modo Retifica Rede', monthlyPrice: 899, description: 'Retifica de motores com multiunidade, padronizacao e gestao em rede.' },
 ];
 
 const cycleOptions: Array<{ value: BillingCycle; label: string; months: number; discountRate: number; badge?: string }> = [
@@ -35,7 +37,8 @@ const formatBrl = (value: number) =>
     maximumFractionDigits: 2,
   }).format(value);
 
-const isPlanName = (value: string | null): value is PlanName => value === 'START' || value === 'PRO' || value === 'REDE';
+const isPlanName = (value: string | null): value is PlanName =>
+  value === 'START' || value === 'PRO' || value === 'REDE' || value === 'RETIFICA_PRO' || value === 'RETIFICA_REDE';
 
 export function PlansCheckoutPage() {
   const navigate = useNavigate();

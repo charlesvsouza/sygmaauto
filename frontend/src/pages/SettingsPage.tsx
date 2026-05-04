@@ -26,6 +26,7 @@ import {
   onlyDigits,
 } from '../lib/masks';
 import { applyThemePreset, getStoredThemePreset, THEME_PRESETS, type ThemePresetId } from '../lib/themePresets';
+import { getPlanLabel, getPlanRank } from '../lib/planAccess';
 
 type TenantForm = {
   taxId: string;
@@ -74,9 +75,8 @@ export function SettingsPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [themePreset, setThemePreset] = useState<ThemePresetId>(getStoredThemePreset());
   const currentPlan = subscription?.plan?.name || 'START';
-  const PLAN_ORDER: Record<string, number> = { START: 1, PRO: 2, REDE: 3 };
-  const isUpgrade = (planName: string) => (PLAN_ORDER[planName] ?? 0) > (PLAN_ORDER[currentPlan] ?? 0);
-  const isDowngrade = (planName: string) => (PLAN_ORDER[planName] ?? 0) < (PLAN_ORDER[currentPlan] ?? 0);
+  const isUpgrade = (planName: string) => getPlanRank(planName) > getPlanRank(currentPlan);
+  const isDowngrade = (planName: string) => getPlanRank(planName) < getPlanRank(currentPlan);
 
   const isMaster = user?.role === 'MASTER';
   const canManageUsers = user?.role === 'MASTER' || user?.role === 'ADMIN';
@@ -704,7 +704,7 @@ export function SettingsPage() {
               <div className="mb-6 p-4 bg-white/10 rounded-lg border border-white/10 backdrop-blur-md">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-2xl font-black text-white">{currentPlan}</h3>
+                  <h3 className="text-2xl font-black text-white">{getPlanLabel(currentPlan)}</h3>
                   <div className="px-2 py-0.5 bg-primary-500 rounded text-[8px] font-black uppercase">Ativo</div>
                 </div>
                 <p className="text-xs text-slate-400 mt-1 font-medium">Renovação automática em breve.</p>
@@ -725,8 +725,8 @@ export function SettingsPage() {
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <p className="font-bold text-sm uppercase tracking-tight">{plan.name}</p>
-                          {plan.name === 'PRO' && <Zap size={12} className="text-primary-400 fill-primary-400" />}
+                          <p className="font-bold text-sm uppercase tracking-tight">{getPlanLabel(plan.name)}</p>
+                          {(plan.name === 'PRO' || plan.name === 'RETIFICA_PRO') && <Zap size={12} className="text-primary-400 fill-primary-400" />}
                         </div>
                         <p className="text-lg font-black mt-0.5">
                           R$ {Number(plan.price).toLocaleString('pt-BR')}
