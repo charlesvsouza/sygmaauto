@@ -524,6 +524,26 @@ Além dos temas principais, a página KPI's já inclui os seguintes indicadores 
    - Percentual de OS aguardando peças dentro do prazo
    - Evidencia OS atrasadas e OS sem previsão de entrega
 
+### Indicadores avançados (Fase 2)
+
+- **First Time Fix Rate (estimado)**
+   - Percentual de OS concluídas sem retorno em curto prazo
+   - Usado para acompanhar qualidade da execução e diagnóstico
+
+- **No-show de agendamento (proxy)**
+   - Estimativa de faltas em agendamentos vencidos
+   - Apoia ajustes de confirmação e remarcação
+
+- **Distribuição da agenda por turno**
+   - Volume de agendamentos por manhã, tarde e noite
+   - Ajuda no balanceamento de equipe e capacidade operacional
+
+- **Penetração de serviços adicionais**
+   - Percentual de OS entregues com 2 ou mais serviços/labores
+   - Indicador de performance comercial técnica (upsell de serviços)
+
+> Observação: enquanto não existir status específico de falta no fluxo de OS, o no-show é exibido como proxy/estimativa.
+
 ### Como usar
 
 1. Clique em **KPI's** no menu lateral

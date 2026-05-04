@@ -288,6 +288,62 @@ export function KPIsPage() {
     };
   }, [orders]);
 
+  const fase2 = useMemo(() => {
+    const withSchedule = orders.filter((o: any) => Boolean(o.scheduledDate));
+    const turns = {
+      manha: 0,
+      tarde: 0,
+      noite: 0,
+      semHora: 0,
+    };
+
+    withSchedule.forEach((o: any) => {
+      const d = toDate(o.scheduledDate);
+      if (Number.isNaN(d.getTime())) {
+        turns.semHora += 1;
+        return;
+      }
+      const h = d.getHours();
+      if (h < 12) turns.manha += 1;
+      else if (h < 18) turns.tarde += 1;
+      else turns.noite += 1;
+    });
+
+    const agendaTurnoData = [
+      { name: 'Manhã', value: turns.manha, color: '#0ea5e9' },
+      { name: 'Tarde', value: turns.tarde, color: '#6366f1' },
+      { name: 'Noite', value: turns.noite, color: '#8b5cf6' },
+      { name: 'Sem horário', value: turns.semHora, color: '#94a3b8' },
+    ];
+
+    const delivered = orders.filter((o: any) => ['ENTREGUE', 'FATURADO'].includes(String(o.status || '')));
+    const multiService = delivered.filter((o: any) => {
+      const q = (o.items || []).filter((i: any) => ['service', 'labor'].includes(String(i.type || '').toLowerCase())).length;
+      return q >= 2;
+    }).length;
+    const penetracaoServicos = delivered.length > 0 ? (multiService / delivered.length) * 100 : 0;
+
+    const firstTimeFixRate = Math.max(0, 100 - Number(fase1.retrabalhoRate || 0));
+
+    const now = new Date();
+    const schedulePast = withSchedule.filter((o: any) => toDate(o.scheduledDate) < now);
+    const noShowProxy = schedulePast.filter((o: any) =>
+      ['CANCELADO', 'REPROVADO'].includes(String(o.status || '')),
+    ).length;
+    const noShowRate = schedulePast.length > 0 ? (noShowProxy / schedulePast.length) * 100 : 0;
+
+    return {
+      firstTimeFixRate,
+      noShowRate,
+      noShowProxy,
+      schedulePast: schedulePast.length,
+      agendaTurnoData,
+      penetracaoServicos,
+      multiService,
+      delivered: delivered.length,
+    };
+  }, [orders, fase1.retrabalhoRate]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96 gap-3">
@@ -445,6 +501,83 @@ export function KPIsPage() {
               {fase1.elr >= fase1.elrMeta
                 ? ' ELR acima da meta de referência, boa captura de valor por hora técnica.'
                 : ' ELR abaixo da meta de referência, revisar precificação, descontos e mix de serviços.'}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Fase 2 · Qualidade e Agenda</h3>
+        <p className="text-xs text-slate-500 mb-4">Leituras para melhorar previsibilidade operacional e qualidade de execução.</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+          <InfoCard
+            title="First Time Fix"
+            value={pct(fase2.firstTimeFixRate)}
+            hint="OS resolvidas sem retorno precoce"
+            icon={CheckCircle2}
+            tone={fase2.firstTimeFixRate >= 92 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="No-show (estimado)"
+            value={`${pct(fase2.noShowRate)} (${fase2.noShowProxy})`}
+            hint="Proxy: agendadas no passado e canceladas/reprovadas"
+            icon={AlertTriangle}
+            tone={fase2.noShowRate <= 8 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="Penetração serviços"
+            value={`${pct(fase2.penetracaoServicos)} (${fase2.multiService}/${fase2.delivered})`}
+            hint="OS entregues com 2+ serviços/labores"
+            icon={BarChart3}
+            tone={fase2.penetracaoServicos >= 45 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="Base agendada"
+            value={String(fase2.schedulePast)}
+            hint="Agendamentos com data/hora já vencida"
+            icon={Timer}
+            tone="blue"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div>
+            <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Distribuição da agenda por turno</p>
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={fase2.agendaTurnoData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any) => [Number(v), 'Agendamentos']} />
+                <Bar dataKey="value" radius={[7, 7, 0, 0]}>
+                  {fase2.agendaTurnoData.map((d) => (
+                    <Cell key={d.name} fill={d.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-xl border border-slate-200 p-3 bg-slate-50">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Leitura de First Time Fix</p>
+              <p className="text-sm text-slate-700 font-medium">
+                {fase2.firstTimeFixRate >= 92
+                  ? 'Excelente estabilidade de entrega. Mantenha o padrão de diagnóstico e checklist.'
+                  : 'Há espaço para reduzir retornos. Priorize checklist técnico e validação final antes da entrega.'}
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3 bg-slate-50">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Leitura de No-show (estimado)</p>
+              <p className="text-sm text-slate-700 font-medium">
+                {fase2.noShowRate <= 8
+                  ? 'Taxa controlada. Continue confirmação ativa por WhatsApp antes do horário.'
+                  : 'Taxa elevada. Reforce confirmações automáticas e política de reagendamento.'}
+              </p>
+            </div>
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700 font-medium">
+              Observação: no-show está em modo proxy (estimativa), até existir status dedicado de falta no fluxo da OS.
             </div>
           </div>
         </div>

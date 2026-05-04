@@ -148,6 +148,11 @@
     - [x] Conversão de orçamento (aprovados no funil)
     - [x] Aging de OS em aberto (0-24h, 24-48h, 48-72h, >72h)
     - [x] SLA de peças (no prazo x atrasadas x sem previsão)
+  - [x] **Fase 2 de indicadores avançados**
+    - [x] First Time Fix Rate (estimado a partir de retorno em 30 dias)
+    - [x] No-show de agendamento (modo proxy/estimativa)
+    - [x] Distribuição de agenda por turno (manhã/tarde/noite)
+    - [x] Penetração de serviços adicionais (OS com 2+ serviços/labores)
 - [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data
 - [ ] **NPS Automático** — pesquisa pós-entrega, dashboard de satisfação
 

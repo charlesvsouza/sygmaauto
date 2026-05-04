@@ -79,7 +79,7 @@ export function Layout() {
     {
       to: '/kpis',
       icon: Gauge,
-      label: "KPI's",
+      label: 'KPIs',
       premium: true,
     },
     {
