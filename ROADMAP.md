@@ -142,6 +142,12 @@
   - [x] Painel temático para leitura rápida: Financeiro, Operações, Estoque e Pessoas
   - [x] Gráficos de alto entendimento (barras e pizza) e KPIs executivos em cards
   - [x] Dados consolidados de endpoints já existentes: financeiro, OS, estoque e comissões
+  - [x] **Fase 1 de indicadores avançados**
+    - [x] ELR (Effective Labor Rate) — faturamento de mão de obra por hora vendida
+    - [x] Retrabalho 30 dias (comeback rate)
+    - [x] Conversão de orçamento (aprovados no funil)
+    - [x] Aging de OS em aberto (0-24h, 24-48h, 48-72h, >72h)
+    - [x] SLA de peças (no prazo x atrasadas x sem previsão)
 - [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data
 - [ ] **NPS Automático** — pesquisa pós-entrega, dashboard de satisfação
 

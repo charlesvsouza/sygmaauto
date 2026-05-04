@@ -5,10 +5,13 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  CheckCircle2,
   DollarSign,
   Gauge,
   Loader2,
   Package,
+  RefreshCw,
+  Timer,
   Users,
 } from 'lucide-react';
 import {
@@ -55,6 +58,16 @@ const STATUS_LABEL: Record<string, string> = {
   ENTREGUE: 'Entregue',
   CANCELADO: 'Cancelado',
 };
+
+const CLOSED_STATUSES = ['ENTREGUE', 'FATURADO', 'CANCELADO'];
+
+function toDate(value: any): Date {
+  return new Date(value);
+}
+
+function diffDays(a: Date, b: Date): number {
+  return (a.getTime() - b.getTime()) / (1000 * 60 * 60 * 24);
+}
 
 export function KPIsPage() {
   const [loading, setLoading] = useState(true);
@@ -187,6 +200,94 @@ export function KPIsPage() {
     [lowStock],
   );
 
+  const fase1 = useMemo(() => {
+    const serviceLaborItems = orders.flatMap((o: any) =>
+      (o.items || []).filter((i: any) => ['service', 'labor'].includes(String(i.type || '').toLowerCase())),
+    );
+
+    const horasVendidas = serviceLaborItems.reduce((sum: number, i: any) => sum + Number(i.quantity || 0), 0);
+    const maoObraFaturada = serviceLaborItems.reduce((sum: number, i: any) => sum + Number(i.totalPrice ?? (Number(i.unitPrice || 0) * Number(i.quantity || 0))), 0);
+    const elr = horasVendidas > 0 ? maoObraFaturada / horasVendidas : 0;
+    const elrMeta = 180;
+
+    const deliveredLike = orders
+      .filter((o: any) => ['ENTREGUE', 'FATURADO'].includes(String(o.status || '')))
+      .map((o: any) => ({ ...o, refDate: toDate(o.deliveredAt || o.updatedAt || o.createdAt) }))
+      .sort((a: any, b: any) => a.refDate.getTime() - b.refDate.getTime());
+
+    const byVehicle = new Map<string, any[]>();
+    deliveredLike.forEach((o: any) => {
+      const key = String(o.vehicleId || o.vehicle?.id || '');
+      if (!key) return;
+      const arr = byVehicle.get(key) || [];
+      arr.push(o);
+      byVehicle.set(key, arr);
+    });
+
+    let comebacks30d = 0;
+    byVehicle.forEach((arr) => {
+      for (let i = 1; i < arr.length; i++) {
+        const d = diffDays(arr[i].refDate, arr[i - 1].refDate);
+        if (d >= 0 && d <= 30) comebacks30d += 1;
+      }
+    });
+    const retrabalhoRate = deliveredLike.length > 0 ? (comebacks30d / deliveredLike.length) * 100 : 0;
+
+    const quoteUniverse = orders.filter((o: any) =>
+      String(o.orderType || '') === 'ORCAMENTO'
+      || ['ORCAMENTO', 'ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO', 'REPROVADO'].includes(String(o.status || ''))
+      || o.approvalStatus,
+    );
+    const quoteApproved = quoteUniverse.filter((o: any) =>
+      String(o.approvalStatus || '') === 'APPROVED'
+      || ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO', 'PRONTO_ENTREGA', 'FATURADO', 'ENTREGUE'].includes(String(o.status || '')),
+    ).length;
+    const quoteConversion = quoteUniverse.length > 0 ? (quoteApproved / quoteUniverse.length) * 100 : 0;
+
+    const openOrders = orders.filter((o: any) => !CLOSED_STATUSES.includes(String(o.status || '')));
+    const now = new Date();
+    const agingBuckets = [
+      { name: '0-24h', value: 0, color: '#22c55e' },
+      { name: '24-48h', value: 0, color: '#f59e0b' },
+      { name: '48-72h', value: 0, color: '#f97316' },
+      { name: '>72h', value: 0, color: '#ef4444' },
+    ];
+
+    openOrders.forEach((o: any) => {
+      const base = toDate(o.statusChangedAt || o.updatedAt || o.createdAt);
+      const h = (now.getTime() - base.getTime()) / (1000 * 60 * 60);
+      if (h < 24) agingBuckets[0].value += 1;
+      else if (h < 48) agingBuckets[1].value += 1;
+      else if (h < 72) agingBuckets[2].value += 1;
+      else agingBuckets[3].value += 1;
+    });
+
+    const waitingParts = openOrders.filter((o: any) => String(o.status || '') === 'AGUARDANDO_PECAS');
+    const withDate = waitingParts.filter((o: any) => o.expectedPartsDate);
+    const onTime = withDate.filter((o: any) => toDate(o.expectedPartsDate) >= now).length;
+    const overdue = withDate.length - onTime;
+    const noForecast = waitingParts.length - withDate.length;
+    const slaParts = withDate.length > 0 ? (onTime / withDate.length) * 100 : 0;
+
+    return {
+      elr,
+      elrMeta,
+      horasVendidas,
+      maoObraFaturada,
+      comebacks30d,
+      retrabalhoRate,
+      quoteUniverse: quoteUniverse.length,
+      quoteApproved,
+      quoteConversion,
+      agingBuckets,
+      waitingParts: waitingParts.length,
+      onTime,
+      overdue,
+      noForecast,
+      slaParts,
+    };
+  }, [orders]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96 gap-3">
@@ -261,6 +362,93 @@ export function KPIsPage() {
           </motion.div>
         ))}
       </div>
+
+      <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Fase 1 · Indicadores de Performance Operacional</h3>
+        <p className="text-xs text-slate-500 mb-4">Métricas mais usadas em gestão de concessionárias e autocenters para acompanhamento diário.</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 mb-4">
+          <InfoCard
+            title="ELR (R$/hora)"
+            value={`${money(fase1.elr)} / h`}
+            hint={`Meta referência: ${money(fase1.elrMeta)} / h`}
+            icon={DollarSign}
+            tone={fase1.elr >= fase1.elrMeta ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="Retrabalho 30d"
+            value={`${fase1.comebacks30d} (${pct(fase1.retrabalhoRate)})`}
+            hint="Retornos do mesmo veículo em até 30 dias"
+            icon={RefreshCw}
+            tone={fase1.retrabalhoRate <= 5 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="Conversão orçamento"
+            value={`${fase1.quoteApproved}/${fase1.quoteUniverse} (${pct(fase1.quoteConversion)})`}
+            hint="Orçamentos aprovados no funil"
+            icon={CheckCircle2}
+            tone={fase1.quoteConversion >= 55 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="SLA de peças"
+            value={pct(fase1.slaParts)}
+            hint={`${fase1.onTime} no prazo · ${fase1.overdue} atrasadas`}
+            icon={Package}
+            tone={fase1.slaParts >= 85 ? 'green' : 'amber'}
+          />
+          <InfoCard
+            title="Aguardando peças"
+            value={String(fase1.waitingParts)}
+            hint={`${fase1.noForecast} sem previsão de entrega`}
+            icon={Timer}
+            tone={fase1.noForecast > 0 ? 'amber' : 'slate'}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div>
+            <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Aging de OS em aberto</p>
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={fase1.agingBuckets}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any) => [Number(v), 'OS']} />
+                <Bar dataKey="value" radius={[7, 7, 0, 0]}>
+                  {fase1.agingBuckets.map((d) => (
+                    <Cell key={d.name} fill={d.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div>
+            <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Composição financeira da hora vendida</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <InfoCard
+                title="Horas vendidas"
+                value={Number(fase1.horasVendidas).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}
+                hint="Serviços e mão de obra lançados"
+                icon={Gauge}
+              />
+              <InfoCard
+                title="Mão de obra faturada"
+                value={money(fase1.maoObraFaturada)}
+                hint="Base para cálculo do ELR"
+                icon={BarChart3}
+                tone="blue"
+              />
+            </div>
+            <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 font-medium">
+              Interpretação rápida:
+              {fase1.elr >= fase1.elrMeta
+                ? ' ELR acima da meta de referência, boa captura de valor por hora técnica.'
+                : ' ELR abaixo da meta de referência, revisar precificação, descontos e mix de serviços.'}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">

@@ -500,6 +500,30 @@ Nova página gerencial acessível no menu lateral, logo abaixo de **DRE**, com f
 - **Tema 5: Pessoas e performance**
    - Totais de comissões (total, pago, pendente) e ranking de executores
 
+### Indicadores avançados (Fase 1)
+
+Além dos temas principais, a página KPI's já inclui os seguintes indicadores de gestão operacional:
+
+- **ELR (Effective Labor Rate)**
+   - Mostra o faturamento médio por hora vendida de serviços/mão de obra
+   - Ajuda a avaliar precificação, descontos e captura de valor
+
+- **Retrabalho 30 dias (Comeback Rate)**
+   - Quantidade e percentual de veículos que retornaram em até 30 dias
+   - Apoia o controle de qualidade da execução técnica
+
+- **Conversão de Orçamento**
+   - Percentual de orçamentos aprovados dentro do funil de aprovação
+   - Indicador direto da performance comercial do atendimento
+
+- **Aging de OS em aberto**
+   - Distribuição em faixas: 0-24h, 24-48h, 48-72h, acima de 72h
+   - Facilita identificar gargalos de prazo e priorização diária
+
+- **SLA de Peças**
+   - Percentual de OS aguardando peças dentro do prazo
+   - Evidencia OS atrasadas e OS sem previsão de entrega
+
 ### Como usar
 
 1. Clique em **KPI's** no menu lateral
