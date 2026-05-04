@@ -1,14 +1,11 @@
 export type PlanName = 'START' | 'PRO' | 'REDE';
 
 export type PlanFeatureKey =
-  | 'WHATSAPP'
   | 'KANBAN_PATIO'
   | 'KANBAN_RECEPCAO'
   | 'CHECKLIST'
   | 'DRE_KPI_RELATORIOS'
   | 'COMISSOES'
-  | 'FINANCEIRO'
-  | 'ESTOQUE'
   | 'MULTIUNIDADE';
 
 const PLAN_LEVEL: Record<PlanName, number> = {
@@ -18,14 +15,11 @@ const PLAN_LEVEL: Record<PlanName, number> = {
 };
 
 const FEATURE_MIN_PLAN: Record<PlanFeatureKey, PlanName> = {
-  WHATSAPP: 'PRO',
   KANBAN_PATIO: 'REDE',
   KANBAN_RECEPCAO: 'REDE',
   CHECKLIST: 'PRO',
   DRE_KPI_RELATORIOS: 'REDE',
   COMISSOES: 'REDE',
-  FINANCEIRO: 'PRO',
-  ESTOQUE: 'PRO',
   MULTIUNIDADE: 'REDE',
 };
 
@@ -43,14 +37,11 @@ export function canAccessFeature(planName: string | null | undefined, feature: P
 
 export function featureLabel(feature: PlanFeatureKey): string {
   const labels: Record<PlanFeatureKey, string> = {
-    WHATSAPP: 'WhatsApp Automático',
     KANBAN_PATIO: 'Kanban de Pátio',
     KANBAN_RECEPCAO: 'Painel de Recepção / TV',
     CHECKLIST: 'Checklist de Entrada/Saída',
     DRE_KPI_RELATORIOS: 'DRE, KPI e Relatórios',
     COMISSOES: 'Comissões',
-    FINANCEIRO: 'Financeiro e Fluxo de Caixa',
-    ESTOQUE: 'Estoque e Reserva de Peças',
     MULTIUNIDADE: 'Multiunidade',
   };
   return labels[feature];

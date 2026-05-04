@@ -12,7 +12,6 @@ import { Tenant } from '../common/decorators/tenant.decorator';
 @Controller('financial')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard, PlanGuard)
-@RequirePlan('PRO')
 export class FinancialController {
   constructor(private financialService: FinancialService) {}
 

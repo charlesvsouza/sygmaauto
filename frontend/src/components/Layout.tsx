@@ -70,8 +70,8 @@ export function Layout() {
       label: 'Oficina',
       items: [
         { to: '/services', icon: Wrench, label: 'Serviços', premium: false },
-        { to: '/inventory', icon: Package, label: 'Estoque', premium: true, feature: 'ESTOQUE' },
-        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true, feature: 'WHATSAPP' },
+        { to: '/inventory', icon: Package, label: 'Estoque', premium: false },
+        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: false },
       ],
     },
     {
@@ -84,7 +84,7 @@ export function Layout() {
     {
       label: 'Financeiro',
       items: [
-        { to: '/financial', icon: DollarSign, label: 'Fluxo de Caixa', premium: true, feature: 'FINANCEIRO' },
+        { to: '/financial', icon: DollarSign, label: 'Fluxo de Caixa', premium: false },
         { to: '/commissions', icon: Award, label: 'Comissões', premium: true, feature: 'COMISSOES' },
         { to: '/dre', icon: BarChart3, label: 'DRE', premium: true, feature: 'DRE_KPI_RELATORIOS' },
       ],
