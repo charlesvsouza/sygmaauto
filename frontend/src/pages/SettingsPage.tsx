@@ -207,6 +207,7 @@ export function SettingsPage() {
       await tenantsApi.update({
         laborHourlyRate: Number(opsData.laborHourlyRate),
         diagnosticHours: Number(opsData.diagnosticHours),
+        defaultCommissionPercent: Number(opsData.defaultCommissionPercent),
       });
       setOpsSuccess(true);
       setTimeout(() => setOpsSuccess(false), 3000);
