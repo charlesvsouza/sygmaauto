@@ -13,19 +13,15 @@ import {
   Menu,
   X,
   UserCheck,
-  Edit,
-  Trash2,
-  Loader2,
-  ChevronDown,
   Search,
   Bell,
   Tv2,
   Monitor,
-  PanelsTopLeft,
   MessageCircle,
   BarChart3,
   Gauge,
   FileText,
+  Award,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -34,7 +30,6 @@ export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [viewModeOpen, setViewModeOpen] = useState(true);
   const canViewUsers = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
 
   const handleLogout = () => {
@@ -44,57 +39,59 @@ export function Layout() {
 
   const planName = tenant?.subscription?.plan?.name || 'START';
 
-  const navItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Painel' },
-    { to: '/customers', icon: Users, label: 'Clientes' },
-    ...(canViewUsers ? [{ to: '/users', icon: UserCheck, label: 'Usuários' }] : []),
-    { to: '/vehicles', icon: Car, label: 'Veículos' },
+  const adminItems = [
+    ...(canViewUsers ? [{ to: '/users', icon: UserCheck, label: 'Usuários', premium: false }] : []),
+    { to: '/settings', icon: Settings, label: 'Configurações', premium: false },
+  ];
 
-    { to: '/service-orders', icon: ClipboardList, label: 'Ordens de Serviço' },
-    { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true },
-    { to: '/services', icon: Wrench, label: 'Serviços' },
+  const navGroups = [
     {
-      to: '/inventory',
-      icon: Package,
-      label: 'Estoque',
+      label: null as string | null,
+      items: [{ to: '/dashboard', icon: LayoutDashboard, label: 'Painel', premium: false }],
     },
     {
-      to: '/financial',
-      icon: DollarSign,
+      label: 'Atendimento',
+      items: [
+        { to: '/service-orders', icon: ClipboardList, label: 'Ordens de Serviço', premium: false },
+        { to: '/customers', icon: Users, label: 'Clientes', premium: false },
+        { to: '/vehicles', icon: Car, label: 'Veículos', premium: false },
+      ],
+    },
+    {
+      label: 'Oficina',
+      items: [
+        { to: '/services', icon: Wrench, label: 'Serviços', premium: false },
+        { to: '/inventory', icon: Package, label: 'Estoque', premium: false },
+        { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true },
+      ],
+    },
+    {
+      label: 'Painéis',
+      items: [
+        { to: '/kanban', icon: Tv2, label: 'Kanban de Pátio', premium: true },
+        { to: '/kanban-recepcao', icon: Monitor, label: 'Recepção / TV', premium: true },
+      ],
+    },
+    {
       label: 'Financeiro',
-      premium: true,
+      items: [
+        { to: '/financial', icon: DollarSign, label: 'Fluxo de Caixa', premium: true },
+        { to: '/commissions', icon: Award, label: 'Comissões', premium: true },
+        { to: '/dre', icon: BarChart3, label: 'DRE', premium: true },
+      ],
     },
     {
-      to: '/commissions',
-      icon: DollarSign,
-      label: 'Comissões',
-      premium: true,
+      label: 'Análise',
+      items: [
+        { to: '/kpis', icon: Gauge, label: 'Indicadores', premium: true },
+        { to: '/reports', icon: FileText, label: 'Relatórios', premium: true },
+      ],
     },
     {
-      to: '/dre',
-      icon: BarChart3,
-      label: 'DRE',
-      premium: true,
+      label: null as string | null,
+      items: adminItems,
     },
-    {
-      to: '/kpis',
-      icon: Gauge,
-      label: 'KPIs',
-      premium: true,
-    },
-    {
-      to: '/reports',
-      icon: FileText,
-      label: 'Relatórios',
-      premium: true,
-    },
-    { to: '/settings', icon: Settings, label: 'Configurações' },
   ];
-  const viewModeItems = [
-    { to: '/kanban', icon: Tv2, label: 'Kanban de Pátio', premium: true },
-    { to: '/kanban-recepcao', icon: Monitor, label: 'Painel Recepção', premium: true },
-  ];
-  const isViewModeActive = viewModeItems.some((item) => location.pathname === item.to);
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-slate-100">
@@ -120,57 +117,28 @@ export function Layout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-primary-500/20 text-primary-400 font-medium'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm">{item.label}</span>
-              {item.premium && planName === 'START' && (
-                <span className="ml-auto text-xs bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">PRO</span>
+        <nav className="flex-1 p-4 overflow-y-auto">
+          {navGroups.map((group, gi) => (
+            <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-white/5' : ''}>
+              {group.label && (
+                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 mb-1.5">
+                  {group.label}
+                </p>
               )}
-            </NavLink>
-          ))}
-
-          <div className="pt-2 mt-2 border-t border-white/5">
-            <button
-              type="button"
-              onClick={() => setViewModeOpen((value) => !value)}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
-                isViewModeActive
-                  ? 'bg-primary-500/10 text-primary-300'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <PanelsTopLeft className="w-5 h-5" />
-              <span className="text-sm">Modo de exibição</span>
-              <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${viewModeOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {viewModeOpen && (
-              <div className="mt-1 ml-4 pl-3 border-l border-white/10 space-y-1">
-                {viewModeItems.map((item) => (
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+                      `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
                         isActive
                           ? 'bg-primary-500/20 text-primary-400 font-medium'
                           : 'text-slate-400 hover:text-white hover:bg-white/5'
                       }`
                     }
                   >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className="w-5 h-5" />
                     <span className="text-sm">{item.label}</span>
                     {item.premium && planName === 'START' && (
                       <span className="ml-auto text-xs bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">PRO</span>
@@ -178,8 +146,8 @@ export function Layout() {
                   </NavLink>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </nav>
 
         {/* User section */}
@@ -229,56 +197,29 @@ export function Layout() {
           </button>
         </div>
         
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-primary-500/20 text-primary-400 font-medium'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm">{item.label}</span>
-            </NavLink>
-          ))}
-
-          <div className="pt-2 mt-2 border-t border-white/5">
-            <button
-              type="button"
-              onClick={() => setViewModeOpen((value) => !value)}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
-                isViewModeActive
-                  ? 'bg-primary-500/10 text-primary-300'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <PanelsTopLeft className="w-5 h-5" />
-              <span className="text-sm">Modo de exibição</span>
-              <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${viewModeOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {viewModeOpen && (
-              <div className="mt-1 ml-4 pl-3 border-l border-white/10 space-y-1">
-                {viewModeItems.map((item) => (
+        <nav className="flex-1 p-4 overflow-y-auto">
+          {navGroups.map((group, gi) => (
+            <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-white/5' : ''}>
+              {group.label && (
+                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 mb-1.5">
+                  {group.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     onClick={() => setSidebarOpen(false)}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+                      `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
                         isActive
                           ? 'bg-primary-500/20 text-primary-400 font-medium'
                           : 'text-slate-400 hover:text-white hover:bg-white/5'
                       }`
                     }
                   >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className="w-5 h-5" />
                     <span className="text-sm">{item.label}</span>
                     {item.premium && planName === 'START' && (
                       <span className="ml-auto text-xs bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">PRO</span>
@@ -286,8 +227,8 @@ export function Layout() {
                   </NavLink>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-white/10">
