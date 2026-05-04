@@ -23,8 +23,9 @@ export class SuperAdminService {
   ) {}
 
   async login(dto: SuperAdminLoginDto) {
+    const normalizedEmail = dto.email.toLowerCase().trim();
     const admin = await this.prisma.superAdmin.findUnique({
-      where: { email: dto.email },
+      where: { email: normalizedEmail },
     });
 
     if (!admin || !admin.isActive) {
@@ -56,8 +57,10 @@ export class SuperAdminService {
       throw new ForbiddenException('Segredo de bootstrap inválido');
     }
 
+    const normalizedEmail = dto.email.toLowerCase().trim();
+
     const existing = await this.prisma.superAdmin.findUnique({
-      where: { email: dto.email },
+      where: { email: normalizedEmail },
     });
     if (existing) {
       throw new ConflictException('Email já cadastrado');
@@ -65,7 +68,7 @@ export class SuperAdminService {
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const admin = await this.prisma.superAdmin.create({
-      data: { email: dto.email, name: dto.name, passwordHash },
+      data: { email: normalizedEmail, name: dto.name, passwordHash },
     });
 
     return { id: admin.id, name: admin.name, email: admin.email };

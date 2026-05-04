@@ -13,7 +13,7 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = process.env.SA_EMAIL || 'charlesvsouza@sigmaauto.com.br';
+  const email = (process.env.SA_EMAIL || 'charlesvsouza@sigmaauto.com.br').toLowerCase().trim();
   const name = process.env.SA_NAME || 'Charles Souza';
   const password = process.env.SA_PASSWORD || '2021Bl08Ap303*a';
 

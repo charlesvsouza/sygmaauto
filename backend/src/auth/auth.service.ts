@@ -23,8 +23,9 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthTokens & { user: any }> {
+    const normalizedEmail = dto.email.toLowerCase().trim();
     const existingUser = await this.prisma.user.findFirst({
-      where: { email: dto.email },
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
     });
 
     if (existingUser) {
@@ -76,7 +77,7 @@ export class AuthService {
         data: {
           id: userId,
           tenantId,
-          email: dto.email,
+          email: normalizedEmail,
           recoveryEmail: dto.recoveryEmail?.toLowerCase().trim(),
           passwordHash: await bcrypt.hash(dto.password, 10),
           name: dto.name,
@@ -86,14 +87,15 @@ export class AuthService {
     ]);
 
     return {
-      ...this.generateTokens({ sub: userId, email: dto.email, tenantId, role: 'MASTER' }),
-      user: { id: userId, email: dto.email, name: dto.name, role: 'MASTER', tenantId },
+      ...this.generateTokens({ sub: userId, email: normalizedEmail, tenantId, role: 'MASTER' }),
+      user: { id: userId, email: normalizedEmail, name: dto.name, role: 'MASTER', tenantId },
     };
   }
 
   async login(dto: LoginDto): Promise<AuthTokens> {
+    const normalizedEmail = dto.email.toLowerCase().trim();
     const user = await this.prisma.user.findFirst({
-      where: { email: dto.email },
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
       include: { tenant: { include: { subscription: { include: { plan: true } } } } },
     });
 
