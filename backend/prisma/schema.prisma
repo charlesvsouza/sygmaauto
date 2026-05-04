@@ -65,7 +65,6 @@ model Tenant {
   logo            String?
   laborHourlyRate Float?   @default(120)
   diagnosticHours Float?   @default(0.5)  // horas padrão para serviço de diagnóstico
-  defaultCommissionPercent Float? @default(0) // percentual de comissão padrão global
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
