@@ -7,6 +7,8 @@ export type PlanFeatureKey =
   | 'CHECKLIST'
   | 'DRE_KPI_RELATORIOS'
   | 'COMISSOES'
+  | 'FINANCEIRO'
+  | 'ESTOQUE'
   | 'MULTIUNIDADE';
 
 const PLAN_LEVEL: Record<PlanName, number> = {
@@ -22,6 +24,8 @@ const FEATURE_MIN_PLAN: Record<PlanFeatureKey, PlanName> = {
   CHECKLIST: 'PRO',
   DRE_KPI_RELATORIOS: 'PRO',
   COMISSOES: 'PRO',
+  FINANCEIRO: 'PRO',
+  ESTOQUE: 'PRO',
   MULTIUNIDADE: 'REDE',
 };
 
@@ -45,6 +49,8 @@ export function featureLabel(feature: PlanFeatureKey): string {
     CHECKLIST: 'Checklist de Entrada/Saída',
     DRE_KPI_RELATORIOS: 'DRE, KPI e Relatórios',
     COMISSOES: 'Comissões',
+    FINANCEIRO: 'Financeiro e Fluxo de Caixa',
+    ESTOQUE: 'Estoque e Reserva de Peças',
     MULTIUNIDADE: 'Multiunidade',
   };
   return labels[feature];

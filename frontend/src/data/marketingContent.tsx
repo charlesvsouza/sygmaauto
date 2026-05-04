@@ -60,7 +60,7 @@ export const plans: Plan[] = [
     price: 'R$ 149',
     period: '/mes',
     description: 'Para oficinas iniciando com o fluxo essencial do dia a dia.',
-    highlights: ['Ate 50 O.S./mes', 'Fluxo de caixa + estoque + reserva de pecas', 'Ate 3 usuarios'],
+    highlights: ['Ate 50 O.S./mes', 'Clientes e Veiculos', 'Ate 3 usuarios'],
   },
   {
     name: 'PRO',
@@ -68,7 +68,7 @@ export const plans: Plan[] = [
     price: 'R$ 299',
     period: '/mes',
     description: 'Aceleracao com operacao completa, visao gerencial e produtividade.',
-    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'Kanban e KPI em tempo real', 'Ate 10 usuarios'],
+    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'Kanban e KPI em tempo real', 'Ate 15 usuarios'],
     featured: true,
   },
   {
@@ -83,10 +83,10 @@ export const plans: Plan[] = [
 
 export const planCapabilities: PlanCapability[] = [
   { feature: 'Ordens de Servico por mes', start: '50', pro: 'Ilimitado', rede: 'Ilimitado' },
-  { feature: 'Usuarios inclusos', start: '3', pro: '10', rede: 'Ilimitado' },
+  { feature: 'Usuarios inclusos', start: '3', pro: '15', rede: 'Ilimitado' },
   { feature: 'Clientes e Veiculos', start: 'Sim', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Financeiro e Fluxo de Caixa', start: 'Sim', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Estoque e Reserva de Pecas', start: 'Sim', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Financeiro e Fluxo de Caixa', start: 'Nao', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Estoque e Reserva de Pecas', start: 'Nao', pro: 'Sim', rede: 'Sim' },
   { feature: 'Checklist Entrada/Saida', start: 'Nao', pro: 'Sim', rede: 'Sim' },
   { feature: 'Kanban Patio + Recepcao TV', start: 'Nao', pro: 'Sim', rede: 'Sim' },
   { feature: 'DRE, KPI e Relatorios', start: 'Nao', pro: 'Sim', rede: 'Sim' },
