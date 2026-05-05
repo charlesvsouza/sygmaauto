@@ -41,7 +41,7 @@ export class AiService {
         select: { id: true, name: true, basePrice: true, hourlyRate: true, tmo: true },
         take: 50,
       }),
-      this.prisma.inventoryItem.findMany({
+      this.prisma.part.findMany({
         where: { tenantId },
         select: { id: true, name: true, unitPrice: true },
         take: 50,
@@ -154,7 +154,7 @@ export class AiService {
         where: { tenantId },
         select: { id: true, name: true, basePrice: true, hourlyRate: true, tmo: true },
       }),
-      this.prisma.inventoryItem.findMany({
+      this.prisma.part.findMany({
         where: { tenantId },
         select: { id: true, name: true, unitPrice: true },
       }),
