@@ -71,7 +71,7 @@ function fmtMM(v: string | number | undefined | null) {
 function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any): string {
   const isMotorAvulso = !os.vehicleId && !os.vehicle;
   const motorLabel = isMotorAvulso
-    ? `${fmt(os.motorBrand)} ${fmt(os.motorModel)} — Serial: ${fmt(os.motorSerial)}`
+    ? `${fmt(os.equipmentBrand)} ${fmt(os.equipmentModel)}${os.serialNumber ? ` — Serial: ${os.serialNumber}` : ''}`.trim()
     : `${fmt(os.vehicle?.brand)} ${fmt(os.vehicle?.model)} (${fmt(os.vehicle?.plate)})`;
 
   const osNum = os.id.slice(-6).toUpperCase();
@@ -145,7 +145,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
       `).join('')
     : '';
 
-  const total = Number(os.totalCost ?? os.totalServices ?? 0);
+  const total = Number(os.totalCost ?? 0);
 
   return `
 <div class="laudo">

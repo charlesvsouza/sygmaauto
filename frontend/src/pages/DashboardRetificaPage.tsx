@@ -270,7 +270,7 @@ export function DashboardRetificaPage() {
         const sla = PHASE_SLA_HOURS[o.status];
         const level = !sla ? 'none' : h >= sla.danger ? 'danger' : h >= sla.warn ? 'warning' : 'none';
         const motorLabel = !o.vehicleId && !o.vehicle
-          ? `${o.motorBrand || 'Motor'} ${o.motorModel || ''}`.trim()
+          ? `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || ''}`.trim()
           : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veiculo sem identificacao';
 
         return {

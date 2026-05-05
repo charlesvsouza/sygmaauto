@@ -131,10 +131,10 @@ function RetificaCard({
   // Determina como exibir o objeto (veículo ou motor avulso)
   const isMotorAvulso = !os.vehicleId && !os.vehicle;
   const objectLabel = isMotorAvulso
-    ? (os.motorBrand && os.motorModel ? `${os.motorBrand} ${os.motorModel}` : 'Motor avulso')
+    ? (os.equipmentBrand && os.equipmentModel ? `${os.equipmentBrand} ${os.equipmentModel}` : 'Motor avulso')
     : `${os.vehicle?.brand ?? ''} ${os.vehicle?.model ?? ''}`.trim();
   const subLabel = isMotorAvulso
-    ? (os.motorSerial ?? '')
+    ? (os.serialNumber ?? '')
     : (os.vehicle?.plate ?? '');
 
   return (
