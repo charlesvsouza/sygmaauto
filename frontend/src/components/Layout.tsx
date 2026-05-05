@@ -124,7 +124,7 @@ export function Layout() {
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
         <div className="px-4 py-2.5 border-b border-white/10">
-          <SigmaAutoLogo variant="compact" size={34} />
+          <SigmaAutoLogo variant="full" size={34} />
           <div className="mt-1.5 pl-0.5">
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               planName === 'START' ? 'bg-slate-700 text-slate-300' :
@@ -211,7 +211,7 @@ export function Layout() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <SigmaAutoLogo variant="compact" size={36} />
+          <SigmaAutoLogo variant="full" size={36} />
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400">
             <X className="w-6 h-6" />
           </button>

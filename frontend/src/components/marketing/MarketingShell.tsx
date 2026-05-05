@@ -65,7 +65,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
           <Link to="/" className="flex-shrink-0">
-            <SigmaAutoLogo variant="compact" size={32} />
+            <SigmaAutoLogo variant="full" size={32} />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
