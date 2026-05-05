@@ -109,11 +109,13 @@ model Subscription {
   tenantId      String             @unique
   planId        String
   status       String @default("TRIALING")
+  billingCycle String             @default("MONTHLY") // MONTHLY | QUARTERLY | SEMIANNUAL | ANNUAL
   startedAt    DateTime           @default(now())
   currentPeriodStart DateTime     @default(now())
   currentPeriodEnd   DateTime
   cancelAtPeriodEnd   Boolean      @default(false)
   trialEndsAt   DateTime?
+  renewalReminderSentAt DateTime? // última vez que enviamos o lembrete de renovação
   
   // Quotas de O.S. mensal
   osCreatedThisMonth    Int       @default(0)  // Contador de O.S. criadas neste mês

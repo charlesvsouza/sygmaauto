@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   ForbiddenException,
   InternalServerErrorException,
@@ -28,6 +29,8 @@ export enum SubscriptionStatus {
 
 @Injectable()
 export class SubscriptionsService {
+  private readonly logger = new Logger(SubscriptionsService.name);
+
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
@@ -504,15 +507,19 @@ export class SubscriptionsService {
       };
     }
 
+    const resolvedBillingCycle = billingCycle || BillingCycle.MONTHLY;
+
     const updated = await this.prisma.subscription.update({
       where: { tenantId },
       data: {
         planId: plan.id,
         status: 'ACTIVE',
+        billingCycle: resolvedBillingCycle,
         cancelAtPeriodEnd: false,
         trialEndsAt: null,
         currentPeriodStart,
         currentPeriodEnd,
+        renewalReminderSentAt: null, // reset para o novo ciclo
       },
       include: { plan: true },
     });
@@ -547,13 +554,33 @@ export class SubscriptionsService {
       }
     }
 
+    // Notificação interna de nova venda/renovação
+    const paymentAmount =
+      paymentData?.transaction_amount ??
+      paymentData?.transaction_details?.total_paid_amount ??
+      0;
+    const notifyEmail = inviteEmail || tenant.setupInviteEmail || tenant.email || '';
+    this.emailService
+      .sendAdminNewSaleNotification({
+        companyName: tenant.name,
+        planName: plan.name,
+        billingCycle: resolvedBillingCycle,
+        amount: Number(paymentAmount),
+        inviteEmail: notifyEmail,
+        paymentId: String(paymentId),
+        tenantId,
+      })
+      .catch((err: any) =>
+        this.logger.error(`Falha ao enviar notificação admin de venda: ${err?.message}`),
+      );
+
     return {
       received: true,
       processed: true,
       paymentId: String(paymentId),
       tenantId,
       plan: updated.plan.name,
-      billingCycle: billingCycle || BillingCycle.MONTHLY,
+      billingCycle: resolvedBillingCycle,
       status: updated.status,
     };
   }
