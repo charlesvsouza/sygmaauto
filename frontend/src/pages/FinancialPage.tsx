@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { financialApi, tenantsApi } from '../api/client';
+import { useAuthStore } from '../store/authStore';
 import {
   DollarSign,
   TrendingUp,
@@ -62,6 +63,9 @@ const containerVariants = {
 const itemVariants = { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } };
 
 export function FinancialPage() {
+  const { user } = useAuthStore();
+  const userRole = String(user?.role ?? '').toUpperCase();
+  const canManageFinancial = ['MASTER', 'ADMIN'].includes(userRole);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -102,6 +106,10 @@ export function FinancialPage() {
 
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canManageFinancial) {
+      alert('Seu perfil nao possui permissao para lancar movimentacoes financeiras.');
+      return;
+    }
     try {
       await financialApi.create(formData);
       setShowAddModal(false);
@@ -276,7 +284,9 @@ export function FinancialPage() {
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2"
+            disabled={!canManageFinancial}
+            className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            title={!canManageFinancial ? 'Sem permissao para lancamentos financeiros' : undefined}
           >
             <Plus size={18} /> Lançar Movimentação
           </button>
@@ -559,7 +569,11 @@ export function FinancialPage() {
                 </div>
 
                 <div className="pt-6">
-                  <button type="submit" className="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95">
+                  <button
+                    type="submit"
+                    disabled={!canManageFinancial}
+                    className="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Confirmar Lançamento
                   </button>
                 </div>

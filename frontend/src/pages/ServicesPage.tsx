@@ -76,6 +76,10 @@ export function ServicesPage() {
   };
 
   const handleEdit = (service: any) => {
+    if (!canManageServices) {
+      alert('Voce nao tem permissao para editar servicos.');
+      return;
+    }
     setEditingService(service);
     setFormData({
       name: service.name,
@@ -236,10 +240,24 @@ export function ServicesPage() {
                       <td className="px-6 py-4 text-right text-base font-black text-slate-900">R$ {finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => handleEdit(service)} className="p-2 bg-slate-100 hover:bg-slate-900 hover:text-white rounded-xl transition-all">
+                          <button
+                            onClick={() => handleEdit(service)}
+                            disabled={!canManageServices}
+                            className={cn(
+                              'p-2 rounded-xl transition-all',
+                              canManageServices ? 'bg-slate-100 hover:bg-slate-900 hover:text-white' : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                            )}
+                          >
                             <Edit size={16} />
                           </button>
-                          <button onClick={() => handleDelete(service.id)} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all">
+                          <button
+                            onClick={() => handleDelete(service.id)}
+                            disabled={!canManageServices}
+                            className={cn(
+                              'p-2 rounded-xl transition-all',
+                              canManageServices ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                            )}
+                          >
                             <Trash2 size={16} />
                           </button>
                         </div>
