@@ -1244,7 +1244,28 @@ export function ServiceOrdersPage() {
                     <h3 className="text-[10px] font-black text-primary-400 uppercase tracking-widest flex items-center gap-2">
                       <Car size={13} /> Dados do Veículo
                     </h3>
-                    <div className="relative" ref={statusDropdownRef}>
+                    <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
+                      {/* Botão retroceder fase — ADMIN/MASTER em OS não finalizadas */}
+                      {canChangeStatus && ['MASTER', 'ADMIN'].includes(user?.role ?? '') &&
+                       !CLOSED_STATUSES.includes(selectedOrder.status) &&
+                       selectedOrder.status !== 'ABERTA' && (() => {
+                        const currentPhaseIdx = activeFlowPhases.findIndex((p) => p.statuses.includes(selectedOrder.status));
+                        const prevPhase = currentPhaseIdx > 0 ? activeFlowPhases[currentPhaseIdx - 1] : null;
+                        if (!prevPhase) return null;
+                        const prevStatus = prevPhase.statuses[0];
+                        return (
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta ação é para correção de fluxo.`)) return;
+                              await changeStatus(prevStatus, true);
+                            }}
+                            title={`Retroceder para: ${prevPhase.label}`}
+                            className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 transition-all"
+                          >
+                            ← Voltar
+                          </button>
+                        );
+                       })()}
                       {canChangeStatus ? (
                         <button
                           onClick={() => setShowStatusDropdown((v) => !v)}

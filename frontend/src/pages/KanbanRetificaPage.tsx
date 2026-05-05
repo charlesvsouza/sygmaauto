@@ -37,6 +37,18 @@ const NEXT_STATUS: Record<string, string> = {
   TESTE_FINAL:                   'PRONTO_ENTREGA',
 };
 
+const PREV_STATUS: Record<string, string> = {
+  DESMONTAGEM:                   'ABERTA',
+  METROLOGIA:                    'DESMONTAGEM',
+  ORCAMENTO_RETIFICA:            'METROLOGIA',
+  AGUARDANDO_APROVACAO_RETIFICA: 'ORCAMENTO_RETIFICA',
+  APROVADO:                      'AGUARDANDO_APROVACAO_RETIFICA',
+  EM_RETIFICA:                   'APROVADO',
+  MONTAGEM:                      'EM_RETIFICA',
+  TESTE_FINAL:                   'MONTAGEM',
+  PRONTO_ENTREGA:                'TESTE_FINAL',
+};
+
 // SLA por fase (horas)
 const PHASE_SLA: Record<string, { warn: number; danger: number }> = {
   ABERTA:                        { warn: 4,   danger: 8 },
@@ -82,6 +94,8 @@ function urgencyColor(os: any) {
 function RetificaCard({
   os,
   onAdvance,
+  onRollback,
+  canRollback,
   advancing,
   tvMode,
   onLaudo,
@@ -89,12 +103,15 @@ function RetificaCard({
 }: {
   os: any;
   onAdvance: (id: string, nextStatus: string) => void;
+  onRollback: (id: string, prevStatus: string) => void;
   advancing: string | null;
   tvMode: boolean;
   onLaudo: (os: any) => void;
   focused?: boolean;
+  canRollback?: boolean;
 }) {
   const next = NEXT_STATUS[os.status];
+  const prev = PREV_STATUS[os.status];
   const isAdv = advancing === os.id;
   const { level, reason } = getAlertLevel(os);
   const statusRefDate = os.statusChangedAt || os.updatedAt || os.createdAt;
@@ -192,16 +209,31 @@ function RetificaCard({
         )}
       </div>
 
-      {/* Avançar */}
-      {next && (
-        <button
-          onClick={() => onAdvance(os.id, next)}
-          disabled={isAdv}
-          className="w-full mt-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
-        >
-          {isAdv ? <Loader2 size={11} className="animate-spin" /> : <>→ Avançar</>}
-        </button>
-      )}
+      {/* Avançar + Voltar */}
+      <div className={`flex gap-1.5 mt-1 ${prev && canRollback ? 'grid grid-cols-[auto_1fr]' : ''}`}>
+        {prev && canRollback && (
+          <button
+            onClick={() => {
+              if (!confirm('Retroceder para a fase anterior? Use apenas para corrigir o fluxo.')) return;
+              onRollback(os.id, prev);
+            }}
+            disabled={isAdv}
+            title="Retroceder fase"
+            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 font-black transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
+          >
+            ←
+          </button>
+        )}
+        {next && (
+          <button
+            onClick={() => onAdvance(os.id, next)}
+            disabled={isAdv}
+            className="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
+          >
+            {isAdv ? <Loader2 size={11} className="animate-spin" /> : <>→ Avançar</>}
+          </button>
+        )}
+      </div>
 
       {/* Laudo — disponível a partir da Metrologia */}
       {hasMetrologia && (
@@ -218,7 +250,8 @@ function RetificaCard({
 
 // ─── Página ───────────────────────────────────────────────────────────────────
 export function KanbanRetificaPage() {
-  const { tenant } = useAuthStore();
+  const { tenant, user } = useAuthStore();
+  const canRollback = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
   const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders]   = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -299,6 +332,18 @@ export function KanbanRetificaPage() {
       await load(true);
     } catch {
       setError('Erro ao avançar status');
+    } finally {
+      setAdvancing(null);
+    }
+  };
+
+  const handleRollback = async (id: string, prevStatus: string) => {
+    setAdvancing(id);
+    try {
+      await serviceOrdersApi.updateStatus(id, { status: prevStatus, adminOverride: true } as any);
+      await load(true);
+    } catch {
+      setError('Erro ao retroceder status');
     } finally {
       setAdvancing(null);
     }
@@ -421,6 +466,8 @@ export function KanbanRetificaPage() {
                             key={os.id}
                             os={os}
                             onAdvance={handleAdvance}
+                            onRollback={handleRollback}
+                            canRollback={canRollback}
                             advancing={advancing}
                             tvMode={tvMode}
                             onLaudo={setLaudoTarget}
