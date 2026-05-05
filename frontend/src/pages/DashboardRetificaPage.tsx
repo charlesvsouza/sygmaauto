@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { serviceOrdersApi } from '../api/client';
 import {
   Activity,
+  AlertTriangle,
   CheckCircle2,
   Clock3,
   Loader2,
   Percent,
   RefreshCw,
+  Timer,
   Wrench,
 } from 'lucide-react';
 import {
@@ -76,6 +79,19 @@ const PHASE_COLOR: Record<string, string> = {
   REPROVADO: '#b91c1c',
 };
 
+const PHASE_SLA_HOURS: Record<string, { warn: number; danger: number }> = {
+  ABERTA: { warn: 4, danger: 8 },
+  DESMONTAGEM: { warn: 8, danger: 24 },
+  METROLOGIA: { warn: 12, danger: 48 },
+  ORCAMENTO_RETIFICA: { warn: 24, danger: 72 },
+  AGUARDANDO_APROVACAO_RETIFICA: { warn: 48, danger: 120 },
+  APROVADO: { warn: 2, danger: 6 },
+  EM_RETIFICA: { warn: 48, danger: 120 },
+  MONTAGEM: { warn: 12, danger: 36 },
+  TESTE_FINAL: { warn: 4, danger: 12 },
+  PRONTO_ENTREGA: { warn: 24, danger: 72 },
+};
+
 const PERIODS = [
   { key: '7d', label: '7 dias', days: 7 },
   { key: '30d', label: '30 dias', days: 30 },
@@ -105,6 +121,7 @@ function dateRef(os: any) {
 }
 
 export function DashboardRetificaPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [orders, setOrders] = useState<any[]>([]);
@@ -245,6 +262,40 @@ export function DashboardRetificaPage() {
       })),
     [phaseAvgHours],
   );
+
+  const acoesCriticas = useMemo(() => {
+    const rows = flowOrders
+      .map((o: any) => {
+        const h = hoursSince(o.statusChangedAt || o.updatedAt || o.createdAt);
+        const sla = PHASE_SLA_HOURS[o.status];
+        const level = !sla ? 'none' : h >= sla.danger ? 'danger' : h >= sla.warn ? 'warning' : 'none';
+        const motorLabel = !o.vehicleId && !o.vehicle
+          ? `${o.motorBrand || 'Motor'} ${o.motorModel || ''}`.trim()
+          : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veiculo sem identificacao';
+
+        return {
+          id: o.id,
+          shortId: String(o.id).slice(-6).toUpperCase(),
+          customer: o.customer?.name || 'Cliente nao informado',
+          status: o.status,
+          statusLabel: PHASE_LABEL[o.status] || o.status,
+          elapsedHours: h,
+          elapsedText: fmtHours(h),
+          level,
+          reason:
+            level === 'danger'
+              ? `SLA critico: ${Math.floor(h)}h na fase`
+              : level === 'warning'
+                ? `Atencao: ${Math.floor(h)}h na fase`
+                : '',
+          motorLabel,
+        };
+      })
+      .filter((r) => r.level !== 'none')
+      .sort((a, b) => b.elapsedHours - a.elapsedHours);
+
+    return rows.slice(0, 8);
+  }, [flowOrders]);
 
   if (loading) {
     return (
@@ -394,6 +445,63 @@ export function DashboardRetificaPage() {
               </BarChart>
             </ResponsiveContainer>
           </ChartShell>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-slate-900/60 p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+            <div>
+              <h3 className="text-sm font-black text-white">Acoes Prioritarias</h3>
+              <p className="text-xs text-slate-400">Motores com tempo acima do SLA da fase atual.</p>
+            </div>
+            <button
+              onClick={() => navigate('/kanban-retifica')}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/90 hover:bg-blue-500 text-xs font-black text-white"
+            >
+              Ir para Kanban Retifica
+            </button>
+          </div>
+
+          {!acoesCriticas.length ? (
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-200 text-sm">
+              Nenhum motor em estado de atencao critica no momento.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {acoesCriticas.map((item) => (
+                <div
+                  key={item.id}
+                  className={`rounded-lg border px-3 py-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2 ${
+                    item.level === 'danger'
+                      ? 'border-red-500/40 bg-red-500/10'
+                      : 'border-amber-500/40 bg-amber-500/10'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 text-sm font-black text-white">
+                      <span>#{item.shortId}</span>
+                      <span className="text-slate-300">{item.statusLabel}</span>
+                      <span className="text-slate-400">{item.elapsedText}</span>
+                    </div>
+                    <p className="text-xs text-slate-300 truncate">{item.customer} • {item.motorLabel}</p>
+                    <p
+                      className={`text-xs mt-1 inline-flex items-center gap-1 ${
+                        item.level === 'danger' ? 'text-red-300' : 'text-amber-300'
+                      }`}
+                    >
+                      {item.level === 'danger' ? <AlertTriangle size={12} /> : <Timer size={12} />}
+                      {item.reason}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/kanban-retifica')}
+                    className="shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+                  >
+                    Tratar no Kanban
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="rounded-xl border border-white/10 bg-slate-900/60 p-4">
