@@ -106,7 +106,7 @@ body {
 
 .app-shell-header {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background:
     radial-gradient(120% 120% at 95% -25%, rgba(var(--theme-glow-rgb), 0.18), transparent 50%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.9));
