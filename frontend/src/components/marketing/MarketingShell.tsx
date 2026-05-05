@@ -130,10 +130,8 @@ export function MarketingShell({ children }: MarketingShellProps) {
       <footer className="relative z-10 border-t border-white/8 py-10 mt-10">
         <div className="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center lg:items-start gap-1">
-            <span className="text-base font-black tracking-tight text-white">
-              Sigma<span className="text-[#ff7b2f]">Auto</span>
-            </span>
-            <span className="text-[11px] text-white/30">Sistema para Oficina Mecânica · ERP Automotivo</span>
+            <SigmaAutoLogo variant="compact" size={28} />
+            <span className="text-[11px] text-white/30 mt-1">Sistema para Oficina Mecânica · ERP Automotivo</span>
           </div>
 
           <div className="flex items-center gap-3">
