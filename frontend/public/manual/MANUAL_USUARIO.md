@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 1.2 — Maio/2026  
+**Versão:** 2.0 — Maio/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -25,6 +25,10 @@
 15. [Configurações e Assinatura](#15-configurações-e-assinatura)
 16. [Perfis de Acesso (Roles)](#16-perfis-de-acesso-roles)
 17. [Dúvidas Frequentes](#17-dúvidas-frequentes)
+18. [Comissões de Mecânicos](#18-comissões-de-mecânicos)
+19. [Manutenção Preventiva Automática](#19-manutenção-preventiva-automática)
+20. [NPS — Pesquisa de Satisfação](#20-nps--pesquisa-de-satisfação)
+21. [Módulo Retífica de Motores — Guia Completo](#21-módulo-retífica-de-motores--guia-completo)
 
 ---
 
@@ -144,6 +148,24 @@ Dentro da OS aberta:
 1. Clique em **"Adicionar Serviço"** para incluir mão de obra do catálogo
 2. Clique em **"Adicionar Peça"** para incluir peças do estoque
 3. Informe a quantidade e confirme
+
+### 5.3A IA Assistiva no Orçamento *(novo — plano PRO e REDE)*
+
+A IA Assistiva sugere serviços e peças automaticamente com base no **sintoma relatado** pelo cliente, cruzando com o catálogo da sua oficina.
+
+**Como usar:**
+
+1. Dentro de uma OS, clique em **"Adicionar Serviço"** ou **"Lançar Peça"** para abrir o catálogo
+2. No cabeçalho do painel, clique no botão **✦ IA** (roxo)
+3. Descreva o problema no campo que aparece:
+   - Ex: *"motor falhando ao acelerar, barulho na suspensão dianteira"*
+   - Ex: *"freios rangendo, pedal mole"*
+   - Ex: *"luz do motor acesa, consumo alto"*
+4. Clique em **"Sugerir"** ou pressione **Enter**
+5. O sistema retorna até 5 sugestões com nome, motivo e preço estimado
+6. Clique em **"+ Lançar"** para adicionar cada item diretamente na OS
+
+> Dica: as sugestões consideram o veículo da OS e os itens já lançados. Use como ponto de partida — revise antes de confirmar com o cliente.
 
 ### 5.4 Reservar peças e gerar Pedido de Compra
 
@@ -670,6 +692,270 @@ Sim. As peças que já estão no estoque são reservadas (debitadas) no momento 
 
 **Posso usar o Checklist sem tirar fotos?**  
 Sim. As fotos são opcionais. Você pode preencher apenas as condições de cada área do veículo e salvar sem adicionar imagens.
+
+---
+
+## 18. Comissões de Mecânicos
+
+> Disponível no plano **PRO** e **REDE**.
+
+O módulo de Comissões calcula e controla automaticamente a remuneração variável de cada técnico com base nos serviços que executou.
+
+### 18.1 Como as comissões são calculadas
+
+Ao faturar uma OS (status FATURADO), o sistema gera automaticamente uma comissão para cada executor vinculado a um item de serviço, com base na sua taxa configurada.
+
+| Função | Taxa padrão |
+|---|---|
+| Mecânico / Eletricista | 10% |
+| Funileiro / Pintor / Preparador | 8% |
+| Lavador / Embelezador | 6% |
+| Aprendiz | 5% |
+
+> As taxas podem ser personalizadas por colaborador em **Usuários → editar → Taxa de Comissão**.
+
+### 18.2 Configurar executor em um item de serviço
+
+1. Ao adicionar um serviço na OS, selecione o **executor responsável** no campo "Executor do Serviço"
+2. O sistema vincula o item ao colaborador e calculará a comissão no faturamento
+
+### 18.3 Visualizar comissões
+
+1. Clique em **Comissões** no menu lateral
+2. Filtre por **período** e/ou **área** (Mecânica, Elétrica, Funilaria, etc.)
+3. Veja o ranking de colaboradores por valor, com totais **Pendente** e **Pago**
+
+### 18.4 Marcar como pago
+
+Clique no botão **"Marcar como pago"** ao lado de cada comissão para registrar o pagamento. O status muda de **PENDENTE** para **PAGO**.
+
+---
+
+## 19. Manutenção Preventiva Automática
+
+> Disponível no plano **PRO** e **REDE**.
+
+O sistema monitora automaticamente os veículos cadastrados e envia lembretes de revisão via **WhatsApp** quando a manutenção estiver vencida.
+
+### 19.1 Como funciona
+
+- Todo dia às **8h**, o sistema verifica veículos com:
+  - **KM atual** acima do intervalo de revisão configurado, **ou**
+  - **Data da última revisão** superior ao intervalo em meses configurado
+- Para os veículos identificados, envia mensagem WhatsApp ao cliente com o lembrete
+
+### 19.2 Configurar intervalo de revisão por veículo
+
+1. Acesse **Veículos** e abra o cadastro do veículo
+2. Preencha:
+   - **KM atual**
+   - **Intervalo de revisão (KM)** — ex: 10.000 km
+   - **Intervalo de revisão (meses)** — ex: 6 meses
+   - **Data da última revisão**
+3. Salve
+
+### 19.3 Consultar veículos com manutenção vencida
+
+1. Clique em **Manutenção Preventiva** no menu lateral
+2. O painel lista todos os veículos com manutenção vencida no momento, com o motivo (KM ou prazo)
+
+> A funcionalidade depende do WhatsApp estar **conectado** e do telefone do cliente estar cadastrado.
+
+---
+
+## 20. NPS — Pesquisa de Satisfação
+
+> Disponível no plano **PRO** e **REDE**.
+
+O NPS (Net Promoter Score) mede a satisfação do cliente automaticamente após a entrega do veículo.
+
+### 20.1 Como funciona
+
+- Ao faturar ou entregar uma OS (status FATURADO/ENTREGUE), o sistema envia automaticamente um link de pesquisa via **WhatsApp** para o cliente
+- O cliente acessa o link, dá uma nota de **0 a 10** e pode deixar um comentário
+- As respostas são consolidadas no painel de NPS
+
+### 20.2 Dashboard NPS
+
+1. Clique em **NPS** no menu lateral
+2. O painel exibe:
+   - **Score NPS** calculado (% Promotores − % Detratores)
+   - Distribuição por categoria: **Promotores** (9–10), **Neutros** (7–8), **Detratores** (0–6)
+   - Lista de respostas com nota, comentário, cliente e data
+   - Totais de pesquisas enviadas, respondidas e taxa de resposta
+
+### 20.3 Enviar pesquisa manualmente
+
+1. Dentro de uma OS, clique em **"Enviar NPS"** (disponível após faturamento)
+2. O link de pesquisa é enviado imediatamente via WhatsApp
+
+### 20.4 Interpretação do Score
+
+| Score | Situação |
+|---|---|
+| **75 a 100** | Excelente — clientes muito satisfeitos |
+| **50 a 74** | Bom — mas há espaço para melhorias |
+| **0 a 49** | Atenção — investigar causas de insatisfação |
+| **Abaixo de 0** | Crítico — ação imediata necessária |
+
+---
+
+## 21. Módulo Retífica de Motores — Guia Completo
+
+> Disponível para oficinas e retificadoras com plano **PRO** ou **REDE**. Ative o tipo de OS "Retífica de Motor" na criação da ordem.
+
+O módulo de Retífica possui um **fluxo de status próprio**, separado das OS convencionais. Ele cobre desde a desmontagem até o teste final, com metrologia em 2 etapas, diagnóstico automático e emissão de laudo técnico.
+
+---
+
+### 21.1 Fluxo de Status da Retífica
+
+```
+ABERTA → DESMONTAGEM → METROLOGIA → ORCAMENTO_RETIFICA
+→ AGUARDANDO_APROVACAO_RETIFICA → EM_RETIFICA
+→ MONTAGEM → TESTE_FINAL → PRONTO_ENTREGA → FATURADO → ENTREGUE
+```
+
+| Status | Descrição |
+|---|---|
+| **ABERTA** | Motor recebido, aguardando desmontagem |
+| **DESMONTAGEM** | Peças sendo separadas e catalogadas |
+| **METROLOGIA** | Medições técnicas sendo realizadas |
+| **ORÇAMENTO RETÍFICA** | Orçamento montado após diagnóstico da metrologia |
+| **AGUARDANDO APROVAÇÃO** | Cliente sendo consultado sobre o orçamento |
+| **EM RETÍFICA** | Trabalho de retífica em execução |
+| **MONTAGEM** | Motor sendo remontado com peças retificadas |
+| **TESTE FINAL** | Motor testado antes da entrega |
+| **PRONTO ENTREGA** | Motor aprovado, aguardando retirada |
+| **FATURADO / ENTREGUE** | Ciclo concluído |
+
+---
+
+### 21.2 Criar uma OS de Retífica
+
+1. Clique em **Ordens de Serviço → Nova OS**
+2. No campo **Tipo de O.S.**, selecione **"Retífica de Motor"**
+3. Preencha:
+   - **Cliente**
+   - **Marca do motor** (ex: Cummins, MWM, Perkins)
+   - **Modelo** e **Número de série** (opcional)
+   - **Reclamação** — descreva o problema relatado
+4. Clique em **Criar OS**
+
+> Diferente de uma OS convencional, a OS de retífica não requer um veículo cadastrado — pode ser um motor avulso trazido pelo cliente.
+
+---
+
+### 21.3 Kanban de Retífica
+
+1. Clique em **Retífica** no menu lateral (ícone de engrenagem)
+2. O Kanban exibe os motores organizados em colunas por status
+3. Cada card mostra: número da OS, modelo do motor, tempo no status atual e alertas de SLA
+
+**Painel de Ações Prioritárias:**
+
+No topo do Kanban de Retífica, um painel destaca automaticamente os motores em situação crítica de SLA — motores com prazo vencido são listados em vermelho, com link direto para o card no Kanban.
+
+**Deep-link de foco:**
+
+Ao clicar em um motor crítico no painel de prioridades, o Kanban rola automaticamente e destaca o card correspondente com uma borda pulsante.
+
+---
+
+### 21.4 Metrologia em 2 Etapas
+
+A metrologia é o coração técnico da retífica. Acesse-a de duas formas:
+
+- Dentro da OS (em qualquer tela): clique no **label "Metrologia"** no andamento da OS
+- No Kanban de Retífica: clique no botão **"Metrologia"** no card do motor
+
+**Etapa 1 — Medições:**
+
+Informe as medições técnicas do motor:
+- **Diâmetro do cilindro** (medição atual vs. especificação)
+- **Ovalização** e **conicidade**
+- **Medição do virabrequim** (munhão e pino de manivela)
+- **Folga lateral e axial**
+- Campo de **observações técnicas** livres
+
+Clique em **"Próximo → Diagnóstico"** para avançar.
+
+**Etapa 2 — Diagnóstico Automático:**
+
+Com base nas medições informadas, o sistema:
+1. Identifica automaticamente quais componentes estão fora da especificação
+2. Sugere serviços de retífica necessários (ex: alargamento de cilindro, retífica de virabrequim)
+3. Sugere peças de reposição do catálogo (ex: jogo de anéis, bronzinas, pistões)
+4. Exibe a lista de sugestões para revisão do técnico
+
+Você pode **aceitar** ou **remover** cada sugestão antes de confirmar. Ao confirmar:
+- Os serviços e peças sugeridos são adicionados automaticamente à OS
+- A OS avança para o status **ORÇAMENTO_RETIFICA**
+
+---
+
+### 21.5 Laudo Técnico de Retífica
+
+Ao confirmar a metrologia, o sistema abre automaticamente o **Laudo Técnico** para impressão.
+
+**O laudo contém:**
+- Dados da oficina (nome, CNPJ, endereço)
+- Dados do motor (marca, modelo, série, OS)
+- Tabela completa das medições realizadas vs. especificações
+- Diagnóstico técnico em texto
+- Serviços e peças indicados
+- Campo de assinatura do técnico responsável
+- Data e número da OS
+
+**Imprimir o laudo:**
+
+1. O laudo abre automaticamente em modal após confirmar a metrologia
+2. Clique em **"Imprimir Laudo"** para enviar à impressora ou salvar como PDF
+3. Para reimprimir a qualquer momento: dentro da OS, clique no botão **"Laudo"** (ícone de documento)
+
+> O laudo serve como documento técnico formal entregue ao cliente junto com o motor.
+
+---
+
+### 21.6 Botão "Voltar Fase" (Admin/Master)
+
+Perfis **MASTER** e **ADMIN** podem retroceder uma OS de Retífica para o status anterior caso seja necessário corrigir um passo.
+
+1. Dentro da OS, clique no botão **"← Voltar fase"** (visível apenas para MASTER/ADMIN)
+2. Confirme a operação
+3. A OS retorna ao status anterior no fluxo
+
+> Este botão não está disponível para OS já finalizadas (FATURADO/ENTREGUE/CANCELADO).
+
+---
+
+### 21.7 Dashboard de Retífica
+
+O Dashboard de Retífica oferece uma visão gerencial dos motores em processo.
+
+**Acesse via:** menu lateral → **Dashboard Retífica**
+
+**O que exibe:**
+- Total de motores em cada fase do fluxo
+- **Painel de Ações Prioritárias** — motores críticos com SLA vencido ordenados por urgência
+- Tempo médio por fase
+- Taxa de conclusão no prazo
+
+---
+
+### 21.8 Perguntas frequentes sobre Retífica
+
+**Posso usar a OS de Retífica para um motor sem veículo?**
+Sim. Na criação, o campo "Veículo" é opcional. Informe a marca, modelo e número de série do motor diretamente.
+
+**O diagnóstico automático é obrigatório?**
+Não. Você pode ignorar as sugestões e lançar serviços/peças manualmente na OS normalmente.
+
+**Posso reimprimir o laudo depois?**
+Sim. A qualquer momento dentro da OS, clique no botão de laudo para reabrir e reimprimir.
+
+**O fluxo de retífica aparece no Kanban convencional?**
+Não. OS do tipo Retífica aparecem apenas no **Kanban de Retífica** (menu lateral → Retífica). O Kanban convencional exibe apenas OS de veículos.
 
 ---
 
