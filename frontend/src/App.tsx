@@ -44,6 +44,9 @@ import { WhatsappPage } from './pages/WhatsappPage';
 import { SuperAdminPage } from './pages/SuperAdminPage';
 import { SuperAdminLoginPage } from './pages/SuperAdminLoginPage';
 import { RetificaMotoresPage } from './pages/RetificaMotoresPage';
+import { MaintenancePage } from './pages/MaintenancePage';
+import { NpsPage } from './pages/NpsPage';
+import { NpsAnswerPage } from './pages/NpsAnswerPage';
 import { ImpersonationBanner } from './components/ImpersonationBanner';
 import { SessionSecurity } from './components/SessionSecurity';
 
@@ -76,6 +79,9 @@ export default function App() {
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
 
+        {/* Pesquisa NPS pública — sem autenticação */}
+        <Route path="/nps/:token" element={<NpsAnswerPage />} />
+
         
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<LoginPage />} />
@@ -103,6 +109,8 @@ export default function App() {
             <Route path="/reports" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><ReportsPage /></PlanFeatureRoute>} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/whatsapp" element={<PlanFeatureRoute feature="WHATSAPP"><WhatsappPage /></PlanFeatureRoute>} />
+            <Route path="/maintenance" element={<PlanFeatureRoute feature="WHATSAPP"><MaintenancePage /></PlanFeatureRoute>} />
+            <Route path="/nps" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><NpsPage /></PlanFeatureRoute>} />
             <Route path="/dashboard-retifica" element={<RetificaModeRoute><DashboardRetificaPage /></RetificaModeRoute>} />
           </Route>
         </Route>

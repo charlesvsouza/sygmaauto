@@ -23,6 +23,7 @@ import {
   FileText,
   Award,
   Cog,
+  Star,
 } from 'lucide-react';
 import { useState } from 'react';
 import { canAccessFeature, canAccessRetificaMode, featureLabel, getFeatureMinPlan, getFeatureUpgradeMessage, getPlanLabel, type PlanFeatureKey } from '../lib/planAccess';
@@ -80,6 +81,7 @@ export function Layout() {
         { to: '/inventory', icon: Package, label: 'Estoque', premium: false },
         { to: '/retifica', icon: Cog, label: 'Modo Retífica', premium: true, retificaMode: true },
         { to: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', premium: true, feature: 'WHATSAPP' },
+        { to: '/maintenance', icon: Bell, label: 'Manutenção Prev.', premium: true, feature: 'WHATSAPP' },
       ],
     },
     {
@@ -104,6 +106,7 @@ export function Layout() {
       items: [
         { to: '/kpis', icon: Gauge, label: 'Indicadores', premium: true, feature: 'DRE_KPI_RELATORIOS' },
         { to: '/reports', icon: FileText, label: 'Relatórios', premium: true, feature: 'DRE_KPI_RELATORIOS' },
+        { to: '/nps', icon: Star, label: 'NPS — Satisfação', premium: true, feature: 'DRE_KPI_RELATORIOS' },
       ],
     },
     {

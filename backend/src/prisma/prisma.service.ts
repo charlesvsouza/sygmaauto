@@ -67,6 +67,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.exec(`ALTER TABLE service_orders ADD COLUMN IF NOT EXISTS "purchaseOrderNumber" TEXT`);
     await this.exec(`ALTER TABLE vehicle_checklists ADD COLUMN IF NOT EXISTS "ownerName" TEXT`);
     await this.exec(`ALTER TABLE vehicle_checklists ADD COLUMN IF NOT EXISTS "ownerType" TEXT DEFAULT 'PROPRIETARIO'`);
+    // NPS Responses
+    await this.exec(`
+      CREATE TABLE IF NOT EXISTS nps_responses (
+        id               TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        "tenantId"       TEXT NOT NULL,
+        "serviceOrderId" TEXT UNIQUE NOT NULL,
+        "customerId"     TEXT NOT NULL,
+        "vehicleId"      TEXT,
+        score            INTEGER,
+        comment          TEXT,
+        token            TEXT UNIQUE NOT NULL,
+        "answeredAt"     TIMESTAMPTZ,
+        "sentAt"         TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "createdAt"      TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
   }
 
   async onModuleDestroy() {

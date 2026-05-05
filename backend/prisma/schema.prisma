@@ -84,6 +84,7 @@ model Tenant {
   checklists            VehicleChecklist[]
   commissions           Commission[]
   commissionRates       CommissionRate[]
+  npsResponses          NpsResponse[]
 
   @@map("tenants")
 }
@@ -191,6 +192,7 @@ model Customer {
   tenant        Tenant        @relation(fields: [tenantId], references: [id])
   vehicles      Vehicle[]
   serviceOrders ServiceOrder[]
+  npsResponses  NpsResponse[]
 
   @@map("customers")
 }
@@ -369,6 +371,7 @@ model ServiceOrder {
   timeline    ServiceOrderTimeline[]
   checklists  VehicleChecklist[]
   commissions Commission[]
+  npsResponse NpsResponse?
 
   @@map("service_orders")
 }
@@ -569,4 +572,28 @@ model Commission {
   user             User             @relation("UserCommissions", fields: [userId], references: [id])
 
   @@map("commissions")
+}
+
+// ────────────────────────────────────────────
+// NPS — Net Promoter Score
+// ────────────────────────────────────────────
+
+model NpsResponse {
+  id             String    @id @default(uuid())
+  tenantId       String
+  serviceOrderId String    @unique  // uma resposta por OS
+  customerId     String
+  vehicleId      String?
+  score          Int?      // 0-10 (null até o cliente responder)
+  comment        String?
+  token          String    @unique  // token público de acesso ao formulário
+  answeredAt     DateTime?
+  sentAt         DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  customer     Customer     @relation(fields: [customerId], references: [id])
+
+  @@map("nps_responses")
 }

@@ -238,6 +238,19 @@ export const managementApi = {
   listTenants: () => api.get('/management/tenants'),
 };
 
+export const maintenanceApi = {
+  getDue: () => api.get('/maintenance/due'),
+};
+
+export const npsApi = {
+  getDashboard: () => api.get('/nps/dashboard'),
+  sendForOrder: (serviceOrderId: string) => api.post(`/nps/send/${serviceOrderId}`),
+  // Públicas (sem autenticação)
+  getForm: (token: string) => axios.get(`${API_URL}/nps/form/${token}`),
+  respond: (token: string, data: { score: number; comment?: string }) =>
+    axios.post(`${API_URL}/nps/${token}/respond`, data),
+};
+
 // ─── Super Admin API (token separado, sem tenant) ────────────────────────────
 const PROD_API_FALLBACK_SA = 'https://sygmaauto-api-production.up.railway.app';
 const SA_BASE = (import.meta.env.VITE_SUPERADMIN_API_URL || import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_API_FALLBACK_SA : 'http://localhost:3000')).replace(/\/+$/, '');

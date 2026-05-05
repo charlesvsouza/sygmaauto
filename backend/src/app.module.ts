@@ -21,6 +21,7 @@ import { ChecklistModule } from './checklist/checklist.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { CommissionsModule } from './commissions/commissions.module';
+import { NpsModule } from './nps/nps.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -56,6 +57,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     WhatsappModule,
     MaintenanceModule,
     CommissionsModule,
+    NpsModule,
   ],
   providers: [TenantMiddleware],
 })
@@ -71,6 +73,8 @@ export class AppModule implements NestModule {
         { path: 'auth/forgot-password/reset', method: RequestMethod.ALL },
         { path: 'onboarding/(.*)', method: RequestMethod.ALL },
         { path: 'service-orders/approval/:token', method: RequestMethod.ALL },
+        { path: 'nps/form/:token', method: RequestMethod.ALL },
+        { path: 'nps/:token/respond', method: RequestMethod.ALL },
         { path: 'webhooks/(.*)', method: RequestMethod.ALL },
         { path: 'superadmin/(.*)', method: RequestMethod.ALL },
       )
