@@ -22,6 +22,8 @@ export function VehiclesPage() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [formData, setFormData] = useState({
     customerId: '',
     plate: '',
@@ -72,6 +74,8 @@ export function VehiclesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
+    setSaveError('');
     try {
       const data = {
         ...formData,
@@ -90,13 +94,22 @@ export function VehiclesPage() {
       setShowModal(false);
       resetForm();
       loadData();
-    } catch (error) {
-      console.error('Falha ao salvar veículo:', error);
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.message ||
+        (Array.isArray(error?.response?.data?.message)
+          ? error.response.data.message.join(', ')
+          : null) ||
+        'Erro ao salvar veículo. Verifique os dados e tente novamente.';
+      setSaveError(Array.isArray(msg) ? msg.join(', ') : msg);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleEdit = (vehicle: any) => {
     setEditingVehicle(vehicle);
+    setSaveError('');
     setFormData({
       customerId: vehicle.customerId,
       plate: vehicle.plate,
@@ -128,6 +141,7 @@ export function VehiclesPage() {
 
   const resetForm = () => {
     setEditingVehicle(null);
+    setSaveError('');
     setFormData({
       customerId: '',
       plate: '',
@@ -292,9 +306,9 @@ export function VehiclesPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+              className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
             >
-              <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
                 <h2 className="text-xl font-bold text-slate-900">
                   {editingVehicle ? 'Editar Veículo' : 'Novo Veículo'}
                 </h2>
@@ -305,7 +319,7 @@ export function VehiclesPage() {
                   <X size={20} />
                 </button>
               </div>
-              <form onSubmit={handleSubmit} className="p-8 space-y-5">
+              <form onSubmit={handleSubmit} className="p-8 space-y-5 overflow-y-auto">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Proprietário (Cliente) *</label>
                   <select
@@ -453,6 +467,11 @@ export function VehiclesPage() {
                   </div>
                 </div>
 
+                {saveError && (
+                  <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                    {saveError}
+                  </p>
+                )}
                 <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
                   <button
                     type="button"
@@ -461,7 +480,12 @@ export function VehiclesPage() {
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className="px-8 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-8 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     {editingVehicle ? 'Salvar Alterações' : 'Cadastrar Veículo'}
                   </button>
                 </div>
