@@ -7,7 +7,7 @@ import {
   RefreshCw, Maximize2, Minimize2, Loader2,
   Cog, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, Package, Ruler, FileText,
 } from 'lucide-react';
-import { MetrologiaModal, type MetrologiaData } from '../components/MetrologiaModal';
+import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
@@ -304,7 +304,7 @@ export function KanbanRetificaPage() {
     }
   };
 
-  const handleMetrologiaSave = async (data: MetrologiaData) => {
+  const handleMetrologiaSave = async (data: MetrologiaData, items: SuggestedItem[]) => {
     if (!metrologiaTarget) return;
     const { id, notes } = metrologiaTarget;
     // Mescla com notes existente (se já for JSON) ou cria novo
@@ -313,6 +313,17 @@ export function KanbanRetificaPage() {
     const merged = JSON.stringify({ ...existing, metrologia: data });
     await serviceOrdersApi.update(id, { notes: merged });
     await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
+    // Adiciona itens sugeridos selecionados à OS
+    for (const item of items) {
+      try {
+        await serviceOrdersApi.addItem(id, {
+          description: item.description,
+          type: item.type === 'service' ? 'service' : 'part',
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+        });
+      } catch { /* ignora falha individual de item */ }
+    }
     setMetrologiaTarget(null);
     await load(true);
   };
