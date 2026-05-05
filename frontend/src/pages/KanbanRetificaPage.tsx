@@ -312,8 +312,8 @@ export function KanbanRetificaPage() {
     // Intercepta avanço para METROLOGIA — abre modal antes
     if (nextStatus === 'METROLOGIA') {
       const os = orders.find((o) => o.id === id);
-      const existingDescriptions = new Set(
-        (os?.items ?? []).map((i: any) => (i.description || i.name || '').toLowerCase())
+      const existingDescriptions = new Set<string>(
+        (os?.items ?? []).map((i: any) => String(i.description || i.name || '').toLowerCase())
       );
       setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), notes: os?.notes ?? null, existingDescriptions });
       return;
