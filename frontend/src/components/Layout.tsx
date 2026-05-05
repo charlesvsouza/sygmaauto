@@ -198,28 +198,6 @@ export function Layout() {
             </div>
           ))}
         </nav>
-
-        {/* User section */}
-        <div className="px-3 py-2 border-t border-white/10 shrink-0">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center shrink-0">
-              <span className="text-xs font-medium text-white">
-                {user?.name?.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-white truncate">{user?.name}</p>
-              <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-xs">Sair</span>
-          </button>
-        </div>
       </aside>
 
       {/* Mobile sidebar backdrop */}
@@ -365,6 +343,38 @@ export function Layout() {
                 Migrar para o Premium
               </button>
             )}
+
+            {/* Divider */}
+            <div className="w-px h-6 bg-slate-200" />
+
+            {/* User avatar + name + logout */}
+            <div className="relative group">
+              <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-slate-100 transition-all">
+                <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-xs font-semibold text-white">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="text-left hidden xl:block">
+                  <p className="text-xs font-semibold text-slate-800 leading-tight truncate max-w-[140px]">{user?.name}</p>
+                  <p className="text-[10px] text-slate-400 leading-tight truncate max-w-[140px]">{user?.email}</p>
+                </div>
+              </button>
+              {/* Dropdown on hover */}
+              <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-lg border border-slate-200 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="px-3 py-2 border-b border-slate-100">
+                  <p className="text-xs font-semibold text-slate-800 truncate">{user?.name}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-600 hover:text-red-500 hover:bg-red-50 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sair
+                </button>
+              </div>
+            </div>
           </div>
         </header>
 
