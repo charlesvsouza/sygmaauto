@@ -149,6 +149,28 @@ body {
   }
 }
 
+@media (max-height: 660px) {
+  :root {
+    --nav-py: 3px;
+    --nav-px: 8px;
+  }
+}
+
+/* Scrollbar fina e discreta para o nav da sidebar */
+.app-sidebar nav::-webkit-scrollbar {
+  width: 4px;
+}
+.app-sidebar nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.app-sidebar nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+.app-sidebar nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* Componentes base */
 @layer components {
   /* Cards */

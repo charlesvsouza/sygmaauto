@@ -120,7 +120,7 @@ export function Layout() {
       {/* Sidebar - Desktop */}
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
-        <div className="px-4 py-3 border-b border-white/10">
+        <div className="px-4 py-2.5 border-b border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 shrink-0">
               <Wrench className="w-5 h-5 text-white" />
@@ -139,9 +139,9 @@ export function Layout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 min-h-0 px-3 py-2.5 overflow-hidden">
+        <nav className="flex-1 min-h-0 px-3 py-2 overflow-y-auto">
           {navGroups.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? 'mt-2 pt-2 border-t border-white/5' : ''}>
+            <div key={gi} className={gi > 0 ? 'mt-1.5 pt-1.5 border-t border-white/5' : ''}>
               {group.label && (
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest px-2.5 mb-1">
                   {group.label}
@@ -200,7 +200,7 @@ export function Layout() {
         </nav>
 
         {/* User section */}
-        <div className="px-3 py-2.5 border-t border-white/10 shrink-0">
+        <div className="px-3 py-2 border-t border-white/10 shrink-0">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center shrink-0">
               <span className="text-xs font-medium text-white">
