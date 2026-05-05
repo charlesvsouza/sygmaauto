@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
+import { PHASE_SLA_HOURS } from '../lib/retificaConstants';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
 const KANBAN_COLUMNS = [
@@ -49,19 +50,7 @@ const PREV_STATUS: Record<string, string> = {
   PRONTO_ENTREGA:                'TESTE_FINAL',
 };
 
-// SLA por fase (horas)
-const PHASE_SLA: Record<string, { warn: number; danger: number }> = {
-  ABERTA:                        { warn: 4,   danger: 8 },
-  DESMONTAGEM:                   { warn: 8,   danger: 24 },
-  METROLOGIA:                    { warn: 12,  danger: 48 },
-  ORCAMENTO_RETIFICA:            { warn: 24,  danger: 72 },
-  AGUARDANDO_APROVACAO_RETIFICA: { warn: 48,  danger: 120 },
-  APROVADO:                      { warn: 2,   danger: 6 },
-  EM_RETIFICA:                   { warn: 48,  danger: 120 },
-  MONTAGEM:                      { warn: 12,  danger: 36 },
-  TESTE_FINAL:                   { warn: 4,   danger: 12 },
-  PRONTO_ENTREGA:                { warn: 24,  danger: 72 },
-};
+
 
 function elapsed(date: string) {
   const diff = Date.now() - new Date(date).getTime();
@@ -75,7 +64,7 @@ function elapsed(date: string) {
 type AlertLevel = 'none' | 'warning' | 'danger';
 
 function getAlertLevel(os: any): { level: AlertLevel; reason: string } {
-  const sla = PHASE_SLA[os.status];
+  const sla = PHASE_SLA_HOURS[os.status];
   if (!sla) return { level: 'none', reason: '' };
   const h = (Date.now() - new Date(os.statusChangedAt || os.updatedAt || os.createdAt).getTime()) / 3_600_000;
   if (h >= sla.danger) return { level: 'danger', reason: `SLA crítico (${Math.floor(h)}h na fase)` };
@@ -263,7 +252,7 @@ export function KanbanRetificaPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Modal de metrologia
-  const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null } | null>(null);
+  const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null; existingDescriptions: Set<string> } | null>(null);
   // Modal de laudo
   const [laudoTarget, setLaudoTarget] = useState<any | null>(null);
 
@@ -323,7 +312,10 @@ export function KanbanRetificaPage() {
     // Intercepta avanço para METROLOGIA — abre modal antes
     if (nextStatus === 'METROLOGIA') {
       const os = orders.find((o) => o.id === id);
-      setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), notes: os?.notes ?? null });
+      const existingDescriptions = new Set(
+        (os?.items ?? []).map((i: any) => (i.description || i.name || '').toLowerCase())
+      );
+      setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), notes: os?.notes ?? null, existingDescriptions });
       return;
     }
     setAdvancing(id);
@@ -358,8 +350,10 @@ export function KanbanRetificaPage() {
     const merged = JSON.stringify({ ...existing, metrologia: data });
     await serviceOrdersApi.update(id, { notes: merged });
     await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
-    // Adiciona itens sugeridos selecionados à OS
-    for (const item of items) {
+    // Adiciona itens sugeridos selecionados à OS (evita duplicação se modal for reaberto)
+    const existingDescriptions = metrologiaTarget.existingDescriptions;
+    for (const item of items.filter((i) => i.selected)) {
+      if (existingDescriptions.has(item.description.toLowerCase())) continue;
       try {
         await serviceOrdersApi.addItem(id, {
           description: item.description,

@@ -459,6 +459,18 @@ export class ServiceOrdersService {
 
     const updateData: any = { status: newStatus, statusChangedAt: new Date() };
 
+    // Valida metrologia obrigatória antes de avançar para orçamento técnico
+    if (order.orderType === 'RETIFICA_MOTOR' && currentStatus === 'METROLOGIA' && newStatus === 'ORCAMENTO_RETIFICA') {
+      let hasMetrologia = false;
+      try {
+        const parsed = order.notes ? JSON.parse(order.notes as string) : null;
+        hasMetrologia = !!(parsed?.metrologia);
+      } catch { /* notes não é JSON válido */ }
+      if (!hasMetrologia) {
+        throw new BadRequestException('Ficha de metrologia obrigatória antes de avançar para Orçamento Técnico');
+      }
+    }
+
     // Reverte estoque ao reprovar via atualização manual de status
     if (newStatus === 'REPROVADO') {
       const orderWithItems = await this.prisma.serviceOrder.findUnique({
