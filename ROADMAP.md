@@ -1,6 +1,6 @@
 # SigmaAuto — Roadmap & Estratégia Comercial
 
-**Última atualização:** 04/05/2026
+**Última atualização:** 04/05/2026 (sessão 2)
 **Produto:** SigmaAuto — SaaS multi-tenant para gestão de oficinas mecânicas
 **Domínio:** sigmaauto.com.br
 
@@ -116,60 +116,52 @@
   - `CommissionsService`: cálculo automático ao faturar OS, relatório com leaderboard
   - `CommissionsController`: GET /commissions, PATCH /:id/pay, GET/POST /rates
   - Taxas padrão: MECANICO/ELETRICISTA 10%, FUNILEIRO/PINTOR/PREPARADOR 8%, LAVADOR/EMBELEZADOR 6%
-  - **BLOQUEIO:** tabelas `commission_rates` e `commissions` não criadas em produção (ver seção abaixo)
-- [ ] **Seed de Dados Demo** — 48 OS + 10 executores + comissões *(bloqueado — ver abaixo)*
-- [x] **Relatórios Gerenciais com PDF** — página `/reports`, 4 tipos de relatório, visualização e impressão *(implementado em 03/05/2026)*
+- [x] **Relatórios Gerenciais com PDF** — página `/reports`, 6 tipos de relatório, visualização e impressão *(implementado em 03/05/2026)*
   - **Relatório de OS por Período** — filtros: data início/fim + status, KPIs, lista de OS, top clientes
     - Backend: `GET /financial/os-report?startDate=&endDate=&status=`
   - **DRE — Demonstrativo de Resultado** — mês/ano, receita bruta, CMV, margem, despesas por categoria, EBITDA, histórico 6 meses
-    - Usa endpoint existente `GET /financial/dre?year=&month=`
+    - Backend: `GET /financial/dre?year=&month=`
+  - **DRE Anual** — consolidação 12 meses → `GET /financial/dre-anual?year=`
+  - **Indicadores KPI** — 5 períodos em paralelo → `GET /financial/indicadores`
   - **Relatório de Comissões** — filtros: período + área, ranking/leaderboard, totais pendente/pago
-    - Usa endpoint existente `GET /commissions?startDate=&endDate=&workshopArea=`
-  - **Projeção de Pedido de Compra** — análise de giro (90 dias), urgência CRÍTICO/URGENTE/ATENÇÃO, qtd sugerida, custo estimado
+    - Backend: `GET /commissions?startDate=&endDate=&workshopArea=`
+  - **Projeção de Pedido de Compra** — análise de giro (90 dias), urgência CRÍTICO/URGENTE/ATENÇÃO
     - Backend: `GET /inventory/purchase-projection`
   - Visualização inline (modal preview A4) + impressão `window.print()` com CSS dedicado
-  - Layout consistente com FinancialPage e ServiceOrdersPage (mesma filosofia visual)
 - [x] **DRE — Melhorias v2** *(implementado em 03/05/2026)*
   - [x] Bug fix: impressão do DRE exibia preview vazio — `#dre-print` div não estava no DOM
   - [x] Seletor de mês **e** ano via dropdowns (antes: apenas chevrons)
-  - [x] Relatório **DRE Anual** — consolidação de todos os 12 meses → endpoint `GET /financial/dre-anual?year=`
-  - [x] Relatório **Indicadores KPI** — 5 períodos em paralelo: mês atual, trimestre, semestre, semestre anterior, anual → endpoint `GET /financial/indicadores`
-  - [x] KPIs por período: Receita Bruta, Receita Líquida, Margem Bruta (%), EBITDA (%), OS Entregues, Ticket Médio
-  - [x] Disponíveis como relatório imprimível em `/reports` (2 novos tipos: DRE Anual + Indicadores KPI)
+  - [x] Relatório DRE Anual e Indicadores KPI como tipos de relatório imprimível em `/reports`
 - [x] **Página KPI's (Gestão à Vista)** *(implementado em 03/05/2026)*
-  - [x] Menu lateral: item **KPI's** posicionado logo abaixo de **DRE**
-  - [x] Nova rota: `/kpis`
-  - [x] Painel temático para leitura rápida: Financeiro, Operações, Estoque e Pessoas
-  - [x] Gráficos de alto entendimento (barras e pizza) e KPIs executivos em cards
-  - [x] Dados consolidados de endpoints já existentes: financeiro, OS, estoque e comissões
-  - [x] **Fase 1 de indicadores avançados**
-    - [x] ELR (Effective Labor Rate) — faturamento de mão de obra por hora vendida
-    - [x] Retrabalho 30 dias (comeback rate)
-    - [x] Conversão de orçamento (aprovados no funil)
-    - [x] Aging de OS em aberto (0-24h, 24-48h, 48-72h, >72h)
-    - [x] SLA de peças (no prazo x atrasadas x sem previsão)
-  - [x] **Fase 2 de indicadores avançados**
-    - [x] First Time Fix Rate (estimado a partir de retorno em 30 dias)
-    - [x] No-show de agendamento (modo proxy/estimativa)
-    - [x] Distribuição de agenda por turno (manhã/tarde/noite)
-    - [x] Penetração de serviços adicionais (OS com 2+ serviços/labores)
+  - [x] Menu lateral: item **KPI's** posicionado logo abaixo de **DRE** — rota `/kpis`
+  - [x] Painel temático: Financeiro, Operações, Estoque e Pessoas
+  - [x] Fase 1: ELR, retrabalho 30 dias, conversão de orçamento, aging de OS, SLA de peças
+  - [x] Fase 2: First Time Fix Rate, no-show de agendamento, distribuição por turno, penetração de serviços adicionais
+- [x] **Bug fix — RequirePlan incorreto em DRE, Indicadores e Comissões** *(04/05/2026 — commit `124a33c`)*
+  - Endpoints `/financial/dre`, `/financial/dre-anual`, `/financial/indicadores` e `CommissionsController` inteiro estavam com `@RequirePlan('REDE')` mas deveriam exigir apenas `PRO` conforme `planAccess.ts`
+  - Resultado: usuários PRO recebiam **403 Forbidden** ao abrir DRE, KPIs, Comissões e Relatórios
+  - Corrigido: `@RequirePlan('PRO')` nos 4 pontos
+  - KpisPage: `Promise.all` convertido em chamadas independentes — falha de comissões não derruba mais a página inteira
+- [x] **Módulo Retífica — Metrologia e Laudo** *(04/05/2026 — commits `903951d` → `5bf566d`)*
+  - [x] MetrologiaModal em 2 passos: medições (step 1) + diagnóstico automático serviços/peças (step 2)
+  - [x] Label "Metrologia" clicável no Andamento da O.S. na ServiceOrdersPage
+  - [x] Botão `← Voltar` para retroceder fase (ADMIN/MASTER) em OS não finalizadas
+  - [x] Confirmar metrologia → abre LaudoRetificaModal automaticamente para impressão (Kanban + ServiceOrdersPage)
+- [ ] **Seed de Dados Demo** — 48 OS + 10 executores + comissões *(pendente)*
 - [ ] **Lembrete de Manutenção Preventiva** — WhatsApp automático por KM/data
 - [ ] **NPS Automático** — pesquisa pós-entrega, dashboard de satisfação
 
 ---
 
-### ⚠️ Bloqueios Resolvidos — Tabelas de Comissão e Colunas de OS
+### ⚠️ Bloqueios Resolvidos
 
-**Problema 1:** Tabelas `commission_rates` e `commissions` não criadas em produção.
-**Problema 2:** Colunas `statusChangedAt`, `partsReserved`, etc. não existiam no banco → `Internal server error` ao criar O.S.
+**Tabelas de Comissão e Colunas de OS (03/05/2026 — commit `17dfa4d`):**
+- `PrismaService.applyMissingMigrations()`: cada `ALTER TABLE` em `try/catch` independente
+- Correção do nome da tabela: `"ServiceOrderItem"` → `service_order_items`
+- Todas as colunas e tabelas garantidas automaticamente no startup e no release ✅
 
-**Solução definitiva (03/05/2026):**
-- `PrismaService.applyMissingMigrations()`: cada `ALTER TABLE` em `try/catch` independente — falha isolada não bloqueia as demais
-- Correção do nome da tabela: `"ServiceOrderItem"` → `service_order_items` (reflete o `@@map` do schema Prisma)
-- `release.js`: mesma correção aplicada
-- **Resultado:** todas as colunas e tabelas são garantidas automaticamente no startup do app e no release
-
-**Status:** ✅ Resolvido (commit `17dfa4d`)
+**RequirePlan incorreto em DRE, KPIs e Comissões (04/05/2026 — commit `124a33c`):**
+- Endpoints `/dre`, `/dre-anual`, `/indicadores` e `CommissionsController` estavam com `REDE` → corrigido para `PRO` ✅
 
 ---
 
