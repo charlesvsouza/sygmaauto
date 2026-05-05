@@ -118,12 +118,44 @@ async function main() {
     create: { tenantId: demoTenant.id, planId: proPlan.id, status: 'TRIALING', trialEndsAt: trialEnds, currentPeriodStart: new Date(), currentPeriodEnd: trialEnds },
   });
 
-  // ── Usuários ───────────────────────────────────────────────────────────────
-  const [adminPwd, mecPwd, recPwd] = await Promise.all([bcrypt.hash('admin123', 10), bcrypt.hash('mecanico123', 10), bcrypt.hash('recepcao123', 10)]);
+  // ── Usuários (10 mecânicos/executores + admin + mestre) ──────────────────────
+  const userPwd = await bcrypt.hash('mecanico123', 10);
+  const [adminPwd, masterPwd] = await Promise.all([bcrypt.hash('admin123', 10), bcrypt.hash('SygmaMaster@2026!', 10)]);
   const adminUser = await prisma.user.upsert({ where: { tenantId_email: { tenantId: demoTenant.id, email: 'admin@demo.com' } }, update: {}, create: { tenantId: demoTenant.id, email: 'admin@demo.com', passwordHash: adminPwd, name: 'Admin Demo', role: 'MASTER' } });
-  await prisma.user.upsert({ where: { tenantId_email: { tenantId: demoTenant.id, email: 'mecanico@demo.com' } }, update: {}, create: { tenantId: demoTenant.id, email: 'mecanico@demo.com', passwordHash: mecPwd, name: 'Carlos Mecânico', role: 'PRODUTIVO' } });
-  await prisma.user.upsert({ where: { tenantId_email: { tenantId: demoTenant.id, email: 'recepcao@demo.com' } }, update: {}, create: { tenantId: demoTenant.id, email: 'recepcao@demo.com', passwordHash: recPwd, name: 'Recepção Demo', role: 'PRODUTIVO' } });
-  console.log('✅ Usuários criados');
+
+  const executorData = [
+    { id: 'usr-mec-01', name: 'Carlos Souza',      email: 'carlos@demo.com',   role: 'MECANICO', jobFunction: 'MECANICO',    workshopArea: 'MECANICA',           commissionPercent: 10 },
+    { id: 'usr-mec-02', name: 'Roberto Lima',       email: 'roberto@demo.com',  role: 'MECANICO', jobFunction: 'ELETRICISTA',  workshopArea: 'ELETRICA',           commissionPercent: 10 },
+    { id: 'usr-mec-03', name: 'Thiago Alves',       email: 'thiago@demo.com',   role: 'MECANICO', jobFunction: 'MECANICO',    workshopArea: 'MECANICA',           commissionPercent: 8  },
+    { id: 'usr-mec-04', name: 'Anderson Ferreira',  email: 'anderson@demo.com', role: 'MECANICO', jobFunction: 'FUNILEIRO',   workshopArea: 'FUNILARIA_PINTURA',  commissionPercent: 8  },
+    { id: 'usr-mec-05', name: 'Marcelo Costa',      email: 'marcelo@demo.com',  role: 'MECANICO', jobFunction: 'PINTOR',      workshopArea: 'FUNILARIA_PINTURA',  commissionPercent: 8  },
+    { id: 'usr-mec-06', name: 'Diego Santos',       email: 'diego@demo.com',    role: 'MECANICO', jobFunction: 'APRENDIZ',    workshopArea: 'MECANICA',           commissionPercent: 5  },
+    { id: 'usr-mec-07', name: 'Felipe Rodrigues',   email: 'felipe@demo.com',   role: 'MECANICO', jobFunction: 'MECANICO',    workshopArea: 'MECANICA',           commissionPercent: 10 },
+    { id: 'usr-mec-08', name: 'Lucas Pereira',      email: 'lucas@demo.com',    role: 'MECANICO', jobFunction: 'LAVADOR',     workshopArea: 'LAVACAO',            commissionPercent: 6  },
+    { id: 'usr-mec-09', name: 'Paulo Nascimento',   email: 'paulo@demo.com',    role: 'MECANICO', jobFunction: 'ELETRICISTA', workshopArea: 'ELETRICA',           commissionPercent: 10 },
+    { id: 'usr-mec-10', name: 'Rafael Mendes',      email: 'rafael@demo.com',   role: 'MECANICO', jobFunction: 'MECANICO',    workshopArea: 'MECANICA',           commissionPercent: 9  },
+  ];
+  const executors = {};
+  for (const u of executorData) {
+    const { commissionPercent, ...rest } = u;
+    executors[u.id] = await prisma.user.upsert({
+      where: { tenantId_email: { tenantId: demoTenant.id, email: u.email } },
+      update: {},
+      create: { tenantId: demoTenant.id, passwordHash: userPwd, isActive: true, commissionPercent, ...rest },
+    });
+  }
+  console.log(`✅ ${executorData.length} executores criados`);
+
+  // ── Taxas de Comissão individuais ─────────────────────────────────────────
+  for (const u of executorData) {
+    await prisma.commissionRate.upsert({
+      where: { userId: executors[u.id].id },
+      update: { rate: u.commissionPercent },
+      create: { tenantId: demoTenant.id, userId: executors[u.id].id, rate: u.commissionPercent },
+    });
+  }
+  console.log('✅ Taxas de comissão configuradas');
+
 
   // ── Peças (Catálogo) ───────────────────────────────────────────────────────
   for (const part of PARTS_CATALOG) {
@@ -220,12 +252,15 @@ async function main() {
   console.log(`✅ ${vehiclesData.length} veículos`);
 
   // ── Ordens de Serviço com Itens ────────────────────────────────────────────
+  // Executor helpers
+  const E = executors;
   const osData = [
-    // OS 1 — ENTREGUE (há 45 dias) — Troca de Óleo + Freios completo
+    // ── BLOCO 1: ENTREGUE (90 → 46 dias atrás) ───────────────────────────────
     {
       id: 'os-001', customerId: 'cust-001', vehicleId: 'veh-001', status: 'ENTREGUE',
       complaint: 'Carro fazendo barulho ao frear e óleo vencido', kmEntrada: 77800,
-      startedAt: daysAgo(47), completedAt: daysAgo(45), deliveredAt: daysAgo(45), paidAt: daysAgo(45),
+      startedAt: daysAgo(90), completedAt: daysAgo(88), deliveredAt: daysAgo(88), paidAt: daysAgo(88),
+      executorId: E['usr-mec-01'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',       quantity: 1, unitPrice: 80.00 },
         { type: 'SERVICE', serviceId: 'svc-003', description: 'Revisão de Freios Dianteiros', quantity: 1, unitPrice: 150.00 },
@@ -233,139 +268,154 @@ async function main() {
         { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',            quantity: 1, unitPrice: 39.90 },
         { type: 'PART',    partId: pFreioDiant?.id, description: 'Pastilha de Freio Dianteira', quantity: 1, unitPrice: 189.90 },
         { type: 'PART',    partId: pFluidoFre?.id,  description: 'Fluido de Freio DOT4',      quantity: 1, unitPrice: 38.90 },
-        { type: 'LABOR',   description: 'Mão de obra — revisão',                             quantity: 2, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 2, unitPrice: 120.00 },
       ],
     },
-    // OS 2 — ENTREGUE (há 35 dias) — Troca de correia + bomba d'água
     {
       id: 'os-002', customerId: 'cust-003', vehicleId: 'veh-003', status: 'ENTREGUE',
       complaint: 'Carro superaquecendo e barulho no motor', kmEntrada: 44800,
-      startedAt: daysAgo(37), completedAt: daysAgo(35), deliveredAt: daysAgo(35), paidAt: daysAgo(35),
+      startedAt: daysAgo(85), completedAt: daysAgo(83), deliveredAt: daysAgo(83), paidAt: daysAgo(83),
+      executorId: E['usr-mec-01'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-005', description: 'Troca de Correia Dentada', quantity: 1, unitPrice: 200.00 },
         { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico',  quantity: 1, unitPrice: 100.00 },
         { type: 'PART',    partId: pCorreia?.id,   description: 'Kit Correia + Tensionador', quantity: 1, unitPrice: 380.00 },
-        { type: 'LABOR',   description: 'Mão de obra — motor',                              quantity: 3, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — motor', quantity: 3, unitPrice: 120.00 },
       ],
     },
-    // OS 3 — ENTREGUE (há 28 dias) — Suspensão completa
     {
       id: 'os-003', customerId: 'cust-005', vehicleId: 'veh-006', status: 'ENTREGUE',
       complaint: 'Carro balançando muito, barulho na suspensão', kmEntrada: 67500,
-      startedAt: daysAgo(30), completedAt: daysAgo(28), deliveredAt: daysAgo(28), paidAt: daysAgo(28),
+      startedAt: daysAgo(80), completedAt: daysAgo(78), deliveredAt: daysAgo(78), paidAt: daysAgo(78),
+      executorId: E['usr-mec-07'].id,
       items: [
-        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores',    quantity: 1, unitPrice: 220.00 },
+        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores', quantity: 1, unitPrice: 220.00 },
         { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
         { type: 'PART',    partId: pAmortDiant?.id, description: 'Amortecedor Dianteiro', quantity: 2, unitPrice: 320.00 },
         { type: 'PART',    partId: pAmortTras?.id,  description: 'Amortecedor Traseiro',  quantity: 2, unitPrice: 280.00 },
-        { type: 'LABOR',   description: 'Mão de obra — suspensão',                         quantity: 3, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — suspensão', quantity: 3, unitPrice: 120.00 },
       ],
     },
-    // OS 4 — ENTREGUE (há 20 dias) — Elétrico + Bateria
     {
       id: 'os-004', customerId: 'cust-007', vehicleId: 'veh-008', status: 'ENTREGUE',
       complaint: 'Carro não liga, luzes fracas', kmEntrada: 51500,
-      startedAt: daysAgo(21), completedAt: daysAgo(20), deliveredAt: daysAgo(20), paidAt: daysAgo(20),
+      startedAt: daysAgo(75), completedAt: daysAgo(74), deliveredAt: daysAgo(74), paidAt: daysAgo(74),
+      executorId: E['usr-mec-02'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Elétrico',   quantity: 1, unitPrice: 100.00 },
         { type: 'SERVICE', serviceId: 'svc-012', description: 'Substituição de Bateria', quantity: 1, unitPrice: 60.00 },
         { type: 'PART',    partId: pBateria60?.id, description: 'Bateria 60Ah Selada',  quantity: 1, unitPrice: 520.00 },
-        { type: 'LABOR',   description: 'Mão de obra — elétrico',                       quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — elétrico', quantity: 1, unitPrice: 120.00 },
       ],
     },
-    // OS 5 — FATURADO (há 10 dias) — Embreagem
     {
-      id: 'os-005', customerId: 'cust-009', vehicleId: 'veh-011', status: 'FATURADO',
-      complaint: 'Embreagem patinando, dificuldade de engrenar', kmEntrada: 60500,
-      startedAt: daysAgo(12), completedAt: daysAgo(10), paidAt: daysAgo(10),
+      id: 'os-014', customerId: 'cust-002', vehicleId: 'veh-002', status: 'ENTREGUE',
+      complaint: 'Revisão preventiva 20.000 km', kmEntrada: 21500,
+      startedAt: daysAgo(72), completedAt: daysAgo(71), deliveredAt: daysAgo(71), paidAt: daysAgo(71),
+      executorId: E['usr-mec-10'].id,
       items: [
-        { type: 'SERVICE', serviceId: 'svc-010', description: 'Troca de Embreagem',         quantity: 1, unitPrice: 300.00 },
-        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Transmissão',    quantity: 1, unitPrice: 100.00 },
-        { type: 'PART',    partId: pKitEmbreagem?.id, description: 'Kit Embreagem completo', quantity: 1, unitPrice: 680.00 },
-        { type: 'LABOR',   description: 'Mão de obra — transmissão',                         quantity: 5, unitPrice: 120.00 },
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',     quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',          quantity: 1, unitPrice: 39.90 },
+        { type: 'PART',    partId: pFiltroAb?.id,   description: 'Filtro de Cabine',        quantity: 1, unitPrice: 49.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 1, unitPrice: 120.00 },
       ],
     },
-    // OS 6 — FATURADO (há 5 dias) — Revisão completa + velas
     {
-      id: 'os-006', customerId: 'cust-010', vehicleId: 'veh-012', status: 'FATURADO',
-      complaint: 'Revisão dos 30.000 km — preventiva', kmEntrada: 28000,
-      startedAt: daysAgo(6), completedAt: daysAgo(5), paidAt: daysAgo(5),
+      id: 'os-015', customerId: 'cust-004', vehicleId: 'veh-005', status: 'ENTREGUE',
+      complaint: 'Freios raspando, pedal fundo', kmEntrada: 11500,
+      startedAt: daysAgo(68), completedAt: daysAgo(67), deliveredAt: daysAgo(67), paidAt: daysAgo(67),
+      executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-003', description: 'Revisão de Freios Dianteiros', quantity: 1, unitPrice: 150.00 },
+        { type: 'SERVICE', serviceId: 'svc-004', description: 'Revisão de Freios Traseiros',  quantity: 1, unitPrice: 130.00 },
+        { type: 'PART',    partId: pFreioDiant?.id, description: 'Pastilha Dianteira', quantity: 1, unitPrice: 189.90 },
+        { type: 'PART',    partId: pFreioTras?.id,  description: 'Pastilha Traseira',  quantity: 1, unitPrice: 149.90 },
+        { type: 'PART',    partId: pFluidoFre?.id,  description: 'Fluido de Freio',    quantity: 1, unitPrice: 38.90 },
+        { type: 'LABOR',   description: 'Mão de obra — freios', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-016', customerId: 'cust-006', vehicleId: 'veh-007', status: 'ENTREGUE',
+      complaint: 'Luz do motor acesa — sensor de oxigênio', kmEntrada: 34500,
+      startedAt: daysAgo(65), completedAt: daysAgo(64), deliveredAt: daysAgo(64), paidAt: daysAgo(64),
+      executorId: E['usr-mec-09'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico',       quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pSensorLambda?.id, description: 'Sensor Lambda',           quantity: 1, unitPrice: 320.00 },
+        { type: 'LABOR',   description: 'Mão de obra — sensores', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-017', customerId: 'cust-009', vehicleId: 'veh-011', status: 'ENTREGUE',
+      complaint: 'Embreagem patinando, dificuldade de engrenar', kmEntrada: 60500,
+      startedAt: daysAgo(60), completedAt: daysAgo(58), deliveredAt: daysAgo(58), paidAt: daysAgo(58),
+      executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-010', description: 'Troca de Embreagem', quantity: 1, unitPrice: 300.00 },
+        { type: 'PART',    partId: pKitEmbreagem?.id, description: 'Kit Embreagem completo', quantity: 1, unitPrice: 680.00 },
+        { type: 'LABOR',   description: 'Mão de obra — transmissão', quantity: 5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-018', customerId: 'cust-010', vehicleId: 'veh-012', status: 'ENTREGUE',
+      complaint: 'Revisão dos 30.000 km + troca de velas', kmEntrada: 29800,
+      startedAt: daysAgo(55), completedAt: daysAgo(54), deliveredAt: daysAgo(54), paidAt: daysAgo(54),
+      executorId: E['usr-mec-01'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
         { type: 'SERVICE', serviceId: 'svc-008', description: 'Troca de Velas de Ignição', quantity: 1, unitPrice: 80.00 },
-        { type: 'PART',    partId: pOleo5W30?.id,  description: 'Óleo Motor 5W30 1L',      quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',     quantity: 4, unitPrice: 49.90 },
         { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',          quantity: 1, unitPrice: 39.90 },
         { type: 'PART',    partId: pFiltroAr?.id,   description: 'Filtro de Ar Motor',     quantity: 1, unitPrice: 59.90 },
-        { type: 'PART',    partId: pFiltroAb?.id,   description: 'Filtro Cabine (habitáculo)', quantity: 1, unitPrice: 49.90 },
         { type: 'PART',    partId: pVela?.id,        description: 'Vela de Ignição',        quantity: 4, unitPrice: 45.00 },
-        { type: 'LABOR',   description: 'Mão de obra — revisão',                            quantity: 2, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 2, unitPrice: 120.00 },
       ],
     },
-    // OS 7 — PRONTO_ENTREGA (pronto, aguardando cliente buscar)
     {
-      id: 'os-007', customerId: 'cust-004', vehicleId: 'veh-005', status: 'PRONTO_ENTREGA',
-      complaint: 'Freio traseiro raspando e pedal fundo', kmEntrada: 11800,
-      startedAt: daysAgo(3), completedAt: daysAgo(1),
-      items: [
-        { type: 'SERVICE', serviceId: 'svc-004', description: 'Revisão de Freios Traseiros', quantity: 1, unitPrice: 130.00 },
-        { type: 'PART',    partId: pFreioTras?.id,  description: 'Pastilha de Freio Traseira', quantity: 1, unitPrice: 149.90 },
-        { type: 'PART',    partId: pDiscoDiant?.id, description: 'Disco de Freio Traseiro',    quantity: 1, unitPrice: 280.00 },
-        { type: 'LABOR',   description: 'Mão de obra — freios',                                quantity: 1.5, unitPrice: 120.00 },
-      ],
-    },
-    // OS 8 — EM_EXECUCAO
-    {
-      id: 'os-008', customerId: 'cust-006', vehicleId: 'veh-007', status: 'EM_EXECUCAO',
-      complaint: 'Sensor de oxigênio com falha (luz amarela no painel)', kmEntrada: 34800,
-      startedAt: daysAgo(1),
-      items: [
-        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico',        quantity: 1, unitPrice: 100.00 },
-        { type: 'PART',    partId: pSensorLambda?.id, description: 'Sensor Lambda (Oxigênio)', quantity: 1, unitPrice: 320.00 },
-        { type: 'LABOR',   description: 'Mão de obra — elétrico/sensores',                     quantity: 1.5, unitPrice: 120.00 },
-      ],
-    },
-    // OS 9 — AGUARDANDO_PECAS (peça encomendada)
-    {
-      id: 'os-009', customerId: 'cust-011', vehicleId: 'veh-013', status: 'AGUARDANDO_PECAS',
-      complaint: 'Carro vibrando na estrada, suspeita de cubo de roda', kmEntrada: 54700,
-      startedAt: daysAgo(4),
+      id: 'os-019', customerId: 'cust-011', vehicleId: 'veh-013', status: 'ENTREGUE',
+      complaint: 'Vibração no volante em alta velocidade', kmEntrada: 54500,
+      startedAt: daysAgo(50), completedAt: daysAgo(49), deliveredAt: daysAgo(49), paidAt: daysAgo(49),
+      executorId: E['usr-mec-03'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
-        { type: 'LABOR',   description: 'Mão de obra — diagnóstico suspensão',              quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — suspensão', quantity: 1, unitPrice: 120.00 },
       ],
     },
-    // OS 10 — AGUARDANDO_APROVACAO (orçamento enviado)
     {
-      id: 'os-010', customerId: 'cust-012', vehicleId: 'veh-014', status: 'AGUARDANDO_APROVACAO',
-      complaint: 'Revisão preventiva dos 15.000 km', kmEntrada: 14000,
+      id: 'os-020', customerId: 'cust-001', vehicleId: 'veh-015', status: 'ENTREGUE',
+      complaint: 'Revisão 100.000 km — motor + freios + suspensão', kmEntrada: 101800,
+      startedAt: daysAgo(47), completedAt: daysAgo(45), deliveredAt: daysAgo(45), paidAt: daysAgo(45),
+      executorId: E['usr-mec-07'].id,
       items: [
-        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',   quantity: 1, unitPrice: 80.00 },
-        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',   quantity: 4, unitPrice: 49.90 },
-        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',        quantity: 1, unitPrice: 39.90 },
-        { type: 'LABOR',   description: 'Mão de obra — revisão',                          quantity: 0.5, unitPrice: 120.00 },
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',       quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-005', description: 'Troca de Correia Dentada',      quantity: 1, unitPrice: 200.00 },
+        { type: 'SERVICE', serviceId: 'svc-003', description: 'Revisão de Freios Dianteiros', quantity: 1, unitPrice: 150.00 },
+        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores',       quantity: 1, unitPrice: 220.00 },
+        { type: 'PART',    partId: pCorreia?.id,    description: 'Kit Correia + Tensionador',  quantity: 1, unitPrice: 380.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',        quantity: 5, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',            quantity: 1, unitPrice: 39.90 },
+        { type: 'PART',    partId: pAmortDiant?.id, description: 'Amortecedor Dianteiro',     quantity: 2, unitPrice: 320.00 },
+        { type: 'PART',    partId: pFreioDiant?.id, description: 'Pastilha Dianteira',        quantity: 1, unitPrice: 189.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão completa', quantity: 6, unitPrice: 120.00 },
       ],
     },
-    // OS 11 — ORCAMENTO_PRONTO (orçamento elaborado)
+    // ── BLOCO 2: ENTREGUE recente (15 → 46 dias) ─────────────────────────────
     {
-      id: 'os-011', customerId: 'cust-002', vehicleId: 'veh-002', status: 'ORCAMENTO_PRONTO',
-      complaint: 'Carro superaquecendo em trânsito lento', kmEntrada: 21900,
+      id: 'os-021', customerId: 'cust-012', vehicleId: 'veh-014', status: 'ENTREGUE',
+      complaint: 'Ar condicionado não refrigera bem', kmEntrada: 13900,
+      startedAt: daysAgo(44), completedAt: daysAgo(43), deliveredAt: daysAgo(43), paidAt: daysAgo(43),
+      executorId: E['usr-mec-09'].id,
       items: [
-        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Superaquecimento', quantity: 1, unitPrice: 100.00 },
-        { type: 'PART',    partId: pFiltroAb?.id,  description: 'Filtro de Cabine',           quantity: 1, unitPrice: 49.90 },
-        { type: 'LABOR',   description: 'Mão de obra — diagnóstico',                          quantity: 1, unitPrice: 120.00 },
+        { type: 'SERVICE', serviceId: 'svc-007', description: 'Higienização do Ar Condicionado', quantity: 1, unitPrice: 180.00 },
+        { type: 'LABOR',   description: 'Mão de obra — AC', quantity: 1.5, unitPrice: 120.00 },
       ],
     },
-    // OS 12 — ABERTA (recém aberta)
     {
-      id: 'os-012', customerId: 'cust-008', vehicleId: 'veh-010', status: 'ABERTA',
-      complaint: 'Barulho no motor ao ligar, batendo em frio', kmEntrada: 7900,
-      items: [],
-    },
-    // OS 13 — EM_EXECUCAO (Hilux — revisão pesada)
-    {
-      id: 'os-013', customerId: 'cust-003', vehicleId: 'veh-004', status: 'EM_EXECUCAO',
-      complaint: 'Revisão completa 90.000 km + freios', kmEntrada: 94800,
-      startedAt: daysAgo(2),
+      id: 'os-022', customerId: 'cust-003', vehicleId: 'veh-004', status: 'ENTREGUE',
+      complaint: 'Revisão completa 90.000 km Hilux', kmEntrada: 94800,
+      startedAt: daysAgo(42), completedAt: daysAgo(40), deliveredAt: daysAgo(40), paidAt: daysAgo(40),
+      executorId: E['usr-mec-01'].id,
       items: [
         { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',       quantity: 1, unitPrice: 80.00 },
         { type: 'SERVICE', serviceId: 'svc-003', description: 'Revisão de Freios Dianteiros', quantity: 1, unitPrice: 150.00 },
@@ -374,26 +424,410 @@ async function main() {
         { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',            quantity: 1, unitPrice: 39.90 },
         { type: 'PART',    partId: pFreioDiant?.id, description: 'Pastilha Dianteira',        quantity: 1, unitPrice: 189.90 },
         { type: 'PART',    partId: pFreioTras?.id,  description: 'Pastilha Traseira',         quantity: 1, unitPrice: 149.90 },
-        { type: 'LABOR',   description: 'Mão de obra — revisão completa',                     quantity: 4, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão completa', quantity: 4, unitPrice: 120.00 },
       ],
     },
+    {
+      id: 'os-023', customerId: 'cust-008', vehicleId: 'veh-010', status: 'ENTREGUE',
+      complaint: 'Batendo em frio, barulho no motor', kmEntrada: 7800,
+      startedAt: daysAgo(38), completedAt: daysAgo(37), deliveredAt: daysAgo(37), paidAt: daysAgo(37),
+      executorId: E['usr-mec-10'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico', quantity: 1, unitPrice: 100.00 },
+        { type: 'SERVICE', serviceId: 'svc-009', description: 'Regulagem de Motor',     quantity: 1, unitPrice: 250.00 },
+        { type: 'PART',    partId: pVela?.id,        description: 'Vela de Ignição',   quantity: 4, unitPrice: 45.00 },
+        { type: 'LABOR',   description: 'Mão de obra — motor', quantity: 2.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-024', customerId: 'cust-005', vehicleId: 'veh-006', status: 'ENTREGUE',
+      complaint: 'Troca de pneus + alinhamento', kmEntrada: 68500,
+      startedAt: daysAgo(34), completedAt: daysAgo(33), deliveredAt: daysAgo(33), paidAt: daysAgo(33),
+      executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — pneus', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-025', customerId: 'cust-007', vehicleId: 'veh-009', status: 'ENTREGUE',
+      complaint: 'Alternador com defeito', kmEntrada: 87800,
+      startedAt: daysAgo(30), completedAt: daysAgo(28), deliveredAt: daysAgo(28), paidAt: daysAgo(28),
+      executorId: E['usr-mec-02'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Elétrico',  quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pBateria60?.id, description: 'Bateria 60Ah Selada', quantity: 1, unitPrice: 520.00 },
+        { type: 'LABOR',   description: 'Mão de obra — elétrico', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-026', customerId: 'cust-009', vehicleId: 'veh-011', status: 'ENTREGUE',
+      complaint: 'Higienização + limpeza interna', kmEntrada: 61500,
+      startedAt: daysAgo(26), completedAt: daysAgo(25), deliveredAt: daysAgo(25), paidAt: daysAgo(25),
+      executorId: E['usr-mec-08'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-007', description: 'Higienização do Ar Condicionado', quantity: 1, unitPrice: 180.00 },
+        { type: 'LABOR',   description: 'Mão de obra — higienização', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-027', customerId: 'cust-012', vehicleId: 'veh-014', status: 'ENTREGUE',
+      complaint: 'Freio de mão não segura na rampa', kmEntrada: 14100,
+      startedAt: daysAgo(22), completedAt: daysAgo(21), deliveredAt: daysAgo(21), paidAt: daysAgo(21),
+      executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-004', description: 'Revisão de Freios Traseiros', quantity: 1, unitPrice: 130.00 },
+        { type: 'PART',    partId: pFreioTras?.id, description: 'Pastilha Traseira', quantity: 1, unitPrice: 149.90 },
+        { type: 'LABOR',   description: 'Mão de obra — freio de mão', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-028', customerId: 'cust-001', vehicleId: 'veh-001', status: 'ENTREGUE',
+      complaint: 'Troca de filtro de combustível + filtro de ar', kmEntrada: 78200,
+      startedAt: daysAgo(18), completedAt: daysAgo(17), deliveredAt: daysAgo(17), paidAt: daysAgo(17),
+      executorId: E['usr-mec-10'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro', quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',  quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',       quantity: 1, unitPrice: 39.90 },
+        { type: 'PART',    partId: pFiltroAr?.id,   description: 'Filtro de Ar Motor',  quantity: 1, unitPrice: 59.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-029', customerId: 'cust-006', vehicleId: 'veh-007', status: 'ENTREGUE',
+      complaint: 'Regulagem e troca de velas iridium', kmEntrada: 35200,
+      startedAt: daysAgo(14), completedAt: daysAgo(13), deliveredAt: daysAgo(13), paidAt: daysAgo(13),
+      executorId: E['usr-mec-01'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-008', description: 'Troca de Velas de Ignição', quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-009', description: 'Regulagem de Motor',        quantity: 1, unitPrice: 250.00 },
+        { type: 'PART',    partId: pVela?.id, description: 'Vela Iridium',                 quantity: 4, unitPrice: 89.00 },
+        { type: 'LABOR',   description: 'Mão de obra — motor', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-030', customerId: 'cust-002', vehicleId: 'veh-002', status: 'ENTREGUE',
+      complaint: 'Revisão 22.000 km Onix', kmEntrada: 21800,
+      startedAt: daysAgo(10), completedAt: daysAgo(9), deliveredAt: daysAgo(9), paidAt: daysAgo(9),
+      executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro', quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L', quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',      quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 0.5, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 3: FATURADO ─────────────────────────────────────────────────────
+    {
+      id: 'os-005', customerId: 'cust-009', vehicleId: 'veh-011', status: 'FATURADO',
+      complaint: 'Embreagem patinando (retorno cliente)', kmEntrada: 62000,
+      startedAt: daysAgo(8), completedAt: daysAgo(6), paidAt: daysAgo(6),
+      executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-010', description: 'Troca de Embreagem',          quantity: 1, unitPrice: 300.00 },
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Transmissão',     quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pKitEmbreagem?.id, description: 'Kit Embreagem completo', quantity: 1, unitPrice: 680.00 },
+        { type: 'LABOR',   description: 'Mão de obra — transmissão', quantity: 5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-006', customerId: 'cust-010', vehicleId: 'veh-012', status: 'FATURADO',
+      complaint: 'Revisão preventiva dos 30.000 km', kmEntrada: 28000,
+      startedAt: daysAgo(6), completedAt: daysAgo(5), paidAt: daysAgo(5),
+      executorId: E['usr-mec-01'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-008', description: 'Troca de Velas de Ignição', quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',     quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',          quantity: 1, unitPrice: 39.90 },
+        { type: 'PART',    partId: pFiltroAr?.id,   description: 'Filtro de Ar Motor',     quantity: 1, unitPrice: 59.90 },
+        { type: 'PART',    partId: pFiltroAb?.id,   description: 'Filtro Cabine',           quantity: 1, unitPrice: 49.90 },
+        { type: 'PART',    partId: pVela?.id,        description: 'Vela de Ignição',        quantity: 4, unitPrice: 45.00 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-031', customerId: 'cust-004', vehicleId: 'veh-005', status: 'FATURADO',
+      complaint: 'Suspensão desgastada — carro baixando', kmEntrada: 12400,
+      startedAt: daysAgo(5), completedAt: daysAgo(4), paidAt: daysAgo(4),
+      executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores', quantity: 1, unitPrice: 220.00 },
+        { type: 'PART',    partId: pAmortDiant?.id, description: 'Amortecedor Dianteiro', quantity: 2, unitPrice: 320.00 },
+        { type: 'LABOR',   description: 'Mão de obra — suspensão', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-032', customerId: 'cust-011', vehicleId: 'veh-013', status: 'FATURADO',
+      complaint: 'Diagnóstico — luz check engine', kmEntrada: 55500,
+      startedAt: daysAgo(4), completedAt: daysAgo(3), paidAt: daysAgo(3),
+      executorId: E['usr-mec-09'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico', quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pSensorLambda?.id, description: 'Sensor Lambda',     quantity: 1, unitPrice: 320.00 },
+        { type: 'LABOR',   description: 'Mão de obra — elétrico', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-033', customerId: 'cust-003', vehicleId: 'veh-003', status: 'FATURADO',
+      complaint: 'Troca de bateria + revisão elétrica', kmEntrada: 45200,
+      startedAt: daysAgo(3), completedAt: daysAgo(2), paidAt: daysAgo(2),
+      executorId: E['usr-mec-02'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-012', description: 'Substituição de Bateria', quantity: 1, unitPrice: 60.00 },
+        { type: 'PART',    partId: pBateria60?.id, description: 'Bateria 60Ah Selada',   quantity: 1, unitPrice: 520.00 },
+        { type: 'LABOR',   description: 'Mão de obra — elétrico', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-034', customerId: 'cust-007', vehicleId: 'veh-008', status: 'FATURADO',
+      complaint: 'Troca de palhetas + limpeza geral', kmEntrada: 52100,
+      startedAt: daysAgo(2), completedAt: daysAgo(1), paidAt: daysAgo(1),
+      executorId: E['usr-mec-08'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro', quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L', quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',      quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 0.5, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 4: PRONTO_ENTREGA ───────────────────────────────────────────────
+    {
+      id: 'os-007', customerId: 'cust-004', vehicleId: 'veh-005', status: 'PRONTO_ENTREGA',
+      complaint: 'Freio traseiro raspando e pedal fundo', kmEntrada: 11800,
+      startedAt: daysAgo(3), completedAt: daysAgo(1), executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-004', description: 'Revisão de Freios Traseiros', quantity: 1, unitPrice: 130.00 },
+        { type: 'PART',    partId: pFreioTras?.id,  description: 'Pastilha Traseira',        quantity: 1, unitPrice: 149.90 },
+        { type: 'PART',    partId: pDiscoDiant?.id, description: 'Disco de Freio Traseiro',  quantity: 1, unitPrice: 280.00 },
+        { type: 'LABOR',   description: 'Mão de obra — freios', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-035', customerId: 'cust-008', vehicleId: 'veh-010', status: 'PRONTO_ENTREGA',
+      complaint: 'Alinhamento + balanceamento', kmEntrada: 8100,
+      startedAt: daysAgo(2), completedAt: daysAgo(1), executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-036', customerId: 'cust-012', vehicleId: 'veh-014', status: 'PRONTO_ENTREGA',
+      complaint: 'Higienização do habitáculo', kmEntrada: 14300,
+      startedAt: daysAgo(2), completedAt: daysAgo(1), executorId: E['usr-mec-08'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-007', description: 'Higienização do Ar Condicionado', quantity: 1, unitPrice: 180.00 },
+        { type: 'LABOR',   description: 'Mão de obra — higienização', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-037', customerId: 'cust-002', vehicleId: 'veh-002', status: 'PRONTO_ENTREGA',
+      complaint: 'Revisão 22.500 km + troca de filtros', kmEntrada: 22400,
+      startedAt: daysAgo(3), completedAt: daysAgo(1), executorId: E['usr-mec-10'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro', quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L', quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',      quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 5: EM_EXECUCAO ──────────────────────────────────────────────────
+    {
+      id: 'os-008', customerId: 'cust-006', vehicleId: 'veh-007', status: 'EM_EXECUCAO',
+      complaint: 'Sensor de oxigênio com falha (luz amarela no painel)', kmEntrada: 34800,
+      startedAt: daysAgo(1), executorId: E['usr-mec-09'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico',        quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pSensorLambda?.id, description: 'Sensor Lambda (Oxigênio)', quantity: 1, unitPrice: 320.00 },
+        { type: 'LABOR',   description: 'Mão de obra — elétrico/sensores', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-013', customerId: 'cust-003', vehicleId: 'veh-004', status: 'EM_EXECUCAO',
+      complaint: 'Revisão completa 90.000 km + freios Hilux', kmEntrada: 94800,
+      startedAt: daysAgo(2), executorId: E['usr-mec-01'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',       quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-003', description: 'Revisão de Freios Dianteiros', quantity: 1, unitPrice: 150.00 },
+        { type: 'SERVICE', serviceId: 'svc-004', description: 'Revisão de Freios Traseiros',  quantity: 1, unitPrice: 130.00 },
+        { type: 'PART',    partId: pOleo10W40?.id,  description: 'Óleo 10W40 1L',             quantity: 7, unitPrice: 32.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',            quantity: 1, unitPrice: 39.90 },
+        { type: 'PART',    partId: pFreioDiant?.id, description: 'Pastilha Dianteira',        quantity: 1, unitPrice: 189.90 },
+        { type: 'PART',    partId: pFreioTras?.id,  description: 'Pastilha Traseira',         quantity: 1, unitPrice: 149.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão completa', quantity: 4, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-038', customerId: 'cust-001', vehicleId: 'veh-015', status: 'EM_EXECUCAO',
+      complaint: 'Correia dentada nova — preventivo 100.000 km', kmEntrada: 102100,
+      startedAt: daysAgo(1), executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-005', description: 'Troca de Correia Dentada',  quantity: 1, unitPrice: 200.00 },
+        { type: 'PART',    partId: pCorreia?.id, description: 'Kit Correia + Tensionador', quantity: 1, unitPrice: 380.00 },
+        { type: 'LABOR',   description: 'Mão de obra — motor', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-039', customerId: 'cust-010', vehicleId: 'veh-012', status: 'EM_EXECUCAO',
+      complaint: 'Rolamento de roda barulhando', kmEntrada: 28600,
+      startedAt: daysAgo(1), executorId: E['usr-mec-03'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — rolamento', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-040', customerId: 'cust-011', vehicleId: 'veh-013', status: 'EM_EXECUCAO',
+      complaint: 'Suspensão traseira com folga', kmEntrada: 56000,
+      startedAt: daysAgo(2), executorId: E['usr-mec-07'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores', quantity: 1, unitPrice: 220.00 },
+        { type: 'PART',    partId: pAmortTras?.id, description: 'Amortecedor Traseiro',  quantity: 2, unitPrice: 280.00 },
+        { type: 'LABOR',   description: 'Mão de obra — suspensão', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-041', customerId: 'cust-007', vehicleId: 'veh-009', status: 'EM_EXECUCAO',
+      complaint: 'Civic — revisão dos 90.000 km', kmEntrada: 88200,
+      startedAt: daysAgo(1), executorId: E['usr-mec-01'].id,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-005', description: 'Troca de Correia Dentada',   quantity: 1, unitPrice: 200.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',     quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pCorreia?.id,    description: 'Kit Correia + Tensionador', quantity: 1, unitPrice: 380.00 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',          quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 3, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 6: AGUARDANDO_PECAS ─────────────────────────────────────────────
+    {
+      id: 'os-009', customerId: 'cust-011', vehicleId: 'veh-013', status: 'AGUARDANDO_PECAS',
+      complaint: 'Carro vibrando — cubo de roda', kmEntrada: 54700,
+      startedAt: daysAgo(4),
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'LABOR',   description: 'Mão de obra — diagnóstico suspensão', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-042', customerId: 'cust-005', vehicleId: 'veh-006', status: 'AGUARDANDO_PECAS',
+      complaint: 'Radiador com vazamento', kmEntrada: 69000,
+      startedAt: daysAgo(5),
+      items: [
+        { type: 'LABOR', description: 'Diagnóstico — vazamento radiador', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-043', customerId: 'cust-009', vehicleId: 'veh-011', status: 'AGUARDANDO_PECAS',
+      complaint: 'Bomba de combustível defeituosa', kmEntrada: 62800,
+      startedAt: daysAgo(3),
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico', quantity: 1, unitPrice: 100.00 },
+        { type: 'LABOR',   description: 'Mão de obra — combustível', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-044', customerId: 'cust-003', vehicleId: 'veh-003', status: 'AGUARDANDO_PECAS',
+      complaint: 'Bomba d\'água com vazamento', kmEntrada: 45800,
+      startedAt: daysAgo(4),
+      items: [
+        { type: 'LABOR', description: 'Diagnóstico — sistema de arrefecimento', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 7: AGUARDANDO_APROVACAO ────────────────────────────────────────
+    {
+      id: 'os-010', customerId: 'cust-012', vehicleId: 'veh-014', status: 'AGUARDANDO_APROVACAO',
+      complaint: 'Revisão preventiva dos 15.000 km', kmEntrada: 14000,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',     quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',          quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — revisão', quantity: 0.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-045', customerId: 'cust-004', vehicleId: 'veh-005', status: 'AGUARDANDO_APROVACAO',
+      complaint: 'Suspensão dianteira completa', kmEntrada: 12800,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-011', description: 'Troca de Amortecedores',     quantity: 1, unitPrice: 220.00 },
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'PART',    partId: pAmortDiant?.id, description: 'Amortecedor Dianteiro',   quantity: 2, unitPrice: 320.00 },
+        { type: 'LABOR',   description: 'Mão de obra — suspensão', quantity: 2.5, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-046', customerId: 'cust-008', vehicleId: 'veh-010', status: 'AGUARDANDO_APROVACAO',
+      complaint: 'Sistema de arrefecimento — diagnóstico completo', kmEntrada: 8300,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico', quantity: 1, unitPrice: 100.00 },
+        { type: 'LABOR',   description: 'Mão de obra — diagnóstico', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-047', customerId: 'cust-006', vehicleId: 'veh-007', status: 'AGUARDANDO_APROVACAO',
+      complaint: 'Caixa de câmbio com dificuldade de engrenar', kmEntrada: 35600,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Transmissão', quantity: 1, unitPrice: 100.00 },
+        { type: 'LABOR',   description: 'Mão de obra — câmbio', quantity: 2, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 8: ORCAMENTO_PRONTO ─────────────────────────────────────────────
+    {
+      id: 'os-011', customerId: 'cust-002', vehicleId: 'veh-002', status: 'ORCAMENTO_PRONTO',
+      complaint: 'Carro superaquecendo em trânsito lento', kmEntrada: 21900,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Superaquecimento', quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pFiltroAb?.id,  description: 'Filtro de Cabine',           quantity: 1, unitPrice: 49.90 },
+        { type: 'LABOR',   description: 'Mão de obra — diagnóstico', quantity: 1, unitPrice: 120.00 },
+      ],
+    },
+    {
+      id: 'os-048', customerId: 'cust-010', vehicleId: 'veh-012', status: 'ORCAMENTO_PRONTO',
+      complaint: 'Revisão geral + check up completo', kmEntrada: 28900,
+      items: [
+        { type: 'SERVICE', serviceId: 'svc-001', description: 'Troca de Óleo e Filtro',    quantity: 1, unitPrice: 80.00 },
+        { type: 'SERVICE', serviceId: 'svc-002', description: 'Alinhamento e Balanceamento', quantity: 1, unitPrice: 120.00 },
+        { type: 'SERVICE', serviceId: 'svc-006', description: 'Diagnóstico Eletrônico',    quantity: 1, unitPrice: 100.00 },
+        { type: 'PART',    partId: pOleo5W30?.id,   description: 'Óleo Motor 5W30 1L',    quantity: 4, unitPrice: 49.90 },
+        { type: 'PART',    partId: pFiltroOleo?.id, description: 'Filtro de Óleo',         quantity: 1, unitPrice: 39.90 },
+        { type: 'LABOR',   description: 'Mão de obra — check up', quantity: 1.5, unitPrice: 120.00 },
+      ],
+    },
+    // ── BLOCO 9: ABERTA ───────────────────────────────────────────────────────
+    {
+      id: 'os-012', customerId: 'cust-008', vehicleId: 'veh-010', status: 'ABERTA',
+      complaint: 'Barulho no motor ao ligar, batendo em frio', kmEntrada: 7900,
+      items: [],
+    },
+    {
+      id: 'os-049', customerId: 'cust-001', vehicleId: 'veh-001', status: 'ABERTA',
+      complaint: 'Revisão dos 80.000 km', kmEntrada: 79100,
+      items: [],
+    },
   ];
+
+  // ── Limpa comissões antigas para idempotência ────────────────────────────
+  await prisma.commission.deleteMany({ where: { tenantId: demoTenant.id } });
 
   for (const os of osData) {
     const items = os.items || [];
     const t = calcTotals(items);
+    const responsibleId = os.executorId || executors['usr-mec-01'].id;
     const osRecord = await prisma.serviceOrder.upsert({
       where: { id: os.id },
       update: {
         totalParts: t.totalParts, totalServices: t.totalServices,
         totalLabor: t.totalLabor, totalCost: t.totalCost,
         status: os.status,
+        mechanicId: responsibleId,
       },
       create: {
         id: os.id, tenantId: demoTenant.id, customerId: customers[os.customerId].id,
         vehicleId: vehicles[os.vehicleId].id, orderType: 'OS', status: os.status,
         complaint: os.complaint, kmEntrada: os.kmEntrada || null,
-        mechanicId: adminUser.id,
+        mechanicId: responsibleId,
         totalParts: t.totalParts, totalServices: t.totalServices,
         totalLabor: t.totalLabor, totalCost: t.totalCost,
         startedAt: os.startedAt || null, completedAt: os.completedAt || null,
@@ -401,11 +835,19 @@ async function main() {
         createdAt: os.startedAt || new Date(),
       },
     });
+
     // Garante idempotência: remove itens anteriores antes de recriar
     await prisma.serviceOrderItem.deleteMany({ where: { serviceOrderId: osRecord.id } });
+
+    const isCompleted = ['ENTREGUE', 'FATURADO'].includes(os.status);
+
+    // Acha o % de comissão do executor desta OS
+    const execDef = executorData.find(e => executors[e.id]?.id === responsibleId);
+    const commRate = execDef?.commissionPercent ?? 10;
+
     for (const item of items) {
       const total = item.quantity * item.unitPrice;
-      await prisma.serviceOrderItem.create({
+      const soItem = await prisma.serviceOrderItem.create({
         data: {
           serviceOrderId: osRecord.id,
           serviceId: item.serviceId || null,
@@ -418,9 +860,27 @@ async function main() {
           applied: ['ENTREGUE','FATURADO','PRONTO_ENTREGA'].includes(os.status),
         },
       });
+
+      // Cria comissão para itens de serviço e mão de obra de OS concluídas
+      if (isCompleted && ['SERVICE', 'LABOR'].includes(item.type)) {
+        const commValue = parseFloat((total * commRate / 100).toFixed(2));
+        await prisma.commission.create({
+          data: {
+            tenantId: demoTenant.id,
+            serviceOrderId: osRecord.id,
+            serviceOrderItemId: soItem.id,
+            userId: responsibleId,
+            baseValue: total,
+            commissionPercent: commRate,
+            commissionValue: commValue,
+            status: os.status === 'ENTREGUE' && os.paidAt ? 'PAGO' : 'PENDENTE',
+            paidAt: os.status === 'ENTREGUE' && os.paidAt ? os.paidAt : null,
+          },
+        });
+      }
     }
   }
-  console.log(`✅ ${osData.length} ordens de serviço com itens`);
+  console.log(`✅ ${osData.length} ordens de serviço com itens e comissões`);
 
   // ── Lançamentos Financeiros ────────────────────────────────────────────────
   // Limpa financeiro anterior do demo para garantir idempotência
@@ -441,18 +901,37 @@ async function main() {
       });
     }
   }
-  // Despesas operacionais
+  // Despesas operacionais — 3 meses de histórico
   const expenses = [
-    { amount: 3800.00, description: 'Aluguel do imóvel — Abril/2026',      category: 'ALUGUEL',       date: daysAgo(28) },
-    { amount: 850.00,  description: 'Energia elétrica — Março/2026',        category: 'UTILIDADES',    date: daysAgo(32) },
-    { amount: 420.00,  description: 'Água e saneamento — Março/2026',       category: 'UTILIDADES',    date: daysAgo(35) },
-    { amount: 1200.00, description: 'Compra de ferramentas (scanner OBD)',  category: 'EQUIPAMENTOS',  date: daysAgo(18) },
-    { amount: 680.00,  description: 'Reposição de estoque — distribuidora', category: 'ESTOQUE',       date: daysAgo(22) },
-    { amount: 350.00,  description: 'Plano de internet + telefone',         category: 'TELECOM',       date: daysAgo(30) },
-    { amount: 250.00,  description: 'Material de limpeza e EPI',            category: 'OPERACIONAL',   date: daysAgo(15) },
-    { amount: 1500.00, description: 'Pró-labore proprietário — Abril/2026', category: 'PESSOAL',       date: daysAgo(10) },
-    { amount: 480.00,  description: 'Seguro do estabelecimento',            category: 'SEGUROS',       date: daysAgo(45) },
-    { amount: 320.00,  description: 'Reposição óleo e fluidos — atacado',  category: 'ESTOQUE',       date: daysAgo(8) },
+    // Mês 3 (mais antigo — 90 a 61 dias)
+    { amount: 3800.00, description: 'Aluguel do imóvel — Fevereiro/2026',     category: 'ALUGUEL',       date: daysAgo(88) },
+    { amount: 850.00,  description: 'Energia elétrica — Fevereiro/2026',      category: 'UTILIDADES',    date: daysAgo(85) },
+    { amount: 420.00,  description: 'Água e saneamento — Fevereiro/2026',     category: 'UTILIDADES',    date: daysAgo(82) },
+    { amount: 680.00,  description: 'Reposição de estoque — distribuidora',   category: 'ESTOQUE',       date: daysAgo(78) },
+    { amount: 350.00,  description: 'Plano de internet + telefone',           category: 'TELECOM',       date: daysAgo(75) },
+    { amount: 250.00,  description: 'Material de limpeza e EPI',              category: 'OPERACIONAL',   date: daysAgo(72) },
+    { amount: 1500.00, description: 'Pró-labore proprietário — Fevereiro/2026', category: 'PESSOAL',     date: daysAgo(70) },
+    { amount: 480.00,  description: 'Seguro do estabelecimento',              category: 'SEGUROS',       date: daysAgo(68) },
+    { amount: 1200.00, description: 'Compra de ferramentas (scanner OBD)',    category: 'EQUIPAMENTOS',  date: daysAgo(65) },
+    // Mês 2 (30 a 61 dias)
+    { amount: 3800.00, description: 'Aluguel do imóvel — Março/2026',         category: 'ALUGUEL',       date: daysAgo(58) },
+    { amount: 860.00,  description: 'Energia elétrica — Março/2026',          category: 'UTILIDADES',    date: daysAgo(55) },
+    { amount: 420.00,  description: 'Água e saneamento — Março/2026',         category: 'UTILIDADES',    date: daysAgo(52) },
+    { amount: 720.00,  description: 'Reposição de estoque — distribuidora',   category: 'ESTOQUE',       date: daysAgo(48) },
+    { amount: 350.00,  description: 'Plano de internet + telefone',           category: 'TELECOM',       date: daysAgo(45) },
+    { amount: 310.00,  description: 'Material de limpeza e EPI',              category: 'OPERACIONAL',   date: daysAgo(42) },
+    { amount: 1500.00, description: 'Pró-labore proprietário — Março/2026',   category: 'PESSOAL',       date: daysAgo(40) },
+    { amount: 890.00,  description: 'Uniforme equipe + Equipamentos EPI',     category: 'PESSOAL',       date: daysAgo(38) },
+    // Mês 1 (últimos 30 dias)
+    { amount: 3800.00, description: 'Aluguel do imóvel — Abril/2026',         category: 'ALUGUEL',       date: daysAgo(28) },
+    { amount: 870.00,  description: 'Energia elétrica — Abril/2026',          category: 'UTILIDADES',    date: daysAgo(25) },
+    { amount: 420.00,  description: 'Água e saneamento — Abril/2026',         category: 'UTILIDADES',    date: daysAgo(22) },
+    { amount: 680.00,  description: 'Reposição de estoque — distribuidora',   category: 'ESTOQUE',       date: daysAgo(18) },
+    { amount: 350.00,  description: 'Plano de internet + telefone',           category: 'TELECOM',       date: daysAgo(15) },
+    { amount: 250.00,  description: 'Material de limpeza e EPI',              category: 'OPERACIONAL',   date: daysAgo(12) },
+    { amount: 1500.00, description: 'Pró-labore proprietário — Abril/2026',   category: 'PESSOAL',       date: daysAgo(10) },
+    { amount: 320.00,  description: 'Reposição óleo e fluidos — atacado',     category: 'ESTOQUE',       date: daysAgo(8) },
+    { amount: 580.00,  description: 'Manutenção equipamento — elevador',      category: 'EQUIPAMENTOS',  date: daysAgo(5) },
   ];
   for (const exp of expenses) {
     await prisma.financialTransaction.create({
@@ -497,11 +976,13 @@ async function main() {
 ╔═══════════════════════════════════════════════════════════╗
 ║           🚀  OFICINA360 — SEED COMPLETO  🚀              ║
 ╠═══════════════════════════════════════════════════════════╣
-║  CLIENTES:  12  •  VEÍCULOS: 15  •  OS: 13               ║
+║  CLIENTES:  12  •  VEÍCULOS: 15  •  OS: 49               ║
+║  EXECUTORES: 10 mecânicos + admin  (com comissões)        ║
 ║  PEÇAS: 57 itens no catálogo (estoque inicial: 20 un)     ║
-║  FINANCEIRO: R$ ${totalRevenue.toFixed(2).padStart(8)} receita / R$ ${totalExpenses.toFixed(2).padStart(8)} despesa    ║
+║  FINANCEIRO: R$ ${totalRevenue.toFixed(2).padStart(9)} receita / R$ ${totalExpenses.toFixed(2).padStart(9)} despesa  ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  LOGIN: admin@demo.com / admin123  (plano PRO, trial 14d) ║
+║  MECÂNICOS: carlos@demo.com ... rafael@demo.com / mec123  ║
 ╚═══════════════════════════════════════════════════════════╝
   `);
 }
