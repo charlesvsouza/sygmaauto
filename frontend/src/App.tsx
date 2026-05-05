@@ -39,6 +39,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { KanbanPage } from './pages/KanbanPage';
 import { KanbanRecepcaoPage } from './pages/KanbanRecepcaoPage';
 import { KanbanRetificaPage } from './pages/KanbanRetificaPage';
+import { DashboardRetificaPage } from './pages/DashboardRetificaPage';
 import { WhatsappPage } from './pages/WhatsappPage';
 import { SuperAdminPage } from './pages/SuperAdminPage';
 import { SuperAdminLoginPage } from './pages/SuperAdminLoginPage';
@@ -102,6 +103,7 @@ export default function App() {
             <Route path="/reports" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><ReportsPage /></PlanFeatureRoute>} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/whatsapp" element={<PlanFeatureRoute feature="WHATSAPP"><WhatsappPage /></PlanFeatureRoute>} />
+            <Route path="/dashboard-retifica" element={<RetificaModeRoute><DashboardRetificaPage /></RetificaModeRoute>} />
           </Route>
         </Route>
         
