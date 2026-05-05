@@ -1,0 +1,28 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sa-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ff7b2f"/>
+    </linearGradient>
+    <linearGradient id="sa-bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e1b10"/>
+      <stop offset="100%" stop-color="#0f0f12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="40" height="40" rx="10" fill="url(#sa-bg)"/>
+  <rect width="40" height="40" rx="10" fill="url(#sa-grad)" fill-opacity="0.12"/>
+
+  <!-- Sigma (Σ) estilizado com seta -->
+  <!-- Barra superior -->
+  <line x1="10" y1="9" x2="30" y2="9" stroke="url(#sa-grad)" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- Diagonal superior -->
+  <line x1="29" y1="9.5" x2="13" y2="20.5" stroke="url(#sa-grad)" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- Diagonal inferior -->
+  <line x1="13" y1="19.5" x2="27" y2="30" stroke="url(#sa-grad)" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- Barra inferior -->
+  <line x1="10" y1="31" x2="27.5" y2="31" stroke="url(#sa-grad)" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- Seta → -->
+  <polyline points="24,26.5 30,31 24,35.5" stroke="url(#sa-grad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

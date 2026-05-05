@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { canAccessFeature, canAccessRetificaMode, featureLabel, getFeatureMinPlan, getFeatureUpgradeMessage, getPlanLabel, type PlanFeatureKey } from '../lib/planAccess';
+import { SigmaAutoLogo } from './SigmaAutoLogo';
 
 export function Layout() {
   const { user, tenant, logout } = useAuthStore();
@@ -123,20 +124,15 @@ export function Layout() {
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
         <div className="px-4 py-2.5 border-b border-white/10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 shrink-0">
-              <Wrench className="w-5 h-5 text-white" />
-            </div>
-            <div>
-               <h1 className="font-bold text-white text-base leading-tight">Sigma Auto</h1>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                planName === 'START' ? 'bg-slate-700 text-slate-300' :
-                planName === 'PRO' ? 'bg-purple-500/20 text-purple-300' :
-                'bg-amber-500/20 text-amber-300'
-              }`}>
-                {getPlanLabel(planName)}
-              </span>
-            </div>
+          <SigmaAutoLogo variant="compact" size={34} />
+          <div className="mt-1.5 pl-0.5">
+            <span className={`text-xs px-2 py-0.5 rounded-full ${
+              planName === 'START' ? 'bg-slate-700 text-slate-300' :
+              planName === 'PRO' ? 'bg-purple-500/20 text-purple-300' :
+              'bg-amber-500/20 text-amber-300'
+            }`}>
+              {getPlanLabel(planName)}
+            </span>
           </div>
         </div>
 
@@ -215,12 +211,7 @@ export function Layout() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
-              <Wrench className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-white text-lg">Sigma Auto</span>
-          </div>
+          <SigmaAutoLogo variant="compact" size={36} />
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400">
             <X className="w-6 h-6" />
           </button>
@@ -306,10 +297,7 @@ export function Layout() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
-              <Wrench className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-slate-900">Sigma Auto</span>
+            <SigmaAutoLogo variant="compact" size={28} />
           </div>
           <div className="w-8" /> {/* Spacer */}
         </header>
