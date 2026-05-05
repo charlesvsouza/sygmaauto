@@ -12,6 +12,7 @@ import { cn } from '../lib/utils';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
 import { ChecklistModal } from '../components/ChecklistModal';
+import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { canAccessFeature, canAccessRetificaMode } from '../lib/planAccess';
 
 const statusConfig: Record<string, { label: string; color: string; icon?: string }> = {
@@ -246,6 +247,31 @@ export function ServiceOrdersPage() {
   const [expectedPartsDate, setExpectedPartsDate] = useState('');
   const [showPurchaseOrderPdf, setShowPurchaseOrderPdf] = useState(false);
   const purchaseOrderFrameRef = useRef<HTMLIFrameElement>(null);
+
+  // Modal de metrologia (aberto a partir do Andamento da O.S.)
+  const [metrologiaOsTarget, setMetrologiaOsTarget] = useState<{ id: string; number: string; notes: string | null } | null>(null);
+
+  const handleMetrologiaSaveFromDetail = async (data: MetrologiaData, items: SuggestedItem[]) => {
+    if (!metrologiaOsTarget) return;
+    const { id, notes } = metrologiaOsTarget;
+    let existing: Record<string, unknown> = {};
+    try { if (notes) existing = JSON.parse(notes); } catch { /* ignore */ }
+    const merged = JSON.stringify({ ...existing, metrologia: data });
+    await serviceOrdersApi.update(id, { notes: merged });
+    await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
+    for (const item of items) {
+      try {
+        await serviceOrdersApi.addItem(id, {
+          description: item.description,
+          type: item.type === 'service' ? 'service' : 'part',
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+        });
+      } catch { /* ignora falha individual */ }
+    }
+    setMetrologiaOsTarget(null);
+    await loadOrders();
+  };
 
   useEffect(() => {
     if (!showStatusDropdown) return;
@@ -1148,14 +1174,43 @@ export function ServiceOrdersPage() {
                     const currentIdx = getCurrentPhaseIndex(selectedOrder.status);
                     const isCurrent = index === currentIdx;
                     const isDone = index < currentIdx;
-                    return (
+                    // Fase Metrologia de OS retífica: clicável quando está em DESMONTAGEM (próxima fase) ou já em METROLOGIA
+                    const isMetrologiaPhase = isRetificaOrder && phase.key === 'ANALISE';
+                    const canOpenMetrologia = isMetrologiaPhase && (
+                      selectedOrder.status === 'DESMONTAGEM' || selectedOrder.status === 'METROLOGIA'
+                    );
+                    const inner = (
+                      <p className="text-[9px] font-black uppercase tracking-wider leading-snug">
+                        {phase.label}
+                        {canOpenMetrologia && (
+                          <span className="block text-[8px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
+                            {selectedOrder.status === 'METROLOGIA' ? '📋 ver / editar' : '📋 iniciar'}
+                          </span>
+                        )}
+                      </p>
+                    );
+                    return canOpenMetrologia ? (
+                      <button
+                        key={phase.key}
+                        type="button"
+                        onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: selectedOrder.id.slice(-6).toUpperCase(), notes: selectedOrder.notes ?? null })}
+                        className={cn(
+                          'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-blue-400',
+                          isCurrent && 'border-primary-600 bg-primary-50 text-primary-700',
+                          isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                          !isCurrent && !isDone && 'border-slate-200 bg-white text-slate-400'
+                        )}
+                      >
+                        {inner}
+                      </button>
+                    ) : (
                       <div key={phase.key} className={cn(
                         'rounded-xl border px-3 py-2 text-center transition-all',
                         isCurrent && 'border-primary-600 bg-primary-50 text-primary-700',
                         isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
                         !isCurrent && !isDone && 'border-slate-200 bg-white text-slate-400'
                       )}>
-                        <p className="text-[9px] font-black uppercase tracking-wider">{phase.label}</p>
+                        {inner}
                       </div>
                     );
                   })}
@@ -2092,6 +2147,19 @@ export function ServiceOrdersPage() {
             setChecklistFlags((prev) => ({ ...prev, [checklistModal]: true }));
             setChecklistModal(null);
           }}
+        />
+      )}
+
+      {/* Modal de Metrologia — abre ao clicar em "Metrologia" no Andamento da OS */}
+      {metrologiaOsTarget && (
+        <MetrologiaModal
+          osId={metrologiaOsTarget.id}
+          osNumber={metrologiaOsTarget.number}
+          initialData={(() => {
+            try { const p = JSON.parse(metrologiaOsTarget.notes ?? ''); return p?.metrologia ?? null; } catch { return null; }
+          })()}
+          onSave={handleMetrologiaSaveFromDetail}
+          onCancel={() => setMetrologiaOsTarget(null)}
         />
       )}
 
