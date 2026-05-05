@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { SigmaAutoLogo } from '../components/SigmaAutoLogo';
 
 export function PrivacyPolicyPage() {
   const navigate = useNavigate();
@@ -25,9 +26,7 @@ export function PrivacyPolicyPage() {
             Voltar
           </button>
           <span className="text-white/20">|</span>
-          <span className="text-sm font-bold text-white">
-            Sigma<span className="text-[#ff7b2f]">Auto</span>
-          </span>
+          <SigmaAutoLogo variant="compact" size={28} />
         </div>
       </header>
 

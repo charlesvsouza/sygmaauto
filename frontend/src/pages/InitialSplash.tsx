@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wrench, Shield, Zap, Database, Cpu } from 'lucide-react';
+import { Shield, Zap, Database, Cpu, Settings } from 'lucide-react';
 import { EcgPulse } from '../components/marketing/EcgPulse';
+import { SigmaAutoLogo } from '../components/SigmaAutoLogo';
 
 const SPLASH_DURATION_MS = 10000;
 
 const steps = [
   { id: 1, text: 'Iniciando sistema...', icon: Cpu },
-  { id: 2, text: 'Carregando módulos...', icon: Wrench },
+  { id: 2, text: 'Carregando módulos...', icon: Settings },
   { id: 3, text: 'Estabelecendo conexão segura...', icon: Shield },
   { id: 4, text: 'Sincronizando dados...', icon: Database },
   { id: 5, text: 'Preparando interface...', icon: Zap },
@@ -64,17 +65,7 @@ export function InitialSplash() {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="flex items-center gap-3 mb-14"
         >
-          <div className="w-14 h-14 bg-gradient-to-br from-[#ff7b2f] to-[#e85d04] rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(255,123,47,0.3)]">
-            <Wrench className="text-white" size={28} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-white leading-none">
-              Sigma<span className="text-[#ff7b2f]">Auto</span>
-            </h1>
-            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mt-0.5">
-              Sistema para Oficina Mecânica
-            </p>
-          </div>
+          <SigmaAutoLogo variant="full" size={56} />
         </motion.div>
 
         {/* Mensagem central */}
