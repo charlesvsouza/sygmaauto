@@ -148,6 +148,7 @@ const DOC_STYLES = `
 .os-doc .tr { text-align: right; }
 .os-doc .tc { text-align: center; }
 .os-doc hr { border: none; border-top: 1px solid #bbb; margin: 5px 0; }
+.os-doc thead { display: table-row-group; }
 `;
 
 const PRINT_STYLE = `
@@ -278,7 +279,7 @@ export function ServiceOrdersPage() {
         });
       } catch { /* ignora falha individual */ }
     }
-    // Recarrega a OS atualizada e abre o laudo para impress├úo
+    // Recarrega a OS atualizada e abre o laudo para impressão
     const res = await serviceOrdersApi.getById(id);
     setSelectedOrder(res.data);
     setMetrologiaOsTarget(null);
@@ -426,7 +427,7 @@ export function ServiceOrdersPage() {
 
     setSyncingTotals(true);
     try {
-      // 1. Aplica altera├º├Áes de quantidade pendentes (se houver)
+      // 1. Aplica alterações de quantidade pendentes (se houver)
       if (changedEntries.length > 0) {
         await Promise.all(
           changedEntries.map(([itemId, newQty]) =>
@@ -1147,7 +1148,7 @@ export function ServiceOrdersPage() {
                 >
                   <Printer size={15} /> Imprimir OS (PDF)
                 </button>
-                {/* Bot├Áes de Checklist - verde quando ja preenchido */}
+                {/* Botões de Checklist - verde quando ja preenchido */}
                 <button
                   onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}
                   disabled={!canUseChecklist}
@@ -1159,7 +1160,7 @@ export function ServiceOrdersPage() {
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
                   )}
-                  title={!canUseChecklist ? 'Dispon├¡vel no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido - clique para editar' : 'Preencher checklist de entrada'}
+                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido - clique para editar' : 'Preencher checklist de entrada'}
                 >
                   <ClipboardCheck size={15} />
                   Entrada
@@ -1176,10 +1177,10 @@ export function ServiceOrdersPage() {
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100',
                   )}
-                  title={!canUseChecklist ? 'Dispon├¡vel no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saida preenchido - clique para editar' : 'Preencher checklist de saida'}
+                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saida preenchido - clique para editar' : 'Preencher checklist de saida'}
                 >
                   <ClipboardCheck size={15} />
-                  Sa├¡da
+                  Saída
                   {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
                 <button
@@ -1194,7 +1195,7 @@ export function ServiceOrdersPage() {
                   className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
                   title={isClosed ? 'OS finalizada nao pode ser editada' : !canEditOrderDetails ? 'Sem permissao para editar O.S.' : undefined}
                 >
-                  <Save size={15} /> Salvar altera├º├Áes
+                  <Save size={15} /> Salvar alterações
                 </button>
                 {canDelete && (
                   <button
@@ -1208,7 +1209,7 @@ export function ServiceOrdersPage() {
               </div>
             </div>
 
-            {/* Banner: OS reprovada + op├º├úo de diagnostico */}
+            {/* Banner: OS reprovada + opção de diagnostico */}
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
               <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
@@ -1216,8 +1217,8 @@ export function ServiceOrdersPage() {
                   <div>
                     <p className="text-sm font-black text-amber-900">Orcamento reprovado pelo cliente</p>
                     <p className="text-xs text-amber-700 mt-0.5">
-                      Deseja abrir uma nova O.S. para cobran├ºa da <strong>Taxa de Diagnostico</strong>?
-                      O valor e o tempo ser├úo preenchidos automaticamente conforme as configura├º├Áes da oficina.
+                      Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnostico</strong>?
+                      O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
                     </p>
                   </div>
                 </div>
@@ -1255,7 +1256,7 @@ export function ServiceOrdersPage() {
                     const currentIdx = getCurrentPhaseIndex(selectedOrder.status);
                     const isCurrent = index === currentIdx;
                     const isDone = index < currentIdx;
-                    // Fase Metrologia de OS retifica: clic├ível quando est├í em DESMONTAGEM (pr├│xima fase) ou ja em METROLOGIA
+                    // Fase Metrologia de OS retifica: clicável quando está em DESMONTAGEM (próxima fase) ou ja em METROLOGIA
                     const isMetrologiaPhase = isRetificaOrder && phase.key === 'ANALISE';
                     const canOpenMetrologia = isMetrologiaPhase && (
                       selectedOrder.status === 'DESMONTAGEM' || selectedOrder.status === 'METROLOGIA'
@@ -1326,7 +1327,7 @@ export function ServiceOrdersPage() {
                       <Car size={13} /> Dados do Veiculo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
-                      {/* Bot├úo retroceder fase - ADMIN/MASTER em OS nao finalizadas */}
+                      {/* Botão retroceder fase - ADMIN/MASTER em OS nao finalizadas */}
                       {canChangeStatus && ['MASTER', 'ADMIN'].includes(user?.role ?? '') &&
                        !CLOSED_STATUSES.includes(selectedOrder.status) &&
                        selectedOrder.status !== 'ABERTA' && (() => {
@@ -1337,7 +1338,7 @@ export function ServiceOrdersPage() {
                         return (
                           <button
                             onClick={async () => {
-                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta a├º├úo e para corre├º├úo de fluxo.`)) return;
+                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta ação e para correção de fluxo.`)) return;
                               await changeStatus(prevStatus, true);
                             }}
                             title={`Retroceder para: ${prevPhase.label}`}
@@ -1379,7 +1380,7 @@ export function ServiceOrdersPage() {
                                   key={key}
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
-                                    if (isNegative && !confirm(`Confirmar mudan├ºa para: ${cfg.label}?`)) return;
+                                    if (isNegative && !confirm(`Confirmar mudança para: ${cfg.label}?`)) return;
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
@@ -1426,7 +1427,7 @@ export function ServiceOrdersPage() {
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      {['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solu├º├úo'][i]}
+                      {['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
                     </label>
                     <textarea
                       value={edit[field]}
@@ -1442,7 +1443,7 @@ export function ServiceOrdersPage() {
                 <div>
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Reserva de Pecas no Orcamento</p>
                   <p className="text-xs text-slate-600 mt-1">
-                    Quando marcado, sinaliza a reserva das pecas para esta O.S. Na aprovacao do orcamento, todas as pecas pendentes ser├úo debitadas do estoque automaticamente.
+                    Quando marcado, sinaliza a reserva das pecas para esta O.S. Na aprovacao do orcamento, todas as pecas pendentes serão debitadas do estoque automaticamente.
                   </p>
                 </div>
                 <label className="inline-flex items-center gap-2 cursor-pointer shrink-0">
@@ -1478,7 +1479,7 @@ export function ServiceOrdersPage() {
                       <th className="px-5 py-3 border-b border-slate-100">Descricao</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-56">Executor</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-20 text-center">Qtd/Hrs</th>
-                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unit├írio</th>
+                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-12" />
                     </tr>
@@ -1531,7 +1532,7 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {serviceItems.length === 0 && (
-                      <tr><td colSpan={6} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhum servico lan├ºado</td></tr>
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhum servico lançado</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1560,7 +1561,7 @@ export function ServiceOrdersPage() {
                     <tr>
                       <th className="px-5 py-3 border-b border-slate-100">Descricao</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-20 text-center">Qtd</th>
-                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unit├írio</th>
+                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-12" />
                     </tr>
@@ -1601,18 +1602,18 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {partItems.length === 0 && (
-                      <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhuma peca lan├ºada</td></tr>
+                      <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhuma peca lançada</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              {/* A├º├Áes + Pagamento + Totais */}
+              {/* Ações + Pagamento + Totais */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
 
-                {/* Avan├ºar status */}
+                {/* Avançar status */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avan├ºar Status</h4>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avançar Status</h4>
                   <div className="flex flex-col gap-1.5">
                     {nextStatuses.length === 0 && (
                       <p className="text-[10px] font-bold text-slate-400">Fluxo encerrado para este status.</p>
@@ -1640,7 +1641,7 @@ export function ServiceOrdersPage() {
                       );
                     })}
 
-                    {/* Bot├úo Reservar Pecas - vis├¡vel em APROVADO e AGUARDANDO_PECAS com pecas na OS */}
+                    {/* Botão Reservar Pecas - visível em APROVADO e AGUARDANDO_PECAS com pecas na OS */}
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (
                       <button
                         onClick={() => { setReserveResult(null); setExpectedPartsDate(''); setShowReserveParts(true); }}
@@ -1781,7 +1782,7 @@ export function ServiceOrdersPage() {
                         onChange={(e) => setExpectedPartsDate(e.target.value)}
                         className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400"
                       />
-                      <p className="text-[10px] text-slate-400">Opcional. Pecas dispon├¡veis ser├úo reservadas imediatamente. Pecas faltantes gerar├úo um Pedido de Compra.</p>
+                      <p className="text-[10px] text-slate-400">Opcional. Pecas disponíveis serão reservadas imediatamente. Pecas faltantes gerarão um Pedido de Compra.</p>
                     </div>
 
                     <button
@@ -1853,7 +1854,7 @@ export function ServiceOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/*  MODAL CAT├üLOGO  */}
+      {/*  MODAL CATÁLOGO  */}
       <AnimatePresence>
         {catalogMode && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -1871,7 +1872,7 @@ export function ServiceOrdersPage() {
                       {catalogMode === 'service' ? 'Adicionar Servico' : 'Lancar Peca'}
                     </h3>
                     <p className="text-[10px] text-slate-400 font-bold uppercase">
-                      {catalogMode === 'service' ? 'Cat├ílogo ou lan├ºamento avulso' : 'Cat├ílogo ou peca avulsa'}
+                      {catalogMode === 'service' ? 'Catálogo ou lançamento avulso' : 'Catálogo ou peca avulsa'}
                     </p>
                   </div>
                 </div>
@@ -1912,7 +1913,7 @@ export function ServiceOrdersPage() {
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Ex: motor falhando ao acelerar, barulho na suspens├úo..."
+                          placeholder="Ex: motor falhando ao acelerar, barulho na suspensão..."
                           value={aiDescription}
                           onChange={(e) => setAiDescription(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAiSuggest()}
@@ -2070,7 +2071,7 @@ export function ServiceOrdersPage() {
                           <div>
                             <p className="font-bold text-slate-900 text-sm">{s.name}</p>
                             <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                              {s.tmo ? `TMO: ${s.tmo}h ├ù R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
+                              {s.tmo ? `TMO: ${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
                               {s.category && ` - ${s.category}`}
                             </p>
                           </div>
@@ -2233,7 +2234,7 @@ export function ServiceOrdersPage() {
                             <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
                           ))}
                         </p>
-                        <p className="text-amber-600">Voce pode criar m├║ltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
+                        <p className="text-amber-600">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
                       </div>
                     );
                   })()}
@@ -2245,7 +2246,7 @@ export function ServiceOrdersPage() {
                       <input value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Ex: VW" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Modelo / fam├¡lia</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Modelo / família</label>
                       <input value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Ex: AP 1.8" />
                     </div>
                     <div className="space-y-1.5">
@@ -2321,7 +2322,7 @@ export function ServiceOrdersPage() {
         />
       )}
 
-      {/* Laudo de Retifica - abre automaticamente ap├│s salvar metrologia */}
+      {/* Laudo de Retifica - abre automaticamente após salvar metrologia */}
       {laudoRetificaOs && (
         <LaudoRetificaModal
           os={laudoRetificaOs}
@@ -2330,7 +2331,7 @@ export function ServiceOrdersPage() {
         />
       )}
 
-      {/* Modal de confirma├º├úo de exclus├úo */}
+      {/* Modal de confirmação de exclusão */}
       {showDeleteModal && selectedOrder && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
@@ -2341,7 +2342,7 @@ export function ServiceOrdersPage() {
               </div>
               <div>
                 <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Excluir O.S.</h2>
-                <p className="text-xs text-slate-500 font-medium">Esta a├º├úo e irrevers├¡vel</p>
+                <p className="text-xs text-slate-500 font-medium">Esta ação e irreversível</p>
               </div>
             </div>
 
@@ -2353,7 +2354,7 @@ export function ServiceOrdersPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-600 uppercase tracking-wider">
-                Motivo da exclus├úo (opcional)
+                Motivo da exclusão (opcional)
               </label>
               <textarea
                 value={deleteReason}
