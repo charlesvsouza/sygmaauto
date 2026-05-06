@@ -7,6 +7,7 @@ COPY backend/. .
 # Timestamp abaixo muda a cada deploy para garantir prisma generate sempre roda
 RUN echo "prisma-gen: 20260503T160000" && npx prisma generate
 RUN npm run build
+RUN mkdir -p dist/service-orders/templates && cp src/service-orders/templates/os-template.html dist/service-orders/templates/
 
 # Production stage
 FROM node:20-alpine
