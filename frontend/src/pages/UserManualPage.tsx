@@ -330,7 +330,7 @@ export function UserManualPage() {
       </section>
 
       <section className="max-w-[1380px] mx-auto px-6 pb-20">
-        <div className="grid gap-8 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="grid gap-8 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-start">
           <aside className="hidden xl:block">
             <div className="sticky top-28 rounded-[28px] border border-[#d0c1a7]/70 bg-[#f3eadb] p-6 shadow-[0_22px_50px_rgba(41,31,20,0.12)]">
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-[#7a6859]">
@@ -357,7 +357,7 @@ export function UserManualPage() {
             </div>
           </aside>
 
-          <div className="min-w-0 rounded-[34px] border border-[#d8cdb8] bg-[linear-gradient(180deg,#fbf7ef_0%,#f4ecdf_100%)] p-4 shadow-[0_30px_80px_rgba(27,20,14,0.16)] sm:p-8 lg:p-12">
+          <div className="min-w-0 overflow-y-auto rounded-[34px] border border-[#d8cdb8] bg-[linear-gradient(180deg,#fbf7ef_0%,#f4ecdf_100%)] p-4 shadow-[0_30px_80px_rgba(27,20,14,0.16)] sm:p-8 lg:p-12 h-[calc(100svh-7.5rem)] sticky top-[7.5rem]">
             {loading ? (
               <div className="flex items-center gap-3 text-[#6d5d50]">
                 <Loader2 size={18} className="animate-spin" />
