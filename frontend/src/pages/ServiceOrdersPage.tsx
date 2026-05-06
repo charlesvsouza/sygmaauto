@@ -232,6 +232,7 @@ export function ServiceOrdersPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
     const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
+  const [osPrintStep, setOsPrintStep] = useState<'preview' | 'print'>('preview');
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -297,6 +298,10 @@ export function ServiceOrdersPage() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showStatusDropdown]);
+
+  useEffect(() => {
+    setOsPrintStep('preview');
+  }, [selectedOrder?.id]);
 
   useEffect(() => { loadOrders(); loadBasics(); }, []);
 
@@ -487,21 +492,69 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const downloadOrderPdf = async () => {
+  const previewOrderPdf = async () => {
     if (!selectedOrder) return;
     try {
       const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `os-${selectedOrder.id.slice(0, 8).toUpperCase()}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!opened) {
+        window.URL.revokeObjectURL(url);
+        alert('Nao foi possivel abrir a visualizacao. Verifique o bloqueador de pop-ups.');
+        return;
+      }
+      setOsPrintStep('print');
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch {
       alert('Erro ao gerar PDF da O.S.');
     }
+  };
+
+  const printOrderPdf = async () => {
+    if (!selectedOrder) return;
+    try {
+      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+
+      const frame = document.createElement('iframe');
+      frame.style.position = 'fixed';
+      frame.style.right = '0';
+      frame.style.bottom = '0';
+      frame.style.width = '0';
+      frame.style.height = '0';
+      frame.style.border = '0';
+      frame.src = url;
+
+      frame.onload = () => {
+        try {
+          frame.contentWindow?.focus();
+          frame.contentWindow?.print();
+        } finally {
+          window.setTimeout(() => {
+            frame.remove();
+            window.URL.revokeObjectURL(url);
+          }, 1000);
+        }
+      };
+
+      frame.onerror = () => {
+        frame.remove();
+        window.URL.revokeObjectURL(url);
+        alert('Erro ao abrir a impressao da O.S.');
+      };
+
+      document.body.appendChild(frame);
+    } catch {
+      alert('Erro ao gerar PDF da O.S.');
+    }
+  };
+
+  const handleOsPrintButton = async () => {
+    if (osPrintStep === 'preview') {
+      await previewOrderPdf();
+      return;
+    }
+    await printOrderPdf();
   };
 
   const getCurrentPhaseIndex = (status: string) => {
@@ -1143,10 +1196,16 @@ export function ServiceOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={downloadOrderPdf}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
+                  onClick={handleOsPrintButton}
+                  className={cn(
+                    'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
+                    osPrintStep === 'preview'
+                      ? 'border-slate-200 bg-white hover:bg-slate-50'
+                      : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                  )}
+                  title={osPrintStep === 'preview' ? 'Primeiro clique: visualizar O.S.' : 'Segundo clique: imprimir O.S.'}
                 >
-                  <Printer size={15} /> Imprimir OS (PDF)
+                  <Printer size={15} /> {osPrintStep === 'preview' ? 'Visualizar OS' : 'Imprimir OS'}
                 </button>
                 {/* Botões de Checklist - verde quando ja preenchido */}
                 <button
