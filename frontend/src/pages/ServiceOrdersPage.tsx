@@ -234,7 +234,7 @@ export function ServiceOrdersPage() {
     const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
   const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
   const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
-  const [quickVehicle, setQuickVehicle] = useState({ plate: '', brand: '', model: '', year: '' });
+  const [quickVehicle, setQuickVehicle] = useState({ plate: '', brand: '', model: '', color: '', year: '' });
   const [osPrintStep, setOsPrintStep] = useState<'preview' | 'print'>('preview');
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
@@ -518,6 +518,7 @@ export function ServiceOrdersPage() {
         plate,
         brand,
         model,
+        color: quickVehicle.color.trim() || undefined,
         year: quickVehicle.year && Number.isFinite(parsedYear) ? parsedYear : undefined,
       };
 
@@ -530,7 +531,7 @@ export function ServiceOrdersPage() {
       });
 
       setNewOrder((prev) => ({ ...prev, vehicleId: createdVehicle.id }));
-      setQuickVehicle({ plate: '', brand: '', model: '', year: '' });
+      setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
       setShowQuickVehicleForm(false);
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Erro ao cadastrar veiculo.');
@@ -2319,7 +2320,7 @@ export function ServiceOrdersPage() {
                   <select className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" value={newOrder.customerId} onChange={(e) => {
                     setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
                     setShowQuickVehicleForm(false);
-                    setQuickVehicle({ plate: '', brand: '', model: '', year: '' });
+                    setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
                   }} required>
                     <option value="">Selecione um cliente...</option>
                     {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -2370,6 +2371,12 @@ export function ServiceOrdersPage() {
                           placeholder="Modelo *"
                           value={quickVehicle.model}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
+                        />
+                        <input
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold"
+                          placeholder="Cor (opcional)"
+                          value={quickVehicle.color}
+                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
                         />
                         <input
                           type="number"
