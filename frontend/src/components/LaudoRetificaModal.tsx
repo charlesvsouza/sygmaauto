@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Printer, FileText } from 'lucide-react';
+import { pdfApi } from '../api/client';
 import type { MetrologiaData } from './MetrologiaModal';
 
 // ─── Estilos do documento ──────────────────────────────────────────────────────
@@ -368,16 +369,23 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
   const html    = buildLaudoHtml(os, metrologia, tenant);
   const fullDoc = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Laudo Retífica OS #${os.id.slice(-6).toUpperCase()}</title><style>${PREVIEW_STYLE}</style></head><body>${html}</body></html>`;
 
-  const handlePrint = () => {
-    const win = iframeRef.current?.contentWindow;
-    if (!win) return;
-    // Injeta o estilo de impressão e chama print
-    const style = win.document.createElement('style');
-    style.textContent = PRINT_STYLE;
-    win.document.head.appendChild(style);
-    win.focus();
-    win.print();
-    win.document.head.removeChild(style);
+  const handlePrint = async () => {
+    try {
+      const response = await pdfApi.render({
+        html: fullDoc.replace('</head>', `<style>${PRINT_STYLE}</style></head>`),
+        fileName: `laudo-retifica-${os.id.slice(0, 8).toUpperCase()}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `laudo-retifica-${os.id.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Erro ao gerar laudo em PDF com Puppeteer.');
+    }
   };
 
   return (

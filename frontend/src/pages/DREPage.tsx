@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { financialApi } from '../api/client';
+import { financialApi, pdfApi } from '../api/client';
 import {
   TrendingUp,
   TrendingDown,
@@ -92,6 +92,7 @@ export function DREPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const printRef = useRef<HTMLDivElement>(null);
 
   const load = async (y: number, m: number) => {
     setLoading(true);
@@ -119,7 +120,26 @@ export function DREPage() {
     else setMonth(m => m + 1);
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = async () => {
+    if (!printRef.current) return;
+    try {
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${DRE_PRINT_STYLE}</style></head><body><div id="dre-print">${printRef.current.innerHTML}</div></body></html>`;
+      const response = await pdfApi.render({
+        html,
+        fileName: `dre-${year}-${String(month).padStart(2, '0')}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `dre-${year}-${String(month).padStart(2, '0')}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Erro ao gerar PDF da DRE com Puppeteer.');
+    }
+  };
 
   const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const currentYear = now.getFullYear();
@@ -134,7 +154,7 @@ export function DREPage() {
       <style>{DRE_PRINT_STYLE}</style>
 
       {/* Hidden print div — must always be in DOM for window.print() to work */}
-      <div id="dre-print">
+      <div id="dre-print" ref={printRef}>
         <h2 style={{ textAlign: 'center', fontSize: '16pt', marginBottom: 4, fontFamily: 'Arial, sans-serif' }}>
           Demonstrativo de Resultado do Exercício — DRE
         </h2>

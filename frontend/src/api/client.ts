@@ -131,6 +131,8 @@ export const serviceOrdersApi = {
   getAll: (status?: string) =>
     api.get('/service-orders', { params: status ? { status } : {} }),
   getById: (id: string) => api.get(`/service-orders/${id}`),
+  downloadPdf: (id: string) =>
+    api.get(`/service-orders/${id}/pdf`, { responseType: 'blob' }),
   create: (data: any) => api.post('/service-orders', data),
   update: (id: string, data: any) => api.patch(`/service-orders/${id}`, data),
   delete: (id: string, reason?: string) => api.delete(`/service-orders/${id}`, { data: { reason } }),
@@ -213,6 +215,11 @@ export const reportsApi = {
     api.get('/commissions', { params: params || {} }),
   getPurchaseProjection: () =>
     api.get('/inventory/purchase-projection'),
+};
+
+export const pdfApi = {
+  render: (payload: { html: string; fileName?: string; landscape?: boolean; format?: string }) =>
+    api.post('/pdf/render', payload, { responseType: 'blob' }),
 };
 
 export const subscriptionsApi = {

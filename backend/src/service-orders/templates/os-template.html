@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordem de Serviço</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+        }
+        
+        /* ===== CABEÇALHO ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .company-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 2px;
+        }
+        
+        .company-info {
+            text-align: right;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .company-info strong {
+            display: block;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        /* ===== TITULO ===== */
+        .title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0 30px 0;
+            color: #333;
+        }
+        
+        /* ===== SEÇÃO DE DADOS ===== */
+        .section-header {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        
+        .section-2col {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .section-2col > div {
+            flex: 1;
+        }
+        
+        .field {
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        
+        .field-value {
+            color: #333;
+            padding: 4px 8px;
+            background: #f9f9f9;
+            border-left: 2px solid #ddd;
+        }
+        
+        /* ===== CAIXAS COM BORDAS ===== */
+        .box {
+            border: 1px solid #999;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+        
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #333;
+        }
+        
+        .box-content {
+            font-size: 11px;
+            line-height: 1.5;
+            color: #444;
+        }
+        
+        /* ===== TABELAS ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+        
+        table thead {
+            background: #333;
+            color: white;
+        }
+        
+        table th {
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #999;
+        }
+        
+        table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .col-qty {
+            text-align: center;
+            width: 60px;
+        }
+        
+        .col-price {
+            text-align: right;
+            width: 80px;
+        }
+        
+        .col-total {
+            text-align: right;
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        /* ===== RESUMO FINANCEIRO ===== */
+        .summary {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 14px;
+            background: #333;
+            color: white;
+            padding: 12px;
+            border: none;
+            margin-top: 10px;
+        }
+        
+        .summary-row.total span:last-child {
+            font-size: 16px;
+        }
+        
+        /* ===== ASSINATURAS ===== */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            gap: 30px;
+        }
+        
+        .signature-block {
+            flex: 1;
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            font-size: 11px;
+        }
+        
+        .signature-block span {
+            display: block;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        /* ===== IMPRESSÃO ===== */
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                max-width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- CABEÇALHO -->
+        <div class="header">
+            <div class="company-logo">SYGMAAUTO</div>
+            <div class="company-info">
+                <strong>{{companyName}}</strong>
+                {{companyAddress}}<br>
+                {{companyPhone}}<br>
+                {{companyEmail}}<br>
+                CNPJ: {{companyCNPJ}}
+            </div>
+        </div>
+        
+        <!-- TÍTULO -->
+        <div class="title">ORDEM DE SERVIÇO</div>
+        
+        <!-- DADOS CLIENTE E OS -->
+        <div class="section-2col">
+            <div>
+                <div class="section-header">Dados do Cliente</div>
+                <div class="field">
+                    <div class="field-label">Nome:</div>
+                    <div class="field-value">{{customerName}}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Documento:</div>
+                    <div class="field-value">{{customerDocument}}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Telefone:</div>
+                    <div class="field-value">{{customerPhone}}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Endereço:</div>
+                    <div class="field-value">{{customerAddress}}</div>
+                </div>
+            </div>
+            <div>
+                <div class="section-header">Identificação</div>
+                <div class="field">
+                    <div class="field-label">Número da OS:</div>
+                    <div class="field-value">#{{osNumber}}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Data:</div>
+                    <div class="field-value">{{osDate}}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Status:</div>
+                    <div class="field-value">{{osStatus}}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VEÍCULO -->
+        <div class="box">
+            <div class="box-title">Equipamentos</div>
+            <div class="box-content">
+                <strong>{{vehicleBrand}} {{vehicleModel}}</strong> {{vehicleYear}}<br>
+                Placa: {{vehiclePlate}} | VIN: {{vehicleVIN}} | KM: {{vehicleKM}} km
+            </div>
+        </div>
+        
+        <!-- DEFEITOS RELATADOS -->
+        <div class="box">
+            <div class="box-title">Defeitos Relatados</div>
+            <div class="box-content">{{complaint}}</div>
+        </div>
+        
+        <!-- LAUDO TÉCNICO -->
+        <div class="box">
+            <div class="box-title">Laudo Técnico</div>
+            <div class="box-content">{{diagnosis}}</div>
+        </div>
+        
+        <!-- SERVIÇOS PRESTADOS -->
+        <div class="section-header">Serviços Prestados</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Descrição</th>
+                    <th class="col-qty">Qtd</th>
+                    <th class="col-price">Preço</th>
+                    <th class="col-total">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{servicesRows}}
+                <tr style="background: #f0f0f0; font-weight: bold;">
+                    <td colspan="4" style="text-align: right;">Total de Serviços:</td>
+                    <td class="col-total">R$ {{totalServices}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- PRODUTOS -->
+        <div class="section-header">Produtos</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Descrição</th>
+                    <th class="col-qty">Qtd</th>
+                    <th class="col-price">Preço</th>
+                    <th class="col-total">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{productsRows}}
+                <tr style="background: #f0f0f0; font-weight: bold;">
+                    <td colspan="4" style="text-align: right;">Total de Produtos:</td>
+                    <td class="col-total">R$ {{totalProducts}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- RESUMO FINANCEIRO -->
+        <div class="summary">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>R$ {{subtotal}}</span>
+            </div>
+            <div class="summary-row">
+                <span>Descontos:</span>
+                <span>R$ {{totalDiscount}}</span>
+            </div>
+            <div class="summary-row total">
+                <span>TOTAL:</span>
+                <span>R$ {{total}}</span>
+            </div>
+        </div>
+        
+        <!-- OBSERVAÇÕES -->
+        {{#if observations}}
+        <div class="box">
+            <div class="box-title">Observações</div>
+            <div class="box-content">{{observations}}</div>
+        </div>
+        {{/if}}
+        
+        <!-- ASSINATURAS -->
+        <div class="signatures">
+            <div class="signature-block">
+                <span>Assinatura do Técnico</span>
+            </div>
+            <div class="signature-block">
+                <span>Assinatura do Cliente</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

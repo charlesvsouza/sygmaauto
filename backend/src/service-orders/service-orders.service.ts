@@ -4,6 +4,8 @@ import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateSt
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
+import { PdfService } from './pdf.service';
+import * as path from 'path';
 
 @Injectable()
 export class ServiceOrdersService {
@@ -11,6 +13,7 @@ export class ServiceOrdersService {
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
     private commissions: CommissionsService,
+    private pdf: PdfService,
   ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
@@ -1235,5 +1238,127 @@ export class ServiceOrdersService {
         data: { applied: false },
       });
     }
+  }
+
+  // ===== PDF GENERATION =====
+
+  private formatCurrency(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  private formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+  }
+
+  async generateOsPdf(tenantId: string, osId: string): Promise<Buffer> {
+    // Buscar OS com todos os dados
+    const order = await this.prisma.serviceOrder.findFirst({
+      where: { id: osId, tenantId },
+      include: {
+        customer: true,
+        vehicle: true,
+        items: {
+          include: {
+            service: true,
+            part: true,
+          },
+        },
+        tenant: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Ordem de Serviço não encontrada');
+    }
+
+    // Preparar dados para template
+    const servicesItems = order.items.filter((i) => i.type === 'service');
+    const productsItems = order.items.filter((i) => i.type === 'part');
+
+    const servicesRows = servicesItems
+      .map(
+        (item, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.service?.name || item.description}</td>
+        <td class="col-qty">${item.quantity}</td>
+        <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
+        <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
+      </tr>
+    `,
+      )
+      .join('');
+
+    const productsRows = productsItems
+      .map(
+        (item, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.part?.name || item.description}</td>
+        <td class="col-qty">${item.quantity}</td>
+        <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
+        <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
+      </tr>
+    `,
+      )
+      .join('');
+
+    const totalServices = servicesItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0,
+    );
+    const totalProducts = productsItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0,
+    );
+    const subtotal = order.totalParts + order.totalServices + order.totalLabor;
+    const total = subtotal - order.totalDiscount;
+
+    const templateData = {
+      companyName: order.tenant.tradeName || order.tenant.legalName || 'SygmaAuto',
+      companyAddress: order.tenant.address || 'Endereço não configurado',
+      companyPhone: order.tenant.phone || '',
+      companyEmail: order.tenant.email || '',
+      companyCNPJ: order.tenant.taxId || order.tenant.document || '',
+      
+      customerName: order.customer.name,
+      customerDocument: order.customer.document || 'Não informado',
+      customerPhone: order.customer.phone || 'Não informado',
+      customerAddress: order.customer.address || 'Não informado',
+      
+      osNumber: order.id.slice(0, 8).toUpperCase(),
+      osDate: this.formatDate(order.createdAt),
+      osStatus: order.status,
+      
+      vehicleBrand: order.vehicle?.brand || order.equipmentBrand || 'N/A',
+      vehicleModel: order.vehicle?.model || order.equipmentModel || 'N/A',
+      vehicleYear: order.vehicle?.year || '',
+      vehiclePlate: order.vehicle?.plate || 'N/A',
+      vehicleVIN: order.vehicle?.vin || 'N/A',
+      vehicleKM: order.vehicle?.km || order.kmEntrada || '0',
+      
+      complaint: order.complaint || 'Não informado',
+      diagnosis: order.diagnosis || order.technicalReport || 'Aguardando diagnóstico',
+      observations: order.observations || '',
+      
+      servicesRows,
+      productsRows,
+      totalServices: this.formatCurrency(totalServices),
+      totalProducts: this.formatCurrency(totalProducts),
+      subtotal: this.formatCurrency(subtotal),
+      totalDiscount: this.formatCurrency(order.totalDiscount),
+      total: this.formatCurrency(total),
+    };
+
+    // Gerar PDF usando Puppeteer
+    const templatePath = path.join(
+      __dirname,
+      'templates',
+      'os-template.html',
+    );
+    return this.pdf.generatePdfFromTemplate(templatePath, templateData);
   }
 }

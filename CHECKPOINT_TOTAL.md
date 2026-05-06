@@ -1,4 +1,4 @@
-# CHECKPOINT TOTAL — SigmaAuto (03/05/2026)
+# CHECKPOINT TOTAL — SigmaAuto (05/05/2026)
 
 ## Visão Geral do Projeto
 
@@ -66,6 +66,9 @@
 | Manutenção Preventiva | ✅ | Cron diário às 8h, lembrete WhatsApp por KM/data, página `/maintenance` |
 | NPS Automático | ✅ | Pesquisa pós-entrega via WhatsApp, dashboard score, resposta pública por link |
 | Agendamento Interno | ✅ | Campo `scheduledDate` na OS, painel no Dashboard, página `/agenda` semanal |
+| **Aquisição de Clientes** | ✅ | Checkout público (sem login), convite MASTER por email pós-pagamento, página `/planos` |
+| **Notificação de Vendas** | ✅ | Email automático para `ADMIN_NOTIFY_EMAIL` a cada pagamento aprovado via webhook |
+| **Renovação Automática** | ✅ | Cron 9h (lembrete 7 dias antes) + Cron 10h (PAST_DUE por vencimento) + link MP gerado dinamicamente |
 
 ---
 
@@ -138,6 +141,8 @@ a7aacd4 feat(layout): mover avatar+nome+logout para extremidade direita do heade
 cf9c46b refactor(retifica): centralizar SLA_HOURS + validar metrologia no backend + proteger duplicacao
 5964182 fix(retifica): corrigir tipo Set<string> no metrologiaTarget para build TS
 62f1c85 fix(retifica): corrigir campos motorBrand/motorModel/motorSerial -> equipmentBrand/equipmentModel/serialNumber
+f281c66 fix: corrigir import next/link e exports em SupportPage, BlogPage e ManualPage
+f5a6b7b feat: renovação automática de assinaturas + email admin de nova venda
 ```
 
 ---
@@ -177,13 +182,19 @@ JWT_REFRESH_SECRET=<openssl rand -hex 32>
 FRONTEND_URL=https://sigmaauto.com.br
 NODE_ENV=production
 PORT=3000
-MERCADOPAGO_ACCESS_TOKEN=...
+MP_ACCESS_TOKEN=...
+MP_MODE=production
+MP_WEBHOOK_SECRET=...           # ou MP_WEBHOOK_TOKEN
 EVOLUTION_API_URL=https://evolution-api-r2-production.up.railway.app
 EVOLUTION_API_KEY=SygmaEvolution@2026!
 EVOLUTION_INSTANCE=sygmaauto
-```
-CHECKOUT_SUCCESS_URL=https://sigmaauto.com.br/settings?checkout=success
-CHECKOUT_CANCEL_URL=https://sigmaauto.com.br/settings?checkout=cancel
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_USER=suporte@sigmaauto.com.br
+SMTP_PASS=...
+SMTP_FROM_EMAIL=suporte@sigmaauto.com.br
+SMTP_FROM_NAME=Sigma Auto
+ADMIN_NOTIFY_EMAIL=charlesvsouza@hotmail.com   # recebe email de nova venda
 BACKEND_PUBLIC_URL=https://sygmaauto-api-production.up.railway.app
 ```
 
@@ -220,7 +231,25 @@ Rota:  /admin/login
 3. ✅ **WhatsApp automático por evento de OS** — 5 templates via Evolution API
 4. ✅ **Tela de configuração WhatsApp** — `/whatsapp` com QR Code e status — **ONLINE**
 
-### 🔄 Sprint 2 — Em Andamento (iniciado em 03/05/2026)
+### ✅ Sprint 2 — Concluído (03–05/05/2026)
+5. ✅ **Comissão de mecânicos** — backend + UI completos
+6. ✅ **Manutenção Preventiva** — cron 8h, WhatsApp por KM/data
+7. ✅ **DRE** — página dedicada com histórico 6 meses
+8. ✅ **NPS Automático** — pesquisa pós-entrega, dashboard
+9. ✅ **Agendamento** — `scheduledDate` na OS, painel Agenda, página `/agenda`
+
+### ✅ Sprint 3 — Concluído (05/05/2026)
+10. ✅ **Checkout público** — `/planos` sem login, formulário com nome/email/CPF
+11. ✅ **Convite de ativação MASTER** — email com token 72h após pagamento aprovado
+12. ✅ **Notificação interna de vendas** — email para `ADMIN_NOTIFY_EMAIL` a cada compra
+13. ✅ **Renovação automática** — cron 9h (lembrete 7 dias) + cron 10h (expiração PAST_DUE)
+14. ✅ **Correção TypeScript** — SupportPage, BlogPage, ManualPage com `next/link` errado
+
+### 🎯 Próximas Prioridades (quando necessário)
+- Tela de gerenciamento de assinaturas no Super Admin (listar todas, forçar PAST_DUE, reativar)
+- Painel de MRR / Receita Recorrente no Super Admin
+- Notificação WhatsApp de vencimento de assinatura (adicionar ao `sendRenewalReminders`)
+- Multi-unidades (plano REDE)
 
 > **Pré-requisito validado:** WhatsApp com estado `open` confirmado + teste de envio bem-sucedido para 5521979330093 em 03/05/2026.
 

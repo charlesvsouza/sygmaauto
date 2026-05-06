@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
+import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi, pdfApi } from '../api/client';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -19,34 +19,34 @@ import { canAccessFeature, canAccessRetificaMode } from '../lib/planAccess';
 const statusConfig: Record<string, { label: string; color: string; icon?: string }> = {
   ABERTA:               { label: 'Aberta',                color: 'bg-slate-100 text-slate-700' },
   ORCAMENTO:            { label: 'Aberta',                color: 'bg-slate-100 text-slate-700' }, // legado
-  EM_DIAGNOSTICO:       { label: 'Em Diagnóstico',        color: 'bg-indigo-100 text-indigo-700' },
-  ORCAMENTO_PRONTO:     { label: 'Orçamento Pronto',      color: 'bg-blue-100 text-blue-700' },
-  AGUARDANDO_APROVACAO: { label: 'Aguardando Aprovação',  color: 'bg-orange-100 text-orange-700' },
+  EM_DIAGNOSTICO:       { label: 'Em Diagn├│stico',        color: 'bg-indigo-100 text-indigo-700' },
+  ORCAMENTO_PRONTO:     { label: 'Or├ºamento Pronto',      color: 'bg-blue-100 text-blue-700' },
+  AGUARDANDO_APROVACAO: { label: 'Aguardando Aprova├º├úo',  color: 'bg-orange-100 text-orange-700' },
   APROVADO:             { label: 'Aprovado',              color: 'bg-emerald-100 text-emerald-700' },
   REPROVADO:            { label: 'Reprovado',             color: 'bg-red-100 text-red-700' },
-  AGUARDANDO_PECAS:     { label: 'Aguardando Peças',      color: 'bg-amber-100 text-amber-700' },
-  EM_EXECUCAO:          { label: 'Em Execução',           color: 'bg-cyan-100 text-cyan-700' },
+  AGUARDANDO_PECAS:     { label: 'Aguardando Pe├ºas',      color: 'bg-amber-100 text-amber-700' },
+  EM_EXECUCAO:          { label: 'Em Execu├º├úo',           color: 'bg-cyan-100 text-cyan-700' },
   PRONTO_ENTREGA:       { label: 'Pronto p/ Entrega',     color: 'bg-violet-100 text-violet-700' },
   FATURADO:             { label: 'Faturado',              color: 'bg-green-100 text-green-700' },
   ENTREGUE:             { label: 'Entregue',              color: 'bg-slate-900 text-white' },
   CANCELADO:            { label: 'Cancelado',             color: 'bg-red-100 text-red-700' },
   DESMONTAGEM:          { label: 'Desmontagem',          color: 'bg-slate-100 text-slate-700' },
   METROLOGIA:           { label: 'Metrologia',           color: 'bg-indigo-100 text-indigo-700' },
-  ORCAMENTO_RETIFICA:   { label: 'Orçamento Retífica',   color: 'bg-blue-100 text-blue-700' },
-  AGUARDANDO_APROVACAO_RETIFICA: { label: 'Aguardando Aprovação', color: 'bg-orange-100 text-orange-700' },
-  EM_RETIFICA:          { label: 'Em Retífica',          color: 'bg-cyan-100 text-cyan-700' },
+  ORCAMENTO_RETIFICA:   { label: 'Or├ºamento Ret├¡fica',   color: 'bg-blue-100 text-blue-700' },
+  AGUARDANDO_APROVACAO_RETIFICA: { label: 'Aguardando Aprova├º├úo', color: 'bg-orange-100 text-orange-700' },
+  EM_RETIFICA:          { label: 'Em Ret├¡fica',          color: 'bg-cyan-100 text-cyan-700' },
   MONTAGEM:             { label: 'Montagem',             color: 'bg-violet-100 text-violet-700' },
   TESTE_FINAL:          { label: 'Teste Final',          color: 'bg-emerald-100 text-emerald-700' },
 };
 
 const PAYMENT_METHODS = [
-  'Dinheiro', 'PIX', 'Cartão de Débito', 'Cartão de Crédito',
-  'Transferência Bancária', 'Boleto', 'Cheque', 'A Prazo / Parcelado',
+  'Dinheiro', 'PIX', 'Cart├úo de D├®bito', 'Cart├úo de Cr├®dito',
+  'Transfer├¬ncia Banc├íria', 'Boleto', 'Cheque', 'A Prazo / Parcelado',
 ];
 
 // Fluxo de status permitidos (espelha o backend exato)
-// ABERTA → EM_DIAGNOSTICO → ORCAMENTO_PRONTO → AGUARDANDO_APROVACAO
-//   → APROVADO → [AGUARDANDO_PECAS →] EM_EXECUCAO → PRONTO_ENTREGA → FATURADO → ENTREGUE
+// ABERTA ÔåÆ EM_DIAGNOSTICO ÔåÆ ORCAMENTO_PRONTO ÔåÆ AGUARDANDO_APROVACAO
+//   ÔåÆ APROVADO ÔåÆ [AGUARDANDO_PECAS ÔåÆ] EM_EXECUCAO ÔåÆ PRONTO_ENTREGA ÔåÆ FATURADO ÔåÆ ENTREGUE
 const STATUS_FLOW_UI: Record<string, string[]> = {
   ABERTA:               ['EM_DIAGNOSTICO', 'CANCELADO'],
   ORCAMENTO:            ['EM_DIAGNOSTICO', 'ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO', 'CANCELADO'], // legado
@@ -80,34 +80,34 @@ const RETIFICA_STATUS_FLOW_UI: Record<string, string[]> = {
   CANCELADO:                     [],
 };
 
-// Labels de ação para cada transição (mais descritivos do que o nome do status)
+// Labels de a├º├úo para cada transi├º├úo (mais descritivos do que o nome do status)
 const STATUS_ACTION_LABEL: Record<string, string> = {
-  EM_DIAGNOSTICO:       '🔍 Iniciar Diagnóstico',
-  ORCAMENTO_PRONTO:     '📝 Orçamento Pronto',
-  AGUARDANDO_APROVACAO: '📤 Enviar para Aprovação',
-  APROVADO:             '✅ Marcar como Aprovado',
-  REPROVADO:            '❌ Marcar como Reprovado',
-  AGUARDANDO_PECAS:     '📦 Aguardar Peças',
-  EM_EXECUCAO:          '🔧 Iniciar Execução',
-  PRONTO_ENTREGA:       '🏁 Marcar Pronto p/ Entrega',
-  FATURADO:             '💰 Registrar Pagamento',
-  ENTREGUE:             '🚗 Confirmar Entrega',
-  CANCELADO:            '⛔ Cancelar O.S.',
-  DESMONTAGEM:          '🔩 Iniciar Desmontagem',
-  METROLOGIA:           '📏 Enviar para Metrologia',
-  ORCAMENTO_RETIFICA:   '📝 Gerar Orçamento Técnico',
-  AGUARDANDO_APROVACAO_RETIFICA: '📤 Enviar para Aprovação',
-  EM_RETIFICA:          '⚙️ Iniciar Retífica',
-  MONTAGEM:             '🛠️ Iniciar Montagem',
-  TESTE_FINAL:          '🧪 Executar Teste Final',
+  EM_DIAGNOSTICO:       '­ƒöì Iniciar Diagn├│stico',
+  ORCAMENTO_PRONTO:     '­ƒôØ Or├ºamento Pronto',
+  AGUARDANDO_APROVACAO: '­ƒôñ Enviar para Aprova├º├úo',
+  APROVADO:             'Ô£à Marcar como Aprovado',
+  REPROVADO:            'ÔØî Marcar como Reprovado',
+  AGUARDANDO_PECAS:     '­ƒôª Aguardar Pe├ºas',
+  EM_EXECUCAO:          '­ƒöº Iniciar Execu├º├úo',
+  PRONTO_ENTREGA:       '­ƒÅü Marcar Pronto p/ Entrega',
+  FATURADO:             '­ƒÆ░ Registrar Pagamento',
+  ENTREGUE:             '­ƒÜù Confirmar Entrega',
+  CANCELADO:            'Ôøö Cancelar O.S.',
+  DESMONTAGEM:          '­ƒö® Iniciar Desmontagem',
+  METROLOGIA:           '­ƒôÅ Enviar para Metrologia',
+  ORCAMENTO_RETIFICA:   '­ƒôØ Gerar Or├ºamento T├®cnico',
+  AGUARDANDO_APROVACAO_RETIFICA: '­ƒôñ Enviar para Aprova├º├úo',
+  EM_RETIFICA:          'ÔÜÖ´©Å Iniciar Ret├¡fica',
+  MONTAGEM:             '­ƒøá´©Å Iniciar Montagem',
+  TESTE_FINAL:          '­ƒº¬ Executar Teste Final',
 };
 
 const FLOW_PHASES = [
   { key: 'ABERTURA',    label: 'Abertura',    statuses: ['ABERTA', 'ORCAMENTO'] },
-  { key: 'DIAGNOSTICO', label: 'Diagnóstico', statuses: ['EM_DIAGNOSTICO'] },
-  { key: 'ORCAMENTO',   label: 'Orçamento',   statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'] },
-  { key: 'APROVACAO',   label: 'Aprovação',   statuses: ['APROVADO', 'REPROVADO'] },
-  { key: 'EXECUCAO',    label: 'Execução',    statuses: ['AGUARDANDO_PECAS', 'EM_EXECUCAO'] },
+  { key: 'DIAGNOSTICO', label: 'Diagn├│stico', statuses: ['EM_DIAGNOSTICO'] },
+  { key: 'ORCAMENTO',   label: 'Or├ºamento',   statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'] },
+  { key: 'APROVACAO',   label: 'Aprova├º├úo',   statuses: ['APROVADO', 'REPROVADO'] },
+  { key: 'EXECUCAO',    label: 'Execu├º├úo',    statuses: ['AGUARDANDO_PECAS', 'EM_EXECUCAO'] },
   { key: 'FINALIZACAO', label: 'Faturamento', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA',     label: 'Entrega',      statuses: ['ENTREGUE'] },
 ];
@@ -116,9 +116,9 @@ const RETIFICA_FLOW_PHASES = [
   { key: 'ABERTURA', label: 'Abertura', statuses: ['ABERTA'] },
   { key: 'DESMONTAGEM', label: 'Desmontagem', statuses: ['DESMONTAGEM'] },
   { key: 'ANALISE', label: 'Metrologia', statuses: ['METROLOGIA'] },
-  { key: 'ORCAMENTO', label: 'Orçamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
-  { key: 'EXECUCAO', label: 'Retífica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
-  { key: 'FINALIZACAO', label: 'Finalização', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
+  { key: 'ORCAMENTO', label: 'Or├ºamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
+  { key: 'EXECUCAO', label: 'Ret├¡fica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
+  { key: 'FINALIZACAO', label: 'Finaliza├º├úo', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA', label: 'Entrega', statuses: ['ENTREGUE'] },
 ];
 
@@ -161,8 +161,6 @@ const PRINT_STYLE = `
 ${DOC_STYLES}
 `;
 
-const PRINT_PREVIEW_STYLE = `body { padding: 10mm; background: #fff; } ${DOC_STYLES}`;
-
 function fmtBR(v: number | string | undefined, dec = 2) {
   return Number(v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
@@ -185,7 +183,6 @@ export function ServiceOrdersPage() {
   const canAssignExecutor = canManageItems;
   const CLOSED_STATUSES = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
   const printContentRef = useRef<HTMLDivElement>(null);
-  const printFrameRef = useRef<HTMLIFrameElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -230,7 +227,6 @@ export function ServiceOrdersPage() {
   const [aiDescription, setAiDescription] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
@@ -249,18 +245,16 @@ export function ServiceOrdersPage() {
 
   const getOrderAssetLabel = (order: any) => {
     if (order?.vehicle) {
-      return `${order.vehicle.plate || 'Sem placa'} · ${order.vehicle.model || 'Veículo'}`;
+      return `${order.vehicle.plate || 'Sem placa'} ┬À ${order.vehicle.model || 'Ve├¡culo'}`;
     }
-    return `${order?.equipmentBrand || 'Motor'} ${order?.equipmentModel || 'Avulso'}${order?.serialNumber ? ` · Série ${order.serialNumber}` : ''}`.trim();
+    return `${order?.equipmentBrand || 'Motor'} ${order?.equipmentModel || 'Avulso'}${order?.serialNumber ? ` ┬À S├®rie ${order.serialNumber}` : ''}`.trim();
   };
 
-  // ─── Reserva de Peças ────────────────────────────────────────────────────
+  // ÔöÇÔöÇÔöÇ Reserva de Pe├ºas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   const [showReserveParts, setShowReserveParts] = useState(false);
   const [reserveLoading, setReserveLoading] = useState(false);
   const [reserveResult, setReserveResult] = useState<any>(null);
   const [expectedPartsDate, setExpectedPartsDate] = useState('');
-  const [showPurchaseOrderPdf, setShowPurchaseOrderPdf] = useState(false);
-  const purchaseOrderFrameRef = useRef<HTMLIFrameElement>(null);
 
   // Modal de metrologia (aberto a partir do Andamento da O.S.)
   const [metrologiaOsTarget, setMetrologiaOsTarget] = useState<{ id: string; number: string; notes: string | null } | null>(null);
@@ -284,7 +278,7 @@ export function ServiceOrdersPage() {
         });
       } catch { /* ignora falha individual */ }
     }
-    // Recarrega a OS atualizada e abre o laudo para impressão
+    // Recarrega a OS atualizada e abre o laudo para impress├úo
     const res = await serviceOrdersApi.getById(id);
     setSelectedOrder(res.data);
     setMetrologiaOsTarget(null);
@@ -372,7 +366,7 @@ export function ServiceOrdersPage() {
   const createDiagnosticOrder = async () => {
     if (!selectedOrder) return;
     if (!canCreateDiagnostic) {
-      alert('Seu perfil não possui permissão para criar O.S. de diagnóstico.');
+      alert('Seu perfil n├úo possui permiss├úo para criar O.S. de diagn├│stico.');
       return;
     }
     setCreatingDiagOrder(true);
@@ -382,7 +376,7 @@ export function ServiceOrdersPage() {
       await loadOrders();
       await selectOrder(res.data);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao criar OS de diagnóstico');
+      alert(err.response?.data?.message || 'Erro ao criar OS de diagn├│stico');
     } finally {
       setCreatingDiagOrder(false);
     }
@@ -391,7 +385,7 @@ export function ServiceOrdersPage() {
   const saveDetails = async (closeAfterSave = false) => {
     if (!selectedOrder) return;
     if (!canEditOrderDetails) {
-      alert('Seu perfil não possui permissão para editar os dados da O.S.');
+      alert('Seu perfil n├úo possui permiss├úo para editar os dados da O.S.');
       return;
     }
     try {
@@ -411,7 +405,7 @@ export function ServiceOrdersPage() {
   const recalculateTotals = async () => {
     if (!selectedOrder) return;
     if (!canSyncOrder) {
-      alert('Seu perfil não possui permissão para atualizar esta O.S.');
+      alert('Seu perfil n├úo possui permiss├úo para atualizar esta O.S.');
       return;
     }
 
@@ -426,13 +420,13 @@ export function ServiceOrdersPage() {
     });
 
     if (hasPartChangeWithoutPermission) {
-      alert('Seu perfil não possui permissão para alterar quantidade de peças.');
+      alert('Seu perfil n├úo possui permiss├úo para alterar quantidade de pe├ºas.');
       return;
     }
 
     setSyncingTotals(true);
     try {
-      // 1. Aplica alterações de quantidade pendentes (se houver)
+      // 1. Aplica altera├º├Áes de quantidade pendentes (se houver)
       if (changedEntries.length > 0) {
         await Promise.all(
           changedEntries.map(([itemId, newQty]) =>
@@ -442,10 +436,10 @@ export function ServiceOrdersPage() {
         setPendingQtyByItem({});
       }
 
-      // 2. Sincroniza preços do catálogo (peças, serviços, perfil da oficina)
+      // 2. Sincroniza pre├ºos do cat├ílogo (pe├ºas, servi├ºos, perfil da oficina)
       await serviceOrdersApi.syncPrices(selectedOrder.id);
 
-      // 3. Recarrega OS, clientes, veículos e dados da empresa
+      // 3. Recarrega OS, clientes, ve├¡culos e dados da empresa
       const [res, cRes, vRes, tRes] = await Promise.all([
         serviceOrdersApi.getById(selectedOrder.id),
         customersApi.getAll(),
@@ -492,21 +486,29 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const buildPrintPreviewHtml = () => {
-    const content = printContentRef.current?.innerHTML || '';
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>OS</title><style>${PRINT_PREVIEW_STYLE}</style></head><body>${content}</body></html>`;
-  };
-
-  const openPrintPreview = () => {
+  const downloadOrderPdf = async () => {
     if (!selectedOrder) return;
-    setShowPrintPreview(true);
-  };
-
-  const printOnlyOrder = () => {
-    const frameWindow = printFrameRef.current?.contentWindow;
-    if (!frameWindow) return;
-    frameWindow.focus();
-    frameWindow.print();
+    if (!printContentRef.current) {
+      alert('N├úo foi poss├¡vel montar o documento da O.S. para PDF.');
+      return;
+    }
+    try {
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${DOC_STYLES}</style></head><body>${printContentRef.current.innerHTML}</body></html>`;
+      const response = await pdfApi.render({
+        html,
+        fileName: `os-${selectedOrder.id.slice(0, 8).toUpperCase()}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `os-${selectedOrder.id.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Erro ao gerar PDF da O.S.');
+    }
   };
 
   const getCurrentPhaseIndex = (status: string) => {
@@ -528,7 +530,7 @@ export function ServiceOrdersPage() {
       setSelectedOrder(updated.data);
       loadOrders();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao reservar peças');
+      alert(err.response?.data?.message || 'Erro ao reservar pe├ºas');
     } finally {
       setReserveLoading(false);
     }
@@ -541,14 +543,14 @@ export function ServiceOrdersPage() {
     const now = new Date().toLocaleDateString('pt-BR');
     const rows = items.map((item: any) => `
       <tr>
-        <td>${item.internalCode || '—'}</td>
-        <td>${item.sku || '—'}</td>
+        <td>${item.internalCode || 'ÔÇö'}</td>
+        <td>${item.sku || 'ÔÇö'}</td>
         <td>${item.description}</td>
         <td style="text-align:center">${item.lacking}</td>
         <td style="text-align:right">R$ ${Number(item.costPrice ?? item.unitPrice ?? 0).toFixed(2).replace('.', ',')}</td>
         <td style="text-align:right">R$ ${(Number(item.costPrice ?? item.unitPrice ?? 0) * item.lacking).toFixed(2).replace('.', ',')}</td>
-        <td>${item.supplierName || '—'}</td>
-        <td>${o.id?.slice(0,8).toUpperCase() || '—'}</td>
+        <td>${item.supplierName || 'ÔÇö'}</td>
+        <td>${o.id?.slice(0,8).toUpperCase() || 'ÔÇö'}</td>
       </tr>
     `).join('');
     const total = items.reduce((s: number, item: any) => s + Number(item.costPrice ?? item.unitPrice ?? 0) * item.lacking, 0);
@@ -575,7 +577,7 @@ export function ServiceOrdersPage() {
           <div class="company-name">${t.name || ''}</div>
           ${t.document ? `<div>${t.document}</div>` : ''}
           ${t.address ? `<div>${t.address}</div>` : ''}
-          <div>${[t.phone ? 'Tel: ' + t.phone : '', t.email].filter(Boolean).join(' · ')}</div>
+          <div>${[t.phone ? 'Tel: ' + t.phone : '', t.email].filter(Boolean).join(' ┬À ')}</div>
         </div>
         <div class="doc-box">
           <div class="doc-type">Pedido de Compra</div>
@@ -586,22 +588,22 @@ export function ServiceOrdersPage() {
       </div>
       <hr />
       <div style="font-size:8pt;margin-bottom:6px">
-        <strong>${(o.vehicle as any) ? 'Veículo' : 'Motor'}:</strong> ${(o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} — Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` — Série ${o.serialNumber}` : ''}`}
-        &nbsp;&nbsp;·&nbsp;&nbsp;
+        <strong>${(o.vehicle as any) ? 'Ve├¡culo' : 'Motor'}:</strong> ${(o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} ÔÇö Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` ÔÇö S├®rie ${o.serialNumber}` : ''}`}
+        &nbsp;&nbsp;┬À&nbsp;&nbsp;
         <strong>Cliente:</strong> ${(o.customer as any)?.name || ''}
-        &nbsp;&nbsp;·&nbsp;&nbsp;
+        &nbsp;&nbsp;┬À&nbsp;&nbsp;
         <strong>OS:</strong> ${o.id?.slice(0,8).toUpperCase() || ''}
       </div>
       <table>
         <thead><tr>
-          <th style="width:80px">Cód. Interno</th>
-          <th style="width:80px">Cód. Original</th>
-          <th>Peça / Descrição</th>
+          <th style="width:80px">C├│d. Interno</th>
+          <th style="width:80px">C├│d. Original</th>
+          <th>Pe├ºa / Descri├º├úo</th>
           <th style="width:50px;text-align:center">Qtd</th>
-          <th style="width:80px;text-align:right">Unitário</th>
+          <th style="width:80px;text-align:right">Unit├írio</th>
           <th style="width:90px;text-align:right">Total</th>
           <th style="width:100px">Fornecedor</th>
-          <th style="width:70px">Nº OS</th>
+          <th style="width:70px">N┬║ OS</th>
         </tr></thead>
         <tbody>${rows}</tbody>
         <tfoot><tr class="total-row">
@@ -610,9 +612,30 @@ export function ServiceOrdersPage() {
           <td colspan="2"></td>
         </tr></tfoot>
       </table>
-      <div class="sig">Assinatura / Aprovação: _________________________________  &nbsp;&nbsp;&nbsp; Data: ___________</div>
-      <div class="preview-label" style="text-align:center;margin-top:8px">Gerado em ${now} · SigmaAuto</div>
+      <div class="sig">Assinatura / Aprova├º├úo: _________________________________  &nbsp;&nbsp;&nbsp; Data: ___________</div>
+      <div class="preview-label" style="text-align:center;margin-top:8px">Gerado em ${now} ┬À SigmaAuto</div>
     </body></html>`;
+  };
+
+  const downloadPurchaseOrderPdf = async () => {
+    if (!reserveResult) return;
+    try {
+      const html = buildPurchaseOrderHtml({ ...reserveResult, expectedPartsDate: expectedPartsDate || null });
+      const response = await pdfApi.render({
+        html,
+        fileName: `pedido-compra-${reserveResult.purchaseOrderNumber || 'os'}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pedido-compra-${reserveResult.purchaseOrderNumber || 'os'}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Erro ao gerar PDF do pedido de compra.');
+    }
   };
 
   const changeStatus = async (status: string, adminOverride = false) => {
@@ -648,11 +671,11 @@ export function ServiceOrdersPage() {
   const addItem = async (itemData: any) => {
     if (!selectedOrder) return;
     if (!canManageItems) {
-      alert('Seu perfil não possui permissão para adicionar itens nesta O.S.');
+      alert('Seu perfil n├úo possui permiss├úo para adicionar itens nesta O.S.');
       return;
     }
     if (itemData?.type === 'part' && !canManageStock) {
-      alert('Seu perfil não possui permissão para alterar estoque de peças.');
+      alert('Seu perfil n├úo possui permiss├úo para alterar estoque de pe├ºas.');
       return;
     }
     try {
@@ -662,15 +685,15 @@ export function ServiceOrdersPage() {
       loadOrders();
       setCatalogMode(null);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao adicionar item. Verifique o estoque disponível.');
+      alert(err.response?.data?.message || 'Erro ao adicionar item. Verifique o estoque dispon├¡vel.');
     }
   };
 
   const quickAddItem = async () => {
     const price = parseFloat(quickAdd.unitPrice.replace(',', '.'));
     const qty = parseFloat(quickAdd.quantity) || 1;
-    if (!quickAdd.description.trim()) { alert('Informe a descrição.'); return; }
-    if (!price || price <= 0) { alert('Informe um preço válido.'); return; }
+    if (!quickAdd.description.trim()) { alert('Informe a descri├º├úo.'); return; }
+    if (!price || price <= 0) { alert('Informe um pre├ºo v├ílido.'); return; }
     await addItem({
       type: catalogMode,
       description: quickAdd.description.trim(),
@@ -705,12 +728,12 @@ export function ServiceOrdersPage() {
   const updateItem = async (itemId: string, data: any) => {
     if (!selectedOrder) return;
     if (!canManageItems) {
-      alert('Seu perfil não possui permissão para editar itens nesta O.S.');
+      alert('Seu perfil n├úo possui permiss├úo para editar itens nesta O.S.');
       return;
     }
     const current = selectedOrder.items?.find((i: any) => i.id === itemId);
     if (current?.type?.toLowerCase() === 'part' && !canManageStock) {
-      alert('Seu perfil não possui permissão para alterar estoque de peças.');
+      alert('Seu perfil n├úo possui permiss├úo para alterar estoque de pe├ºas.');
       return;
     }
     try {
@@ -722,14 +745,14 @@ export function ServiceOrdersPage() {
   };
 
   const removeItem = async (itemId: string) => {
-    if (!selectedOrder || !confirm('Remover este item? O estoque será estornado.')) return;
+    if (!selectedOrder || !confirm('Remover este item? O estoque ser├í estornado.')) return;
     if (!canManageItems) {
-      alert('Seu perfil não possui permissão para remover itens nesta O.S.');
+      alert('Seu perfil n├úo possui permiss├úo para remover itens nesta O.S.');
       return;
     }
     const current = selectedOrder.items?.find((i: any) => i.id === itemId);
     if (current?.type?.toLowerCase() === 'part' && !canManageStock) {
-      alert('Seu perfil não possui permissão para alterar estoque de peças.');
+      alert('Seu perfil n├úo possui permiss├úo para alterar estoque de pe├ºas.');
       return;
     }
     try {
@@ -766,11 +789,11 @@ export function ServiceOrdersPage() {
     <div className="flex h-[calc(100vh-120px)] gap-6 overflow-hidden">
       <style>{PRINT_STYLE}</style>
 
-      {/* ── PRINT DOCUMENT ─────────────────────────────────────────── */}
+      {/* ÔöÇÔöÇ PRINT DOCUMENT ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <div id="os-print-doc">
         {selectedOrder && (
           <div ref={printContentRef} className="os-doc">
-            {/* Cabeçalho: empresa (esq) + tipo/número do documento (dir) */}
+            {/* Cabe├ºalho: empresa (esq) + tipo/n├║mero do documento (dir) */}
             <table style={{ marginBottom: '6px' }}>
               <tbody>
                 <tr>
@@ -788,13 +811,13 @@ export function ServiceOrdersPage() {
                     )}
                     <div style={{ fontSize: '8.5pt' }}>
                       {tenantFullData?.phone && `Tel: ${tenantFullData.phone}`}
-                      {tenantFullData?.phone && tenantFullData?.email && '  ·  '}
+                      {tenantFullData?.phone && tenantFullData?.email && '  ┬À  '}
                       {tenantFullData?.email}
                     </div>
                   </td>
                   <td style={{ border: '2px solid #1e293b', padding: '8px 14px', textAlign: 'right', verticalAlign: 'top', minWidth: '155px' }}>
                     <div style={{ fontSize: '7.5pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#666' }}>
-                      {selectedOrder.orderType === 'ORCAMENTO' ? 'Orçamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retífica de Motor' : 'Ordem de Serviço'}
+                      {selectedOrder.orderType === 'ORCAMENTO' ? 'Or├ºamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Ret├¡fica de Motor' : 'Ordem de Servi├ºo'}
                     </div>
                     <div style={{ fontSize: '19pt', fontWeight: 900, fontFamily: 'monospace', letterSpacing: '2px', lineHeight: 1.1 }}>
                       {selectedOrder.id.slice(0, 8).toUpperCase()}
@@ -808,7 +831,7 @@ export function ServiceOrdersPage() {
                       </div>
                     )}
                     <div style={{ fontSize: '8.5pt', color: '#444' }}>
-                      Tipo O.S.: {selectedOrder.orderType === 'ORCAMENTO' ? 'Orçamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retífica de Motor' : 'OS'}
+                      Tipo O.S.: {selectedOrder.orderType === 'ORCAMENTO' ? 'Or├ºamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Ret├¡fica de Motor' : 'OS'}
                     </div>
                     {(selectedOrder.paymentMethod || edit.paymentMethod) && (
                       <div style={{ fontSize: '8.5pt', color: '#444' }}>
@@ -831,29 +854,29 @@ export function ServiceOrdersPage() {
               <tbody>
                 <tr className="hdr"><td colSpan={4}>DADOS DO CLIENTE</td></tr>
                 <tr>
-                  <td colSpan={2}><strong>Nome / Razão Social:</strong> {selectedOrder.customer?.name}</td>
-                  <td><strong>CPF / CNPJ:</strong> {selectedOrder.customer?.document || '—'}</td>
-                  <td><strong>Telefone:</strong> {selectedOrder.customer?.phone || '—'}</td>
+                  <td colSpan={2}><strong>Nome / Raz├úo Social:</strong> {selectedOrder.customer?.name}</td>
+                  <td><strong>CPF / CNPJ:</strong> {selectedOrder.customer?.document || 'ÔÇö'}</td>
+                  <td><strong>Telefone:</strong> {selectedOrder.customer?.phone || 'ÔÇö'}</td>
                 </tr>
                 {(selectedOrder.customer?.address || selectedOrder.customer?.email) && (
                   <tr>
-                    <td colSpan={3}><strong>Endereço:</strong> {selectedOrder.customer?.address || '—'}</td>
-                    <td><strong>E-mail:</strong> {selectedOrder.customer?.email || '—'}</td>
+                    <td colSpan={3}><strong>Endere├ºo:</strong> {selectedOrder.customer?.address || 'ÔÇö'}</td>
+                    <td><strong>E-mail:</strong> {selectedOrder.customer?.email || 'ÔÇö'}</td>
                   </tr>
                 )}
               </tbody>
             </table>
 
-            {/* Dados do Veículo */}
+            {/* Dados do Ve├¡culo */}
             <table>
               <tbody>
-                <tr className="hdr"><td colSpan={6}>DADOS DO VEÍCULO</td></tr>
+                <tr className="hdr"><td colSpan={6}>DADOS DO VE├ìCULO</td></tr>
                 <tr>
                   <td colSpan={2}><strong>Marca / Modelo:</strong> {selectedOrder.vehicle?.brand} {selectedOrder.vehicle?.model}</td>
-                  <td><strong>Ano:</strong> {selectedOrder.vehicle?.year || '—'}</td>
-                  <td><strong>Cor:</strong> {selectedOrder.vehicle?.color || '—'}</td>
-                  <td><strong>Placa:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 900 }}>{selectedOrder.vehicle?.plate || '—'}</span></td>
-                  <td><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '—'}</td>
+                  <td><strong>Ano:</strong> {selectedOrder.vehicle?.year || 'ÔÇö'}</td>
+                  <td><strong>Cor:</strong> {selectedOrder.vehicle?.color || 'ÔÇö'}</td>
+                  <td><strong>Placa:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 900 }}>{selectedOrder.vehicle?.plate || 'ÔÇö'}</span></td>
+                  <td><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : 'ÔÇö'}</td>
                 </tr>
                 {selectedOrder.vehicle?.vin && (
                   <tr><td colSpan={6}><strong>Chassi / VIN:</strong> {selectedOrder.vehicle.vin}</td></tr>
@@ -861,34 +884,34 @@ export function ServiceOrdersPage() {
               </tbody>
             </table>
 
-            {/* Queixa / Diagnóstico / Laudo */}
+            {/* Queixa / Diagn├│stico / Laudo */}
             {(selectedOrder.complaint || selectedOrder.diagnosis || selectedOrder.technicalReport) && (
               <table>
                 <tbody>
                   {selectedOrder.complaint && <>
-                    <tr className="hdr"><td>RECLAMAÇÃO DO CLIENTE</td></tr>
+                    <tr className="hdr"><td>RECLAMA├ç├âO DO CLIENTE</td></tr>
                     <tr><td style={{ minHeight: '22px' }}>{selectedOrder.complaint}</td></tr>
                   </>}
                   {selectedOrder.diagnosis && <>
-                    <tr className="hdr"><td>DIAGNÓSTICO TÉCNICO</td></tr>
+                    <tr className="hdr"><td>DIAGN├ôSTICO T├ëCNICO</td></tr>
                     <tr><td style={{ minHeight: '22px' }}>{selectedOrder.diagnosis}</td></tr>
                   </>}
                   {selectedOrder.technicalReport && <>
-                    <tr className="hdr"><td>LAUDO / SOLUÇÃO APLICADA</td></tr>
+                    <tr className="hdr"><td>LAUDO / SOLU├ç├âO APLICADA</td></tr>
                     <tr><td style={{ minHeight: '22px' }}>{selectedOrder.technicalReport}</td></tr>
                   </>}
                 </tbody>
               </table>
             )}
 
-            {/* Serviços */}
+            {/* Servi├ºos */}
             {serviceItems.length > 0 && (
               <table>
                 <thead>
-                  <tr className="hdr"><td colSpan={5}>SERVIÇOS / MÃO DE OBRA</td></tr>
+                  <tr className="hdr"><td colSpan={5}>SERVI├çOS / M├âO DE OBRA</td></tr>
                   <tr>
                     <th className="tc" style={{ width: '28px' }}>#</th>
-                    <th>Descrição</th>
+                    <th>Descri├º├úo</th>
                     <th className="tc" style={{ width: '60px' }}>Qtd/Hrs</th>
                     <th className="tr" style={{ width: '90px' }}>Vl. Unit.</th>
                     <th className="tr" style={{ width: '95px' }}>Vl. Total</th>
@@ -908,15 +931,15 @@ export function ServiceOrdersPage() {
               </table>
             )}
 
-            {/* Peças e Materiais */}
+            {/* Pe├ºas e Materiais */}
             {partItems.length > 0 && (
               <table>
                 <thead>
-                  <tr className="hdr"><td colSpan={6}>PEÇAS E MATERIAIS</td></tr>
+                  <tr className="hdr"><td colSpan={6}>PE├çAS E MATERIAIS</td></tr>
                   <tr>
                     <th className="tc" style={{ width: '28px' }}>#</th>
-                    <th style={{ width: '80px' }}>Referência</th>
-                    <th>Descrição</th>
+                    <th style={{ width: '80px' }}>Refer├¬ncia</th>
+                    <th>Descri├º├úo</th>
                     <th className="tc" style={{ width: '50px' }}>Qtd</th>
                     <th className="tr" style={{ width: '90px' }}>Vl. Unit.</th>
                     <th className="tr" style={{ width: '95px' }}>Vl. Total</th>
@@ -926,7 +949,7 @@ export function ServiceOrdersPage() {
                   {partItems.map((item: any, idx: number) => (
                     <tr key={item.id}>
                       <td className="tc" style={{ color: '#888', fontSize: '7.5pt' }}>{idx + 1}</td>
-                      <td style={{ fontSize: '7.5pt', color: '#555', fontFamily: 'monospace' }}>{item.part?.internalCode || item.internalCode || '—'}</td>
+                      <td style={{ fontSize: '7.5pt', color: '#555', fontFamily: 'monospace' }}>{item.part?.internalCode || item.internalCode || 'ÔÇö'}</td>
                       <td>{item.description}</td>
                       <td className="tc">{Number(item.quantity).toLocaleString('pt-BR')}</td>
                       <td className="tr">R$ {fmtBR(item.unitPrice)}</td>
@@ -937,15 +960,15 @@ export function ServiceOrdersPage() {
               </table>
             )}
 
-            {/* Observações + Totais lado a lado */}
+            {/* Observa├º├Áes + Totais lado a lado */}
             <table>
               <tbody>
                 <tr className="nb">
-                  {/* Esquerda: observações */}
+                  {/* Esquerda: observa├º├Áes */}
                   <td style={{ border: 'none', width: '55%', verticalAlign: 'top', paddingRight: '10px' }}>
                     <table>
                       <tbody>
-                        <tr className="hdr"><td>OBSERVAÇÕES</td></tr>
+                        <tr className="hdr"><td>OBSERVA├ç├òES</td></tr>
                         <tr>
                           <td style={{ minHeight: '38px', fontSize: '8.5pt', whiteSpace: 'pre-wrap' }}>
                             {selectedOrder.observations || selectedOrder.notes || ''}
@@ -960,7 +983,7 @@ export function ServiceOrdersPage() {
                     <table>
                       <tbody>
                         <tr className="subtotal-row">
-                          <td className="tr">Total Serviços</td>
+                          <td className="tr">Total Servi├ºos</td>
                           <td className="tr" style={{ width: '110px' }}>R$ {fmtBR(selectedOrder.totalServices)}</td>
                         </tr>
                         <tr className="subtotal-row">
@@ -969,14 +992,14 @@ export function ServiceOrdersPage() {
                         </tr>
                         {Number(selectedOrder.totalLabor) > 0 && (
                           <tr className="subtotal-row">
-                            <td className="tr">Mão de Obra</td>
+                            <td className="tr">M├úo de Obra</td>
                             <td className="tr">R$ {fmtBR(selectedOrder.totalLabor)}</td>
                           </tr>
                         )}
                         {Number(selectedOrder.totalDiscount) > 0 && (
                           <tr>
                             <td className="tr" style={{ color: '#b91c1c' }}>Desconto</td>
-                            <td className="tr" style={{ color: '#b91c1c' }}>− R$ {fmtBR(selectedOrder.totalDiscount)}</td>
+                            <td className="tr" style={{ color: '#b91c1c' }}>ÔêÆ R$ {fmtBR(selectedOrder.totalDiscount)}</td>
                           </tr>
                         )}
                         <tr className="total-final">
@@ -990,12 +1013,12 @@ export function ServiceOrdersPage() {
               </tbody>
             </table>
 
-            {/* Autorização + Assinatura */}
+            {/* Autoriza├º├úo + Assinatura */}
             <div style={{ marginTop: '14px', fontSize: '8pt', color: '#333', lineHeight: 1.5 }}>
-              Autorizo os serviços e a substituição das peças deste{' '}
-              {selectedOrder.orderType === 'ORCAMENTO' ? 'ORÇAMENTO' : 'documento'}, e o necessário
-              teste de rua com o veículo. Estou ciente que a empresa não se responsabiliza pela perda
-              ou roubo de qualquer objeto que se encontra no interior do veículo.
+              Autorizo os servi├ºos e a substitui├º├úo das pe├ºas deste{' '}
+              {selectedOrder.orderType === 'ORCAMENTO' ? 'OR├çAMENTO' : 'documento'}, e o necess├írio
+              teste de rua com o ve├¡culo. Estou ciente que a empresa n├úo se responsabiliza pela perda
+              ou roubo de qualquer objeto que se encontra no interior do ve├¡culo.
             </div>
             <table style={{ marginTop: '16px' }}>
               <tbody>
@@ -1007,7 +1030,7 @@ export function ServiceOrdersPage() {
                   </td>
                   <td style={{ border: 'none', textAlign: 'center', paddingTop: '36px', width: '50%' }}>
                     <div style={{ borderTop: '1px solid #666', display: 'inline-block', width: '210px', marginBottom: '3px' }} />
-                    <br /><span style={{ fontSize: '9pt', fontWeight: 700 }}>Consultor Técnico</span>
+                    <br /><span style={{ fontSize: '9pt', fontWeight: 700 }}>Consultor T├®cnico</span>
                     <br /><span style={{ fontSize: '8pt', color: '#555' }}>Nome: _________________________________</span>
                   </td>
                 </tr>
@@ -1015,24 +1038,24 @@ export function ServiceOrdersPage() {
             </table>
 
             <div style={{ marginTop: '10px', paddingTop: '5px', borderTop: '1px solid #ddd', fontSize: '7pt', color: '#aaa', textAlign: 'center' }}>
-              Documento gerado em {new Date().toLocaleString('pt-BR')} · Sigma Auto — Sistema de Gestão para Oficinas Automotivas
+              Documento gerado em {new Date().toLocaleString('pt-BR')} ┬À Sigma Auto ÔÇö Sistema de Gest├úo para Oficinas Automotivas
             </div>
           </div>
         )}
       </div>
 
-      {/* ── LISTA DE OS ────────────────────────────────────────────── */}
+      {/* ÔöÇÔöÇ LISTA DE OS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <div className="w-80 flex flex-col bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-black text-slate-900 flex items-center gap-2 uppercase text-xs tracking-tight">
-              <ClipboardList size={16} /> Ordens de Serviço
+              <ClipboardList size={16} /> Ordens de Servi├ºo
             </h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowImportModal(true)}
                 className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-lg"
-                title="Importar de Orçamento PDF"
+                title="Importar de Or├ºamento PDF"
               >
                 <FileUp size={18} />
               </button>
@@ -1101,12 +1124,12 @@ export function ServiceOrdersPage() {
         </div>
       </div>
 
-      {/* ── DETALHE DA OS ──────────────────────────────────────────── */}
+      {/* ÔöÇÔöÇ DETALHE DA OS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <div className="flex-1 flex flex-col bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
         {!selectedOrder ? (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-300 opacity-50">
             <Layout size={64} className="mb-4 stroke-[1px]" />
-            <p className="font-bold uppercase tracking-widest text-xs">Selecione uma Ordem de Serviço</p>
+            <p className="font-bold uppercase tracking-widest text-xs">Selecione uma Ordem de Servi├ºo</p>
           </div>
         ) : (
           <>
@@ -1127,12 +1150,12 @@ export function ServiceOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={openPrintPreview}
+                  onClick={downloadOrderPdf}
                   className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
                 >
-                  <Printer size={15} /> Visualizar / Imprimir OS
+                  <Printer size={15} /> Imprimir OS (PDF)
                 </button>
-                {/* Botões de Checklist — verde quando já preenchido */}
+                {/* Bot├Áes de Checklist ÔÇö verde quando j├í preenchido */}
                 <button
                   onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}
                   disabled={!canUseChecklist}
@@ -1144,7 +1167,7 @@ export function ServiceOrdersPage() {
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
                   )}
-                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido — clique para editar' : 'Preencher checklist de entrada'}
+                  title={!canUseChecklist ? 'Dispon├¡vel no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido ÔÇö clique para editar' : 'Preencher checklist de entrada'}
                 >
                   <ClipboardCheck size={15} />
                   Entrada
@@ -1161,10 +1184,10 @@ export function ServiceOrdersPage() {
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100',
                   )}
-                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saída preenchido — clique para editar' : 'Preencher checklist de saída'}
+                  title={!canUseChecklist ? 'Dispon├¡vel no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de sa├¡da preenchido ÔÇö clique para editar' : 'Preencher checklist de sa├¡da'}
                 >
                   <ClipboardCheck size={15} />
-                  Saída
+                  Sa├¡da
                   {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
                 <button
@@ -1177,9 +1200,9 @@ export function ServiceOrdersPage() {
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
                   className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
-                  title={isClosed ? 'OS finalizada não pode ser editada' : !canEditOrderDetails ? 'Sem permissão para editar O.S.' : undefined}
+                  title={isClosed ? 'OS finalizada n├úo pode ser editada' : !canEditOrderDetails ? 'Sem permiss├úo para editar O.S.' : undefined}
                 >
-                  <Save size={15} /> Salvar alterações
+                  <Save size={15} /> Salvar altera├º├Áes
                 </button>
                 {canDelete && (
                   <button
@@ -1193,16 +1216,16 @@ export function ServiceOrdersPage() {
               </div>
             </div>
 
-            {/* Banner: OS reprovada + opção de diagnóstico */}
+            {/* Banner: OS reprovada + op├º├úo de diagn├│stico */}
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
               <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">🔍</span>
+                  <span className="text-2xl">­ƒöì</span>
                   <div>
-                    <p className="text-sm font-black text-amber-900">Orçamento reprovado pelo cliente</p>
+                    <p className="text-sm font-black text-amber-900">Or├ºamento reprovado pelo cliente</p>
                     <p className="text-xs text-amber-700 mt-0.5">
-                      Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnóstico</strong>?
-                      O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
+                      Deseja abrir uma nova O.S. para cobran├ºa da <strong>Taxa de Diagn├│stico</strong>?
+                      O valor e o tempo ser├úo preenchidos automaticamente conforme as configura├º├Áes da oficina.
                     </p>
                   </div>
                 </div>
@@ -1212,13 +1235,13 @@ export function ServiceOrdersPage() {
                     disabled={creatingDiagOrder}
                     className="px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black hover:bg-amber-700 transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
-                    {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : '✅'} Sim, criar nova O.S.
+                    {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'Ô£à'} Sim, criar nova O.S.
                   </button>
                   <button
                     onClick={() => setShowDiagBanner(false)}
                     className="px-4 py-2 bg-white border border-amber-200 text-amber-700 rounded-xl text-xs font-black hover:bg-amber-50 transition-all whitespace-nowrap"
                   >
-                    Não, obrigado
+                    N├úo, obrigado
                   </button>
                 </div>
               </div>
@@ -1240,7 +1263,7 @@ export function ServiceOrdersPage() {
                     const currentIdx = getCurrentPhaseIndex(selectedOrder.status);
                     const isCurrent = index === currentIdx;
                     const isDone = index < currentIdx;
-                    // Fase Metrologia de OS retífica: clicável quando está em DESMONTAGEM (próxima fase) ou já em METROLOGIA
+                    // Fase Metrologia de OS ret├¡fica: clic├ível quando est├í em DESMONTAGEM (pr├│xima fase) ou j├í em METROLOGIA
                     const isMetrologiaPhase = isRetificaOrder && phase.key === 'ANALISE';
                     const canOpenMetrologia = isMetrologiaPhase && (
                       selectedOrder.status === 'DESMONTAGEM' || selectedOrder.status === 'METROLOGIA'
@@ -1250,7 +1273,7 @@ export function ServiceOrdersPage() {
                         {phase.label}
                         {canOpenMetrologia && (
                           <span className="block text-[8px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
-                            {selectedOrder.status === 'METROLOGIA' ? '📋 ver / editar' : '📋 iniciar'}
+                            {selectedOrder.status === 'METROLOGIA' ? '­ƒôï ver / editar' : '­ƒôï iniciar'}
                           </span>
                         )}
                       </p>
@@ -1283,7 +1306,7 @@ export function ServiceOrdersPage() {
                 </div>
               </div>
 
-              {/* Cliente + Veículo */}
+              {/* Cliente + Ve├¡culo */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
                   <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -1291,16 +1314,16 @@ export function ServiceOrdersPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Nome / Razão Social</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Nome / Raz├úo Social</p>
                       <p className="font-black text-slate-900">{selectedOrder.customer?.name}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Telefone</p>
-                      <p className="font-bold text-slate-700 text-sm">{selectedOrder.customer?.phone || '—'}</p>
+                      <p className="font-bold text-slate-700 text-sm">{selectedOrder.customer?.phone || 'ÔÇö'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Documento</p>
-                      <p className="font-bold text-slate-700 text-sm">{selectedOrder.customer?.document || '—'}</p>
+                      <p className="font-bold text-slate-700 text-sm">{selectedOrder.customer?.document || 'ÔÇö'}</p>
                     </div>
                   </div>
                 </div>
@@ -1308,10 +1331,10 @@ export function ServiceOrdersPage() {
                 <div className="bg-slate-900 rounded-2xl p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h3 className="text-[10px] font-black text-primary-400 uppercase tracking-widest flex items-center gap-2">
-                      <Car size={13} /> Dados do Veículo
+                      <Car size={13} /> Dados do Ve├¡culo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
-                      {/* Botão retroceder fase — ADMIN/MASTER em OS não finalizadas */}
+                      {/* Bot├úo retroceder fase ÔÇö ADMIN/MASTER em OS n├úo finalizadas */}
                       {canChangeStatus && ['MASTER', 'ADMIN'].includes(user?.role ?? '') &&
                        !CLOSED_STATUSES.includes(selectedOrder.status) &&
                        selectedOrder.status !== 'ABERTA' && (() => {
@@ -1322,13 +1345,13 @@ export function ServiceOrdersPage() {
                         return (
                           <button
                             onClick={async () => {
-                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta ação é para correção de fluxo.`)) return;
+                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta a├º├úo ├® para corre├º├úo de fluxo.`)) return;
                               await changeStatus(prevStatus, true);
                             }}
                             title={`Retroceder para: ${prevPhase.label}`}
                             className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 transition-all"
                           >
-                            ← Voltar
+                            ÔåÉ Voltar
                           </button>
                         );
                        })()}
@@ -1364,7 +1387,7 @@ export function ServiceOrdersPage() {
                                   key={key}
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
-                                    if (isNegative && !confirm(`Confirmar mudança para: ${cfg.label}?`)) return;
+                                    if (isNegative && !confirm(`Confirmar mudan├ºa para: ${cfg.label}?`)) return;
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
@@ -1383,24 +1406,24 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Veículo</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Ve├¡culo</p>
                       <p className="font-black text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Série / ID'}</p>
-                      <p className="font-mono font-black text-primary-400">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '—'}</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'S├®rie / ID'}</p>
+                      <p className="font-mono font-black text-primary-400">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || 'ÔÇö'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '—'} / ${selectedOrder.vehicle?.color || '—'}` : 'Motor avulso'}</p>
+                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || 'ÔÇö'} / ${selectedOrder.vehicle?.color || 'ÔÇö'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">KM Atual</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '—'}</p>
+                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : 'ÔÇö'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">KM Entrada</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '—'}</p>
+                      <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : 'ÔÇö'}</p>
                     </div>
                   </div>
                 </div>
@@ -1411,7 +1434,7 @@ export function ServiceOrdersPage() {
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      {['Reclamação Inicial', 'Diagnóstico Técnico', 'Laudo / Solução'][i]}
+                      {['Reclama├º├úo Inicial', 'Diagn├│stico T├®cnico', 'Laudo / Solu├º├úo'][i]}
                     </label>
                     <textarea
                       value={edit[field]}
@@ -1425,9 +1448,9 @@ export function ServiceOrdersPage() {
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Reserva de Peças no Orçamento</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Reserva de Pe├ºas no Or├ºamento</p>
                   <p className="text-xs text-slate-600 mt-1">
-                    Quando marcado, sinaliza a reserva das peças para esta O.S. Na aprovação do orçamento, todas as peças pendentes serão debitadas do estoque automaticamente.
+                    Quando marcado, sinaliza a reserva das pe├ºas para esta O.S. Na aprova├º├úo do or├ºamento, todas as pe├ºas pendentes ser├úo debitadas do estoque automaticamente.
                   </p>
                 </div>
                 <label className="inline-flex items-center gap-2 cursor-pointer shrink-0">
@@ -1441,29 +1464,29 @@ export function ServiceOrdersPage() {
                 </label>
               </div>
 
-              {/* Serviços */}
+              {/* Servi├ºos */}
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
                 <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                   <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                    <Wrench size={14} /> Serviços Realizados
+                    <Wrench size={14} /> Servi├ºos Realizados
                     <span className="bg-slate-200 text-slate-700 rounded-md px-1.5 py-0.5 text-[9px] font-black">{serviceItems.length}</span>
                   </h3>
                   <button
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
                     className="text-[9px] font-black uppercase tracking-widest bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors flex items-center gap-1"
-                    title={!canManageItems ? 'Sem permissão para adicionar itens' : undefined}
+                    title={!canManageItems ? 'Sem permiss├úo para adicionar itens' : undefined}
                   >
-                    <Plus size={12} /> Adicionar Serviço
+                    <Plus size={12} /> Adicionar Servi├ºo
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50/50 text-slate-500 font-bold uppercase text-[10px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-slate-100">Descrição</th>
+                      <th className="px-5 py-3 border-b border-slate-100">Descri├º├úo</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-56">Executor</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-20 text-center">Qtd/Hrs</th>
-                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unitário</th>
+                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unit├írio</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-12" />
                     </tr>
@@ -1516,17 +1539,17 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {serviceItems.length === 0 && (
-                      <tr><td colSpan={6} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhum serviço lançado</td></tr>
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhum servi├ºo lan├ºado</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              {/* Peças */}
+              {/* Pe├ºas */}
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
                 <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                   <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                    <Package size={14} /> Peças e Materiais
+                    <Package size={14} /> Pe├ºas e Materiais
                     <span className="bg-slate-200 text-slate-700 rounded-md px-1.5 py-0.5 text-[9px] font-black">{partItems.length}</span>
                   </h3>
                   <button
@@ -1535,17 +1558,17 @@ export function ServiceOrdersPage() {
                       'text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
                       canManageStock ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-slate-300 text-slate-500'
                     )}
-                    title={canManageStock ? 'Lançar peça' : 'Sem permissão para alterar estoque'}
+                    title={canManageStock ? 'Lan├ºar pe├ºa' : 'Sem permiss├úo para alterar estoque'}
                   >
-                    <Plus size={12} /> Lançar Peça
+                    <Plus size={12} /> Lan├ºar Pe├ºa
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50/50 text-slate-500 font-bold uppercase text-[10px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-slate-100">Descrição</th>
+                      <th className="px-5 py-3 border-b border-slate-100">Descri├º├úo</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-20 text-center">Qtd</th>
-                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unitário</th>
+                      <th className="px-5 py-3 border-b border-slate-100 w-28">Unit├írio</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-slate-100 w-12" />
                     </tr>
@@ -1557,7 +1580,7 @@ export function ServiceOrdersPage() {
                           <div>{item.description}</div>
                           <div className="mt-1 text-[10px] text-slate-500 font-bold">
                             Estoque atual: <span className={cn('font-black', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
-                            {' · '}Status: {item.applied ? 'Baixada' : 'Pendente'}
+                            {' ┬À '}Status: {item.applied ? 'Baixada' : 'Pendente'}
                           </div>
                         </td>
                         <td className="px-5 py-3">
@@ -1586,18 +1609,18 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {partItems.length === 0 && (
-                      <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhuma peça lançada</td></tr>
+                      <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400 text-xs">Nenhuma pe├ºa lan├ºada</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              {/* Ações + Pagamento + Totais */}
+              {/* A├º├Áes + Pagamento + Totais */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
 
-                {/* Avançar status */}
+                {/* Avan├ºar status */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avançar Status</h4>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avan├ºar Status</h4>
                   <div className="flex flex-col gap-1.5">
                     {nextStatuses.length === 0 && (
                       <p className="text-[10px] font-bold text-slate-400">Fluxo encerrado para este status.</p>
@@ -1625,14 +1648,14 @@ export function ServiceOrdersPage() {
                       );
                     })}
 
-                    {/* Botão Reservar Peças — visível em APROVADO e AGUARDANDO_PECAS com peças na OS */}
+                    {/* Bot├úo Reservar Pe├ºas ÔÇö vis├¡vel em APROVADO e AGUARDANDO_PECAS com pe├ºas na OS */}
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (
                       <button
                         onClick={() => { setReserveResult(null); setExpectedPartsDate(''); setShowReserveParts(true); }}
                         className="w-full px-3 py-2 rounded-xl text-[10px] font-black tracking-wide transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
                       >
                         <ShoppingCart size={12} />
-                        {selectedOrder?.partsReserved ? 'Rever Pedido de Peças' : 'Verificar / Reservar Peças'}
+                        {selectedOrder?.partsReserved ? 'Rever Pedido de Pe├ºas' : 'Verificar / Reservar Pe├ºas'}
                       </button>
                     )}
                   </div>
@@ -1677,15 +1700,15 @@ export function ServiceOrdersPage() {
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
                     className="mb-2 inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-800 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-slate-700 disabled:opacity-60"
-                    title={!canSyncOrder ? 'Sem permissão para atualizar O.S.' : undefined}
+                    title={!canSyncOrder ? 'Sem permiss├úo para atualizar O.S.' : undefined}
                   >
                     {syncingTotals ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                     Atualizar O.S.
                   </button>
                   {[
-                    { label: 'Serviços', val: selectedOrder.totalServices },
-                    { label: 'Peças', val: selectedOrder.totalParts },
-                    ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'Mão de Obra', val: selectedOrder.totalLabor }] : []),
+                    { label: 'Servi├ºos', val: selectedOrder.totalServices },
+                    { label: 'Pe├ºas', val: selectedOrder.totalParts },
+                    ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'M├úo de Obra', val: selectedOrder.totalLabor }] : []),
                   ].map(({ label, val }) => (
                     <div key={label} className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       <span>{label}</span>
@@ -1703,7 +1726,7 @@ export function ServiceOrdersPage() {
         )}
       </div>
 
-      {/* ── MODAL RESERVA DE PEÇAS ───────────────────────────────── */}
+      {/* ÔöÇÔöÇ MODAL RESERVA DE PE├çAS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <AnimatePresence>
         {showReserveParts && selectedOrder && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -1717,8 +1740,8 @@ export function ServiceOrdersPage() {
                     <ShoppingCart size={18} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest">Reserva de Peças</h3>
-                    <p className="text-[10px] text-slate-500 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} · {partItems.length} peça(s) na OS</p>
+                    <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest">Reserva de Pe├ºas</h3>
+                    <p className="text-[10px] text-slate-500 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} ┬À {partItems.length} pe├ºa(s) na OS</p>
                   </div>
                 </div>
                 <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-slate-400 hover:text-red-500 transition-colors">
@@ -1729,9 +1752,9 @@ export function ServiceOrdersPage() {
               <div className="overflow-y-auto flex-1 p-6 space-y-5">
                 {!reserveResult ? (
                   <>
-                    {/* Lista de peças */}
+                    {/* Lista de pe├ºas */}
                     <div className="space-y-2">
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Peças desta OS</p>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pe├ºas desta OS</p>
                       {partItems.map((item: any) => {
                         const stock = Number(item.part?.currentStock ?? 0);
                         const needed = Math.ceil(Number(item.quantity));
@@ -1742,7 +1765,7 @@ export function ServiceOrdersPage() {
                               {ok ? <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> : <AlertTriangle size={14} className="text-red-500 shrink-0" />}
                               <div>
                                 <p className="font-bold text-slate-900 leading-tight">{item.description}</p>
-                                {item.part?.internalCode && <p className="text-slate-400 text-[10px]">Cód: {item.part.internalCode}</p>}
+                                {item.part?.internalCode && <p className="text-slate-400 text-[10px]">C├│d: {item.part.internalCode}</p>}
                               </div>
                             </div>
                             <div className="text-right shrink-0">
@@ -1757,7 +1780,7 @@ export function ServiceOrdersPage() {
                     {/* Data prevista chegada */}
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                        <Calendar size={11} /> Data prevista de chegada (para peças faltantes)
+                        <Calendar size={11} /> Data prevista de chegada (para pe├ºas faltantes)
                       </label>
                       <input
                         type="date"
@@ -1766,7 +1789,7 @@ export function ServiceOrdersPage() {
                         onChange={(e) => setExpectedPartsDate(e.target.value)}
                         className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400"
                       />
-                      <p className="text-[10px] text-slate-400">Opcional. Peças disponíveis serão reservadas imediatamente. Peças faltantes gerarão um Pedido de Compra.</p>
+                      <p className="text-[10px] text-slate-400">Opcional. Pe├ºas dispon├¡veis ser├úo reservadas imediatamente. Pe├ºas faltantes gerar├úo um Pedido de Compra.</p>
                     </div>
 
                     <button
@@ -1791,11 +1814,11 @@ export function ServiceOrdersPage() {
                       <div className={cn('border rounded-2xl p-4 text-center', reserveResult.missing > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200')}>
                         <p className={cn('text-2xl font-black', reserveResult.missing > 0 ? 'text-red-600' : 'text-slate-400')}>{reserveResult.missing}</p>
                         <p className={cn('text-[10px] font-bold uppercase tracking-wide', reserveResult.missing > 0 ? 'text-red-700' : 'text-slate-500')}>Faltantes</p>
-                        <p className="text-[9px] text-slate-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo disponível'}</p>
+                        <p className="text-[9px] text-slate-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo dispon├¡vel'}</p>
                       </div>
                     </div>
 
-                    {/* Peças faltantes */}
+                    {/* Pe├ºas faltantes */}
                     {reserveResult.missingItems?.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -1806,7 +1829,7 @@ export function ServiceOrdersPage() {
                           <div key={i} className="flex items-start justify-between rounded-xl px-3 py-2 bg-red-50 border border-red-200 text-xs">
                             <div>
                               <p className="font-bold text-slate-900">{item.description}</p>
-                              <p className="text-slate-400 text-[10px]">Cód: {item.internalCode || '—'} · Orig: {item.sku || '—'} · Fornec: {item.supplierName || '—'}</p>
+                              <p className="text-slate-400 text-[10px]">C├│d: {item.internalCode || 'ÔÇö'} ┬À Orig: {item.sku || 'ÔÇö'} ┬À Fornec: {item.supplierName || 'ÔÇö'}</p>
                             </div>
                             <div className="text-right shrink-0 ml-2">
                               <p className="font-black text-red-700">Falta: {item.lacking}</p>
@@ -1816,7 +1839,7 @@ export function ServiceOrdersPage() {
                         ))}
 
                         <button
-                          onClick={() => setShowPurchaseOrderPdf(true)}
+                          onClick={downloadPurchaseOrderPdf}
                           className="w-full py-2.5 rounded-xl bg-slate-900 text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-slate-700 transition-all"
                         >
                           <Printer size={14} /> Imprimir Pedido de Compra
@@ -1838,65 +1861,8 @@ export function ServiceOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/* ── MODAL PDF PEDIDO DE COMPRA ────────────────────────────── */}
+      {/* ÔöÇÔöÇ MODAL CAT├üLOGO ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <AnimatePresence>
-        {showPurchaseOrderPdf && reserveResult && (
-          <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPurchaseOrderPdf(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }} className="relative flex flex-col w-full max-w-5xl h-[90vh] rounded-[2rem] overflow-hidden bg-white shadow-2xl">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
-                <div>
-                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest">Pedido de Compra — {reserveResult.purchaseOrderNumber}</h3>
-                  <p className="text-xs text-slate-500 font-semibold">Peças faltantes para a OS {selectedOrder?.id.slice(0,8).toUpperCase()}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setShowPurchaseOrderPdf(false)} className="h-9 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all">Voltar</button>
-                  <button onClick={() => purchaseOrderFrameRef.current?.contentWindow?.print()} className="h-9 px-4 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-700 transition-all flex items-center gap-1.5">
-                    <Printer size={13} /> Imprimir
-                  </button>
-                </div>
-              </div>
-              <iframe
-                ref={purchaseOrderFrameRef}
-                title="Pedido de Compra"
-                srcDoc={buildPurchaseOrderHtml({ ...reserveResult, expectedPartsDate: expectedPartsDate || null })}
-                className="flex-1 w-full bg-slate-200"
-              />
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ── MODAL CATÁLOGO ─────────────────────────────────────────── */}
-      <AnimatePresence>
-        {showPrintPreview && selectedOrder && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPrintPreview(false)} className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }} className="relative flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-6 py-4">
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Visualização da Ordem de Serviço</h3>
-                  <p className="text-xs font-semibold text-slate-500">Somente a O.S. será impressa, sem os outros quadros da tela.</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setShowPrintPreview(false)} className="h-10 rounded-xl border border-slate-200 px-4 text-xs font-bold text-slate-700 transition-all hover:bg-slate-100">
-                    Voltar
-                  </button>
-                  <button onClick={printOnlyOrder} className="h-10 rounded-xl bg-slate-900 px-4 text-xs font-bold text-white transition-all hover:bg-slate-800">
-                    Imprimir O.S.
-                  </button>
-                </div>
-              </div>
-              <iframe
-                ref={printFrameRef}
-                title="Visualizacao da O.S."
-                srcDoc={buildPrintPreviewHtml()}
-                className="h-full w-full bg-slate-200"
-              />
-            </motion.div>
-          </div>
-        )}
-
         {catalogMode && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCatalogMode(null)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
@@ -1910,10 +1876,10 @@ export function ServiceOrdersPage() {
                   </div>
                   <div>
                     <h3 className="font-black text-slate-900 uppercase text-sm tracking-widest">
-                      {catalogMode === 'service' ? 'Adicionar Serviço' : 'Lançar Peça'}
+                      {catalogMode === 'service' ? 'Adicionar Servi├ºo' : 'Lan├ºar Pe├ºa'}
                     </h3>
                     <p className="text-[10px] text-slate-400 font-bold uppercase">
-                      {catalogMode === 'service' ? 'Catálogo ou lançamento avulso' : 'Catálogo ou peça avulsa'}
+                      {catalogMode === 'service' ? 'Cat├ílogo ou lan├ºamento avulso' : 'Cat├ílogo ou pe├ºa avulsa'}
                     </p>
                   </div>
                 </div>
@@ -1926,7 +1892,7 @@ export function ServiceOrdersPage() {
                         ? 'bg-violet-600 text-white shadow-md'
                         : 'bg-violet-100 text-violet-700 hover:bg-violet-200'
                     )}
-                    title="IA Assistiva — sugestões por sintoma"
+                    title="IA Assistiva ÔÇö sugest├Áes por sintoma"
                   >
                     <Sparkles size={13} />
                     IA
@@ -1949,12 +1915,12 @@ export function ServiceOrdersPage() {
                     <div className="p-4 space-y-3">
                       <p className="text-[9px] font-black text-violet-700 uppercase tracking-widest flex items-center gap-1">
                         <Sparkles size={11} />
-                        IA Assistiva — descreva o problema e receba sugestões
+                        IA Assistiva ÔÇö descreva o problema e receba sugest├Áes
                       </p>
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Ex: motor falhando ao acelerar, barulho na suspensão..."
+                          placeholder="Ex: motor falhando ao acelerar, barulho na suspens├úo..."
                           value={aiDescription}
                           onChange={(e) => setAiDescription(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAiSuggest()}
@@ -1976,7 +1942,7 @@ export function ServiceOrdersPage() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
                                   <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-600')}>
-                                    {s.type === 'service' ? 'Serviço' : 'Peça'}
+                                    {s.type === 'service' ? 'Servi├ºo' : 'Pe├ºa'}
                                   </span>
                                   <span className="text-[10px] font-black text-slate-800 truncate">{s.description}</span>
                                 </div>
@@ -1997,7 +1963,7 @@ export function ServiceOrdersPage() {
                                   disabled={isClosed}
                                   className="mt-0.5 text-[9px] font-black text-violet-600 hover:text-violet-800 uppercase tracking-wider disabled:opacity-40"
                                 >
-                                  + Lançar
+                                  + Lan├ºar
                                 </button>
                               </div>
                             </div>
@@ -2005,7 +1971,7 @@ export function ServiceOrdersPage() {
                         </div>
                       )}
                       {!aiLoading && aiSuggestions.length === 0 && aiDescription.trim() && (
-                        <p className="text-[10px] text-slate-400 text-center py-1">Nenhuma sugestão encontrada. Tente descrever com mais detalhes.</p>
+                        <p className="text-[10px] text-slate-400 text-center py-1">Nenhuma sugest├úo encontrada. Tente descrever com mais detalhes.</p>
                       )}
                     </div>
                   </motion.div>
@@ -2016,11 +1982,11 @@ export function ServiceOrdersPage() {
               <div className="p-4 border-b border-slate-100 bg-amber-50/60">
                 <p className="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-1">
                   <Zap size={11} />
-                  {catalogMode === 'service' ? 'Serviço avulso (não cadastrado)' : 'Peça avulsa (não cadastrada)'}
+                  {catalogMode === 'service' ? 'Servi├ºo avulso (n├úo cadastrado)' : 'Pe├ºa avulsa (n├úo cadastrada)'}
                 </p>
                 <div className="flex items-end gap-2">
                   <div className="flex-1 space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">Descrição *</label>
+                    <label className="text-[9px] font-bold text-slate-500 uppercase">Descri├º├úo *</label>
                     <input
                       type="text"
                       placeholder={catalogMode === 'service' ? 'Ex: Limpeza de bicos injetores' : 'Ex: Correia auxiliar Fiat Uno'}
@@ -2055,12 +2021,12 @@ export function ServiceOrdersPage() {
                     onClick={quickAddItem}
                     className="h-9 px-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow flex items-center gap-1 whitespace-nowrap"
                   >
-                    <Plus size={13} /> Lançar
+                    <Plus size={13} /> Lan├ºar
                   </button>
                 </div>
                 {catalogMode === 'service' && (
                   <div className="mt-2">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">Executor do Serviço</label>
+                    <label className="text-[9px] font-bold text-slate-500 uppercase">Executor do Servi├ºo</label>
                     <select
                       value={quickAssignedUserId}
                       onChange={(e) => setQuickAssignedUserId(e.target.value)}
@@ -2081,7 +2047,7 @@ export function ServiceOrdersPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                   <input
                     type="text"
-                    placeholder={`Pesquisar no catálogo de ${catalogMode === 'service' ? 'serviços' : 'peças'}...`}
+                    placeholder={`Pesquisar no cat├ílogo de ${catalogMode === 'service' ? 'servi├ºos' : 'pe├ºas'}...`}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 text-sm font-bold focus:bg-white transition-all"
                     value={catalogSearch}
                     onChange={(e) => setCatalogSearch(e.target.value)}
@@ -2112,8 +2078,8 @@ export function ServiceOrdersPage() {
                           <div>
                             <p className="font-bold text-slate-900 text-sm">{s.name}</p>
                             <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                              {s.tmo ? `TMO: ${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
-                              {s.category && ` · ${s.category}`}
+                              {s.tmo ? `TMO: ${s.tmo}h ├ù R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
+                              {s.category && ` ┬À ${s.category}`}
                             </p>
                           </div>
                           <div className="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-all">
@@ -2123,7 +2089,7 @@ export function ServiceOrdersPage() {
                       ))
                     }
                     {catalogItems.services.filter((s) => s.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-slate-400 text-xs py-8">Nenhum serviço encontrado no catálogo</p>
+                      <p className="text-center text-slate-400 text-xs py-8">Nenhum servi├ºo encontrado no cat├ílogo</p>
                     )}
                   </>
                 )}
@@ -2149,22 +2115,22 @@ export function ServiceOrdersPage() {
                                 )}
                               </div>
                               <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                                {p.internalCode && `${p.internalCode} · `}
+                                {p.internalCode && `${p.internalCode} ┬À `}
                                 Estoque: <span className={cn('font-black', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
-                                {' · Mínimo: '}<span className="font-black text-slate-600">{p.minStock || 0}</span>
-                                {' · '}R$ {fmtBR(p.unitPrice)}
+                                {' ┬À M├¡nimo: '}<span className="font-black text-slate-600">{p.minStock || 0}</span>
+                                {' ┬À '}R$ {fmtBR(p.unitPrice)}
                               </p>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden">
-                                <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 text-xs font-bold">−</button>
+                                <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 text-xs font-bold">ÔêÆ</button>
                                 <span className="w-8 text-center text-sm font-black">{qty}</span>
                                 <button onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 text-xs font-bold">+</button>
                               </div>
                               <button
                                 onClick={() => addItem({ type: 'part', partId: p.id, description: p.name, quantity: qty, unitPrice: p.unitPrice })}
                                 disabled={isClosed || !canManageStock || notEnoughStock}
-                                title={isClosed ? 'OS finalizada não pode ser editada' : !canManageStock ? 'Somente MASTER/ADMIN podem alterar estoque' : notEnoughStock ? 'Quantidade maior que estoque disponível' : 'Adicionar peça'}
+                                title={isClosed ? 'OS finalizada n├úo pode ser editada' : !canManageStock ? 'Somente MASTER/ADMIN podem alterar estoque' : notEnoughStock ? 'Quantidade maior que estoque dispon├¡vel' : 'Adicionar pe├ºa'}
                                 className={cn(
                                   'w-10 h-10 rounded-xl flex items-center justify-center shadow transition-all',
                                   !canManageStock || notEnoughStock
@@ -2185,7 +2151,7 @@ export function ServiceOrdersPage() {
                       </p>
                     )}
                     {catalogItems.parts.filter((p) => p.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-slate-400 text-xs py-8">Nenhuma peça encontrada no catálogo</p>
+                      <p className="text-center text-slate-400 text-xs py-8">Nenhuma pe├ºa encontrada no cat├ílogo</p>
                     )}
                   </>
                 )}
@@ -2195,7 +2161,7 @@ export function ServiceOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/* ── MODAL NOVA OS ──────────────────────────────────────────── */}
+      {/* ÔöÇÔöÇ MODAL NOVA OS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */}
       <AnimatePresence>
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -2227,9 +2193,9 @@ export function ServiceOrdersPage() {
                 {/* Tipo de documento */}
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'ORCAMENTO', label: '📋 Orçamento', desc: 'Aguarda aprovação do cliente' },
-                    { value: 'ORDEM_SERVICO', label: '🔧 Ordem de Serviço', desc: 'Serviço já autorizado' },
-                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: '⚙️ Retífica', desc: 'Motor avulso ou fluxo técnico especializado' }] : []),
+                    { value: 'ORCAMENTO', label: '­ƒôï Or├ºamento', desc: 'Aguarda aprova├º├úo do cliente' },
+                    { value: 'ORDEM_SERVICO', label: '­ƒöº Ordem de Servi├ºo', desc: 'Servi├ºo j├í autorizado' },
+                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'ÔÜÖ´©Å Ret├¡fica', desc: 'Motor avulso ou fluxo t├®cnico especializado' }] : []),
                   ].map(({ value, label, desc }) => (
                     <button
                       key={value}
@@ -2255,12 +2221,12 @@ export function ServiceOrdersPage() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Veículo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Ve├¡culo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
                   <select className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
-                    <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veículo' : 'Selecione um veículo...'}</option>
-                    {vehicles.filter((v) => v.customerId === newOrder.customerId).map((v) => <option key={v.id} value={v.id}>{v.plate} — {v.brand} {v.model}</option>)}
+                    <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem ve├¡culo' : 'Selecione um ve├¡culo...'}</option>
+                    {vehicles.filter((v) => v.customerId === newOrder.customerId).map((v) => <option key={v.id} value={v.id}>{v.plate} ÔÇö {v.brand} {v.model}</option>)}
                   </select>
-                  {/* Aviso de OSs abertas para o veículo selecionado */}
+                  {/* Aviso de OSs abertas para o ve├¡culo selecionado */}
                   {newOrder.vehicleId && (() => {
                     const CLOSED = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
                     const openForVehicle = orders.filter(
@@ -2270,12 +2236,12 @@ export function ServiceOrdersPage() {
                     return (
                       <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 font-medium space-y-1">
                         <p>
-                          ⚠️ Este veículo já possui <strong>{openForVehicle.length}</strong> O.S/orçamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
+                          ÔÜá´©Å Este ve├¡culo j├í possui <strong>{openForVehicle.length}</strong> O.S/or├ºamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
                           {openForVehicle.map((o: any) => (
                             <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
                           ))}
                         </p>
-                        <p className="text-amber-600">Você pode criar múltiplos orçamentos/OSs para o mesmo veículo. Verifique se não é duplicata.</p>
+                        <p className="text-amber-600">Voc├¬ pode criar m├║ltiplos or├ºamentos/OSs para o mesmo ve├¡culo. Verifique se n├úo ├® duplicata.</p>
                       </div>
                     );
                   })()}
@@ -2287,11 +2253,11 @@ export function ServiceOrdersPage() {
                       <input value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Ex: VW" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Modelo / família</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Modelo / fam├¡lia</label>
                       <input value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Ex: AP 1.8" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nº de série</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">N┬║ de s├®rie</label>
                       <input value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Opcional" />
                     </div>
                   </div>
@@ -2305,7 +2271,7 @@ export function ServiceOrdersPage() {
                   <input type="datetime-local" className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Reclamação Principal</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Reclama├º├úo Principal</label>
                   <textarea className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-bold focus:ring-4 focus:ring-slate-900/5 transition-all h-24 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
                 <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
@@ -2315,7 +2281,7 @@ export function ServiceOrdersPage() {
                     onChange={(e) => setNewOrder({ ...newOrder, reserveStock: e.target.checked })}
                     className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
                   />
-                  Reservar peças para debitar automaticamente na aprovação
+                  Reservar pe├ºas para debitar automaticamente na aprova├º├úo
                 </label>
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all">Cancelar</button>
@@ -2350,7 +2316,7 @@ export function ServiceOrdersPage() {
         />
       )}
 
-      {/* Modal de Metrologia — abre ao clicar em "Metrologia" no Andamento da OS */}
+      {/* Modal de Metrologia ÔÇö abre ao clicar em "Metrologia" no Andamento da OS */}
       {metrologiaOsTarget && (
         <MetrologiaModal
           osId={metrologiaOsTarget.id}
@@ -2363,7 +2329,7 @@ export function ServiceOrdersPage() {
         />
       )}
 
-      {/* Laudo de Retífica — abre automaticamente após salvar metrologia */}
+      {/* Laudo de Ret├¡fica ÔÇö abre automaticamente ap├│s salvar metrologia */}
       {laudoRetificaOs && (
         <LaudoRetificaModal
           os={laudoRetificaOs}
@@ -2372,7 +2338,7 @@ export function ServiceOrdersPage() {
         />
       )}
 
-      {/* Modal de confirmação de exclusão */}
+      {/* Modal de confirma├º├úo de exclus├úo */}
       {showDeleteModal && selectedOrder && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
@@ -2383,7 +2349,7 @@ export function ServiceOrdersPage() {
               </div>
               <div>
                 <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Excluir O.S.</h2>
-                <p className="text-xs text-slate-500 font-medium">Esta ação é irreversível</p>
+                <p className="text-xs text-slate-500 font-medium">Esta a├º├úo ├® irrevers├¡vel</p>
               </div>
             </div>
 
@@ -2395,18 +2361,18 @@ export function ServiceOrdersPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-600 uppercase tracking-wider">
-                Motivo da exclusão (opcional)
+                Motivo da exclus├úo (opcional)
               </label>
               <textarea
                 value={deleteReason}
                 onChange={(e) => setDeleteReason(e.target.value)}
-                placeholder="Ex: Orçamento duplicado, erro de cadastro..."
+                placeholder="Ex: Or├ºamento duplicado, erro de cadastro..."
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none h-16 focus:outline-none focus:ring-2 focus:ring-red-300"
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-600 uppercase tracking-wider">
-                Digite o número da O.S. para confirmar:
+                Digite o n├║mero da O.S. para confirmar:
                 <span className="ml-2 font-mono text-slate-900">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
               </label>
               <input

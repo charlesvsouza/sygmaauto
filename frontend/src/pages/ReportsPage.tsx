@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { reportsApi, tenantsApi } from '../api/client';
+import { pdfApi, reportsApi, tenantsApi } from '../api/client';
 import {
   FileText,
   BarChart3,
@@ -172,7 +172,27 @@ const ICON_BG: Record<string, string> = {
     }
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = async () => {
+    if (!printRef.current) return;
+    try {
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${PRINT_STYLE}</style></head><body><div id="rpt-print-doc">${printRef.current.innerHTML}</div></body></html>`;
+      const response = await pdfApi.render({
+        html,
+        fileName: `relatorio-${type}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `relatorio-${type}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Erro ao gerar PDF com Puppeteer.');
+      console.error(e);
+    }
+  };
 
   /* ─── report header (shared) ─────────────────────────────────────────────── */
   const ReportHeader = ({ title }: { title: string }) => (

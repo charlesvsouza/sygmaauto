@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { financialApi, tenantsApi } from '../api/client';
+import { financialApi, pdfApi, tenantsApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import {
   DollarSign,
@@ -73,6 +73,7 @@ export function FinancialPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [tenantData, setTenantData] = useState<any>(null);
   const [summary, setSummary] = useState({ income: 0, expense: 0, balance: 0 });
+  const printRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     description: '',
@@ -162,12 +163,33 @@ export function FinancialPage() {
   const fmtBR = (v: number, dec = 2) =>
     Number(v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 
+  const handlePrint = async () => {
+    if (!printRef.current) return;
+    try {
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${FINANCIAL_PRINT_STYLE}</style></head><body><div id="fin-print-doc">${printRef.current.innerHTML}</div></body></html>`;
+      const response = await pdfApi.render({
+        html,
+        fileName: `financeiro-${new Date().toISOString().slice(0, 10)}.pdf`,
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'relatorio-financeiro.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Erro ao gerar PDF financeiro com Puppeteer.');
+    }
+  };
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8 pb-10">
       <style>{FINANCIAL_PRINT_STYLE}</style>
 
       {/* PRINT DOCUMENT */}
-      <div id="fin-print-doc">
+      <div id="fin-print-doc" ref={printRef}>
         {tenantData && (
           <div className="fin-doc">
             {/* Header */}
@@ -280,7 +302,7 @@ export function FinancialPage() {
         </motion.div>
         <motion.div variants={itemVariants} className="flex gap-3">
           <button
-            onClick={() => window.print()}
+            onClick={handlePrint}
             className="h-12 px-6 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
           >
             <Printer size={18} className="text-slate-400" /> Imprimir Relatório

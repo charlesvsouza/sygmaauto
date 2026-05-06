@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ServiceOrdersService } from './service-orders.service';
@@ -246,5 +246,37 @@ export class ServiceOrdersController {
     @Body() dto: UpdateServiceOrderItemDto,
   ) {
     return this.serviceOrdersService.updateItem(tenant.tenantId, id, itemId, dto, user.userId);
+  }
+
+  @Get(':id/pdf')
+  @ApiOperation({ summary: 'Gerar PDF da OS (padrão: Puppeteer)' })
+  async generatePdfDefault(
+    @Tenant() tenant: { tenantId: string },
+    @Param('id') id: string,
+    @Res() res: any,
+  ) {
+    const pdf = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="OS-${id.slice(0, 8)}.pdf"`,
+      'Content-Length': pdf.length,
+    });
+    res.end(pdf);
+  }
+
+  @Get(':id/pdf/puppeteer')
+  @ApiOperation({ summary: 'Gerar PDF com Puppeteer (teste)' })
+  async generatePdfPuppeteer(
+    @Tenant() tenant: { tenantId: string },
+    @Param('id') id: string,
+    @Res() res: any,
+  ) {
+    const pdf = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="OS-${id.slice(0, 8)}-puppeteer.pdf"`,
+      'Content-Length': pdf.length,
+    });
+    res.end(pdf);
   }
 }
