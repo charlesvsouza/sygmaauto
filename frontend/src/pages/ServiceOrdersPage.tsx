@@ -1322,7 +1322,7 @@ export function ServiceOrdersPage() {
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
               <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">­ƒöì</span>
+                  <span className="text-2xl">!</span>
                   <div>
                     <p className="text-sm font-black text-amber-900">Orcamento reprovado pelo cliente</p>
                     <p className="text-xs text-amber-700 mt-0.5">
@@ -1337,7 +1337,7 @@ export function ServiceOrdersPage() {
                     disabled={creatingDiagOrder}
                     className="px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black hover:bg-amber-700 transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
-                    {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'Ô£à'} Sim, criar nova O.S.
+                    {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'OK'} Sim, criar nova O.S.
                   </button>
                   <button
                     onClick={() => setShowDiagBanner(false)}
@@ -1375,7 +1375,7 @@ export function ServiceOrdersPage() {
                         {phase.label}
                         {canOpenMetrologia && (
                           <span className="block text-[8px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
-                            {selectedOrder.status === 'METROLOGIA' ? '­ƒôï ver / editar' : '­ƒôï iniciar'}
+                            {selectedOrder.status === 'METROLOGIA' ? 'ver / editar' : 'iniciar'}
                           </span>
                         )}
                       </p>
@@ -1453,7 +1453,7 @@ export function ServiceOrdersPage() {
                             title={`Retroceder para: ${prevPhase.label}`}
                             className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 transition-all"
                           >
-                            ÔåÉ Voltar
+                            Voltar
                           </button>
                         );
                        })()}
@@ -2295,9 +2295,9 @@ export function ServiceOrdersPage() {
                 {/* Tipo de documento */}
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'ORCAMENTO', label: '­ƒôï Orcamento', desc: 'Aguarda aprovacao do cliente' },
-                    { value: 'ORDEM_SERVICO', label: '­ƒöº Ordem de Servico', desc: 'Servico ja autorizado' },
-                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'ÔÜÖ´©Å Retifica', desc: 'Motor avulso ou fluxo tecnico especializado' }] : []),
+                    { value: 'ORCAMENTO', label: 'Orcamento', desc: 'Aguarda aprovacao do cliente' },
+                    { value: 'ORDEM_SERVICO', label: 'Ordem de Servico', desc: 'Servico ja autorizado' },
+                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'Retifica', desc: 'Motor avulso ou fluxo tecnico especializado' }] : []),
                   ].map(({ value, label, desc }) => (
                     <button
                       key={value}
@@ -2414,7 +2414,7 @@ export function ServiceOrdersPage() {
                     return (
                       <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 font-medium space-y-1">
                         <p>
-                          ÔÜá´©Å Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
+                          Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
                           {openForVehicle.map((o: any) => (
                             <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
                           ))}
