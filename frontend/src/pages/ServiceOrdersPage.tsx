@@ -488,16 +488,8 @@ export function ServiceOrdersPage() {
 
   const downloadOrderPdf = async () => {
     if (!selectedOrder) return;
-    if (!printContentRef.current) {
-      alert('N├úo foi poss├¡vel montar o documento da O.S. para PDF.');
-      return;
-    }
     try {
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${DOC_STYLES}</style></head><body>${printContentRef.current.innerHTML}</body></html>`;
-      const response = await pdfApi.render({
-        html,
-        fileName: `os-${selectedOrder.id.slice(0, 8).toUpperCase()}.pdf`,
-      });
+      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
