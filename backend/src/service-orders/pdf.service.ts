@@ -18,6 +18,22 @@ interface PDFGenerationOptions {
 export class PdfService {
   private browser: puppeteer.Browser | null = null;
 
+  private resolveExecutablePath(): string | undefined {
+    const fromEnv = process.env.PUPPETEER_EXECUTABLE_PATH;
+    if (fromEnv && fs.existsSync(fromEnv)) {
+      return fromEnv;
+    }
+
+    const linuxCandidates = ['/usr/bin/chromium-browser', '/usr/bin/chromium'];
+    for (const candidate of linuxCandidates) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+
+    return undefined;
+  }
+
   async onModuleInit() {
     // Inicializar browser na primeira requisição (lazy loading)
   }
@@ -29,8 +45,10 @@ export class PdfService {
     try {
       // Garante que o browser esteja inicializado
       if (!this.browser) {
+        const executablePath = this.resolveExecutablePath();
         this.browser = await puppeteer.launch({
           headless: true,
+          executablePath,
           args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',

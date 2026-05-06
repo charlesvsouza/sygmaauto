@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, OnModuleDestroy } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
 
 interface RenderOptions {
   format?: string;
@@ -10,10 +11,28 @@ interface RenderOptions {
 export class PdfService implements OnModuleDestroy {
   private browser: puppeteer.Browser | null = null;
 
+  private resolveExecutablePath(): string | undefined {
+    const fromEnv = process.env.PUPPETEER_EXECUTABLE_PATH;
+    if (fromEnv && fs.existsSync(fromEnv)) {
+      return fromEnv;
+    }
+
+    const linuxCandidates = ['/usr/bin/chromium-browser', '/usr/bin/chromium'];
+    for (const candidate of linuxCandidates) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+
+    return undefined;
+  }
+
   private async getBrowser(): Promise<puppeteer.Browser> {
     if (!this.browser) {
+      const executablePath = this.resolveExecutablePath();
       this.browser = await puppeteer.launch({
         headless: true,
+        executablePath,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
       });
     }

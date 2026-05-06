@@ -11,7 +11,8 @@ RUN mkdir -p dist/service-orders/templates && cp src/service-orders/templates/os
 
 # Production stage
 FROM node:20-alpine
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl chromium nss freetype harfbuzz ca-certificates ttf-freefont
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 WORKDIR /app
 COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
