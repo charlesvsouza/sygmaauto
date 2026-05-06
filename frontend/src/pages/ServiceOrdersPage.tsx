@@ -529,6 +529,7 @@ export function ServiceOrdersPage() {
         try {
           frame.contentWindow?.focus();
           frame.contentWindow?.print();
+          window.setTimeout(() => setOsPrintStep('preview'), 3000);
         } finally {
           window.setTimeout(() => {
             frame.remove();
