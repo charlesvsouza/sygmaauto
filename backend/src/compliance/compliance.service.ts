@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLgpdRequestDto } from './dto/create-lgpd-request.dto';
 import { UpdateLgpdRequestStatusDto } from './dto/update-lgpd-request-status.dto';
@@ -227,5 +228,124 @@ export class ComplianceService {
     });
 
     return payload;
+  }
+
+  async eraseCustomerData(tenantId: string, actorUserId: string, customerId: string, reason: string) {
+    const customer = await this.prisma.customer.findFirst({
+      where: { id: customerId, tenantId },
+      include: {
+        _count: {
+          select: {
+            vehicles: true,
+            serviceOrders: true,
+            npsResponses: true,
+          },
+        },
+      },
+    });
+
+    if (!customer) throw new NotFoundException('Cliente nao encontrado para eliminacao LGPD');
+
+    const hasDependencies =
+      customer._count.vehicles > 0 ||
+      customer._count.serviceOrders > 0 ||
+      customer._count.npsResponses > 0;
+
+    let mode = 'HARD_DELETE';
+
+    if (hasDependencies) {
+      mode = 'ANONYMIZE';
+      await this.prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          name: `Titular removido ${customer.id.slice(0, 8)}`,
+          document: null,
+          rg: null,
+          nacionalidade: null,
+          estado_civil: null,
+          profissao: null,
+          email: null,
+          phone: null,
+          cep: null,
+          address: null,
+          cidade: null,
+          estado: null,
+          notes: `Anonimizado por LGPD em ${new Date().toISOString()}`,
+          lgpdErasedAt: new Date(),
+        },
+      });
+    } else {
+      await this.prisma.customer.delete({ where: { id: customer.id } });
+    }
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'Customer',
+        entityId: customerId,
+        action: 'LGPD_ERASE',
+        changes: JSON.stringify({
+          mode,
+          reason,
+          dependencyCounts: customer._count,
+        }),
+      },
+    });
+
+    return { success: true, mode, customerId };
+  }
+
+  async eraseUserData(tenantId: string, actorUserId: string, userId: string, reason: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, tenantId },
+      include: {
+        _count: {
+          select: {
+            serviceOrders: true,
+            timeline: true,
+            assignedItems: true,
+            commissions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) throw new NotFoundException('Usuario nao encontrado para eliminacao LGPD');
+
+    const replacementHash = await bcrypt.hash(`lgpd-erased:${user.id}:${Date.now()}`, 10);
+    const anonymizedEmail = `lgpd-erased+${user.id}@invalid.local`;
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: anonymizedEmail,
+        recoveryEmail: null,
+        passwordHash: replacementHash,
+        passwordResetToken: null,
+        passwordResetExpiresAt: null,
+        passwordUpdatedAt: new Date(),
+        name: `Usuario removido ${user.id.slice(0, 8)}`,
+        isActive: false,
+        lgpdErasedAt: new Date(),
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'LGPD_ERASE',
+        changes: JSON.stringify({
+          mode: 'ANONYMIZE',
+          reason,
+          dependencyCounts: user._count,
+        }),
+      },
+    });
+
+    return { success: true, mode: 'ANONYMIZE', userId };
   }
 }

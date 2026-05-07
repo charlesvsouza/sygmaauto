@@ -107,6 +107,7 @@ Evidencias:
 - Cadastro e acompanhamento de solicitacoes LGPD por tenant.
 - Protocolo tecnico por solicitacao e prazo (SLA tecnico) para acompanhamento operacional.
 - Exportacao estruturada de dados de cliente e usuario para atendimento de acesso/portabilidade.
+- Eliminacao LGPD controlada com anonimização quando houver dependencias historicas.
 - Registro de auditoria de criacao/atualizacao de solicitacao e exportacao.
 
 Evidencias:
@@ -130,7 +131,7 @@ Legenda:
 | Registro de eventos relevantes | Parcial | Auditoria em exclusao de OS, webhook e fluxo LGPD; cobertura ainda parcial |
 | Minimizacao de dados por endpoint | Parcial | Existem selects com campos filtrados em alguns servicos; sem politica global de minimizacao |
 | Correcao/atualizacao de dados | Implementado | CRUD de usuarios/clientes/veiculos/tenant |
-| Eliminacao de dados | Parcial | Delete tecnico existe em varios modulos; sem fluxo formal de solicitacao LGPD |
+| Eliminacao de dados | Parcial | Fluxo LGPD controlado implementado para CUSTOMER e USER, com anonimização quando houver dependencias; sem rotina global para todos os domínios |
 | Portabilidade do titular | Parcial | Exportacao tecnica implementada para CUSTOMER e USER |
 | Anonimizacao/pseudonimizacao | Nao implementado | Nao ha rotina tecnica dedicada |
 | Retencao e descarte por prazo | Nao implementado | Nao ha politica versionada nem jobs de descarte |
@@ -146,6 +147,8 @@ Legenda:
 - PATCH /compliance/lgpd/requests/:id/status
 - GET /compliance/lgpd/export/customer/:customerId
 - GET /compliance/lgpd/export/user/:userId
+- POST /compliance/lgpd/erase/customer/:customerId
+- POST /compliance/lgpd/erase/user/:userId
 
 Observacao: os endpoints sao protegidos por JWT + role (MASTER/ADMIN) e operam sempre no tenant autenticado.
 

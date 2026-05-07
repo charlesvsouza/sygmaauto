@@ -6,6 +6,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser, Tenant } from '../common/decorators/tenant.decorator';
 import { ComplianceService } from './compliance.service';
 import { CreateLgpdRequestDto } from './dto/create-lgpd-request.dto';
+import { ExecuteLgpdErasureDto } from './dto/execute-lgpd-erasure.dto';
 import { UpdateLgpdRequestStatusDto } from './dto/update-lgpd-request-status.dto';
 
 @ApiTags('Compliance')
@@ -67,5 +68,27 @@ export class ComplianceController {
     @Param('userId') userId: string,
   ) {
     return this.complianceService.exportUserData(tenant.tenantId, user.userId, userId);
+  }
+
+  @Post('erase/customer/:customerId')
+  @ApiOperation({ summary: 'Executar eliminacao LGPD controlada de cliente' })
+  eraseCustomer(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('customerId') customerId: string,
+    @Body() dto: ExecuteLgpdErasureDto,
+  ) {
+    return this.complianceService.eraseCustomerData(tenant.tenantId, user.userId, customerId, dto.reason);
+  }
+
+  @Post('erase/user/:userId')
+  @ApiOperation({ summary: 'Executar eliminacao LGPD controlada de usuario' })
+  eraseUser(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('userId') userId: string,
+    @Body() dto: ExecuteLgpdErasureDto,
+  ) {
+    return this.complianceService.eraseUserData(tenant.tenantId, user.userId, userId, dto.reason);
   }
 }

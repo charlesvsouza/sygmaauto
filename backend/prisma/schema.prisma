@@ -155,6 +155,7 @@ model User {
   role         UserRole @default(PRODUTIVO)
   invitedBy    String?  // Email de quem convidou (auditoria)
   isActive     Boolean  @default(true)
+  lgpdErasedAt DateTime?
   workshopArea WorkshopArea?
   jobFunction  JobFunction?
   lastLoginAt   DateTime?
@@ -188,6 +189,7 @@ model Customer {
   cidade    String?
   estado    String?
   notes     String?
+  lgpdErasedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
