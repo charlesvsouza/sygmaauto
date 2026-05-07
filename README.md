@@ -128,6 +128,12 @@ Push para master dispara o pipeline de CI/CD automaticamente.
 
 \\\
 sygmaauto/
+
+## Compliance e Segurança
+
+- Status técnico de LGPD e segurança (somente controles realmente implementados): [LGPD_COMPLIANCE_E_SEGURANCA.md](LGPD_COMPLIANCE_E_SEGURANCA.md)
+
+---
 ├── backend/          # NestJS API
 │   ├── src/          # Código-fonte (módulos por domínio)
 │   └── prisma/       # Schema e migrations

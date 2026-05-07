@@ -677,7 +677,7 @@ Após registrar o pagamento, altere o status da OS para **"Entregue"** para conc
 O downgrade fica disponível automaticamente após o vencimento do plano atual. Para cancelamento, entre em contato com **suporte@sigmaauto.com.br**.
 
 **Meus dados estão seguros?**  
-Sim. Todos os dados são armazenados em banco de dados isolado por empresa (multi-tenant), com conexões criptografadas e backups automáticos.
+O sistema possui controles técnicos de segurança como autenticação, perfis de acesso e isolamento por tenant. Para transparência completa sobre o que está implementado hoje e o que ainda está em evolução para LGPD, consulte o documento **LGPD_COMPLIANCE_E_SEGURANCA.md** no repositório do projeto.
 
 **O WhatsApp não está enviando mensagens. O que fazer?**  
 Acesse **WhatsApp** no menu lateral e verifique se o status está como **"Conectado"**. Se aparecer desconectado, clique em **"Conectar WhatsApp"**, gere um novo QR Code e leia com o celular.
