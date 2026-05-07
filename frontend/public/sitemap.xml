@@ -65,12 +65,20 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Central de Compliance, LGPD e Privacidade -->
+  <url>
+    <loc>https://sigmaauto.com.br/compliance</loc>
+    <lastmod>2026-05-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Política de privacidade -->
   <url>
     <loc>https://sigmaauto.com.br/privacidade</loc>
-    <lastmod>2026-05-01</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <lastmod>2026-05-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 
   <!-- Login -->
