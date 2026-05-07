@@ -80,6 +80,7 @@ export function SettingsPage() {
 
   const isMaster = user?.role === 'MASTER';
   const canManageUsers = user?.role === 'MASTER' || user?.role === 'ADMIN';
+  const isTradeNameMissing = !tenantData.name.trim();
 
   const ROLE_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
     MASTER:     { label: 'Master',     color: 'bg-slate-900 text-white',          desc: 'Proprietário — acesso total' },
@@ -345,8 +346,19 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.name}
                     onChange={(e) => setTenantData({ ...tenantData, name: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className={cn(
+                      'w-full rounded-lg border px-3 py-2 text-sm transition-all',
+                      isTradeNameMissing
+                        ? 'border-amber-300 bg-amber-50/40 focus:ring-2 focus:ring-amber-500'
+                        : 'border-slate-300 focus:ring-2 focus:ring-indigo-500',
+                    )}
                   />
+                  {isTradeNameMissing && (
+                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-700">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      Preencha o Nome Fantasia para exibir corretamente em orçamentos, O.S. e relatórios.
+                    </p>
+                  )}
                 </div>
 
                 <div className="col-span-2">

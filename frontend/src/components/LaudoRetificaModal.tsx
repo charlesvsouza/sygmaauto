@@ -147,6 +147,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
     : '';
 
   const total = Number(os.totalCost ?? 0);
+  const workshopDisplayName = fmt(tenant?.tradeName || tenant?.name || tenant?.legalName, 'Oficina');
 
   return `
 <div class="laudo">
@@ -155,7 +156,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
   <table style="margin-bottom:8px;">
     <tr>
       <td style="border:none; padding:0; width:60%;">
-        <div style="font-size:16pt; font-weight:900; color:#1e293b; line-height:1.1;">${fmt(tenant?.name, 'Oficina')}</div>
+        <div style="font-size:16pt; font-weight:900; color:#1e293b; line-height:1.1;">${workshopDisplayName}</div>
         <div style="font-size:8pt; color:#555; margin-top:2px;">
           ${tenant?.phone ? `Tel: ${tenant.phone}` : ''}
           ${tenant?.email ? ` · ${tenant.email}` : ''}
@@ -343,7 +344,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
 
   <hr style="margin-top:16pt;"/>
   <p style="font-size:7pt; color:#999; text-align:center;">
-    Documento emitido por ${fmt(tenant?.name)} · SygmaAuto · ${new Date().toLocaleString('pt-BR')}
+    Documento emitido por ${workshopDisplayName} · SygmaAuto · ${new Date().toLocaleString('pt-BR')}
   </p>
 </div>
   `;
