@@ -95,6 +95,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       CREATE TABLE IF NOT EXISTS lgpd_requests (
         id                TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "tenantId"        TEXT NOT NULL,
+        protocol          TEXT,
         "requestType"     TEXT NOT NULL,
         "subjectType"     TEXT NOT NULL,
         "subjectId"       TEXT NOT NULL,
@@ -102,11 +103,30 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         "requesterEmail"  TEXT NOT NULL,
         notes             TEXT,
         status            TEXT NOT NULL DEFAULT 'OPEN',
+        "dueAt"           TIMESTAMPTZ,
         "resolutionNotes" TEXT,
         "completedAt"     TIMESTAMPTZ,
         "createdAt"       TIMESTAMPTZ NOT NULL DEFAULT now(),
         "updatedAt"       TIMESTAMPTZ NOT NULL DEFAULT now()
       )
+    `);
+    await this.exec(`ALTER TABLE lgpd_requests ADD COLUMN IF NOT EXISTS protocol TEXT`);
+    await this.exec(`ALTER TABLE lgpd_requests ADD COLUMN IF NOT EXISTS "dueAt" TIMESTAMPTZ`);
+    await this.exec(`
+      UPDATE lgpd_requests
+      SET protocol = COALESCE(protocol, 'LGPD-' || to_char(COALESCE("createdAt", now()), 'YYYYMMDD') || '-' || substr(md5(id), 1, 6))
+      WHERE protocol IS NULL
+    `);
+    await this.exec(`
+      UPDATE lgpd_requests
+      SET "dueAt" = COALESCE("dueAt", COALESCE("createdAt", now()) + interval '15 days')
+      WHERE "dueAt" IS NULL
+    `);
+    await this.exec(`ALTER TABLE lgpd_requests ALTER COLUMN protocol SET NOT NULL`);
+    await this.exec(`ALTER TABLE lgpd_requests ALTER COLUMN "dueAt" SET NOT NULL`);
+    await this.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS lgpd_requests_tenant_protocol_unique
+      ON lgpd_requests ("tenantId", protocol)
     `);
     await this.exec(`
       CREATE INDEX IF NOT EXISTS lgpd_requests_tenant_created_at_idx
@@ -115,6 +135,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.exec(`
       CREATE INDEX IF NOT EXISTS lgpd_requests_tenant_status_idx
       ON lgpd_requests ("tenantId", status)
+    `);
+    await this.exec(`
+      CREATE INDEX IF NOT EXISTS lgpd_requests_tenant_due_at_idx
+      ON lgpd_requests ("tenantId", "dueAt")
     `);
     // NPS Responses
     await this.exec(`

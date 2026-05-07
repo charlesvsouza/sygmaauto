@@ -105,7 +105,8 @@ Evidencias:
 ### 4.6 Atendimento tecnico ao titular (LGPD)
 
 - Cadastro e acompanhamento de solicitacoes LGPD por tenant.
-- Exportacao estruturada de dados de cliente para atendimento de acesso/portabilidade.
+- Protocolo tecnico por solicitacao e prazo (SLA tecnico) para acompanhamento operacional.
+- Exportacao estruturada de dados de cliente e usuario para atendimento de acesso/portabilidade.
 - Registro de auditoria de criacao/atualizacao de solicitacao e exportacao.
 
 Evidencias:
@@ -130,7 +131,7 @@ Legenda:
 | Minimizacao de dados por endpoint | Parcial | Existem selects com campos filtrados em alguns servicos; sem politica global de minimizacao |
 | Correcao/atualizacao de dados | Implementado | CRUD de usuarios/clientes/veiculos/tenant |
 | Eliminacao de dados | Parcial | Delete tecnico existe em varios modulos; sem fluxo formal de solicitacao LGPD |
-| Portabilidade do titular | Parcial | Exportacao tecnica implementada para subjectType CUSTOMER |
+| Portabilidade do titular | Parcial | Exportacao tecnica implementada para CUSTOMER e USER |
 | Anonimizacao/pseudonimizacao | Nao implementado | Nao ha rotina tecnica dedicada |
 | Retencao e descarte por prazo | Nao implementado | Nao ha politica versionada nem jobs de descarte |
 | Gestao de incidentes e notificacao | Parcial | Existem praticas operacionais, sem plano formal versionado |
@@ -144,6 +145,7 @@ Legenda:
 - GET /compliance/lgpd/requests/:id
 - PATCH /compliance/lgpd/requests/:id/status
 - GET /compliance/lgpd/export/customer/:customerId
+- GET /compliance/lgpd/export/user/:userId
 
 Observacao: os endpoints sao protegidos por JWT + role (MASTER/ADMIN) e operam sempre no tenant autenticado.
 

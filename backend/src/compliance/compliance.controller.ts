@@ -58,4 +58,14 @@ export class ComplianceController {
   ) {
     return this.complianceService.exportCustomerData(tenant.tenantId, user.userId, customerId);
   }
+
+  @Get('export/user/:userId')
+  @ApiOperation({ summary: 'Exportar dados do usuario para atendimento LGPD' })
+  exportUser(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('userId') userId: string,
+  ) {
+    return this.complianceService.exportUserData(tenant.tenantId, user.userId, userId);
+  }
 }

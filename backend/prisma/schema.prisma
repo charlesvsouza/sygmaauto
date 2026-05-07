@@ -620,6 +620,7 @@ model WhatsappWebhookEvent {
 model LgpdRequest {
   id              String   @id @default(uuid())
   tenantId        String
+  protocol        String
   requestType     String
   subjectType     String
   subjectId       String
@@ -627,12 +628,15 @@ model LgpdRequest {
   requesterEmail  String
   notes           String?
   status          String   @default("OPEN")
+  dueAt           DateTime
   resolutionNotes String?
   completedAt     DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  @@unique([tenantId, protocol])
   @@index([tenantId, createdAt])
   @@index([tenantId, status])
+  @@index([tenantId, dueAt])
   @@map("lgpd_requests")
 }

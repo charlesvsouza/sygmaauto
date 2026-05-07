@@ -7,10 +7,29 @@ import { UpdateLgpdRequestStatusDto } from './dto/update-lgpd-request-status.dto
 export class ComplianceService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private buildProtocol(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const rnd = Math.random().toString(36).slice(2, 8).toUpperCase();
+    return `LGPD-${y}${m}${d}-${rnd}`;
+  }
+
+  private buildDueAt(): Date {
+    const due = new Date();
+    due.setDate(due.getDate() + 15);
+    return due;
+  }
+
   async createLgpdRequest(tenantId: string, actorUserId: string, dto: CreateLgpdRequestDto) {
+    const protocol = this.buildProtocol();
+    const dueAt = this.buildDueAt();
+
     const request = await this.prisma.lgpdRequest.create({
       data: {
         tenantId,
+        protocol,
         requestType: dto.requestType,
         subjectType: dto.subjectType,
         subjectId: dto.subjectId,
@@ -18,6 +37,7 @@ export class ComplianceService {
         requesterEmail: dto.requesterEmail.toLowerCase().trim(),
         notes: dto.notes,
         status: 'OPEN',
+        dueAt,
       },
     });
 
@@ -32,7 +52,9 @@ export class ComplianceService {
           requestType: request.requestType,
           subjectType: request.subjectType,
           subjectId: request.subjectId,
+          protocol: request.protocol,
           status: request.status,
+          dueAt: request.dueAt,
         }),
       },
     });
@@ -79,6 +101,7 @@ export class ComplianceService {
         action: 'UPDATE_STATUS',
         changes: JSON.stringify({
           status: updated.status,
+          dueAt: updated.dueAt,
           completedAt: updated.completedAt,
         }),
       },
@@ -150,6 +173,54 @@ export class ComplianceService {
         changes: JSON.stringify({
           vehicleCount: customer.vehicles.length,
           serviceOrderCount: customer.serviceOrders.length,
+          exportedAt: payload.exportedAt,
+        }),
+      },
+    });
+
+    return payload;
+  }
+
+  async exportUserData(tenantId: string, actorUserId: string, userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, tenantId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        recoveryEmail: true,
+        role: true,
+        workshopArea: true,
+        jobFunction: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        lastLoginAt: true,
+        passwordUpdatedAt: true,
+      },
+    });
+
+    if (!user) throw new NotFoundException('Usuario nao encontrado para exportacao LGPD');
+
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      tenantId,
+      subject: {
+        type: 'USER',
+        ...user,
+      },
+    };
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'LGPD_EXPORT',
+        changes: JSON.stringify({
+          role: user.role,
+          isActive: user.isActive,
           exportedAt: payload.exportedAt,
         }),
       },
