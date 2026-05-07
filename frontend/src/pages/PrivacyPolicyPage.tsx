@@ -53,6 +53,10 @@ export function PrivacyPolicyPage() {
             <p className="mt-4">
               Ao criar uma conta ou utilizar nossos serviços, você concorda com os termos desta política. Recomendamos que a leia com atenção.
             </p>
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 leading-relaxed">
+              <p className="font-bold text-white text-sm">Nota de transparência</p>
+              <p className="mt-2">Esta política é uma base operacional ainda em revisão jurídica. Recomendamos também consultar nossa <a href="/compliance" className="text-[#ff7b2f] hover:underline">Central de Privacidade, LGPD e Compliance</a> para informações sobre o status real dos controles implementados e governança documental.</p>
+            </div>
           </section>
 
           <hr className="border-white/8" />

@@ -10,6 +10,7 @@ import {
   Newspaper,
   Package,
   Phone,
+  Shield,
   Trophy,
   Users,
   Wrench,
@@ -181,6 +182,13 @@ export const quickLinks = [
     title: 'Manual, FAQ e canais de ajuda',
     description: 'Central pública com documentação, perguntas frequentes e acesso ao manual.',
     icon: BookOpen,
+  },
+  {
+    to: '/compliance',
+    eyebrow: 'Conformidade',
+    title: 'Privacidade, LGPD e Compliance',
+    description: 'Central provisória com status real de controles de privacidade, governança documental e segurança.',
+    icon: Shield,
   },
 ];
 
