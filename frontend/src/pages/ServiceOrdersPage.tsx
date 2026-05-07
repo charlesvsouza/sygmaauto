@@ -664,6 +664,7 @@ export function ServiceOrdersPage() {
       tr:nth-child(even) td { background: #f8fafc; }
       .total-row td { font-weight: 900; border-top: 2px solid #1e293b; border-bottom: none; }
       .sig { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 4px; font-size: 8pt; color: #555; text-align: center; }
+      .doc-footer { margin-top: 10px; padding-top: 8px; border-top: 1px solid #dbe3ea; font-size: 7.5pt; color: #64748b; text-align: center; }
       .preview-label { font-size: 7pt; color: #94a3b8; margin-top: 2px; }
       @media print { body { padding: 8px; } }
     </style></head><body>
@@ -708,6 +709,7 @@ export function ServiceOrdersPage() {
         </tr></tfoot>
       </table>
       <div class="sig">Assinatura / Aprovacao: _________________________________  &nbsp;&nbsp;&nbsp; Data: ___________</div>
+      <div class="doc-footer">Documento Pedido de Compra #${result.purchaseOrderNumber || '-'} gerado em ${new Date().toLocaleString('pt-BR')} via SigmaAuto ERP para oficinas.</div>
       <div class="preview-label" style="text-align:center;margin-top:8px">Gerado em ${now} - SigmaAuto</div>
     </body></html>`;
   };
@@ -716,14 +718,15 @@ export function ServiceOrdersPage() {
     if (!reserveResult) return;
     try {
       const html = buildPurchaseOrderHtml({ ...reserveResult, expectedPartsDate: expectedPartsDate || null });
+      const documentFileName = `${reserveResult.purchaseOrderNumber || 'pedido-compra'}.pdf`;
       const response = await pdfApi.render({
         html,
-        fileName: `pedido-compra-${reserveResult.purchaseOrderNumber || 'os'}.pdf`,
+        fileName: documentFileName,
       });
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.download = `pedido-compra-${reserveResult.purchaseOrderNumber || 'os'}.pdf`;
+      link.download = documentFileName;
       document.body.appendChild(link);
       link.click();
       link.remove();

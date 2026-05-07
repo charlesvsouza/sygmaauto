@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordem de Serviço</title>
+    <title>{{documentTitle}}</title>
     <style>
         * {
             margin: 0;
@@ -221,6 +221,15 @@
             margin-top: 5px;
             font-weight: bold;
         }
+
+        .document-footer {
+            margin-top: 24px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
         
         /* ===== IMPRESSÃO ===== */
         @media print {
@@ -249,7 +258,7 @@
         </div>
         
         <!-- TÍTULO -->
-        <div class="title">ORDEM DE SERVIÇO</div>
+        <div class="title">{{documentTitle}}</div>
         
         <!-- DADOS CLIENTE E OS -->
         <div class="section-2col">
@@ -384,6 +393,10 @@
             <div class="signature-block">
                 <span>Assinatura do Cliente</span>
             </div>
+        </div>
+
+        <div class="document-footer">
+            Documento {{documentTypeLine}} gerado em {{generatedAt}} via SigmaAuto ERP para oficinas.
         </div>
     </div>
 </body>

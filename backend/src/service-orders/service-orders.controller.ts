@@ -255,13 +255,13 @@ export class ServiceOrdersController {
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const pdf = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="OS-${id.slice(0, 8)}.pdf"`,
-      'Content-Length': pdf.length,
+      'Content-Disposition': `attachment; filename="${generated.fileName}"`,
+      'Content-Length': generated.buffer.length,
     });
-    res.end(pdf);
+    res.end(generated.buffer);
   }
 
   @Get(':id/pdf/puppeteer')
@@ -271,12 +271,13 @@ export class ServiceOrdersController {
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const pdf = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    const fileName = generated.fileName.replace(/\.pdf$/i, '-puppeteer.pdf');
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="OS-${id.slice(0, 8)}-puppeteer.pdf"`,
-      'Content-Length': pdf.length,
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Content-Length': generated.buffer.length,
     });
-    res.end(pdf);
+    res.end(generated.buffer);
   }
 }

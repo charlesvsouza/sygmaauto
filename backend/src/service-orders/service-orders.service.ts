@@ -7,6 +7,11 @@ import { CommissionsService } from '../commissions/commissions.service';
 import { PdfService } from './pdf.service';
 import * as path from 'path';
 
+type GeneratedOrderPdf = {
+  buffer: Buffer;
+  fileName: string;
+};
+
 @Injectable()
 export class ServiceOrdersService {
   constructor(
@@ -1253,7 +1258,15 @@ export class ServiceOrdersService {
     return new Intl.DateTimeFormat('pt-BR').format(date);
   }
 
-  async generateOsPdf(tenantId: string, osId: string): Promise<Buffer> {
+  private getDocumentTitle(orderType?: string | null): string {
+    if (orderType === 'ORCAMENTO') {
+      return 'ORÇAMENTO';
+    }
+
+    return 'ORDEM DE SERVIÇO';
+  }
+
+  async generateOsPdf(tenantId: string, osId: string): Promise<GeneratedOrderPdf> {
     // Buscar OS com todos os dados
     const order = await this.prisma.serviceOrder.findFirst({
       where: { id: osId, tenantId },
@@ -1316,6 +1329,12 @@ export class ServiceOrdersService {
     );
     const subtotal = order.totalParts + order.totalServices + order.totalLabor;
     const total = subtotal - order.totalDiscount;
+    const documentNumber = order.id.slice(0, 8).toUpperCase();
+    const documentTitle = this.getDocumentTitle(order.orderType);
+    const generatedAt = new Intl.DateTimeFormat('pt-BR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date());
 
     const templateData = {
       companyName: order.tenant.tradeName || order.tenant.legalName || 'SygmaAuto',
@@ -1329,7 +1348,10 @@ export class ServiceOrdersService {
       customerPhone: order.customer.phone || 'Não informado',
       customerAddress: order.customer.address || 'Não informado',
       
-      osNumber: order.id.slice(0, 8).toUpperCase(),
+      documentTitle,
+      documentTypeLine: `${documentTitle} #${documentNumber}`,
+      generatedAt,
+      osNumber: documentNumber,
       osDate: this.formatDate(order.createdAt),
       osStatus: order.status,
       
@@ -1359,6 +1381,11 @@ export class ServiceOrdersService {
       'templates',
       'os-template.html',
     );
-    return this.pdf.generatePdfFromTemplate(templatePath, templateData);
+    const buffer = await this.pdf.generatePdfFromTemplate(templatePath, templateData);
+
+    return {
+      buffer,
+      fileName: `${documentNumber}.pdf`,
+    };
   }
 }
