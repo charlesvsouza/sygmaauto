@@ -47,7 +47,7 @@ Branch: master
 - Adicionado servico `evolution-api-r2` com imagem `atendai/evolution-api:v2.1.1`.
 - Regiao alterada para `us-east4` (Virginia, EUA) via GraphQL API do Railway.
 - Configuradas variaveis de ambiente:
-  - `AUTHENTICATION_API_KEY=SygmaEvolution@2026!`
+  - `AUTHENTICATION_API_KEY=<configure_no_railway>`
   - `DATABASE_CONNECTION_URI` (PostgreSQL compartilhado)
   - `DATABASE_PROVIDER=postgresql`
   - `SERVER_URL=https://evolution-api-r2-production.up.railway.app`
@@ -72,7 +72,7 @@ Branch: master
 
 ### Variaveis Chave do Backend
 - `EVOLUTION_API_URL=https://evolution-api-r2-production.up.railway.app`
-- `EVOLUTION_API_KEY=SygmaEvolution@2026!`
+- `EVOLUTION_API_KEY=<configure_no_railway>`
 - `EVOLUTION_INSTANCE=sygmaauto`
 - `BACKEND_PUBLIC_URL=https://sygmaauto-api-production.up.railway.app`
 

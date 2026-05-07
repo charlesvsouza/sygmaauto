@@ -299,8 +299,8 @@ async createCheckout(@Tenant() tenant: { tenantId: string }, @Body() dto: Create
 **Railway env vars (já configuradas):**
 ```
 FRONTEND_URL=https://sigmaauto.com.br
-MP_ACCESS_TOKEN=APP_USR-6584337207491033-050117-e92ba9698b01a8e9c33cabfdfd39ffe3-89752632
-MP_WEBHOOK_SECRET=22ff8335bb7acc99fd7955cdbcca730454d2aaf4367149d24c833276b1897280
+MP_ACCESS_TOKEN=<configure_no_railway>
+MP_WEBHOOK_SECRET=<configure_no_railway>
 MP_MODE=production
 BACKEND_PUBLIC_URL=https://sygmaauto-api-production.up.railway.app
 CHECKOUT_SUCCESS_URL=https://sigmaauto.com.br/settings?checkout=success

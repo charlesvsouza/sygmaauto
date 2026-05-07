@@ -79,7 +79,7 @@ Branch: master
 
 ```env
 EVOLUTION_API_URL=https://evolution-api-r2-production.up.railway.app
-EVOLUTION_API_KEY=SygmaEvolution@2026!
+EVOLUTION_API_KEY=<configure_no_railway>
 EVOLUTION_INSTANCE=sygmaauto
 BACKEND_PUBLIC_URL=https://sygmaauto-api-production.up.railway.app
 ```

@@ -25,6 +25,11 @@ O backend (Sygma Auto) está 100% funcional e resiliente. O problema persistente
 - **Incompatibilidade de Versão**: A imagem da Evolution API pode estar usando uma versão do Baileys desatualizada em relação ao protocolo atual do WhatsApp.
 - **Bloqueio de IP (Rate Limit)**: O WhatsApp bloqueou temporariamente o IP do servidor Railway devido a múltiplas tentativas de conexão/reconexão.
 
+### 4. Risco operacional confirmado
+- Em testes recentes, houve bloqueio temporário de 24h no WhatsApp.
+- Isso caracteriza risco de continuidade para operação de clientes finais quando o canal depende de engenharia reversa/sessão não oficial.
+- Recomendação: evitar novas janelas agressivas de reconexão/QR em produção até concluir plano de migração.
+
 ---
 
 ## Plano de Ação para Resolução Definitiva
@@ -73,3 +78,26 @@ Frontend exibe QR Code
 | `EVOLUTION_API_URL` | `https://...` | OK |
 | `EVOLUTION_API_KEY` | `...` | OK |
 | `BACKEND_PUBLIC_URL` | `https://sygmaauto-api-production.up.railway.app` | OK |
+
+---
+
+## Diretriz recomendada: migração para provedor credenciado
+
+Para reduzir risco de banimento e melhorar previsibilidade para o usuário final, a recomendação é migrar para API oficial/fornecedor credenciado (BSP) em vez de sessão Web pareada por QR.
+
+### Opções viáveis
+- WhatsApp Cloud API (Meta, oficial)
+- BSPs credenciados com suporte no Brasil (ex.: Zenvia, Infobip, Twilio, Gupshup, 360dialog)
+
+### Plano técnico sugerido
+1. Criar camada de abstração de provider no backend (`whatsapp.provider.ts`) para desacoplar envio/status/webhook.
+2. Implementar adapter oficial (`MetaCloudProvider`) com validação de assinatura de webhook e idempotência.
+3. Manter Evolution como fallback temporário somente em ambiente controlado de transição.
+4. Definir feature flag por tenant para migração gradual sem interrupção.
+5. Congelar novas tentativas de reconexão massiva por QR em produção.
+
+### Critérios de aceite da migração
+- Zero dependência de sessão Web por QR para clientes em produção.
+- Entrega de mensagens por API oficial com telemetria de status (`sent`, `delivered`, `read`, `failed`).
+- Política de retry com backoff e circuit breaker.
+- Documentação de onboarding do canal para suporte e operação.
