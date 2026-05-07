@@ -670,7 +670,7 @@ export function ServiceOrdersPage() {
     </style></head><body>
       <div class="header-row">
         <div>
-          <div class="company-name">${t.tradeName || t.name || t.legalName || ''}</div>
+          <div class="company-name">${t.legalName || t.tradeName || t.name || ''}</div>
           ${t.document ? `<div>${t.document}</div>` : ''}
           ${t.address ? `<div>${t.address}</div>` : ''}
           <div>${[t.phone ? 'Tel: ' + t.phone : '', t.email].filter(Boolean).join(' - ')}</div>
@@ -898,7 +898,7 @@ export function ServiceOrdersPage() {
                 <tr>
                   <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '62%' }}>
                     <div style={{ fontSize: '15pt', fontWeight: 900, lineHeight: 1.1 }}>
-                      {tenantFullData?.tradeName || tenantFullData?.name || tenantFullData?.legalName || ''}
+                      {tenantFullData?.legalName || tenantFullData?.tradeName || tenantFullData?.name || ''}
                     </div>
                     {(tenantFullData?.taxId || tenantFullData?.document) && (
                       <div style={{ fontSize: '8.5pt', marginTop: '2px' }}>
