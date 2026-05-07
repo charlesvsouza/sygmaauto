@@ -89,6 +89,7 @@ export class NpsService {
       `Olá, *${order.customer.name}*! O serviço do *${vehicle}* foi concluído.\n\n` +
       `Gostaríamos muito de saber sua opinião — levará menos de 1 minuto:\n${link}\n\n` +
       `Sua avaliação nos ajuda a melhorar cada dia! 🙏`,
+      order.tenantId,
     );
   }
 

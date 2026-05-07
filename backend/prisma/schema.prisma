@@ -54,6 +54,8 @@ model Tenant {
   tradeName   String?
   stateRegistration String?
   municipalRegistration String?
+  whatsappMetaPhoneNumberId String?
+  whatsappDisplayNumber String?
   address   String?
 
   phone     String?

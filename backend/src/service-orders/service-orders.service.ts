@@ -546,6 +546,7 @@ export class ServiceOrdersService {
       const phone: string = c?.phone ?? '';
       if (phone) {
         const payload = {
+          tenantId,
           customerName: c.name ?? '',
           customerPhone: phone,
           orderNumber: (updated as any).orderNumber ?? updated.id.slice(0, 8),

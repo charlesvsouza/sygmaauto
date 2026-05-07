@@ -106,6 +106,7 @@ export class MaintenanceSchedulerService {
           `Olá, *${vehicle.customer.name}*! É hora de agendar a manutenção preventiva do seu veículo.\n\n` +
           `📋 *Motivo:* ${reason}\n\n` +
           `Entre em contato com a nossa oficina para agendar. Cuidar preventivamente evita problemas maiores! 🚗✅`,
+          vehicle.tenantId,
         );
 
         await this.prisma.vehicle.update({

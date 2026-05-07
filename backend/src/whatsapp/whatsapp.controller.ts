@@ -4,6 +4,7 @@ import { WhatsappAdminService } from '../notifications/whatsapp-admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
+import { Tenant } from '../common/decorators/tenant.decorator';
 
 @ApiTags('WhatsApp')
 @Controller('whatsapp')
@@ -15,7 +16,7 @@ export class WhatsappController {
 
   @Get('status')
   @ApiOperation({ summary: 'Status da conexão WhatsApp' })
-  async status() {
-    return this.whatsappAdmin.getStatus();
+  async status(@Tenant() tenant: { tenantId: string }) {
+    return this.whatsappAdmin.getStatus(tenant.tenantId);
   }
 }

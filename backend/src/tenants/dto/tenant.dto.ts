@@ -69,6 +69,16 @@ export class UpdateTenantDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
+  whatsappMetaPhoneNumberId?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  whatsappDisplayNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsNumber()
   diagnosticHours?: number;
 

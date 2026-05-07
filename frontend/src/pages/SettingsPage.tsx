@@ -34,6 +34,8 @@ type TenantForm = {
   name: string;
   legalName: string;
   tradeName: string;
+  whatsappMetaPhoneNumberId: string;
+  whatsappDisplayNumber: string;
   stateRegistration: string;
   municipalRegistration: string;
   phone: string;
@@ -62,6 +64,8 @@ export function SettingsPage() {
     name: '',
     legalName: '',
     tradeName: '',
+    whatsappMetaPhoneNumberId: '',
+    whatsappDisplayNumber: '',
     stateRegistration: '',
     municipalRegistration: '',
     phone: '',
@@ -117,6 +121,8 @@ export function SettingsPage() {
           name: t.name || '',
           legalName: t.legalName || '',
           tradeName: t.tradeName || '',
+          whatsappMetaPhoneNumberId: t.whatsappMetaPhoneNumberId || '',
+          whatsappDisplayNumber: t.whatsappDisplayNumber || '',
           stateRegistration: t.stateRegistration || '',
           municipalRegistration: t.municipalRegistration || '',
           phone: t.phone || '',
@@ -367,6 +373,28 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.legalName}
                     onChange={(e) => setTenantData({ ...tenantData, legalName: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Phone Number ID (Meta)</label>
+                  <input
+                    type="text"
+                    value={tenantData.whatsappMetaPhoneNumberId}
+                    onChange={(e) => setTenantData({ ...tenantData, whatsappMetaPhoneNumberId: e.target.value })}
+                    placeholder="Ex: 123456789012345"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Número exibido no WhatsApp</label>
+                  <input
+                    type="text"
+                    value={tenantData.whatsappDisplayNumber}
+                    onChange={(e) => setTenantData({ ...tenantData, whatsappDisplayNumber: e.target.value })}
+                    placeholder="Ex: +55 21 99999-9999"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>

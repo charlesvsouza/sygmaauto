@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { WhatsappProvider } from './whatsapp-provider.interface';
+import { WhatsappProvider, WhatsappSendOptions } from './whatsapp-provider.interface';
 
 @Injectable()
 export class MetaCloudWhatsappProvider implements WhatsappProvider {
@@ -26,17 +26,18 @@ export class MetaCloudWhatsappProvider implements WhatsappProvider {
     return !!(this.token && this.phoneNumberId);
   }
 
-  async sendText(to: string, message: string): Promise<void> {
+  async sendText(to: string, message: string, options?: WhatsappSendOptions): Promise<void> {
     const number = this.normalizePhone(to);
+    const phoneNumberId = options?.phoneNumberId || this.phoneNumberId;
 
-    if (!this.isConfigured()) {
+    if (!this.token || !phoneNumberId) {
       this.logger.warn(`Provider Meta Cloud nao configurado; envio para ${number} descartado`);
       return;
     }
 
     try {
       await axios.post(
-        `https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`,
+        `https://graph.facebook.com/${this.apiVersion}/${phoneNumberId}/messages`,
         {
           messaging_product: 'whatsapp',
           to: number,
