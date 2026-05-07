@@ -5,9 +5,9 @@ Escopo: sistema SigmaAuto (backend NestJS/Prisma + frontend React)
 
 ## 1) Objetivo deste documento
 
-Este documento descreve apenas controles tecnicos e operacionais que estao implementados no codigo e na configuracao documentada do projeto.
+Este documento descreve controles tecnicos implementados no codigo e o estado atual da governanca documental de LGPD no repositorio.
 
-Nao descreve controles juridicos ainda nao formalizados em documento oficial (ex.: politica de privacidade publicada, termo de uso detalhado, processo formal de atendimento ao titular).
+Os documentos de governanca criados nesta fase ainda recomendam revisao juridica antes de publicacao externa definitiva, mas ja passam a formalizar diretrizes minimas de privacidade, atendimento ao titular, retencao/descarte e resposta a incidentes.
 
 ## 2) Dados pessoais tratados no sistema
 
@@ -116,6 +116,22 @@ Evidencias:
 - backend/src/compliance/compliance.service.ts
 - backend/prisma/schema.prisma (LgpdRequest)
 
+### 4.7 Governanca documental
+
+- Politica de privacidade e tratamento de dados documentada.
+- Politica de retencao e descarte documentada.
+- Procedimento de atendimento ao titular documentado.
+- Plano operacional de resposta a incidentes documentado.
+- Registro consolidado de governanca LGPD documentado.
+
+Evidencias:
+
+- POLITICA_PRIVACIDADE_E_TRATAMENTO_DADOS.md
+- POLITICA_RETENCAO_E_DESCARTE_DADOS.md
+- PROCEDIMENTO_ATENDIMENTO_TITULAR_LGPD.md
+- PLANO_RESPOSTA_INCIDENTES_DADOS.md
+- REGISTRO_GOVERNANCA_LGPD.md
+
 ## 5) Matriz LGPD (status atual)
 
 Legenda:
@@ -134,10 +150,23 @@ Legenda:
 | Eliminacao de dados | Parcial | Fluxo LGPD controlado implementado para CUSTOMER e USER, com anonimização quando houver dependencias; sem rotina global para todos os domínios |
 | Portabilidade do titular | Parcial | Exportacao tecnica implementada para CUSTOMER e USER |
 | Anonimizacao/pseudonimizacao | Nao implementado | Nao ha rotina tecnica dedicada |
-| Retencao e descarte por prazo | Nao implementado | Nao ha politica versionada nem jobs de descarte |
-| Gestao de incidentes e notificacao | Parcial | Existem praticas operacionais, sem plano formal versionado |
-| Base legal e transparencia ao titular | Nao implementado (documental) | Falta politica de privacidade/termos publicados e versionados |
-| Encarregado/DPO e canal do titular | Nao implementado (formal) | Nao ha secao formal no produto/repositorio |
+| Retencao e descarte por prazo | Parcial | Politica documental criada; jobs automatizados de descarte ainda nao implementados |
+| Gestao de incidentes e notificacao | Parcial | Plano operacional documental criado; modulo dedicado e automacoes ainda nao existem |
+| Base legal e transparencia ao titular | Parcial (documental) | Politica de privacidade e base operacional de termos criadas; publicacao externa e revisao juridica pendentes |
+| Encarregado/DPO e canal do titular | Parcial (documental) | Canal operacional provisório documentado via suporte@sigmaauto.com.br; encarregado formal ainda pendente |
+
+## 5.2 Maturidade consolidada (estimativa operacional)
+
+- Base tecnica de seguranca: alta para o estagio atual do projeto.
+- Atendimento tecnico ao titular: parcial, com fluxo backend implementado.
+- Governanca documental: nivel intermediario, com conjunto minimo documental agora formalizado no repositorio.
+
+Estimativa executiva atual:
+
+- aderencia tecnica-operacional geral de LGPD: aproximadamente 55% a 60%;
+- governanca documental: aproximadamente 50%.
+
+Esses percentuais sao estimativas internas de maturidade e nao substituem avaliacao juridica formal.
 
 ## 5.1 Endpoints tecnicos de atendimento LGPD (backend)
 
@@ -163,9 +192,9 @@ Prioridade alta:
 
 Prioridade media:
 
-- Criar exportacao estruturada de dados por titular/tenant.
+- Publicar externamente os documentos documentais apos revisao juridica.
 - Implementar rotina de anonimização para dados que nao exigem identificacao apos prazo.
-- Formalizar plano de resposta a incidente e fluxo de comunicacao.
+- Formalizar matriz de responsabilidades e encarregado/DPO.
 
 ## 7) Variaveis de seguranca relacionadas
 

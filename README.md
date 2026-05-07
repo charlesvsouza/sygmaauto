@@ -128,12 +128,6 @@ Push para master dispara o pipeline de CI/CD automaticamente.
 
 \\\
 sygmaauto/
-
-## Compliance e Segurança
-
-- Status técnico de LGPD e segurança (somente controles realmente implementados): [LGPD_COMPLIANCE_E_SEGURANCA.md](LGPD_COMPLIANCE_E_SEGURANCA.md)
-
----
 ├── backend/          # NestJS API
 │   ├── src/          # Código-fonte (módulos por domínio)
 │   └── prisma/       # Schema e migrations
@@ -148,6 +142,17 @@ sygmaauto/
 │   └── workflows/    # CI/CD GitHub Actions
 └── docker-compose.yml
 \\\
+
+---
+
+## Compliance e Segurança
+
+- Status técnico de LGPD e segurança: [LGPD_COMPLIANCE_E_SEGURANCA.md](LGPD_COMPLIANCE_E_SEGURANCA.md)
+- Política de privacidade e tratamento de dados: [POLITICA_PRIVACIDADE_E_TRATAMENTO_DADOS.md](POLITICA_PRIVACIDADE_E_TRATAMENTO_DADOS.md)
+- Política de retenção e descarte: [POLITICA_RETENCAO_E_DESCARTE_DADOS.md](POLITICA_RETENCAO_E_DESCARTE_DADOS.md)
+- Procedimento de atendimento ao titular: [PROCEDIMENTO_ATENDIMENTO_TITULAR_LGPD.md](PROCEDIMENTO_ATENDIMENTO_TITULAR_LGPD.md)
+- Plano de resposta a incidentes: [PLANO_RESPOSTA_INCIDENTES_DADOS.md](PLANO_RESPOSTA_INCIDENTES_DADOS.md)
+- Registro de governança LGPD: [REGISTRO_GOVERNANCA_LGPD.md](REGISTRO_GOVERNANCA_LGPD.md)
 
 ---
 
