@@ -37,15 +37,12 @@
 
 | Variavel | Obrigatoria | Observacao |
 |---|---|---|
-| `WHATSAPP_PROVIDER` | Sim | `EVOLUTION` (legado) ou `META_CLOUD` (oficial). |
-| `EVOLUTION_API_URL` | Sim | Endpoint da Evolution API. |
-| `EVOLUTION_API_KEY` | Sim | Chave da Evolution API. |
-| `EVOLUTION_INSTANCE` | Sim | Nome da instancia WhatsApp. |
-| `META_WHATSAPP_TOKEN` | Condicional | Obrigatoria quando `WHATSAPP_PROVIDER=META_CLOUD`. |
-| `META_WHATSAPP_PHONE_NUMBER_ID` | Condicional | Obrigatoria quando `WHATSAPP_PROVIDER=META_CLOUD`. |
+| `WHATSAPP_PROVIDER` | Sim | Deve ser `META_CLOUD` (oficial). |
+| `META_WHATSAPP_TOKEN` | Sim | Token permanente da Meta Cloud API. |
+| `META_WHATSAPP_PHONE_NUMBER_ID` | Sim | Fallback global do backend e referencia padrao inicial. |
 | `META_WHATSAPP_API_VERSION` | Nao | Default: `v22.0`. |
-| `META_WHATSAPP_APP_SECRET` | Condicional | Obrigatoria para validar assinatura `X-Hub-Signature-256` do webhook. |
-| `META_WHATSAPP_VERIFY_TOKEN` | Condicional | Obrigatoria para validacao inicial do webhook (`hub.challenge`). |
+| `META_WHATSAPP_APP_SECRET` | Sim | Obrigatoria para validar assinatura `X-Hub-Signature-256` do webhook. |
+| `META_WHATSAPP_VERIFY_TOKEN` | Sim | Obrigatoria para validacao inicial do webhook (`hub.challenge`). |
 | `MP_ACCESS_TOKEN` | Sim | Mercado Pago (producao). |
 | `MP_WEBHOOK_SECRET` | Sim | Assinatura de webhook Mercado Pago. |
 | `MP_MODE` | Sim | `production` |
@@ -71,8 +68,9 @@
 
 ## Nota de seguranca para WhatsApp
 
-- Para producao com clientes finais, priorizar `WHATSAPP_PROVIDER=META_CLOUD` (API oficial).
-- O modo `EVOLUTION` deve ser tratado como legado/transicao devido ao risco operacional de bloqueio temporario de conexao por QR.
+- Para producao com clientes finais, usar exclusivamente `WHATSAPP_PROVIDER=META_CLOUD` (API oficial).
+- A configuracao por oficina (tenant) do `Phone Number ID` e feita na aba de Configuracoes do sistema.
+- Tokens e segredos (`META_WHATSAPP_TOKEN`, `META_WHATSAPP_APP_SECRET`, `META_WHATSAPP_VERIFY_TOKEN`) devem permanecer apenas no backend (Railway Variables).
 
 ## Variaveis automaticas do Railway (nao editar)
 
@@ -88,7 +86,6 @@
 - `RAILWAY_STATIC_URL`
 - `RAILWAY_SERVICE_POSTGRES_URL`
 - `RAILWAY_SERVICE_SYGMAAUTO_API_URL`
-- `RAILWAY_SERVICE_EVOLUTION_API_211_URL`
 
 ## Checklist rapido para incidentes de healthcheck
 

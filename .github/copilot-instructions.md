@@ -61,8 +61,10 @@ O `PrismaService` em `backend/src/prisma/prisma.service.ts` injeta automaticamen
 |---|---|
 | `DATABASE_URL` | `postgresql://user:pass@host:port/db?sslmode=require` |
 | `JWT_SECRET` | Secret do token JWT |
-| `EVOLUTION_API_URL` | URL da Evolution API (WhatsApp) |
-| `EVOLUTION_API_KEY` | Chave da Evolution API |
-| `EVOLUTION_INSTANCE` | Nome da instância WhatsApp (`sygmaauto`) |
+| `WHATSAPP_PROVIDER` | `META_CLOUD` |
+| `META_WHATSAPP_TOKEN` | Token permanente da Meta Cloud API |
+| `META_WHATSAPP_PHONE_NUMBER_ID` | Phone Number ID global (fallback) |
+| `META_WHATSAPP_VERIFY_TOKEN` | Token de validação do webhook Meta |
+| `META_WHATSAPP_APP_SECRET` | App secret para assinatura `X-Hub-Signature-256` |
 | `BACKEND_PUBLIC_URL` | URL pública do backend (`https://...railway.app`) |
 | `MERCADOPAGO_ACCESS_TOKEN` | Token do Mercado Pago |

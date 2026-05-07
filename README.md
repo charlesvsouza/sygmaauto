@@ -78,10 +78,17 @@ JWT_REFRESH_SECRET=<openssl rand -hex 32>
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
 PORT=3000
+WHATSAPP_PROVIDER=META_CLOUD
+META_WHATSAPP_TOKEN=<meta-permanent-token>
+META_WHATSAPP_PHONE_NUMBER_ID=<fallback-global>
+META_WHATSAPP_VERIFY_TOKEN=<verify-token>
+META_WHATSAPP_APP_SECRET=<meta-app-secret>
 
 # frontend/.env
 VITE_API_URL=http://localhost:3000
 \\\
+
+Observacao: o `Phone Number ID` pode ser configurado por oficina na aba de Configuracoes. O backend usa esse valor por tenant e mantem `META_WHATSAPP_PHONE_NUMBER_ID` como fallback global.
 
 ### Executar
 

@@ -32,7 +32,7 @@ Referencias tecnicas:
 - Armazenamento principal: PostgreSQL (via Prisma).
 - Persistencia de sessao no frontend: sessionStorage (estado de autenticacao persistido na sessao do navegador).
 - Envio de e-mail: SMTP configuravel por variaveis de ambiente.
-- Envio de WhatsApp: provider configuravel por variavel WHATSAPP_PROVIDER.
+- Envio de WhatsApp: API oficial Meta Cloud (`WHATSAPP_PROVIDER=META_CLOUD`) com webhook assinado.
 - Webhook Meta: validacao de assinatura e registro de eventos para idempotencia/auditoria.
 
 Referencias tecnicas:
