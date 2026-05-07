@@ -90,6 +90,32 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       CREATE INDEX IF NOT EXISTS whatsapp_webhook_events_provider_created_at_idx
       ON whatsapp_webhook_events (provider, "createdAt")
     `);
+    // LGPD requests (titular rights workflow)
+    await this.exec(`
+      CREATE TABLE IF NOT EXISTS lgpd_requests (
+        id                TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        "tenantId"        TEXT NOT NULL,
+        "requestType"     TEXT NOT NULL,
+        "subjectType"     TEXT NOT NULL,
+        "subjectId"       TEXT NOT NULL,
+        "requesterName"   TEXT NOT NULL,
+        "requesterEmail"  TEXT NOT NULL,
+        notes             TEXT,
+        status            TEXT NOT NULL DEFAULT 'OPEN',
+        "resolutionNotes" TEXT,
+        "completedAt"     TIMESTAMPTZ,
+        "createdAt"       TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updatedAt"       TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
+    await this.exec(`
+      CREATE INDEX IF NOT EXISTS lgpd_requests_tenant_created_at_idx
+      ON lgpd_requests ("tenantId", "createdAt")
+    `);
+    await this.exec(`
+      CREATE INDEX IF NOT EXISTS lgpd_requests_tenant_status_idx
+      ON lgpd_requests ("tenantId", status)
+    `);
     // NPS Responses
     await this.exec(`
       CREATE TABLE IF NOT EXISTS nps_responses (

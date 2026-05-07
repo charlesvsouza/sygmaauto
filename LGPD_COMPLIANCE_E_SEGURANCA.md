@@ -102,6 +102,18 @@ Evidencias:
 - backend/src/whatsapp/whatsapp-webhook.controller.ts
 - backend/src/whatsapp/whatsapp-meta-webhook.service.ts
 
+### 4.6 Atendimento tecnico ao titular (LGPD)
+
+- Cadastro e acompanhamento de solicitacoes LGPD por tenant.
+- Exportacao estruturada de dados de cliente para atendimento de acesso/portabilidade.
+- Registro de auditoria de criacao/atualizacao de solicitacao e exportacao.
+
+Evidencias:
+
+- backend/src/compliance/compliance.controller.ts
+- backend/src/compliance/compliance.service.ts
+- backend/prisma/schema.prisma (LgpdRequest)
+
 ## 5) Matriz LGPD (status atual)
 
 Legenda:
@@ -114,16 +126,26 @@ Legenda:
 |---|---|---|
 | Controle de acesso e segregacao | Implementado | JWT, roles e tenantId no backend |
 | Seguranca de credenciais | Implementado | bcrypt + reset com expiracao |
-| Registro de eventos relevantes | Parcial | Auditoria focada em exclusao de OS e webhook; cobertura parcial |
+| Registro de eventos relevantes | Parcial | Auditoria em exclusao de OS, webhook e fluxo LGPD; cobertura ainda parcial |
 | Minimizacao de dados por endpoint | Parcial | Existem selects com campos filtrados em alguns servicos; sem politica global de minimizacao |
 | Correcao/atualizacao de dados | Implementado | CRUD de usuarios/clientes/veiculos/tenant |
 | Eliminacao de dados | Parcial | Delete tecnico existe em varios modulos; sem fluxo formal de solicitacao LGPD |
-| Portabilidade do titular | Nao implementado | Nao ha endpoint/processo formal de exportacao LGPD |
+| Portabilidade do titular | Parcial | Exportacao tecnica implementada para subjectType CUSTOMER |
 | Anonimizacao/pseudonimizacao | Nao implementado | Nao ha rotina tecnica dedicada |
 | Retencao e descarte por prazo | Nao implementado | Nao ha politica versionada nem jobs de descarte |
 | Gestao de incidentes e notificacao | Parcial | Existem praticas operacionais, sem plano formal versionado |
 | Base legal e transparencia ao titular | Nao implementado (documental) | Falta politica de privacidade/termos publicados e versionados |
 | Encarregado/DPO e canal do titular | Nao implementado (formal) | Nao ha secao formal no produto/repositorio |
+
+## 5.1 Endpoints tecnicos de atendimento LGPD (backend)
+
+- POST /compliance/lgpd/requests
+- GET /compliance/lgpd/requests
+- GET /compliance/lgpd/requests/:id
+- PATCH /compliance/lgpd/requests/:id/status
+- GET /compliance/lgpd/export/customer/:customerId
+
+Observacao: os endpoints sao protegidos por JWT + role (MASTER/ADMIN) e operam sempre no tenant autenticado.
 
 ## 6) Lacunas prioritarias para adequacao
 

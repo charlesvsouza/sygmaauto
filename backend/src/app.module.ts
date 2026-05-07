@@ -24,6 +24,7 @@ import { CommissionsModule } from './commissions/commissions.module';
 import { NpsModule } from './nps/nps.module';
 import { AiModule } from './ai/ai.module';
 import { PdfModule } from './pdf/pdf.module';
+import { ComplianceModule } from './compliance/compliance.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 @Module({
@@ -62,6 +63,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     NpsModule,
     AiModule,
     PdfModule,
+    ComplianceModule,
   ],
   providers: [TenantMiddleware],
 })

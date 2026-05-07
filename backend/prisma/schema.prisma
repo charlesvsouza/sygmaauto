@@ -616,3 +616,23 @@ model WhatsappWebhookEvent {
   @@index([provider, createdAt])
   @@map("whatsapp_webhook_events")
 }
+
+model LgpdRequest {
+  id              String   @id @default(uuid())
+  tenantId        String
+  requestType     String
+  subjectType     String
+  subjectId       String
+  requesterName   String
+  requesterEmail  String
+  notes           String?
+  status          String   @default("OPEN")
+  resolutionNotes String?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, status])
+  @@map("lgpd_requests")
+}
