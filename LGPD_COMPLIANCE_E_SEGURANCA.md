@@ -153,7 +153,7 @@ Legenda:
 | Retencao e descarte por prazo | Parcial | Politica documental criada; jobs automatizados de descarte ainda nao implementados |
 | Gestao de incidentes e notificacao | Parcial | Plano operacional documental criado; modulo dedicado e automacoes ainda nao existem |
 | Base legal e transparencia ao titular | Parcial (documental) | Politica de privacidade e base operacional de termos criadas; publicacao externa e revisao juridica pendentes |
-| Encarregado/DPO e canal do titular | Parcial (documental) | Canal operacional provisório documentado via suporte@sigmaauto.com.br; encarregado formal ainda pendente |
+| Encarregado/DPO e canal do titular | Parcial (documental) | Canal operacional provisório documentado via suporte@sigmaauto.com.br, sob responsabilidade operacional provisória da direção da SigmaAuto; encarregado formal ainda pendente |
 
 ## 5.2 Maturidade consolidada (estimativa operacional)
 
@@ -167,6 +167,11 @@ Estimativa executiva atual:
 - governanca documental: aproximadamente 50%.
 
 Esses percentuais sao estimativas internas de maturidade e nao substituem avaliacao juridica formal.
+
+Publicacao externa provisoria:
+
+- a partir desta fase, o projeto passa a admitir uma central publica provisória de Compliance/Privacidade no frontend para fins de transparencia operacional;
+- essa publicacao deve manter linguagem factual, status provisório e recomendacao expressa de revisao juridica antes de consolidacao definitiva.
 
 ## 5.1 Endpoints tecnicos de atendimento LGPD (backend)
 

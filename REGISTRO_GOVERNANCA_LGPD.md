@@ -18,7 +18,12 @@ Centralizar os documentos de governanca criados no repositorio para apoiar a mat
 
 - suporte@sigmaauto.com.br
 
+## Responsabilidade operacional provisoria
+
+- Ate a designacao formal de encarregado/DPO, a responsabilidade operacional inicial pelos temas de privacidade e governanca LGPD permanece centralizada na direcao da SigmaAuto, com triagem pelo canal suporte@sigmaauto.com.br.
+
 ## Observacoes
 
 - O canal acima funciona como ponto operacional provisório para assuntos de privacidade e LGPD ate formalizacao juridica de encarregado/DPO.
 - A publicacao externa desses documentos ainda deve passar por revisao juridica e decisao de negocio.
+- A central publica de compliance, quando publicada, deve deixar explicito seu carater provisório e informativo.

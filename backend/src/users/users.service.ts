@@ -67,7 +67,7 @@ export class UsersService {
       throw new ConflictException('Email already exists in this tenant');
     }
 
-    return this.prisma.user.create({
+    const created = await this.prisma.user.create({
       data: {
         tenantId,
         name: dto.name,
@@ -87,12 +87,29 @@ export class UsersService {
         isActive: true,
       },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: dto.createdBy || null,
+        entityType: 'User',
+        entityId: created.id,
+        action: 'CREATE',
+        changes: JSON.stringify({
+          email: created.email,
+          role: created.role,
+          isActive: created.isActive,
+        }),
+      },
+    });
+
+    return created;
   }
 
-  async update(tenantId: string, userId: string, dto: UpdateUserDto) {
-    await this.findById(tenantId, userId);
+  async update(tenantId: string, actorUserId: string, userId: string, dto: UpdateUserDto) {
+    const before = await this.findById(tenantId, userId);
 
-    return this.prisma.user.update({
+    const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
         name: dto.name,
@@ -113,9 +130,25 @@ export class UsersService {
         jobFunction: true,
       },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'UPDATE',
+        changes: JSON.stringify({
+          before,
+          after: updated,
+        }),
+      },
+    });
+
+    return updated;
   }
 
-  async changePassword(tenantId: string, userId: string, dto: ChangePasswordDto) {
+  async changePassword(tenantId: string, actorUserId: string, userId: string, dto: ChangePasswordDto) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId, tenantId },
     });
@@ -129,19 +162,34 @@ export class UsersService {
       throw new ConflictException('Current password is incorrect');
     }
 
-    return this.prisma.user.update({
+    const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
         passwordHash: await bcrypt.hash(dto.newPassword, 10),
         passwordUpdatedAt: new Date(),
       },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'CHANGE_PASSWORD',
+        changes: JSON.stringify({
+          passwordUpdatedAt: updated.passwordUpdatedAt,
+        }),
+      },
+    });
+
+    return updated;
   }
 
-  async adminResetPassword(tenantId: string, userId: string, dto: AdminResetPasswordDto) {
+  async adminResetPassword(tenantId: string, actorUserId: string, userId: string, dto: AdminResetPasswordDto) {
     await this.findById(tenantId, userId);
 
-    return this.prisma.user.update({
+    const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
         passwordHash: await bcrypt.hash(dto.newPassword, 10),
@@ -156,10 +204,36 @@ export class UsersService {
         passwordUpdatedAt: true,
       },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'ADMIN_RESET_PASSWORD',
+        changes: JSON.stringify({
+          passwordUpdatedAt: updated.passwordUpdatedAt,
+        }),
+      },
+    });
+
+    return updated;
   }
 
-  async delete(tenantId: string, userId: string) {
-    await this.findById(tenantId, userId);
+  async delete(tenantId: string, actorUserId: string, userId: string) {
+    const target = await this.findById(tenantId, userId);
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'User',
+        entityId: userId,
+        action: 'DELETE',
+        changes: JSON.stringify(target),
+      },
+    });
 
     return this.prisma.user.delete({
       where: { id: userId },

@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Tenant } from '../common/decorators/tenant.decorator';
+import { CurrentUser, Tenant } from '../common/decorators/tenant.decorator';
 
 @ApiTags('Financial')
 @Controller('financial')
@@ -105,9 +105,10 @@ export class FinancialController {
   @ApiOperation({ summary: 'Create transaction' })
   async create(
     @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
     @Body() dto: CreateTransactionDto,
   ) {
-    return this.financialService.create(tenant.tenantId, dto);
+    return this.financialService.create(tenant.tenantId, user.userId, dto);
   }
 
   @Delete(':id')
@@ -115,8 +116,9 @@ export class FinancialController {
   @ApiOperation({ summary: 'Delete transaction' })
   async delete(
     @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
     @Param('id') id: string,
   ) {
-    return this.financialService.delete(tenant.tenantId, id);
+    return this.financialService.delete(tenant.tenantId, user.userId, id);
   }
 }

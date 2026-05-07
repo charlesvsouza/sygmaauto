@@ -32,8 +32,8 @@ export class FinancialService {
     return transaction;
   }
 
-  async create(tenantId: string, dto: CreateTransactionDto) {
-    return this.prisma.financialTransaction.create({
+  async create(tenantId: string, actorUserId: string, dto: CreateTransactionDto) {
+    const created = await this.prisma.financialTransaction.create({
       data: {
         tenantId,
         type: dto.type,
@@ -45,10 +45,35 @@ export class FinancialService {
         date: dto.date ? new Date(dto.date) : new Date(),
       },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'FinancialTransaction',
+        entityId: created.id,
+        action: 'CREATE',
+        changes: JSON.stringify(created),
+      },
+    });
+
+    return created;
   }
 
-  async delete(tenantId: string, transactionId: string) {
-    await this.findById(tenantId, transactionId);
+  async delete(tenantId: string, actorUserId: string, transactionId: string) {
+    const transaction = await this.findById(tenantId, transactionId);
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: actorUserId,
+        entityType: 'FinancialTransaction',
+        entityId: transactionId,
+        action: 'DELETE',
+        changes: JSON.stringify(transaction),
+      },
+    });
+
     return this.prisma.financialTransaction.delete({
       where: { id: transactionId },
     });

@@ -86,6 +86,21 @@ export class AuthService {
       }),
     ]);
 
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId,
+        entityType: 'Auth',
+        entityId: userId,
+        action: 'REGISTER',
+        changes: JSON.stringify({
+          email: normalizedEmail,
+          role: 'MASTER',
+          tenantId,
+        }),
+      },
+    });
+
     return {
       ...this.generateTokens({ sub: userId, email: normalizedEmail, tenantId, role: 'MASTER' }),
       user: { id: userId, email: normalizedEmail, name: dto.name, role: 'MASTER', tenantId },
@@ -139,6 +154,20 @@ export class AuthService {
       data: { lastLoginAt: new Date() },
     });
 
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId: user.tenantId,
+        userId: user.id,
+        entityType: 'Auth',
+        entityId: user.id,
+        action: 'LOGIN_SUCCESS',
+        changes: JSON.stringify({
+          email: user.email,
+          role: user.role,
+        }),
+      },
+    });
+
     return {
       ...this.generateTokens({
         sub: user.id,
@@ -164,6 +193,17 @@ export class AuthService {
       if (!user || !user.isActive) {
         throw new UnauthorizedException('Invalid refresh token');
       }
+
+      await this.prisma.auditLog.create({
+        data: {
+          tenantId: user.tenantId,
+          userId: user.id,
+          entityType: 'Auth',
+          entityId: user.id,
+          action: 'TOKEN_REFRESH',
+          changes: JSON.stringify({ email: user.email }),
+        },
+      });
 
       return this.generateTokens({
         sub: user.id,
@@ -209,6 +249,20 @@ export class AuthService {
       },
     });
 
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId: user.tenantId,
+        userId: user.id,
+        entityType: 'Auth',
+        entityId: user.id,
+        action: 'PASSWORD_RESET_REQUEST',
+        changes: JSON.stringify({
+          recoveryEmail: savedRecovery,
+          expiresAt,
+        }),
+      },
+    });
+
     const frontendUrl = (this.configService.get<string>('FRONTEND_URL') || 'https://sigmaauto.com.br').replace(/\/+$/, '');
     const resetLink = `${frontendUrl}/forgot-password?token=${token}`;
     const emailSent = await this.emailService.sendPasswordResetEmail(savedRecovery, {
@@ -251,6 +305,19 @@ export class AuthService {
         passwordUpdatedAt: new Date(),
         passwordResetToken: null,
         passwordResetExpiresAt: null,
+      },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId: user.tenantId,
+        userId: user.id,
+        entityType: 'Auth',
+        entityId: user.id,
+        action: 'PASSWORD_RESET_COMPLETE',
+        changes: JSON.stringify({
+          passwordUpdatedAt: new Date(),
+        }),
       },
     });
 

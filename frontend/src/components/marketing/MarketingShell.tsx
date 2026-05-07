@@ -74,6 +74,9 @@ export function MarketingShell({ children }: MarketingShellProps) {
                 {link.label}
               </Link>
             ))}
+            <Link to="/compliance" className={navItemClass('/compliance')}>
+              Compliance
+            </Link>
             <Link to="/privacidade" className={navItemClass('/privacidade')}>
               Privacidade
             </Link>
@@ -110,6 +113,9 @@ export function MarketingShell({ children }: MarketingShellProps) {
                     {link.label}
                   </Link>
                 ))}
+                <Link to="/compliance" className={navItemClass('/compliance')}>
+                  Compliance
+                </Link>
                 <Link to="/privacidade" className={navItemClass('/privacidade')}>
                   Privacidade
                 </Link>
@@ -169,6 +175,10 @@ export function MarketingShell({ children }: MarketingShellProps) {
           <div className="text-[11px] text-white/25 text-center lg:text-right">
             <p>© {new Date().getFullYear()} SigmaAuto · sigmaauto.com.br</p>
             <div className="mt-1 flex items-center justify-center lg:justify-end gap-2">
+              <Link to="/compliance" className="hover:text-[#ff7b2f] transition-colors">
+                Compliance
+              </Link>
+              <span>·</span>
               <Link to="/privacidade" className="hover:text-[#ff7b2f] transition-colors">
                 Política de Privacidade
               </Link>

@@ -2,7 +2,7 @@
 
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, BookOpenText, Mail, MessageCircle, ChevronRight, Clock, Shield } from 'lucide-react'
+import { ArrowLeft, BookOpenText, Mail, MessageCircle, ChevronRight, Clock, Shield, ShieldCheck } from 'lucide-react'
 
 const channels = [
   {
@@ -13,6 +13,15 @@ const channels = [
     cta: 'Abrir manual',
     external: false,
     accent: true,
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Central de Compliance',
+    description: 'Acompanhe a publicação provisória de privacidade, governança documental e status real de controles LGPD e segurança.',
+    href: '/compliance',
+    cta: 'Abrir central',
+    external: false,
+    accent: false,
   },
   {
     icon: Mail,
@@ -113,7 +122,7 @@ export function SupportPage() {
 
       {/* Channels */}
       <div className="max-w-7xl mx-auto px-6 pb-16">
-        <div className="grid md:grid-cols-3 gap-5 mb-16">
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mb-16">
           {channels.map((ch, i) => {
             const Icon = ch.icon
             const Card = (

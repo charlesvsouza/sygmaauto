@@ -7,6 +7,7 @@ import { RetificaModeRoute } from './components/RetificaModeRoute';
 import { Layout } from './components/Layout';
 import { InitialSplash } from './pages/InitialSplash';
 import { LandingPage } from './pages/LandingPage';
+import { CompliancePage } from './pages/CompliancePage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { NewsPage } from './pages/NewsPage';
 import { SolutionsPage } from './pages/SolutionsPage';
@@ -66,6 +67,7 @@ export default function App() {
         <Route path="/contato" element={<ContactPage />} />
         <Route path="/suporte" element={<SupportPage />} />
         <Route path="/manual" element={<UserManualPage />} />
+        <Route path="/compliance" element={<CompliancePage />} />
         <Route path="/privacidade" element={<PrivacyPolicyPage />} />
         <Route path="/splash" element={<InitialSplash />} />
         
