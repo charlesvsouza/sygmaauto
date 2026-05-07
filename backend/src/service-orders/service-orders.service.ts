@@ -1337,7 +1337,7 @@ export class ServiceOrdersService {
     }).format(new Date());
 
     const templateData = {
-      companyName: order.tenant.legalName || order.tenant.tradeName || 'SygmaAuto',
+      companyName: order.tenant.tradeName || order.tenant.legalName || 'SygmaAuto',
       companyAddress: order.tenant.address || 'Endereço não configurado',
       companyPhone: order.tenant.phone || '',
       companyEmail: order.tenant.email || '',
