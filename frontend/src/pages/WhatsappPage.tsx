@@ -10,9 +10,12 @@ type ConnectionState = 'open' | 'connecting' | 'close' | 'unknown';
 
 interface WaStatus {
   connected: boolean;
-  state: ConnectionState;
-  instanceName: string;
+  state: ConnectionState | 'not_found' | 'not_applicable' | 'not_configured' | string;
+  instanceName?: string;
   configured: boolean;
+  provider?: string;
+  qrAvailable?: boolean;
+  message?: string;
 }
 
 const STATE_LABEL: Record<ConnectionState, string> = {
@@ -63,6 +66,11 @@ export function WhatsappPage() {
   }, []);
 
   async function handleGetQr() {
+    if (status?.provider && status.provider !== 'EVOLUTION') {
+      alert(`O provider ${status.provider} não utiliza conexão por QR Code.`);
+      return;
+    }
+
     setLoadingQr(true);
     setQrCode(null);
     try {
@@ -75,7 +83,7 @@ export function WhatsappPage() {
         alert(msg);
       }
     } catch (e: any) {
-      alert(e?.response?.data?.message ?? 'Erro ao gerar QR Code. Verifique se a Evolution API está configurada no servidor.');
+      alert(e?.response?.data?.message ?? 'Erro ao gerar QR Code. Verifique a configuração do provider no servidor.');
     } finally {
       setLoadingQr(false);
     }
@@ -109,6 +117,10 @@ export function WhatsappPage() {
     );
   }
 
+  const providerName = status?.provider || 'EVOLUTION';
+  const isEvolution = providerName === 'EVOLUTION';
+  const canUseQr = isEvolution && (status?.qrAvailable ?? true);
+
   if (!status?.configured) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
@@ -124,20 +136,30 @@ export function WhatsappPage() {
 
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-2 text-amber-700 font-bold">
-            <WifiOff size={18} /> Evolution API não configurada
+            <WifiOff size={18} /> Provider WhatsApp não configurado
           </div>
           <p className="text-sm text-amber-700">
-            Para ativar o WhatsApp automático, o administrador do sistema precisa configurar a
-            <strong> Evolution API</strong> no servidor e definir as variáveis de ambiente.
+            Para ativar o WhatsApp automático, o administrador precisa configurar o provider
+            <strong> {providerName}</strong> no servidor e definir as variáveis de ambiente.
           </p>
           <div className="bg-white rounded-xl border border-amber-200 p-4 space-y-2">
             <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Variáveis de ambiente (Railway)</p>
-            <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
-              EVOLUTION_API_URL=https://sua-evolution.railway.app<br />
-              EVOLUTION_API_KEY=sua-chave-api<br />
-              EVOLUTION_INSTANCE=sygmaauto
-            </code>
+            {providerName === 'META_CLOUD' ? (
+              <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
+                WHATSAPP_PROVIDER=META_CLOUD<br />
+                META_WHATSAPP_TOKEN=seu-token-meta<br />
+                META_WHATSAPP_PHONE_NUMBER_ID=seu-phone-number-id
+              </code>
+            ) : (
+              <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
+                WHATSAPP_PROVIDER=EVOLUTION<br />
+                EVOLUTION_API_URL=https://sua-evolution.railway.app<br />
+                EVOLUTION_API_KEY=sua-chave-api<br />
+                EVOLUTION_INSTANCE=sygmaauto
+              </code>
+            )}
           </div>
+          {status?.message && <p className="text-xs text-amber-700">{status.message}</p>}
           <p className="text-xs text-amber-600">
             Consulte o manual de implantação ou entre em contato com o suporte técnico.
           </p>
@@ -183,11 +205,13 @@ export function WhatsappPage() {
             {status?.connected ? 'WhatsApp Conectado' : 'WhatsApp Desconectado'}
           </p>
           <p className={cn('text-sm font-semibold', stateColor[status?.state ?? 'unknown'])}>
-            {STATE_LABEL[status?.state ?? 'unknown']}
+            {STATE_LABEL[(status?.state as ConnectionState) ?? 'unknown'] || String(status?.state || 'Desconhecido')}
             {status?.instanceName ? ` — instância: ${status.instanceName}` : ''}
+            {` — provider: ${providerName}`}
           </p>
+          {!!status?.message && <p className="text-xs text-slate-500 mt-1">{status.message}</p>}
         </div>
-        {status?.connected && (
+        {status?.connected && isEvolution && (
           <button
             onClick={handleDisconnect}
             disabled={disconnecting}
@@ -201,7 +225,7 @@ export function WhatsappPage() {
       </div>
 
       {/* QR Code area */}
-      {!status?.connected && (
+      {!status?.connected && canUseQr && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4">
           <div className="flex items-center gap-2 font-bold text-slate-800">
             <QrCode size={18} /> Conectar via QR Code
@@ -240,6 +264,17 @@ export function WhatsappPage() {
                 : <><Power size={15} /> Gerar QR Code</>}
             </button>
           )}
+        </div>
+      )}
+
+      {!status?.connected && !canUseQr && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-3">
+          <div className="flex items-center gap-2 font-bold text-slate-800">
+            <XCircle size={18} className="text-slate-500" /> Conexão sem QR Code
+          </div>
+          <p className="text-sm text-slate-600">
+            O provider <strong>{providerName}</strong> não utiliza pareamento por QR. A conexão é gerenciada pela API oficial.
+          </p>
         </div>
       )}
 

@@ -29,6 +29,12 @@ export class WhatsappAdminService {
     return (this.config.get<string>('WHATSAPP_PROVIDER') ?? 'EVOLUTION').trim().toUpperCase();
   }
 
+  private isMetaConfigured(): boolean {
+    const token = this.config.get<string>('META_WHATSAPP_TOKEN') ?? '';
+    const phoneNumberId = this.config.get<string>('META_WHATSAPP_PHONE_NUMBER_ID') ?? '';
+    return !!(token && phoneNumberId);
+  }
+
   isConfigured(): boolean {
     return !!(this.apiUrl && this.globalApiKey);
   }
@@ -93,25 +99,54 @@ export class WhatsappAdminService {
   }
 
   async getStatus() {
-    if (this.providerMode !== 'EVOLUTION') {
+    if (this.providerMode === 'META_CLOUD') {
+      const configured = this.isMetaConfigured();
       return {
-        configured: false,
-        connected: false,
-        state: 'not_applicable',
+        configured,
+        connected: configured,
+        state: configured ? 'open' : 'not_configured',
         provider: this.providerMode,
-        message: 'Fluxo de QR disponivel apenas para provider EVOLUTION.',
+        instanceName: '',
+        qrAvailable: false,
+        message: configured
+          ? 'Provider Meta Cloud configurado. Conexao via QR nao se aplica.'
+          : 'Meta Cloud nao configurado. Defina META_WHATSAPP_TOKEN e META_WHATSAPP_PHONE_NUMBER_ID.',
       };
     }
 
     if (!this.isConfigured()) {
-      return { configured: false, connected: false, state: 'unknown' };
+      return {
+        configured: false,
+        connected: false,
+        state: 'unknown',
+        provider: this.providerMode,
+        instanceName: this.instanceName,
+        qrAvailable: true,
+        message: 'Evolution API nao configurada.',
+      };
     }
 
     const item = await this.fetchCurrentInstance();
-    if (!item) return { configured: true, connected: false, state: 'not_found' };
+    if (!item) {
+      return {
+        configured: true,
+        connected: false,
+        state: 'not_found',
+        provider: this.providerMode,
+        instanceName: this.instanceName,
+        qrAvailable: true,
+      };
+    }
 
     const state = this.instanceStatus(item);
-    return { configured: true, connected: state === 'open', state };
+    return {
+      configured: true,
+      connected: state === 'open',
+      state,
+      provider: this.providerMode,
+      instanceName: this.instanceName,
+      qrAvailable: true,
+    };
   }
 
   async getQrCode(): Promise<{ qrCode: string | null; error?: string }> {
