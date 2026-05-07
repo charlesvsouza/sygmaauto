@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import {
-  MessageCircle, Loader2, CheckCircle2, XCircle, RefreshCw, Wifi,
-  WifiOff, QrCode, Power, PowerOff,
+  MessageCircle, Loader2, CheckCircle2, RefreshCw, Wifi,
+  WifiOff, AlertCircle,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -27,20 +27,12 @@ const STATE_LABEL: Record<ConnectionState, string> = {
 
 export function WhatsappPage() {
   const [status, setStatus] = useState<WaStatus | null>(null);
-  const [qrCode, setQrCode] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
-  const [loadingQr, setLoadingQr] = useState(false);
-  const [disconnecting, setDisconnecting] = useState(false);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function fetchStatus() {
     try {
       const res = await api.get('/whatsapp/status');
       setStatus(res.data);
-      if (res.data.connected) {
-        setQrCode(null);
-        stopPolling();
-      }
     } catch {
       setStatus({ connected: false, state: 'unknown', instanceName: '', configured: false });
     } finally {
@@ -48,59 +40,9 @@ export function WhatsappPage() {
     }
   }
 
-  function startPolling() {
-    if (pollRef.current) return;
-    pollRef.current = setInterval(fetchStatus, 5000);
-  }
-
-  function stopPolling() {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-  }
-
   useEffect(() => {
     fetchStatus();
-    return () => stopPolling();
   }, []);
-
-  async function handleGetQr() {
-    if (status?.provider && status.provider !== 'EVOLUTION') {
-      alert(`O provider ${status.provider} não utiliza conexão por QR Code.`);
-      return;
-    }
-
-    setLoadingQr(true);
-    setQrCode(null);
-    try {
-      const res = await api.get('/whatsapp/qrcode');
-      if (res.data.qrCode) {
-        setQrCode(res.data.qrCode);
-        startPolling();
-      } else {
-        const msg = res.data.error ?? 'QR Code não disponível. Verifique os logs do servidor.';
-        alert(msg);
-      }
-    } catch (e: any) {
-      alert(e?.response?.data?.message ?? 'Erro ao gerar QR Code. Verifique a configuração do provider no servidor.');
-    } finally {
-      setLoadingQr(false);
-    }
-  }
-
-  async function handleDisconnect() {
-    if (!confirm('Desconectar o WhatsApp? As mensagens automáticas serão desativadas.')) return;
-    setDisconnecting(true);
-    try {
-      await api.post('/whatsapp/disconnect');
-      await fetchStatus();
-    } catch {
-      alert('Erro ao desconectar.');
-    } finally {
-      setDisconnecting(false);
-    }
-  }
 
   const stateColor: Record<ConnectionState, string> = {
     open: 'text-emerald-600',
@@ -117,9 +59,7 @@ export function WhatsappPage() {
     );
   }
 
-  const providerName = status?.provider || 'EVOLUTION';
-  const isEvolution = providerName === 'EVOLUTION';
-  const canUseQr = isEvolution && (status?.qrAvailable ?? true);
+  const providerName = status?.provider || 'META_CLOUD';
 
   if (!status?.configured) {
     return (
@@ -144,20 +84,13 @@ export function WhatsappPage() {
           </p>
           <div className="bg-white rounded-xl border border-amber-200 p-4 space-y-2">
             <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Variáveis de ambiente (Railway)</p>
-            {providerName === 'META_CLOUD' ? (
-              <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
-                WHATSAPP_PROVIDER=META_CLOUD<br />
-                META_WHATSAPP_TOKEN=seu-token-meta<br />
-                META_WHATSAPP_PHONE_NUMBER_ID=seu-phone-number-id
-              </code>
-            ) : (
-              <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
-                WHATSAPP_PROVIDER=EVOLUTION<br />
-                EVOLUTION_API_URL=https://sua-evolution.railway.app<br />
-                EVOLUTION_API_KEY=sua-chave-api<br />
-                EVOLUTION_INSTANCE=sygmaauto
-              </code>
-            )}
+            <code className="block text-xs bg-slate-50 rounded-lg p-3 text-slate-700 font-mono">
+              WHATSAPP_PROVIDER=META_CLOUD<br />
+              META_WHATSAPP_TOKEN=seu-token-meta<br />
+              META_WHATSAPP_PHONE_NUMBER_ID=seu-phone-number-id<br />
+              META_WHATSAPP_VERIFY_TOKEN=token-do-webhook<br />
+              META_WHATSAPP_APP_SECRET=app-secret-meta
+            </code>
           </div>
           {status?.message && <p className="text-xs text-amber-700">{status.message}</p>}
           <p className="text-xs text-amber-600">
@@ -206,77 +139,20 @@ export function WhatsappPage() {
           </p>
           <p className={cn('text-sm font-semibold', stateColor[status?.state ?? 'unknown'])}>
             {STATE_LABEL[(status?.state as ConnectionState) ?? 'unknown'] || String(status?.state || 'Desconhecido')}
-            {status?.instanceName ? ` — instância: ${status.instanceName}` : ''}
             {` — provider: ${providerName}`}
           </p>
           {!!status?.message && <p className="text-xs text-slate-500 mt-1">{status.message}</p>}
         </div>
-        {status?.connected && isEvolution && (
-          <button
-            onClick={handleDisconnect}
-            disabled={disconnecting}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-red-200 bg-white text-red-600 hover:bg-red-50 transition disabled:opacity-50"
-          >
-            {disconnecting
-              ? <><Loader2 size={13} className="animate-spin" /> Desconectando…</>
-              : <><PowerOff size={13} /> Desconectar</>}
-          </button>
-        )}
       </div>
 
-      {/* QR Code area */}
-      {!status?.connected && canUseQr && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4">
-          <div className="flex items-center gap-2 font-bold text-slate-800">
-            <QrCode size={18} /> Conectar via QR Code
-          </div>
-          <p className="text-sm text-slate-500">
-            Clique em "Gerar QR Code", depois abra o WhatsApp no celular →{' '}
-            <strong>Dispositivos conectados</strong> → <strong>Conectar dispositivo</strong> →
-            escaneie o código abaixo.
-          </p>
-          {qrCode ? (
-            <div className="flex flex-col items-center gap-3">
-              <img
-                src={qrCode}
-                alt="QR Code WhatsApp"
-                className="w-56 h-56 rounded-xl border border-slate-200"
-              />
-              <p className="text-xs text-slate-400 animate-pulse">
-                Aguardando leitura… (atualiza automaticamente)
-              </p>
-              <button
-                onClick={handleGetQr}
-                disabled={loadingQr}
-                className="text-xs text-indigo-600 hover:underline"
-              >
-                Gerar novo QR Code
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={handleGetQr}
-              disabled={loadingQr}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-bold hover:bg-green-700 transition disabled:opacity-60"
-            >
-              {loadingQr
-                ? <><Loader2 size={15} className="animate-spin" /> Gerando…</>
-                : <><Power size={15} /> Gerar QR Code</>}
-            </button>
-          )}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-3">
+        <div className="flex items-center gap-2 font-bold text-slate-800">
+          <AlertCircle size={18} className="text-slate-500" /> Integração Oficial (Meta Cloud)
         </div>
-      )}
-
-      {!status?.connected && !canUseQr && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-3">
-          <div className="flex items-center gap-2 font-bold text-slate-800">
-            <XCircle size={18} className="text-slate-500" /> Conexão sem QR Code
-          </div>
-          <p className="text-sm text-slate-600">
-            O provider <strong>{providerName}</strong> não utiliza pareamento por QR. A conexão é gerenciada pela API oficial.
-          </p>
-        </div>
-      )}
+        <p className="text-sm text-slate-600">
+          Este ambiente opera somente com a API oficial da Meta. Não há conexão por QR Code.
+        </p>
+      </div>
 
       {/* Gatilhos configurados */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-3">

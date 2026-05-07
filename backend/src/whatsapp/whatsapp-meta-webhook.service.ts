@@ -99,7 +99,7 @@ export class WhatsappMetaWebhookService {
   }
 
   private get providerMode(): string {
-    return (this.config.get<string>('WHATSAPP_PROVIDER') ?? 'EVOLUTION').trim().toUpperCase();
+    return (this.config.get<string>('WHATSAPP_PROVIDER') ?? 'META_CLOUD').trim().toUpperCase();
   }
 
   private get verifyToken(): string {
