@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { ArrowRight, CheckCircle, CheckCircle2, ChevronRight, CircleSlash } from 'lucide-react';
+import { ArrowRight, CheckCircle, CheckCircle2, CircleSlash } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MarketingShell } from '../components/marketing/MarketingShell';
 import { EcgPulse } from '../components/marketing/EcgPulse';
 import { type PlanName } from '../lib/planAccess';
-import { features, plans, planCapabilities, quickLinks, retificaPlans, type Plan } from '../data/marketingContent';
+import { features, news, plans, planCapabilities, retificaPlans, type Plan } from '../data/marketingContent';
 import { useAuthStore } from '../store/authStore';
 
 export function LandingPage() {
@@ -41,9 +41,12 @@ export function LandingPage() {
     navigate('/splash');
   };
 
+  const releasedInnovations = news.filter((item) => item.tag === 'Lancamento').slice(0, 4);
+  const plannedIntegrations = news.filter((item) => item.tag !== 'Lancamento').slice(0, 4);
+
   return (
     <MarketingShell>
-      <section className="relative max-w-6xl mx-auto px-6 pt-10 pb-20 overflow-hidden">
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-16 sm:pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none flex items-start justify-center">
           <motion.div
             animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.22, 0.1] }}
@@ -53,7 +56,7 @@ export function LandingPage() {
         </div>
 
         <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
-          <div className="rounded-[30px] border border-white/10 bg-white/[0.03] backdrop-blur-sm px-7 py-8 shadow-[0_20px_64px_rgba(0,0,0,0.35)]">
+          <div className="rounded-[30px] border border-white/10 bg-white/[0.03] backdrop-blur-sm px-4 sm:px-7 py-6 sm:py-8 shadow-[0_20px_64px_rgba(0,0,0,0.35)]">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,7 +71,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mt-6 text-[clamp(2.8rem,7vw,5.2rem)] font-black leading-[0.95] tracking-tight"
+              className="mt-6 text-[clamp(2.15rem,9vw,5.2rem)] font-black leading-[0.95] tracking-tight"
             >
               <span className="text-[#f8fafc]">Sigma</span>{' '}
               <span className="text-[#58c3cb]">Auto</span>
@@ -81,7 +84,7 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.17 }}
               className="mt-5"
             >
-              <EcgPulse className="h-7 w-[320px] rounded-full border border-[#0b7f86]/30 bg-white/[0.04] overflow-hidden relative" />
+              <EcgPulse className="h-7 w-full max-w-[320px] rounded-full border border-[#0b7f86]/30 bg-white/[0.04] overflow-hidden relative" />
             </motion.div>
 
             <motion.p
@@ -90,7 +93,7 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-7 text-lg md:text-xl font-bold text-[#e5ecf3] max-w-2xl leading-snug"
             >
-              Do primeiro parafuso ao lucro no bolso, gestão completa para sua oficina sem virar bagunça digital.
+              Se hoje sua oficina ainda resolve tudo no papel, aqui você migra com segurança e sem complicação.
             </motion.p>
 
             <motion.p
@@ -99,7 +102,7 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.32 }}
               className="mt-3 text-base text-[#a1b0bd] max-w-xl"
             >
-              Menos planilha, menos retrabalho e mais clareza para decidir, do atendimento ao fechamento da ordem de serviço.
+              O SigmaAuto foi pensado para a rotina real da oficina: simples de usar, rápido no dia a dia e com apoio humano para sua equipe ganhar confiança no digital.
             </motion.p>
 
             <motion.div
@@ -122,6 +125,10 @@ export function LandingPage() {
                 Explorar soluções
               </Link>
             </motion.div>
+
+            <div className="mt-6 rounded-2xl border border-[#58c3cb]/30 bg-[#58c3cb]/8 px-4 py-3 text-sm text-[#d6edf0] max-w-2xl leading-relaxed">
+              Comece no seu ritmo: importamos dados, treinamos sua equipe e acompanhamos os primeiros dias para a transição do papel acontecer sem trauma.
+            </div>
           </div>
 
           <div className="relative hidden lg:flex items-center justify-center min-h-[460px]">
@@ -232,11 +239,11 @@ export function LandingPage() {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-white/8">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-white/8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map(({ icon: Icon, title, desc }, index) => (
             <motion.article
@@ -257,52 +264,79 @@ export function LandingPage() {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-white/8">
         <div className="text-center mb-12">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Navegação Comercial</p>
-          <h2 className="text-3xl md:text-4xl font-black">Encontre rapido o que sua oficina precisa</h2>
-          <p className="mt-3 text-white/45 text-sm max-w-2xl mx-auto">
-            Explore solucoes, diferenciais, suporte e canais de contato em paginas focadas para facilitar sua avaliacao da plataforma.
+          <p className="text-xs uppercase tracking-[0.25em] text-[#58c3cb]/80 font-bold mb-3">Transparência de produto</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">O que já entregamos e o que vem a seguir</h2>
+          <p className="mt-3 text-white/65 text-sm max-w-3xl mx-auto">
+            Sem promessa vazia: aqui mostramos as inovações já disponíveis e as integrações planejadas para a evolução da sua operação.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {quickLinks.map(({ to, eyebrow, title, description, icon: Icon }, index) => (
-            <motion.div
-              key={to}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
-            >
-              <Link to={to} className="block rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6 h-full hover:border-[#ff7b2f]/35 transition-colors">
-                <div className="w-11 h-11 rounded-xl bg-[#ff7b2f]/12 flex items-center justify-center mb-4">
-                  <Icon size={20} className="text-[#ff7b2f]" />
+        <div className="grid lg:grid-cols-2 gap-6">
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-3xl border border-white/10 bg-white/[0.045] backdrop-blur-sm p-6"
+          >
+            <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-300/90 font-bold">Inovações disponíveis</p>
+            <h3 className="mt-3 text-xl font-black text-white">Já em uso por oficinas</h3>
+            <div className="mt-5 space-y-4">
+              {releasedInnovations.map((item) => (
+                <div key={item.title} className="rounded-2xl border border-white/10 bg-[#0b1320]/55 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-emerald-300/80 font-bold">{item.tag}</p>
+                    <span className="text-[11px] text-white/45">{item.date}</span>
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-white">{item.title}</p>
+                  <p className="mt-2 text-xs text-white/70 leading-relaxed">{item.excerpt}</p>
                 </div>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-white/35 font-bold">{eyebrow}</p>
-                <h3 className="mt-3 text-lg font-black text-white leading-snug">{title}</h3>
-                <p className="mt-3 text-sm text-white/55 leading-relaxed">{description}</p>
-                <div className="mt-5 inline-flex items-center gap-1 text-[#ff7b2f] text-xs font-bold">
-                  Abrir página <ChevronRight size={13} />
+              ))}
+            </div>
+          </motion.article>
+
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.08 }}
+            className="rounded-3xl border border-white/10 bg-white/[0.045] backdrop-blur-sm p-6"
+          >
+            <p className="text-[11px] uppercase tracking-[0.2em] text-[#7fd2d8] font-bold">Integrações planejadas</p>
+            <h3 className="mt-3 text-xl font-black text-white">Próximos passos do roadmap</h3>
+            <div className="mt-5 space-y-4">
+              {plannedIntegrations.map((item) => (
+                <div key={item.title} className="rounded-2xl border border-white/10 bg-[#0b1320]/55 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-[#7fd2d8] font-bold">{item.tag}</p>
+                    <span className="text-[11px] text-white/45">{item.date}</span>
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-white">{item.title}</p>
+                  <p className="mt-2 text-xs text-white/70 leading-relaxed">{item.excerpt}</p>
                 </div>
-              </Link>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+          </motion.article>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-[#58c3cb]/25 bg-[#58c3cb]/8 px-5 py-4 text-sm text-[#d8edf0]">
+          A ideia é simples: você não precisa virar uma empresa de tecnologia para modernizar a oficina. O sistema se adapta ao seu processo e evolui junto com sua equipe.
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section id="planos" className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
+      <section id="planos" className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
-          <h2 className="text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
           <p className="mt-3 text-white/45 text-sm">Sem conta? voce conclui o pagamento e recebe convite de ativacao no e-mail.</p>
         </div>
 

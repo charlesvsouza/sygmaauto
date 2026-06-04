@@ -125,10 +125,10 @@ export const planCapabilities: PlanCapability[] = [
 ];
 
 export const features: IconCard[] = [
-  { icon: Gauge, title: 'Dashboard em tempo real', desc: 'Metas, indicadores e performance da equipe num unico painel.' },
-  { icon: Lock, title: 'Permissoes por papel', desc: 'Controle total de acesso: admin, produtor e financeiro.' },
-  { icon: ClipboardList, title: 'O.S. digital completa', desc: 'Abertura, execucao, aprovacao e fechamento sem papel.' },
-  { icon: Wrench, title: 'Estoque inteligente', desc: 'Alertas de reposicao e rastreio de pecas por ordem.' },
+  { icon: Gauge, title: 'Visão clara do dia a dia', desc: 'Veja rapidamente o que está em andamento, o que está parado e o que já foi entregue.' },
+  { icon: Lock, title: 'Acesso certo para cada pessoa', desc: 'Cada função da equipe enxerga só o que precisa, sem bagunça e sem risco.' },
+  { icon: ClipboardList, title: 'O.S. simples de abrir e acompanhar', desc: 'Da entrada ao fechamento, tudo em um fluxo fácil para quem está no balcão e na oficina.' },
+  { icon: Wrench, title: 'Peças sob controle', desc: 'Saiba o que tem no estoque, o que está acabando e o que precisa comprar.' },
 ];
 
 export const navLinks: NavLinkItem[] = [

@@ -290,7 +290,7 @@ export function Layout() {
       </div>
 
       {/* Main content */}
-      <main className="app-main-frame flex-1 lg:ml-64">
+      <main className="app-main-frame flex-1 lg:ml-64 min-w-0">
         {/* Header mobile */}
         <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-20">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-slate-600">
@@ -303,7 +303,7 @@ export function Layout() {
         </header>
 
         {/* Header desktop */}
-        <header className="app-shell-header hidden lg:flex items-center justify-between px-8 py-4 border-b border-slate-200 sticky top-0 z-10">
+        <header className="app-shell-header hidden lg:flex items-center justify-between px-4 xl:px-8 py-4 border-b border-slate-200 sticky top-0 z-10 gap-4">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
               {tenant?.name || 'Minha Oficina'}
@@ -317,7 +317,7 @@ export function Layout() {
               <input
                 type="text"
                 placeholder="Buscar..."
-                className="w-64 pl-9 pr-4 py-2 bg-slate-50 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-44 xl:w-64 pl-9 pr-4 py-2 bg-slate-50 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
 
@@ -369,7 +369,7 @@ export function Layout() {
         </header>
 
         {/* Page content */}
-        <div className="p-4 lg:p-8">
+        <div className="p-3 sm:p-4 lg:p-8">
           <Outlet />
         </div>
       </main>

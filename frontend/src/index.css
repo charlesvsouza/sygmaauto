@@ -55,6 +55,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  overflow-x: hidden;
+}
+
+button,
+a[role='button'],
+input,
+select,
+textarea {
+  min-height: 44px;
+}
+
 /* Scrollbar moderna */
 ::-webkit-scrollbar {
   width: 8px;
@@ -458,4 +470,56 @@ body {
 
 .bg-gradient-main {
   background: linear-gradient(135deg, #082f49 0%, #1e3a8a 100%);
+}
+
+@media (max-width: 1024px) {
+  .page-header {
+    @apply flex-col items-start gap-3;
+  }
+
+  .action-bar {
+    @apply flex-wrap w-full;
+  }
+
+  .action-bar > * {
+    @apply w-full;
+  }
+
+  .modal {
+    @apply w-[calc(100%-1.5rem)] max-w-none;
+  }
+
+  .table th,
+  .table td {
+    @apply px-3 py-2.5;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+
+  .card,
+  .card-flat,
+  .stat-card {
+    @apply rounded-2xl;
+  }
+
+  .btn {
+    @apply w-full;
+  }
+
+  .btn-sm,
+  .btn-lg {
+    @apply w-full;
+  }
+
+  .tabs {
+    @apply overflow-x-auto;
+  }
+
+  .tab {
+    @apply whitespace-nowrap;
+  }
 }
