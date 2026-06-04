@@ -46,19 +46,19 @@ export function LandingPage() {
       <section className="relative max-w-6xl mx-auto px-6 pt-10 pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none flex items-start justify-center">
           <motion.div
-            animate={{ scale: [1, 1.06, 1], opacity: [0.08, 0.18, 0.08] }}
+            animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.22, 0.1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="mt-16 w-[520px] h-[520px] rounded-full bg-[#0b7f86]/25 blur-[95px]"
+            className="mt-16 w-[520px] h-[520px] rounded-full bg-[#0b7f86]/28 blur-[95px]"
           />
         </div>
 
         <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
-          <div>
+          <div className="rounded-[30px] border border-white/10 bg-white/[0.03] backdrop-blur-sm px-7 py-8 shadow-[0_20px_64px_rgba(0,0,0,0.35)]">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-[#0b7f86]/25 bg-[#0b7f86]/10 px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#0b7f86]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#0b7f86]/35 bg-[#0b7f86]/12 px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#7fd2d8]"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#0b7f86] animate-pulse" />
               Sistema para oficinas mecânicas
@@ -70,9 +70,9 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="mt-6 text-[clamp(2.8rem,7vw,5.2rem)] font-black leading-[0.95] tracking-tight"
             >
-              <span className="text-[#0f1f2b]">Sigma</span>{' '}
-              <span className="text-[#0b7f86]">Auto</span>
-              <span className="block text-[#1a3547] mt-1">gestão em fluxo real</span>
+              <span className="text-[#f8fafc]">Sigma</span>{' '}
+              <span className="text-[#58c3cb]">Auto</span>
+              <span className="block text-[#c6d4df] mt-1">gestão em fluxo real</span>
             </motion.h1>
 
             <motion.div
@@ -81,14 +81,14 @@ export function LandingPage() {
               transition={{ duration: 0.6, delay: 0.17 }}
               className="mt-5"
             >
-              <EcgPulse className="h-7 w-[320px] rounded-full border border-[#0b7f86]/30 bg-white/80 overflow-hidden relative" />
+              <EcgPulse className="h-7 w-[320px] rounded-full border border-[#0b7f86]/30 bg-white/[0.04] overflow-hidden relative" />
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-7 text-lg md:text-xl font-bold text-[#1f3948] max-w-2xl leading-snug"
+              className="mt-7 text-lg md:text-xl font-bold text-[#e5ecf3] max-w-2xl leading-snug"
             >
               Do primeiro parafuso ao lucro no bolso, gestão completa para sua oficina sem virar bagunça digital.
             </motion.p>
@@ -97,7 +97,7 @@ export function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.32 }}
-              className="mt-3 text-base text-[#4c6471] max-w-xl"
+              className="mt-3 text-base text-[#a1b0bd] max-w-xl"
             >
               Menos planilha, menos retrabalho e mais clareza para decidir, do atendimento ao fechamento da ordem de serviço.
             </motion.p>
@@ -117,7 +117,7 @@ export function LandingPage() {
               </button>
               <Link
                 to="/solucoes"
-                className="h-[52px] px-8 rounded-2xl border border-[#b9d3db] text-[#1f3948] font-bold text-base hover:border-[#0b7f86]/45 hover:bg-[#0b7f86]/5 transition-all inline-flex items-center"
+                className="h-[52px] px-8 rounded-2xl border border-white/20 text-[#dce5ee] font-bold text-base hover:border-[#58c3cb]/55 hover:bg-[#58c3cb]/10 transition-all inline-flex items-center"
               >
                 Explorar soluções
               </Link>
@@ -236,7 +236,7 @@ export function LandingPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
+      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-white/8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map(({ icon: Icon, title, desc }, index) => (
             <motion.article
@@ -245,13 +245,13 @@ export function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-5 hover:border-[#ff7b2f]/30 transition-colors"
+              className="rounded-3xl border border-white/10 bg-white/[0.045] backdrop-blur-sm p-5 hover:border-[#ff7b2f]/35 transition-colors"
             >
               <div className="w-10 h-10 rounded-xl bg-[#ff7b2f]/15 flex items-center justify-center mb-4">
                 <Icon size={20} className="text-[#ff7b2f]" />
               </div>
               <p className="font-bold text-sm text-white">{title}</p>
-              <p className="mt-1 text-xs text-white/50 leading-relaxed">{desc}</p>
+              <p className="mt-1 text-xs text-white/68 leading-relaxed">{desc}</p>
             </motion.article>
           ))}
         </div>
