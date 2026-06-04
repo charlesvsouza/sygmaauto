@@ -18,11 +18,11 @@ export function LandingPage() {
         rotateY: 0,
         scale: 1,
         opacity: 1,
-        transition: { duration: 1.55, ease: [0.23, 1.0, 0.32, 1.0] },
+        transition: { duration: 1.25, ease: [0.23, 1, 0.32, 1] },
       });
       logoControls.start({
         rotateY: 360,
-        transition: { duration: 9, repeat: Infinity, ease: 'linear' },
+        transition: { duration: 10, repeat: Infinity, ease: 'linear' },
       });
     }
     runLogoSequence();
@@ -124,83 +124,110 @@ export function LandingPage() {
             </motion.div>
           </div>
 
-          <div className="relative hidden lg:flex items-center justify-center min-h-[420px]">
-            <div className="absolute w-[330px] h-[330px] rounded-full bg-[#0b7f86]/12 blur-3xl pointer-events-none" />
-
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-[260px] h-[260px] rounded-full"
-              style={{
-                background: 'radial-gradient(circle at 38% 32%, rgba(11,127,134,0.28) 0%, rgba(11,127,134,0.10) 45%, transparent 68%)',
-                boxShadow: 'inset 0 0 80px rgba(11,127,134,0.06)',
-              }}
-            />
-
+          <div className="relative hidden lg:flex items-center justify-center min-h-[460px]">
             <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
-              style={{ animationDuration: '18s' }}
+              className="absolute"
+              style={{ left: '44%', top: '43%', transform: 'translate(-50%, -50%)' }}
             >
-              <div className="w-[300px] h-[300px] rounded-full border border-[#0b7f86]/24" style={{ transform: 'rotateX(62deg)' }} />
-            </div>
-
-            <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
-              style={{ animationDuration: '7s', animationTimingFunction: 'linear' }}
-            >
-              <div className="relative" style={{ width: 300, height: 300, transform: 'rotateX(62deg)' }}>
-                <div className="absolute" style={{ top: -5, left: '50%', transform: 'translateX(-50%)' }}>
-                  <div
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{
-                      background: 'radial-gradient(circle, #0b7f86 20%, rgba(11,127,134,0.15) 100%)',
-                      boxShadow: '0 0 8px 3px rgba(11,127,134,0.75), 0 0 18px rgba(11,127,134,0.30)',
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
-              style={{ animationDuration: '28s', animationDirection: 'reverse' }}
-            >
-              <div
-                className="w-[360px] h-[360px] rounded-full border border-[#0b7f86]/16"
-                style={{ transform: 'rotateX(48deg) rotateZ(30deg)' }}
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-3xl"
+                style={{
+                  background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(11,127,134,0.14) 55%, rgba(11,127,134,0.02) 100%)',
+                }}
               />
-            </div>
 
-            <motion.div
-              animate={{ y: [0, -14, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut', delay: 1.7 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
-              style={{ perspective: 900 }}
-            >
-              <motion.div initial={{ rotateY: 720, scale: 0.22, opacity: 0 }} animate={logoControls}>
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-36 h-36 rounded-full bg-[#0b7f86]/10 blur-3xl animate-pulse" />
-                  <div
-                    className="absolute w-[110px] h-[110px] rounded-full border border-[#0b7f86]/30 animate-spin"
-                    style={{ animationDuration: '14s' }}
-                  />
-                  <div
-                    className="relative w-20 h-20 rounded-full flex items-center justify-center border-2 border-[#0b7f86]/60"
-                    style={{
-                      background: 'radial-gradient(circle at 35% 30%, rgba(11,127,134,0.20) 0%, rgba(246,252,253,0.96) 70%)',
-                      boxShadow: '0 0 48px rgba(11,127,134,0.25), 0 0 90px rgba(11,127,134,0.12), inset 0 0 24px rgba(11,127,134,0.08)',
-                    }}
-                  >
-                    <img
-                      src="/logo.png"
-                      alt="Logo SigmaAuto"
-                      className="w-11 h-11 object-contain"
-                      style={{ filter: 'drop-shadow(0 0 8px rgba(11,127,134,0.55))' }}
+              <div className="pointer-events-none absolute" style={{ left: 0, top: 0, transform: 'translate(-50%, -50%) rotateZ(20deg) rotateX(70deg)' }}>
+                <div className="w-[238px] h-[238px] rounded-full border" style={{ borderColor: 'rgba(251,191,36,0.55)' }} />
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotateZ: [0, 360] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: 'linear' }}
+                >
+                  <div className="absolute" style={{ top: -6, left: '50%', transform: 'translateX(-50%)' }}>
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle, #fbbf24 20%, rgba(251,191,36,0.15) 100%)',
+                        boxShadow: '0 0 8px 3px rgba(251,191,36,0.9), 0 0 18px rgba(251,191,36,0.4)',
+                      }}
                     />
                   </div>
-                </div>
-              </motion.div>
-            </motion.div>
+                </motion.div>
+              </div>
+
+              <div className="pointer-events-none absolute" style={{ left: 0, top: 0, transform: 'translate(-50%, -50%) rotateZ(-22deg) rotateX(62deg)' }}>
+                <div className="w-[318px] h-[318px] rounded-full border" style={{ borderColor: 'rgba(245,158,11,0.45)' }} />
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotateZ: [120, 480] }}
+                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                >
+                  <div className="absolute" style={{ top: -6, left: '50%', transform: 'translateX(-50%)' }}>
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle, #f59e0b 20%, rgba(245,158,11,0.15) 100%)',
+                        boxShadow: '0 0 8px 3px rgba(245,158,11,0.9), 0 0 18px rgba(245,158,11,0.38)',
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="pointer-events-none absolute hidden sm:block" style={{ left: 0, top: 0, transform: 'translate(-50%, -50%) rotateZ(8deg) rotateX(58deg)' }}>
+                <div className="w-[392px] h-[392px] rounded-full border" style={{ borderColor: 'rgba(251,191,36,0.38)' }} />
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotateZ: [240, 600] }}
+                  transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
+                >
+                  <div className="absolute" style={{ top: -6, left: '50%', transform: 'translateX(-50%)' }}>
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle, #fcd34d 20%, rgba(252,211,77,0.15) 100%)',
+                        boxShadow: '0 0 8px 3px rgba(252,211,77,0.85), 0 0 18px rgba(252,211,77,0.35)',
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="absolute z-10" style={{ left: 0, top: 0, transform: 'translate(-50%, -50%)' }}>
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut', delay: 1.7 }}
+                  style={{ perspective: 900 }}
+                >
+                  <motion.div initial={{ rotateY: 620, scale: 0.25, opacity: 0 }} animate={logoControls}>
+                    <div className="relative flex items-center justify-center">
+                      <div className="absolute w-[100px] h-[100px] rounded-full blur-2xl" style={{ background: 'rgba(251,191,36,0.22)' }} />
+                      <div
+                        className="absolute w-[80px] h-[80px] rounded-full border animate-spin"
+                        style={{ borderColor: 'rgba(251,191,36,0.34)', animationDuration: '14s' }}
+                      />
+                      <div
+                        className="relative w-[60px] h-[60px] rounded-full flex items-center justify-center border"
+                        style={{
+                          borderColor: 'rgba(251,191,36,0.65)',
+                          background: 'radial-gradient(circle at 35% 30%, rgba(11,127,134,0.16) 0%, rgba(2,17,23,0.96) 74%)',
+                          boxShadow: '0 0 40px rgba(251,191,36,0.22), 0 0 70px rgba(11,127,134,0.16), inset 0 0 22px rgba(251,191,36,0.07)',
+                        }}
+                      >
+                        <img
+                          src="/logo.png"
+                          alt="Logo SigmaAuto"
+                          className="w-[30px] h-[30px] object-contain"
+                          style={{ filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.68))' }}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
