@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
-  Car, User, Clock, AlertCircle, Monitor, AlertTriangle, Timer,
+  Car, User, Clock, AlertCircle, Monitor, AlertTriangle, Timer, ArrowLeft,
 } from 'lucide-react';
 
 const PROGRESS_STEPS = [
@@ -205,6 +206,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
 
 // ─── Página ───────────────────────────────────────────────────────────────────
 export function KanbanRecepcaoPage() {
+  const navigate = useNavigate();
   const { tenant } = useAuthStore();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -279,9 +281,16 @@ export function KanbanRecepcaoPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
       {/* Header */}
-      <div className={`flex items-center justify-between px-6 border-b border-white/10 ${tvMode ? 'py-4' : 'py-3'}`}>
-        <div className="flex items-center gap-3">
-          <Monitor className="text-purple-400 w-5 h-5" />
+      <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-4' : 'py-3'}`}>
+        <div className="flex items-start gap-3">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            aria-label="Voltar para dashboard"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <Monitor className="text-purple-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Painel de Recepção
@@ -292,7 +301,7 @@ export function KanbanRecepcaoPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <button
             onClick={() => load(false)}
             className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"

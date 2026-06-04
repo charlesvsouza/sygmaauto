@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
+import { useBoardViewport } from '../hooks/useBoardViewport';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
   Car, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, ArrowLeft, ChevronLeft, ChevronRight,
@@ -181,9 +182,8 @@ export function KanbanPage() {
   const [advancing, setAdvancing] = useState<string | null>(null);
   const [tvMode, setTvMode] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const boardScrollRef = useRef<HTMLDivElement | null>(null);
+  const { isCompactViewport, boardScrollRef, getColumnWidth, scrollColumns } = useBoardViewport();
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -211,12 +211,6 @@ export function KanbanPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, []);
 
-  useEffect(() => {
-    const onResize = () => setViewportWidth(window.innerWidth);
-    window.addEventListener('resize', onResize, { passive: true });
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
   const handleAdvance = async (id: string, nextStatus: string) => {
     setAdvancing(id);
     try {
@@ -236,23 +230,7 @@ export function KanbanPage() {
 
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
-  const isCompactViewport = viewportWidth < 1024;
-  const columnWidth = tvMode
-    ? 288
-    : viewportWidth < 640
-      ? Math.max(250, viewportWidth - 48)
-      : viewportWidth < 1024
-        ? Math.max(260, Math.min(320, viewportWidth * 0.46))
-        : 256;
-
-  const scrollColumns = (direction: 'left' | 'right') => {
-    if (!boardScrollRef.current) return;
-    const offset = Math.max(columnWidth * 0.92, 240);
-    boardScrollRef.current.scrollBy({
-      left: direction === 'right' ? offset : -offset,
-      behavior: 'smooth',
-    });
-  };
+  const columnWidth = getColumnWidth(tvMode);
 
   return (
     <div className={`min-h-screen flex flex-col ${tvMode ? 'bg-slate-950' : 'bg-slate-950'}`}>
@@ -286,14 +264,14 @@ export function KanbanPage() {
           {isCompactViewport && !tvMode && (
             <>
               <button
-                onClick={() => scrollColumns('left')}
+                onClick={() => scrollColumns('left', columnWidth)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
               >
                 <ChevronLeft size={14} />
                 Colunas
               </button>
               <button
-                onClick={() => scrollColumns('right')}
+                onClick={() => scrollColumns('right', columnWidth)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
               >
                 Colunas

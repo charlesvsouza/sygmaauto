@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
+import { useBoardViewport } from '../hooks/useBoardViewport';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
-  Cog, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, Package, Ruler, FileText,
+  Cog, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, Package, Ruler, FileText, ArrowLeft, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
@@ -239,6 +240,7 @@ function RetificaCard({
 
 // ─── Página ───────────────────────────────────────────────────────────────────
 export function KanbanRetificaPage() {
+  const navigate = useNavigate();
   const { tenant, user } = useAuthStore();
   const canRollback = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
   const [searchParams, setSearchParams] = useSearchParams();
@@ -255,6 +257,7 @@ export function KanbanRetificaPage() {
   const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null; existingDescriptions: Set<string> } | null>(null);
   // Modal de laudo
   const [laudoTarget, setLaudoTarget] = useState<any | null>(null);
+  const { isCompactViewport, boardScrollRef, getColumnWidth, scrollColumns } = useBoardViewport();
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -372,13 +375,21 @@ export function KanbanRetificaPage() {
 
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
+  const columnWidth = getColumnWidth(tvMode);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
       {/* Header */}
-      <div className={`flex items-center justify-between px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
-        <div className="flex items-center gap-3">
-          <Cog className="text-amber-400 w-5 h-5" />
+      <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
+        <div className="flex items-start gap-3">
+          <button
+            onClick={() => navigate('/dashboard-retifica')}
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            aria-label="Voltar para dashboard de retífica"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <Cog className="text-amber-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban — Retífica de Motores
@@ -394,7 +405,25 @@ export function KanbanRetificaPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          {isCompactViewport && !tvMode && (
+            <>
+              <button
+                onClick={() => scrollColumns('left', columnWidth)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+              >
+                <ChevronLeft size={14} />
+                Colunas
+              </button>
+              <button
+                onClick={() => scrollColumns('right', columnWidth)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+              >
+                Colunas
+                <ChevronRight size={14} />
+              </button>
+            </>
+          )}
           <button
             onClick={() => load(false)}
             className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
@@ -427,14 +456,15 @@ export function KanbanRetificaPage() {
           <Loader2 className="animate-spin text-amber-400" size={40} />
         </div>
       ) : (
-        <div className="flex-1 overflow-x-auto">
-          <div className="flex gap-3 p-4 min-w-max" style={{ minHeight: 'calc(100vh - 80px)' }}>
+        <div ref={boardScrollRef} className="flex-1 overflow-x-auto overflow-y-hidden scroll-smooth">
+          <div className="flex gap-3 p-3 sm:p-4 min-w-max snap-x snap-mandatory" style={{ minHeight: 'calc(100vh - 104px)' }}>
             {KANBAN_COLUMNS.map((col) => {
               const colOrders = orders.filter((o) => o.status === col.status);
               return (
                 <div
                   key={col.status}
-                  className={`flex flex-col ${tvMode ? 'w-72' : 'w-64'} shrink-0`}
+                  className="flex flex-col shrink-0 snap-start"
+                  style={{ width: `${columnWidth}px` }}
                 >
                   {/* Cabeçalho */}
                   <div className="flex items-center gap-2 mb-3 px-1">
