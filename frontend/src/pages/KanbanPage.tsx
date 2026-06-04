@@ -5,7 +5,7 @@ import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
-  Car, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer,
+  Car, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, ArrowLeft, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 
 // ─── Status visíveis no Kanban (exclui estados terminais) ────────────────────
@@ -181,7 +181,9 @@ export function KanbanPage() {
   const [advancing, setAdvancing] = useState<string | null>(null);
   const [tvMode, setTvMode] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const boardScrollRef = useRef<HTMLDivElement | null>(null);
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -209,6 +211,12 @@ export function KanbanPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, []);
 
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   const handleAdvance = async (id: string, nextStatus: string) => {
     setAdvancing(id);
     try {
@@ -228,13 +236,37 @@ export function KanbanPage() {
 
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
+  const isCompactViewport = viewportWidth < 1024;
+  const columnWidth = tvMode
+    ? 288
+    : viewportWidth < 640
+      ? Math.max(250, viewportWidth - 48)
+      : viewportWidth < 1024
+        ? Math.max(260, Math.min(320, viewportWidth * 0.46))
+        : 256;
+
+  const scrollColumns = (direction: 'left' | 'right') => {
+    if (!boardScrollRef.current) return;
+    const offset = Math.max(columnWidth * 0.92, 240);
+    boardScrollRef.current.scrollBy({
+      left: direction === 'right' ? offset : -offset,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <div className={`min-h-screen flex flex-col ${tvMode ? 'bg-slate-950' : 'bg-slate-950'}`}>
       {/* Header */}
-      <div className={`flex items-center justify-between px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
-        <div className="flex items-center gap-3">
-          <Tv2 className="text-cyan-400 w-5 h-5" />
+      <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
+        <div className="flex items-start gap-3">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            aria-label="Voltar para dashboard"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <Tv2 className="text-cyan-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban de Pátio
@@ -250,7 +282,25 @@ export function KanbanPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          {isCompactViewport && !tvMode && (
+            <>
+              <button
+                onClick={() => scrollColumns('left')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+              >
+                <ChevronLeft size={14} />
+                Colunas
+              </button>
+              <button
+                onClick={() => scrollColumns('right')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+              >
+                Colunas
+                <ChevronRight size={14} />
+              </button>
+            </>
+          )}
           <button
             onClick={() => load(false)}
             className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
@@ -283,14 +333,18 @@ export function KanbanPage() {
           <Loader2 className="animate-spin text-cyan-400" size={40} />
         </div>
       ) : (
-        <div className="flex-1 overflow-x-auto">
-          <div className={`flex gap-3 p-4 h-full min-w-max`} style={{ minHeight: 'calc(100vh - 80px)' }}>
+        <div
+          ref={boardScrollRef}
+          className="flex-1 overflow-x-auto overflow-y-hidden scroll-smooth"
+        >
+          <div className={`flex gap-3 p-3 sm:p-4 h-full min-w-max snap-x snap-mandatory`} style={{ minHeight: 'calc(100vh - 104px)' }}>
             {KANBAN_COLUMNS.map((col) => {
               const colOrders = ordersForColumn(col.status);
               return (
                 <div
                   key={col.status}
-                  className={`flex flex-col ${tvMode ? 'w-72' : 'w-64'} shrink-0`}
+                  className="flex flex-col shrink-0 snap-start"
+                  style={{ width: `${columnWidth}px` }}
                 >
                   {/* Column header */}
                   <div className={`flex items-center gap-2 mb-3 px-1`}>
