@@ -183,7 +183,7 @@ export function KanbanPage() {
   const [tvMode, setTvMode] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { isCompactViewport, boardScrollRef, getColumnWidth, scrollColumns } = useBoardViewport();
+  const { isCompactViewport, boardScrollRef, getColumnWidth, getBoardFit, scrollColumns } = useBoardViewport();
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -231,6 +231,11 @@ export function KanbanPage() {
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
   const columnWidth = getColumnWidth(tvMode);
+  const boardFit = getBoardFit({
+    columnCount: KANBAN_COLUMNS.length,
+    columnWidth,
+    tvMode,
+  });
 
   return (
     <div className={`min-h-screen flex flex-col ${tvMode ? 'bg-slate-950' : 'bg-slate-950'}`}>
@@ -313,9 +318,13 @@ export function KanbanPage() {
       ) : (
         <div
           ref={boardScrollRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden scroll-smooth"
+          className={`flex-1 ${boardFit.fitEnabled ? 'overflow-hidden' : 'overflow-x-auto overflow-y-hidden'} scroll-smooth`}
+          style={boardFit.wrapperStyle}
         >
-          <div className={`flex gap-3 p-3 sm:p-4 h-full min-w-max snap-x snap-mandatory`} style={{ minHeight: 'calc(100vh - 104px)' }}>
+          <div
+            className={`flex gap-3 p-3 sm:p-4 h-full min-w-max snap-x snap-mandatory`}
+            style={boardFit.fitEnabled ? boardFit.innerStyle : { minHeight: 'calc(100vh - 104px)' }}
+          >
             {KANBAN_COLUMNS.map((col) => {
               const colOrders = ordersForColumn(col.status);
               return (

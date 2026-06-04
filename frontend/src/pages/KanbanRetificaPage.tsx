@@ -257,7 +257,7 @@ export function KanbanRetificaPage() {
   const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null; existingDescriptions: Set<string> } | null>(null);
   // Modal de laudo
   const [laudoTarget, setLaudoTarget] = useState<any | null>(null);
-  const { isCompactViewport, boardScrollRef, getColumnWidth, scrollColumns } = useBoardViewport();
+  const { isCompactViewport, boardScrollRef, getColumnWidth, getBoardFit, scrollColumns } = useBoardViewport();
 
   const load = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -376,6 +376,11 @@ export function KanbanRetificaPage() {
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
   const columnWidth = getColumnWidth(tvMode);
+  const boardFit = getBoardFit({
+    columnCount: KANBAN_COLUMNS.length,
+    columnWidth,
+    tvMode,
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
@@ -456,8 +461,15 @@ export function KanbanRetificaPage() {
           <Loader2 className="animate-spin text-amber-400" size={40} />
         </div>
       ) : (
-        <div ref={boardScrollRef} className="flex-1 overflow-x-auto overflow-y-hidden scroll-smooth">
-          <div className="flex gap-3 p-3 sm:p-4 min-w-max snap-x snap-mandatory" style={{ minHeight: 'calc(100vh - 104px)' }}>
+        <div
+          ref={boardScrollRef}
+          className={`flex-1 ${boardFit.fitEnabled ? 'overflow-hidden' : 'overflow-x-auto overflow-y-hidden'} scroll-smooth`}
+          style={boardFit.wrapperStyle}
+        >
+          <div
+            className="flex gap-3 p-3 sm:p-4 min-w-max snap-x snap-mandatory"
+            style={boardFit.fitEnabled ? boardFit.innerStyle : { minHeight: 'calc(100vh - 104px)' }}
+          >
             {KANBAN_COLUMNS.map((col) => {
               const colOrders = orders.filter((o) => o.status === col.status);
               return (
