@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import { ArrowRight, CheckCircle, CheckCircle2, ChevronRight, CircleSlash } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MarketingShell } from '../components/marketing/MarketingShell';
@@ -9,6 +10,23 @@ import { useAuthStore } from '../store/authStore';
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const logoControls = useAnimation();
+
+  useEffect(() => {
+    async function runLogoSequence() {
+      await logoControls.start({
+        rotateY: 0,
+        scale: 1,
+        opacity: 1,
+        transition: { duration: 1.55, ease: [0.23, 1.0, 0.32, 1.0] },
+      });
+      logoControls.start({
+        rotateY: 360,
+        transition: { duration: 9, repeat: Infinity, ease: 'linear' },
+      });
+    }
+    runLogoSequence();
+  }, [logoControls]);
 
   const startPlanCheckout = (planName: PlanName) => {
     navigate(`/planos?plan=${planName}`);
@@ -25,123 +43,173 @@ export function LandingPage() {
 
   return (
     <MarketingShell>
-      <section className="relative max-w-6xl mx-auto px-6 pt-8 pb-20 text-center overflow-hidden">
+      <section className="relative max-w-6xl mx-auto px-6 pt-10 pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none flex items-start justify-center">
           <motion.div
-            animate={{ scale: [1, 1.22, 1], opacity: [0.12, 0.3, 0.12] }}
-            transition={{ duration: 2.9, repeat: Infinity, ease: 'easeInOut' }}
-            className="mt-20 w-[440px] h-[440px] rounded-full bg-[#ff7b2f]/20 blur-[90px]"
-          />
-          <motion.div
-            animate={{ scale: [0.85, 1.18, 1.3], opacity: [0, 0.15, 0] }}
-            transition={{ duration: 2.9, repeat: Infinity, ease: 'easeOut', delay: 0.45 }}
-            className="absolute mt-10 w-[680px] h-[680px] rounded-full border border-[#ff7b2f]/20"
+            animate={{ scale: [1, 1.06, 1], opacity: [0.08, 0.18, 0.08] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="mt-16 w-[520px] h-[520px] rounded-full bg-[#0b7f86]/25 blur-[95px]"
           />
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#ff7b2f]"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ff7b2f] animate-pulse" />
-          Sistema para oficinas mecânicas
-        </motion.div>
+        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 rounded-full border border-[#0b7f86]/25 bg-[#0b7f86]/10 px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#0b7f86]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0b7f86] animate-pulse" />
+              Sistema para oficinas mecânicas
+            </motion.div>
 
-        <div className="relative mt-8 inline-block">
-          <motion.div
-            className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
-            animate={{ scale: [1, 1.08, 1], opacity: [0.24, 0.42, 0.24] }}
-            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <div className="w-[115%] h-[115%] rounded-full bg-[#ff7b2f]/25 blur-[34px]" />
-          </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mt-6 text-[clamp(2.8rem,7vw,5.2rem)] font-black leading-[0.95] tracking-tight"
+            >
+              <span className="text-[#0f1f2b]">Sigma</span>{' '}
+              <span className="text-[#0b7f86]">Auto</span>
+              <span className="block text-[#1a3547] mt-1">gestão em fluxo real</span>
+            </motion.h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative z-10 text-[clamp(3.4rem,10vw,7rem)] font-black leading-none tracking-[0.12em] uppercase"
-            style={{ letterSpacing: '0.14em' }}
-          >
-            <span className="text-white">Sigma</span>
-            <span className="text-[#ff7b2f]"> Auto</span>
-          </motion.h1>
-        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.17 }}
+              className="mt-5"
+            >
+              <EcgPulse className="h-7 w-[320px] rounded-full border border-[#0b7f86]/30 bg-white/80 overflow-hidden relative" />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.17 }}
-          className="mx-auto mt-4"
-        >
-          <EcgPulse className="mx-auto h-7 w-[340px] rounded-full border border-[#ff7b2f]/25 bg-[#0d1220]/40 overflow-hidden relative" />
-        </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-7 text-lg md:text-xl font-bold text-[#1f3948] max-w-2xl leading-snug"
+            >
+              Do primeiro parafuso ao lucro no bolso, gestão completa para sua oficina sem virar bagunça digital.
+            </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-7 text-[clamp(1.1rem,2.5vw,1.5rem)] font-bold text-white/80 max-w-3xl leading-snug mx-auto"
-        >
-          Do primeiro parafuso ao lucro no bolso. <span className="text-white">Gestão completa para sua oficina, sem virar uma bagunça digital.</span>
-        </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.32 }}
+              className="mt-3 text-base text-[#4c6471] max-w-xl"
+            >
+              Menos planilha, menos retrabalho e mais clareza para decidir, do atendimento ao fechamento da ordem de serviço.
+            </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.32 }}
-          className="mt-4 text-base text-white/45 max-w-2xl mx-auto"
-        >
-          Menos planilha, menos retrabalho e mais clareza para decidir. Tudo em um fluxo simples, do atendimento ao fechamento da ordem de servico.
-        </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.42 }}
+              className="mt-9 flex flex-wrap gap-3"
+            >
+              <button
+                onClick={handleAccess}
+                className="h-[52px] px-8 rounded-2xl bg-[#0b7f86] text-white font-black text-base tracking-wide hover:bg-[#076168] transition-all shadow-[0_16px_34px_rgba(11,127,134,0.28)] inline-flex items-center gap-2"
+              >
+                Entrar no sistema
+                <ArrowRight size={18} />
+              </button>
+              <Link
+                to="/solucoes"
+                className="h-[52px] px-8 rounded-2xl border border-[#b9d3db] text-[#1f3948] font-bold text-base hover:border-[#0b7f86]/45 hover:bg-[#0b7f86]/5 transition-all inline-flex items-center"
+              >
+                Explorar soluções
+              </Link>
+            </motion.div>
+          </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.42 }}
-          className="mt-10 flex flex-wrap gap-3 justify-center"
-        >
-          <button
-            onClick={handleAccess}
-            className="h-[52px] px-8 rounded-2xl bg-[#ff7b2f] text-white font-black text-base tracking-wide hover:bg-[#f06820] transition-all shadow-[0_0_30px_rgba(255,123,47,0.4)] inline-flex items-center gap-2"
-          >
-            Entrar no sistema
-            <ArrowRight size={18} />
-          </button>
-          <Link
-            to="/solucoes"
-            className="h-[52px] px-8 rounded-2xl border border-white/15 text-white font-bold text-base hover:border-white/40 hover:bg-white/5 transition-all inline-flex items-center"
-          >
-            Explorar soluções
-          </Link>
-        </motion.div>
+          <div className="relative hidden lg:flex items-center justify-center min-h-[420px]">
+            <div className="absolute w-[330px] h-[330px] rounded-full bg-[#0b7f86]/12 blur-3xl pointer-events-none" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-16 flex flex-wrap justify-center gap-8 text-center"
-        >
-          {[
-            { value: '99.95%', label: 'Disponibilidade' },
-            { value: '-34%', label: 'Tempo medio de O.S.' },
-            { value: '+52%', label: 'Produtividade da equipe' },
-          ].map((item) => (
-            <div key={item.label}>
-              <p className="text-3xl font-black text-white">{item.value}</p>
-              <p className="text-xs text-white/45 mt-1 uppercase tracking-widest">{item.label}</p>
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-[260px] h-[260px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle at 38% 32%, rgba(11,127,134,0.28) 0%, rgba(11,127,134,0.10) 45%, transparent 68%)',
+                boxShadow: 'inset 0 0 80px rgba(11,127,134,0.06)',
+              }}
+            />
+
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
+              style={{ animationDuration: '18s' }}
+            >
+              <div className="w-[300px] h-[300px] rounded-full border border-[#0b7f86]/24" style={{ transform: 'rotateX(62deg)' }} />
             </div>
-          ))}
-        </motion.div>
+
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
+              style={{ animationDuration: '7s', animationTimingFunction: 'linear' }}
+            >
+              <div className="relative" style={{ width: 300, height: 300, transform: 'rotateX(62deg)' }}>
+                <div className="absolute" style={{ top: -5, left: '50%', transform: 'translateX(-50%)' }}>
+                  <div
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{
+                      background: 'radial-gradient(circle, #0b7f86 20%, rgba(11,127,134,0.15) 100%)',
+                      boxShadow: '0 0 8px 3px rgba(11,127,134,0.75), 0 0 18px rgba(11,127,134,0.30)',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none animate-spin"
+              style={{ animationDuration: '28s', animationDirection: 'reverse' }}
+            >
+              <div
+                className="w-[360px] h-[360px] rounded-full border border-[#0b7f86]/16"
+                style={{ transform: 'rotateX(48deg) rotateZ(30deg)' }}
+              />
+            </div>
+
+            <motion.div
+              animate={{ y: [0, -14, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut', delay: 1.7 }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+              style={{ perspective: 900 }}
+            >
+              <motion.div initial={{ rotateY: 720, scale: 0.22, opacity: 0 }} animate={logoControls}>
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-36 h-36 rounded-full bg-[#0b7f86]/10 blur-3xl animate-pulse" />
+                  <div
+                    className="absolute w-[110px] h-[110px] rounded-full border border-[#0b7f86]/30 animate-spin"
+                    style={{ animationDuration: '14s' }}
+                  />
+                  <div
+                    className="relative w-20 h-20 rounded-full flex items-center justify-center border-2 border-[#0b7f86]/60"
+                    style={{
+                      background: 'radial-gradient(circle at 35% 30%, rgba(11,127,134,0.20) 0%, rgba(246,252,253,0.96) 70%)',
+                      boxShadow: '0 0 48px rgba(11,127,134,0.25), 0 0 90px rgba(11,127,134,0.12), inset 0 0 24px rgba(11,127,134,0.08)',
+                    }}
+                  >
+                    <img
+                      src="/logo.png"
+                      alt="Logo SigmaAuto"
+                      className="w-11 h-11 object-contain"
+                      style={{ filter: 'drop-shadow(0 0 8px rgba(11,127,134,0.55))' }}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map(({ icon: Icon, title, desc }, index) => (
             <motion.article
@@ -163,10 +231,10 @@ export function LandingPage() {
       </section>
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Navegação Comercial</p>
           <h2 className="text-3xl md:text-4xl font-black">Encontre rapido o que sua oficina precisa</h2>
@@ -201,10 +269,10 @@ export function LandingPage() {
       </section>
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section id="planos" className="max-w-6xl mx-auto px-6 py-20">
+      <section id="planos" className="max-w-6xl mx-auto px-6 py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
           <h2 className="text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>

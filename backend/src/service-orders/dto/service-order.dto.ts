@@ -136,6 +136,11 @@ export class CreateOrcamentoDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  observations?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   equipmentBrand?: string;
 
   @ApiProperty({ required: false })

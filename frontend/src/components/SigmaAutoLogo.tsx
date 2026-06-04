@@ -16,9 +16,13 @@ interface SigmaAutoLogoProps {
   variant?: LogoVariant;
   size?: number;       // tamanho do ícone em px
   className?: string;
+  tone?: 'light' | 'dark';
 }
 
-export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '' }: SigmaAutoLogoProps) {
+export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', tone = 'light' }: SigmaAutoLogoProps) {
+  const primaryText = tone === 'dark' ? '#0f1f2b' : '#ffffff';
+  const secondaryText = tone === 'dark' ? '#4f6470' : '#64748b';
+
   const Icon = (
     <img
       src="/logo.png"
@@ -38,7 +42,7 @@ export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '' }
       <div className={`flex items-center gap-2.5 ${className}`}>
         {Icon}
         <div className="leading-none">
-          <span className="block font-black text-white text-[15px] tracking-tight">
+          <span className="block font-black text-[15px] tracking-tight" style={{ color: primaryText }}>
             Sigma<span style={{ color: '#f59e0b' }}>Auto</span>
           </span>
         </div>
@@ -51,10 +55,10 @@ export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '' }
     <div className={`flex items-center gap-3 ${className}`}>
       {Icon}
       <div className="leading-none">
-        <span className="block font-black text-white text-xl tracking-tight">
+        <span className="block font-black text-xl tracking-tight" style={{ color: primaryText }}>
           Sigma<span style={{ color: '#f59e0b' }}>Auto</span>
         </span>
-        <span className="block text-[10px] text-slate-500 font-medium tracking-widest uppercase mt-0.5">
+        <span className="block text-[10px] font-medium tracking-widest uppercase mt-0.5" style={{ color: secondaryText }}>
           Gestão de Oficina
         </span>
       </div>

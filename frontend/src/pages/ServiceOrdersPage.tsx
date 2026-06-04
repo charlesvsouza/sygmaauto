@@ -229,6 +229,7 @@ export function ServiceOrdersPage() {
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [importTargetOrderId, setImportTargetOrderId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
     const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
@@ -1152,7 +1153,10 @@ export function ServiceOrdersPage() {
             </h2>
             <div className="flex gap-2">
               <button
-                onClick={() => setShowImportModal(true)}
+                onClick={() => {
+                  setImportTargetOrderId(null);
+                  setShowImportModal(true);
+                }}
                 className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-lg"
                 title="Importar de Orcamento PDF"
               >
@@ -1294,6 +1298,17 @@ export function ServiceOrdersPage() {
                   <ClipboardCheck size={15} />
                   Saída
                   {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
+                </button>
+                <button
+                  onClick={() => {
+                    setImportTargetOrderId(selectedOrder.id);
+                    setShowImportModal(true);
+                  }}
+                  disabled={isClosed || !canManageItems}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={isClosed ? 'OS finalizada nao pode receber importacao de orçamento' : !canManageItems ? 'Sem permissao para importar itens na O.S.' : 'Importar orçamento externo nesta O.S.'}
+                >
+                  <FileUp size={15} /> Importar Orcamento Externo
                 </button>
                 <button
                   onClick={() => navigate('/service-orders')}
@@ -2475,10 +2490,20 @@ export function ServiceOrdersPage() {
       </AnimatePresence>
       {showImportModal && (
         <ImportOSModal 
-          onClose={() => setShowImportModal(false)} 
-          onSuccess={() => {
-            loadOrders();
-            alert('OS Importada com sucesso!');
+          targetOrderId={importTargetOrderId ?? undefined}
+          onClose={() => {
+            setShowImportModal(false);
+            setImportTargetOrderId(null);
+          }} 
+          onSuccess={async () => {
+            await loadOrders();
+            if (importTargetOrderId) {
+              const updated = await serviceOrdersApi.getById(importTargetOrderId);
+              setSelectedOrder(updated.data);
+              alert('Orcamento externo importado na O.S. com sucesso!');
+            } else {
+              alert('OS Importada com sucesso!');
+            }
           }} 
         />
       )}

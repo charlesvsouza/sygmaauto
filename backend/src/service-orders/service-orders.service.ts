@@ -230,6 +230,7 @@ export class ServiceOrdersService {
         status: 'ABERTA',
         statusChangedAt: new Date(),
         notes: dto.notes,
+        observations: dto.observations,
         complaint: dto.complaint,
         equipmentBrand: dto.equipmentBrand,
         equipmentModel: dto.equipmentModel,

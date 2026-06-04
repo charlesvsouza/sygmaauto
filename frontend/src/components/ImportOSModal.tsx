@@ -7,14 +7,23 @@ import { cn } from '../lib/utils';
 interface ImportOSModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  targetOrderId?: string;
 }
 
-export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
+export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'upload' | 'review'>('upload');
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const isAppendMode = Boolean(targetOrderId);
+
+  const parseApiError = (err: any, fallback: string) => {
+    const message = err?.response?.data?.message;
+    if (Array.isArray(message)) return message.join(' • ');
+    if (typeof message === 'string') return message;
+    return fallback;
+  };
 
   const handleUpload = async () => {
     if (!file) return;
@@ -25,7 +34,7 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
       setData(res.data);
       setStep('review');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao processar PDF. Verifique se a chave da API do Google está configurada corretamente no .env do backend.');
+      setError(parseApiError(err, 'Erro ao processar PDF. Verifique se a chave da API do Google está configurada corretamente no .env do backend.'));
     } finally {
       setLoading(false);
     }
@@ -54,6 +63,38 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
     setLoading(true);
     setError(null);
     try {
+      if (isAppendMode && targetOrderId) {
+        const currentOrder = await serviceOrdersApi.getById(targetOrderId);
+        const currentComplaint = String(currentOrder.data?.complaint || '').trim();
+        const currentObservations = String(currentOrder.data?.observations || '').trim();
+        const importedObservations = String(data?.observations || '').trim();
+
+        for (const item of data?.items || []) {
+          await serviceOrdersApi.addItem(targetOrderId, {
+            type: item.type === 'service' ? 'service' : 'part',
+            description: item.description,
+            quantity: Number(item.quantity) || 1,
+            unitPrice: Number(item.unitPrice) || 0,
+            internalCode: item.internalCode,
+          });
+        }
+
+        if (importedObservations) {
+          const mergedObservations = currentObservations
+            ? `${currentObservations}\n\n${importedObservations}`
+            : importedObservations;
+
+          await serviceOrdersApi.update(targetOrderId, {
+            observations: mergedObservations,
+            ...(currentComplaint ? {} : { complaint: importedObservations }),
+          });
+        }
+
+        onSuccess();
+        onClose();
+        return;
+      }
+
       // 1. Garantir Cliente
       let customerId = '';
       try {
@@ -133,7 +174,7 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao criar Ordem de Serviço. Verifique os dados informados.');
+      setError(parseApiError(err, 'Erro ao criar Ordem de Serviço. Verifique os dados informados.'));
     } finally {
       setLoading(false);
     }
@@ -155,7 +196,9 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
               <FileUp size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Importar Orçamento PDF</h2>
+              <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+                {isAppendMode ? 'Importar Orçamento Externo na O.S.' : 'Importar Orçamento PDF'}
+              </h2>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">IA Assistida · Verifique os dados abaixo</p>
             </div>
           </div>
@@ -213,7 +256,7 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
             </div>
           ) : (
             <div className="space-y-8">
-              <div className="grid grid-cols-2 gap-8">
+              {!isAppendMode && <div className="grid grid-cols-2 gap-8">
                 {/* Cliente */}
                 <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200">
                   <div className="flex items-center gap-2 mb-6 text-indigo-600 border-b border-slate-200 pb-3">
@@ -291,7 +334,13 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>}
+
+              {isAppendMode && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-800 font-semibold">
+                  Os dados de cliente e veículo da O.S. serão mantidos. A importação irá adicionar os itens do PDF e anexar as observações extraídas.
+                </div>
+              )}
 
               {/* Observações do PDF */}
               {(data.observations || data._warnings) && (
@@ -419,7 +468,7 @@ export function ImportOSModal({ onClose, onSuccess }: ImportOSModalProps) {
               className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
-              Confirmar e Abrir O.S.
+              {isAppendMode ? 'Importar na O.S. Aberta' : 'Confirmar e Abrir O.S.'}
             </button>
           )}
         </div>
