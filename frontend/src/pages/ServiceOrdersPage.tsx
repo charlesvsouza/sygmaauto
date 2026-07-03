@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi, pdfApi } from '../api/client';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
-  Wrench, Package, FileText, FileDown, Trash2, Layout, X,
+  Wrench, Package, FileText, Trash2, Layout, X,
   Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
   ClipboardCheck, ShoppingCart, CheckCircle2, AlertTriangle, Calendar, Sparkles,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
 import { ChecklistModal } from '../components/ChecklistModal';
@@ -232,15 +233,15 @@ export function ServiceOrdersPage() {
   const [importTargetOrderId, setImportTargetOrderId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
-    const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
+  const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
   const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
   const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
   const [quickVehicle, setQuickVehicle] = useState({ plate: '', brand: '', model: '', color: '', year: '' });
-  const [osPrintStep, setOsPrintStep] = useState<'preview' | 'print'>('preview');
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [showDiagBanner, setShowDiagBanner] = useState(false);
+
   const [creatingDiagOrder, setCreatingDiagOrder] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const isReprovado = selectedOrder?.status === 'REPROVADO';
@@ -541,24 +542,7 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const downloadOrderPdf = async () => {
-    if (!selectedOrder) return;
-    try {
-      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `os-${selectedOrder.id}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-    } catch {
-      alert('Erro ao baixar PDF da O.S.');
-    }
-  };
-
-  const previewOrderPdf = async () => {
+  const viewOrderPdf = async () => {
     if (!selectedOrder) return;
     try {
       const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
@@ -573,53 +557,6 @@ export function ServiceOrdersPage() {
     } catch {
       alert('Erro ao gerar PDF da O.S.');
     }
-  };
-
-  const printOrderPdf = async () => {
-    if (!selectedOrder) return;
-    try {
-      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-
-      const frame = document.createElement('iframe');
-      frame.style.position = 'fixed';
-      frame.style.right = '0';
-      frame.style.bottom = '0';
-      frame.style.width = '0';
-      frame.style.height = '0';
-      frame.style.border = '0';
-      frame.src = url;
-
-      frame.onload = () => {
-        try {
-          frame.contentWindow?.focus();
-          frame.contentWindow?.print();
-        } finally {
-          window.setTimeout(() => {
-            frame.remove();
-            window.URL.revokeObjectURL(url);
-          }, 1000);
-        }
-      };
-
-      frame.onerror = () => {
-        frame.remove();
-        window.URL.revokeObjectURL(url);
-        alert('Erro ao abrir a impressao da O.S.');
-      };
-
-      document.body.appendChild(frame);
-    } catch {
-      alert('Erro ao gerar PDF da O.S.');
-    }
-  };
-
-  const handleOsPrintButton = async () => {
-    if (osPrintStep === 'preview') {
-      await previewOrderPdf();
-      return;
-    }
-    await printOrderPdf();
   };
 
   const getCurrentPhaseIndex = (status: string) => {
@@ -1268,25 +1205,11 @@ export function ServiceOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={downloadOrderPdf}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
-                  title="Baixar PDF da O.S."
-                >
-                  <FileDown size={15} /> Baixar PDF
-                </button>
-                <button
-                  onClick={previewOrderPdf}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
-                  title="Abrir visualizacao do PDF da O.S."
-                >
-                  <FileText size={15} /> Visualizar PDF
-                </button>
-                <button
-                  onClick={printOrderPdf}
+                  onClick={viewOrderPdf}
                   className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all"
-                  title="Imprimir O.S."
+                  title="Visualizar O.S. em PDF"
                 >
-                  <Printer size={15} /> Imprimir OS
+                  <FileText size={15} /> Visualizar O.S.
                 </button>
                 {/* Botões de Checklist - verde quando ja preenchido */}
                 <button
