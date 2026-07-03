@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi, pdfApi } from '../api/client';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
-  Wrench, Package, FileText, Trash2, Layout, X,
+  Wrench, Package, FileText, FileDown, Trash2, Layout, X,
   Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
   ClipboardCheck, ShoppingCart, CheckCircle2, AlertTriangle, Calendar, Sparkles,
 } from 'lucide-react';
@@ -541,6 +541,23 @@ export function ServiceOrdersPage() {
     }
   };
 
+  const downloadOrderPdf = async () => {
+    if (!selectedOrder) return;
+    try {
+      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `os-${selectedOrder.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch {
+      alert('Erro ao baixar PDF da O.S.');
+    }
+  };
+
   const previewOrderPdf = async () => {
     if (!selectedOrder) return;
     try {
@@ -552,7 +569,6 @@ export function ServiceOrdersPage() {
         alert('Nao foi possivel abrir a visualizacao. Verifique o bloqueador de pop-ups.');
         return;
       }
-      setOsPrintStep('print');
       window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch {
       alert('Erro ao gerar PDF da O.S.');
@@ -578,7 +594,6 @@ export function ServiceOrdersPage() {
         try {
           frame.contentWindow?.focus();
           frame.contentWindow?.print();
-          window.setTimeout(() => setOsPrintStep('preview'), 3000);
         } finally {
           window.setTimeout(() => {
             frame.remove();
@@ -1253,16 +1268,25 @@ export function ServiceOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={handleOsPrintButton}
-                  className={cn(
-                    'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
-                    osPrintStep === 'preview'
-                      ? 'border-slate-200 bg-white hover:bg-slate-50'
-                      : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                  )}
-                  title={osPrintStep === 'preview' ? 'Primeiro clique: visualizar O.S.' : 'Segundo clique: imprimir O.S.'}
+                  onClick={downloadOrderPdf}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
+                  title="Baixar PDF da O.S."
                 >
-                  <Printer size={15} /> {osPrintStep === 'preview' ? 'Visualizar OS' : 'Imprimir OS'}
+                  <FileDown size={15} /> Baixar PDF
+                </button>
+                <button
+                  onClick={previewOrderPdf}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 transition-all"
+                  title="Abrir visualizacao do PDF da O.S."
+                >
+                  <FileText size={15} /> Visualizar PDF
+                </button>
+                <button
+                  onClick={printOrderPdf}
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all"
+                  title="Imprimir O.S."
+                >
+                  <Printer size={15} /> Imprimir OS
                 </button>
                 {/* Botões de Checklist - verde quando ja preenchido */}
                 <button

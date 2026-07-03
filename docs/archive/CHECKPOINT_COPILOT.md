@@ -1,8 +1,8 @@
 # Checkpoint Oficina360 — Para Copilot
 
-**Data:** 2026-05-31  
+**Data:** 2026-06-04  
 **Branch:** master  
-**Último commit:** `7fb5ce8 fix(whatsapp): adiciona coluna wavoipToken em Setting para Evolution API v2.3.7`
+**Último commit:** `c5d0044 fix(boards): add viewport fit mode for fullscreen kanbans`
 
 ---
 
@@ -12,6 +12,13 @@
 - **Frontend:** React + Vite + TypeScript + Tailwind + Framer Motion → Vercel
 - **Backend:** NestJS + Prisma + PostgreSQL → Railway (Docker)
 - **Auth:** JWT com refresh token, multi-tenant por `tenantId`
+
+### Estado Atual do Frontend Público e Operacional
+- Landing pública revisada para tom noir consistente, com linguagem mais acessível para donos de oficina que ainda operam no papel.
+- Conteúdo da landing foi reposicionado para destacar qualidade de produto, inovações entregues e integrações planejadas, evitando marketing fantasioso.
+- Responsividade base do sistema foi reforçada em `frontend/src/index.css` e `frontend/src/components/Layout.tsx`, com foco em smartphone e tablet.
+- Boards full-screen agora seguem padrão compartilhado com botão de retorno, navegação lateral assistida e ajuste automático por viewport.
+- Hook compartilhado criado em `frontend/src/hooks/useBoardViewport.ts` para evitar duplicação entre boards.
 
 ---
 
@@ -157,3 +164,19 @@ WHERE table_name = 'tenants' AND column_name = 'diagnosticHours';
 - **Estilos:** Tailwind + classes globais `.btn`, `.btn-primary`, `.input`, `.card`, `.badge` em `index.css`
 - **Cores primárias:** `primary-600 = #2563eb` (azul), sidebar `midnight-950`
 - **Modais:** Framer Motion `scale: 0.95 → 1`, `backdrop-blur-sm`, `rounded-[3rem]`
+
+### Padrão de Boards Full-Screen
+- Toda tela full-screen deve ter saída explícita para dashboard ou painel pai.
+- Toda tela com colunas horizontais deve detectar viewport e ajustar largura de coluna automaticamente.
+- Em telas compactas, boards devem expor navegação lateral assistida além do scroll horizontal.
+- Em telas com espaço útil suficiente, o board deve tentar encaixe real no viewport antes de depender apenas de rolagem lateral.
+- Referência documental: `DIRETRIZ_BOARDS_FULLSCREEN_RESPONSIVOS.md`.
+
+### Arquivos-chave recentes do padrão visual/responsivo
+- `frontend/src/hooks/useBoardViewport.ts`
+- `frontend/src/components/Layout.tsx`
+- `frontend/src/index.css`
+- `frontend/src/pages/KanbanPage.tsx`
+- `frontend/src/pages/KanbanRetificaPage.tsx`
+- `frontend/src/pages/KanbanRecepcaoPage.tsx`
+- `frontend/src/pages/LandingPage.tsx`
