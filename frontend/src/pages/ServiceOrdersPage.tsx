@@ -1493,7 +1493,7 @@ export function ServiceOrdersPage() {
               </div>
 
               {/* Campos texto */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">

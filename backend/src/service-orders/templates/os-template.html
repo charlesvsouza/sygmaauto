@@ -126,6 +126,8 @@
             font-size: 11px;
             line-height: 1.5;
             color: #444;
+            white-space: pre-line;
+            word-wrap: break-word;
         }
         
         /* ===== TABELAS ===== */
@@ -314,11 +316,19 @@
             <div class="box-content">{{complaint}}</div>
         </div>
         
-        <!-- LAUDO TÉCNICO -->
+        <!-- DIAGNÓSTICO TÉCNICO -->
         <div class="box">
-            <div class="box-title">Laudo Técnico</div>
+            <div class="box-title">Diagnóstico Técnico</div>
             <div class="box-content">{{diagnosis}}</div>
         </div>
+
+        <!-- LAUDO / SOLUÇÃO -->
+        {{#if technicalReport}}
+        <div class="box">
+            <div class="box-title">Laudo / Solução</div>
+            <div class="box-content">{{technicalReport}}</div>
+        </div>
+        {{/if}}
         
         <!-- SERVIÇOS PRESTADOS -->
         <div class="section-header">Serviços Prestados</div>

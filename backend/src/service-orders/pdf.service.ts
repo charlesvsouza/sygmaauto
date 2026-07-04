@@ -97,6 +97,12 @@ export class PdfService {
       // Ler arquivo template
       let htmlContent = fs.readFileSync(templatePath, 'utf-8');
 
+      // Processar condicionais {{#if chave}}...{{/if}} antes das substituições
+      htmlContent = htmlContent.replace(
+        /{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g,
+        (_match, key, inner) => (data[key] ? inner : ''),
+      );
+
       // Fazer replace de variáveis simples
       Object.keys(data).forEach((key) => {
         const value = data[key] || '';
@@ -125,7 +131,6 @@ export class PdfService {
 
       // Limpar variáveis não usadas
       htmlContent = htmlContent.replace(/{{.*?}}/g, '');
-      htmlContent = htmlContent.replace(/{{#if.*?}}.*?{{\/if}}/gs, '');
 
       return this.generatePdfFromHtml(htmlContent, options);
     } catch (error) {

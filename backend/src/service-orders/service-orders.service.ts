@@ -1369,7 +1369,8 @@ export class ServiceOrdersService {
       vehicleKM: order.vehicle?.km || order.kmEntrada || '0',
       
       complaint: order.complaint || 'Não informado',
-      diagnosis: order.diagnosis || order.technicalReport || 'Aguardando diagnóstico',
+      diagnosis: order.diagnosis || 'Não informado',
+      technicalReport: order.technicalReport || '',
       observations: order.observations || '',
       
       servicesRows,
