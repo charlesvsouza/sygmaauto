@@ -1340,8 +1340,8 @@ export class ServiceOrdersService {
 
     const templateData = {
       companyName:
-        order.tenant.tradeName ||
         order.tenant.name ||
+        order.tenant.tradeName ||
         order.tenant.legalName ||
         'SygmaAuto',
       companyAddress: order.tenant.address || 'Endereço não configurado',
