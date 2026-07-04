@@ -938,15 +938,15 @@ export function ServiceOrdersPage() {
                 <tbody>
                   {selectedOrder.complaint && <>
                     <tr className="hdr"><td>RECLAMACAO DO CLIENTE</td></tr>
-                    <tr><td style={{ minHeight: '22px' }}>{selectedOrder.complaint}</td></tr>
+                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.complaint}</td></tr>
                   </>}
                   {selectedOrder.diagnosis && <>
                     <tr className="hdr"><td>DIAGNOSTICO TECNICO</td></tr>
-                    <tr><td style={{ minHeight: '22px' }}>{selectedOrder.diagnosis}</td></tr>
+                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.diagnosis}</td></tr>
                   </>}
                   {selectedOrder.technicalReport && <>
                     <tr className="hdr"><td>LAUDO / SOLUCAO APLICADA</td></tr>
-                    <tr><td style={{ minHeight: '22px' }}>{selectedOrder.technicalReport}</td></tr>
+                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.technicalReport}</td></tr>
                   </>}
                 </tbody>
               </table>
@@ -1501,9 +1501,14 @@ export function ServiceOrdersPage() {
                     </label>
                     <textarea
                       value={edit[field]}
-                      onChange={(e) => setEdit({ ...edit, [field]: e.target.value })}
+                      ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = `${el.scrollHeight}px`; } }}
+                      onChange={(e) => {
+                        setEdit({ ...edit, [field]: e.target.value });
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
                       readOnly={isReprovado}
-                      className={`w-full h-24 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold focus:bg-white focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all resize-none ${isReprovado ? 'opacity-60 cursor-not-allowed bg-slate-100' : ''}`}
+                      className={`w-full min-h-24 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold focus:bg-white focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-slate-100' : ''}`}
                     />
                   </div>
                 ))}
