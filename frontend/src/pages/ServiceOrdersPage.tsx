@@ -304,10 +304,6 @@ export function ServiceOrdersPage() {
     return () => document.removeEventListener('mousedown', handler);
   }, [showStatusDropdown]);
 
-  useEffect(() => {
-    setOsPrintStep('preview');
-  }, [selectedOrder?.id]);
-
   useEffect(() => { loadOrders(); loadBasics(); }, []);
 
   const loadOrders = async () => {
