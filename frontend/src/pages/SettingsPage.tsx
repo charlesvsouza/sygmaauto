@@ -632,7 +632,7 @@ export function SettingsPage() {
 
             <div className="p-5 space-y-3">
               <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">Tema</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-xl">
                 {THEME_PRESETS.map((preset) => {
                   const active = themePreset === preset.id;
                   return (
@@ -643,8 +643,8 @@ export function SettingsPage() {
                       className={cn(
                         'text-left rounded-lg border p-3 transition-all',
                         active
-                          ? 'border-blue-500 bg-blue-500/10 shadow-sm ring-1 ring-blue-400'
-                          : 'border-line bg-surface-900 hover:border-line hover:shadow-sm'
+                          ? 'border-accent bg-accent-soft shadow-sm ring-1 ring-accent'
+                          : 'border-line bg-panel hover:border-line-strong hover:shadow-sm'
                       )}
                     >
                       {/* Swatches */}
@@ -657,8 +657,8 @@ export function SettingsPage() {
                           />
                         ))}
                       </div>
-                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-blue-700' : 'text-surface-50')}>{preset.label}</p>
-                      <p className="text-[10px] text-surface-400 mt-0.5 leading-tight">{preset.description}</p>
+                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-accent' : 'text-ink')}>{preset.label}</p>
+                      <p className="text-[10px] text-muted mt-0.5 leading-tight">{preset.description}</p>
                     </button>
                   );
                 })}

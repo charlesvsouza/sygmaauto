@@ -9,7 +9,7 @@ import {
   Truck, CheckCircle, FileSpreadsheet,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useToast } from '../components/ui';
+import { useToast, CollapsiblePanel } from '../components/ui';
 import { ImportNFModal } from '../components/ImportNFModal';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -342,6 +342,18 @@ export function InventoryPage() {
   const totalValue = parts.reduce((s, p) => s + Number(p.unitPrice) * (p.currentStock || 0), 0);
   const lowStock = parts.filter((p) => (p.currentStock || 0) <= (p.minStock || 0)).length;
 
+  // Agrupa por categoria para os painéis colapsáveis
+  const groupedParts = useMemo(() => {
+    const map = new Map<string, any[]>();
+    for (const p of filtered) {
+      const code = p.category || '';
+      const label = CATEGORIES.find((c) => c.code === code)?.label || (code || 'Sem categoria');
+      if (!map.has(label)) map.set(label, []);
+      map.get(label)!.push(p);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
+  }, [filtered]);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-10">
       {/* Header */}
@@ -400,120 +412,107 @@ export function InventoryPage() {
         ))}
       </div>
 
-      {/* Tabela */}
-      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
-        {/* Filtros */}
-        <div className="p-6 border-b border-line flex flex-col sm:flex-row gap-4">
+      {/* Busca fixa */}
+      <div className="sticky top-0 z-20 -my-2 py-2 bg-app/95 backdrop-blur-sm">
+        <div className="flex flex-col sm:flex-row gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
             <input type="text" placeholder="Buscar por nome, código interno ou SKU..."
               value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 font-medium" />
+              className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors" />
           </div>
           <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-line text-sm font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent/40 bg-surface-900">
+            className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25">
             <option value="">Todas as categorias</option>
             {CATEGORIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
           </select>
         </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center h-48">
-            <Loader2 className="w-8 h-8 animate-spin text-surface-500" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Package className="w-12 h-12 text-surface-600 mb-3" />
-            <p className="font-bold text-surface-500">Nenhuma peça encontrada</p>
-            <p className="text-sm text-surface-600 mt-1">Cadastre peças ou ajuste os filtros</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-line">
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Código / Peça</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Categoria</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Fornecedor</th>
-                  <th className="px-6 py-4 text-center text-[10px] font-black text-surface-500 uppercase tracking-widest">Estoque</th>
-                  <th className="px-6 py-4 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Preço Unit.</th>
-                  <th className="px-6 py-4 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {filtered.map((part) => {
-                  const stock = part.currentStock || 0;
-                  const low = stock <= (part.minStock || 0);
-                  return (
-                    <tr key={part.id} className="hover:bg-ink/5 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-bold text-surface-50 text-sm">{part.name}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            {part.internalCode && (
-                              <span className="text-[10px] font-mono bg-surface-800 text-surface-300 px-1.5 py-0.5 rounded font-bold">{part.internalCode}</span>
-                            )}
-                            {part.sku && (
-                              <span className="text-[10px] text-surface-500 font-medium">{part.sku}</span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {part.category ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-800 text-surface-200 text-[10px] font-black uppercase tracking-wider rounded-lg">
-                            {CATEGORIES.find(c => c.code === part.category)?.label || part.category}
-                          </span>
-                        ) : <span className="text-surface-600 text-sm">—</span>}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-surface-300 font-medium">
-                          {part.supplier?.name || <span className="text-surface-600">—</span>}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={cn(
-                          'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black',
-                          low ? 'bg-red-500/10 text-red-600' : 'bg-emerald-500/10 text-emerald-700'
-                        )}>
-                          {low && <AlertTriangle className="w-3 h-3" />}
-                          {stock} {part.unit}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="text-sm font-black text-surface-50">
-                          R$ {Number(part.unitPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => { setShowMovModal(part); setMovType('ENTRY'); }}
-                            title="Entrada"
-                            disabled={!canManageParts}
-                            className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-600 transition-colors">
-                            <ArrowDownLeft className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => { setShowMovModal(part); setMovType('EXIT'); }}
-                            title="Saída"
-                            disabled={!canManageParts}
-                            className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors">
-                            <ArrowUpRight className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => openEdit(part)}
-                            disabled={!canManageParts}
-                            className="p-2 rounded-lg hover:bg-ink/5 text-surface-300 transition-colors">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-48 rounded-lg border border-line bg-panel">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center rounded-lg border border-line bg-panel">
+          <Package className="w-12 h-12 text-faint mb-3" />
+          <p className="font-semibold text-ink">Nenhuma peça encontrada</p>
+          <p className="text-sm text-muted mt-1">Cadastre peças ou ajuste os filtros</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {groupedParts.map(([label, items]) => (
+            <CollapsiblePanel
+              key={label}
+              title={label}
+              count={items.length}
+              defaultOpen={groupedParts.length <= 4 || Boolean(search)}
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[760px] text-sm">
+                  <thead>
+                    <tr className="border-b border-line bg-panel-2 text-xs text-muted">
+                      <th className="px-4 py-2.5 text-left font-medium">Código / Peça</th>
+                      <th className="px-4 py-2.5 text-left font-medium">Fornecedor</th>
+                      <th className="px-4 py-2.5 text-center font-medium">Estoque</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Preço Unit.</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-line">
+                    {items.map((part) => {
+                      const stock = part.currentStock || 0;
+                      const low = stock <= (part.minStock || 0);
+                      return (
+                        <tr key={part.id} className="hover:bg-panel-2 transition-colors group">
+                          <td className="px-4 py-3">
+                            <p className="font-semibold text-ink">{part.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {part.internalCode && (
+                                <span className="text-[10px] font-mono bg-panel-2 text-muted px-1.5 py-0.5 rounded">{part.internalCode}</span>
+                              )}
+                              {part.sku && <span className="text-[10px] text-faint">{part.sku}</span>}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3"><span className="text-muted">{part.supplier?.name || '—'}</span></td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={cn(
+                              'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold',
+                              low ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'
+                            )}>
+                              {low && <AlertTriangle className="w-3 h-3" />}
+                              {stock} {part.unit}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right font-semibold text-ink">
+                            R$ {Number(part.unitPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-1 md:opacity-0 md:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                              <button onClick={() => { setShowMovModal(part); setMovType('ENTRY'); }} title="Entrada" disabled={!canManageParts}
+                                className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                <ArrowDownLeft className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => { setShowMovModal(part); setMovType('EXIT'); }} title="Saída" disabled={!canManageParts}
+                                className="p-1.5 rounded-md text-danger hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                <ArrowUpRight className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => openEdit(part)} disabled={!canManageParts}
+                                className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                <Edit className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CollapsiblePanel>
+          ))}
+        </div>
+      )}
 
       {/* Modal Peça */}
       <AnimatePresence>
