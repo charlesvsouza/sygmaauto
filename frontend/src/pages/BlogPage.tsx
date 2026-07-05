@@ -89,7 +89,7 @@ export default function BlogPage() {
         <div className="relative max-w-7xl mx-auto px-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-zinc-500 hover:text-white text-sm font-medium transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-surface-400 hover:text-white text-sm font-medium transition-colors mb-8"
           >
             <ArrowLeft size={14} />
             Voltar ao site
@@ -101,7 +101,7 @@ export default function BlogPage() {
             Conteúdo para{' '}
             <span className="gradient-text">crescer</span>
           </h1>
-          <p className="text-zinc-400 text-lg max-w-xl">
+          <p className="text-surface-400 text-lg max-w-xl">
             Dicas, tutoriais e insights sobre gestão de oficinas, tecnologia automotiva e mercado.
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function BlogPage() {
                   <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center mb-3">
                     <span className="text-2xl">📈</span>
                   </div>
-                  <p className="text-zinc-600 text-xs">Imagem em breve</p>
+                  <p className="text-surface-500 text-xs">Imagem em breve</p>
                 </div>
               </div>
               <div className="order-1 lg:order-2">
@@ -132,8 +132,8 @@ export default function BlogPage() {
                 <h2 className="text-2xl lg:text-3xl font-black text-white mb-3 leading-tight group-hover:text-amber-400 transition-colors">
                   {posts[0].title}
                 </h2>
-                <p className="text-zinc-400 text-sm leading-relaxed mb-5">{posts[0].excerpt}</p>
-                <div className="flex items-center gap-4 text-zinc-600 text-xs">
+                <p className="text-surface-400 text-sm leading-relaxed mb-5">{posts[0].excerpt}</p>
+                <div className="flex items-center gap-4 text-surface-500 text-xs">
                   <span className="flex items-center gap-1"><User size={11} /> {posts[0].author}</span>
                   <span>{posts[0].date}</span>
                   <span className="flex items-center gap-1"><Clock size={11} /> {posts[0].readTime}</span>
@@ -166,8 +166,8 @@ export default function BlogPage() {
               <h3 className="font-black text-white text-base leading-snug mb-3 group-hover:text-amber-400 transition-colors flex-1">
                 {post.title}
               </h3>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
-              <div className="flex items-center gap-3 text-zinc-700 text-[11px] pt-4 border-t border-white/[0.05]">
+              <p className="text-surface-400 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
+              <div className="flex items-center gap-3 text-surface-300 text-[11px] pt-4 border-t border-white/[0.05]">
                 <span>{post.date}</span>
                 <span>·</span>
                 <span className="flex items-center gap-1"><Clock size={10} /> {post.readTime} de leitura</span>
@@ -179,13 +179,13 @@ export default function BlogPage() {
         {/* Newsletter CTA */}
         <div className="mt-16 rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 to-orange-600/4 p-10 text-center">
           <h3 className="text-2xl font-black text-white mb-2">Receba novos artigos no seu e-mail</h3>
-          <p className="text-zinc-400 text-sm mb-6">Conteúdo semanal sobre gestão de oficinas. Sem spam.</p>
+          <p className="text-surface-400 text-sm mb-6">Conteúdo semanal sobre gestão de oficinas. Sem spam.</p>
           <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
             <input
               type="email"
               placeholder="seu@email.com.br"
               required
-              className="flex-1 px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-zinc-700 focus:outline-none focus:border-amber-500/40 transition-all"
+              className="flex-1 px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-surface-500 focus:outline-none focus:border-amber-500/40 transition-all"
             />
             <button
               type="submit"

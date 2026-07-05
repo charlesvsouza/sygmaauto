@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { commissionsApi, usersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
+import { useToast } from '../components/ui';
 import { Loader2, DollarSign, CheckCircle2, Download, FileSpreadsheet, Trophy } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -17,6 +18,7 @@ const money = (value: number) =>
 
 export function CommissionsPage() {
   const { user } = useAuthStore();
+  const toast = useToast();
   const canMarkAsPaid = ['MASTER', 'ADMIN', 'FINANCEIRO'].includes(user?.role ?? '');
 
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ export function CommissionsPage() {
       await commissionsApi.markAsPaid(id);
       await load();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Não foi possível marcar como paga.');
+      toast.error(error?.response?.data?.message || 'Não foi possível marcar como paga.');
     } finally {
       setPayingId('');
     }
@@ -171,12 +173,12 @@ export function CommissionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Comissões</h1>
-          <p className="text-slate-500 font-medium">Controle por executor e por item de serviço.</p>
+          <h1 className="text-3xl font-black text-surface-50 tracking-tight">Comissões</h1>
+          <p className="text-surface-400 font-medium">Controle por executor e por item de serviço.</p>
         </div>
         <button
           onClick={exportCsv}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gold-500 text-surface-950 text-sm font-bold hover:bg-gold-400"
         >
           <Download size={16} /> Exportar CSV
         </button>
@@ -189,25 +191,25 @@ export function CommissionsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Total</p>
-          <p className="text-2xl font-black text-slate-900 mt-1">{money(totals.total)}</p>
+        <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
+          <p className="text-xs text-surface-400 font-bold uppercase tracking-wider">Total</p>
+          <p className="text-2xl font-black text-surface-50 mt-1">{money(totals.total)}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-amber-200 p-5">
-          <p className="text-xs text-amber-600 font-bold uppercase tracking-wider">Pendente</p>
-          <p className="text-2xl font-black text-amber-700 mt-1">{money(totals.pending)}</p>
+        <div className="bg-surface-900 rounded-2xl border border-amber-500/30 p-5">
+          <p className="text-xs text-amber-400 font-bold uppercase tracking-wider">Pendente</p>
+          <p className="text-2xl font-black text-amber-300 mt-1">{money(totals.pending)}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-emerald-200 p-5">
-          <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider">Pago</p>
-          <p className="text-2xl font-black text-emerald-700 mt-1">{money(totals.paid)}</p>
+        <div className="bg-surface-900 rounded-2xl border border-emerald-500/30 p-5">
+          <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider">Pago</p>
+          <p className="text-2xl font-black text-emerald-300 mt-1">{money(totals.paid)}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
+      <div className="bg-surface-900 rounded-2xl border border-white/10 p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
         <select
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          className="input bg-slate-50 border-slate-200"
+          className="input bg-surface-950/40 border-white/10"
         >
           <option value="">Todos status</option>
           <option value="PENDENTE">Pendente</option>
@@ -217,7 +219,7 @@ export function CommissionsPage() {
         <select
           value={filters.userId}
           onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
-          className="input bg-slate-50 border-slate-200"
+          className="input bg-surface-950/40 border-white/10"
           disabled={!canFilterByUser}
         >
           <option value="">Todos executores</option>
@@ -229,7 +231,7 @@ export function CommissionsPage() {
         <select
           value={filters.workshopArea}
           onChange={(e) => setFilters({ ...filters, workshopArea: e.target.value })}
-          className="input bg-slate-50 border-slate-200"
+          className="input bg-surface-950/40 border-white/10"
         >
           <option value="">Todas áreas</option>
           <option value="MECANICA">Mecânica</option>
@@ -243,43 +245,43 @@ export function CommissionsPage() {
           type="date"
           value={filters.startDate}
           onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-          className="input bg-slate-50 border-slate-200"
+          className="input bg-surface-950/40 border-white/10"
         />
 
         <input
           type="date"
           value={filters.endDate}
           onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-          className="input bg-slate-50 border-slate-200"
+          className="input bg-surface-950/40 border-white/10"
         />
 
         <button onClick={load} className="btn btn-primary">Filtrar</button>
       </div>
 
       {leadership.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-5">
+        <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-4 h-4 text-amber-500" />
-            <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">Visão de Liderança</h2>
+            <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider">Visão de Liderança</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {leadership.slice(0, 8).map((p: any) => (
-              <div key={p.userId} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                <p className="text-xs font-black text-slate-900">{p.name}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
-                <p className="text-sm font-black text-slate-900 mt-2">{money(p.total)}</p>
-                <p className="text-[11px] text-slate-500">{p.count} comissões</p>
+              <div key={p.userId} className="rounded-xl border border-white/5 bg-surface-950/40 p-3">
+                <p className="text-xs font-black text-surface-50">{p.name}</p>
+                <p className="text-[10px] text-surface-400 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
+                <p className="text-sm font-black text-surface-50 mt-2">{money(p.total)}</p>
+                <p className="text-[11px] text-surface-400">{p.count} comissões</p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-5">
-        <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
-        <p className="text-xs text-slate-500 mb-4">Valor total de comissões geradas por mês</p>
+      <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
+        <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
+        <p className="text-xs text-surface-400 mb-4">Valor total de comissões geradas por mês</p>
         {trendData.length === 0 ? (
-          <p className="text-sm text-slate-400 py-8 text-center">Sem dados suficientes para montar a tendência.</p>
+          <p className="text-sm text-surface-500 py-8 text-center">Sem dados suficientes para montar a tendência.</p>
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={trendData}>
@@ -300,14 +302,14 @@ export function CommissionsPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+      <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-x-auto">
         {loading ? (
           <div className="h-56 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-slate-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-surface-400" />
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-widest">
+            <thead className="bg-surface-950/40 text-surface-400 uppercase text-[10px] tracking-widest">
               <tr>
                 <th className="px-4 py-3 text-left">Executor</th>
                 <th className="px-4 py-3 text-left">Área</th>
@@ -322,21 +324,21 @@ export function CommissionsPage() {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.id} className="border-t border-slate-100">
-                  <td className="px-4 py-3 font-bold text-slate-900">{row.user?.name || '—'}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">{row.user?.workshopArea || '—'}</td>
-                  <td className="px-4 py-3 text-slate-600">{row.serviceOrderItem?.description || '—'}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-600">#{String(row.serviceOrderId).slice(0, 8).toUpperCase()}</td>
+                <tr key={row.id} className="border-t border-white/5">
+                  <td className="px-4 py-3 font-bold text-surface-50">{row.user?.name || '—'}</td>
+                  <td className="px-4 py-3 text-surface-400 text-xs">{row.user?.workshopArea || '—'}</td>
+                  <td className="px-4 py-3 text-surface-300">{row.serviceOrderItem?.description || '—'}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-surface-300">#{String(row.serviceOrderId).slice(0, 8).toUpperCase()}</td>
                   <td className="px-4 py-3 text-right">{money(row.baseValue)}</td>
                   <td className="px-4 py-3 text-right font-bold">{Number(row.commissionPercent).toFixed(1)}%</td>
-                  <td className="px-4 py-3 text-right font-black text-slate-900">{money(row.commissionValue)}</td>
+                  <td className="px-4 py-3 text-right font-black text-surface-50">{money(row.commissionValue)}</td>
                   <td className="px-4 py-3">
                     {row.status === 'PAGO' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
                         <CheckCircle2 size={12} /> Pago
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-300 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
                         <DollarSign size={12} /> Pendente
                       </span>
                     )}
@@ -346,19 +348,19 @@ export function CommissionsPage() {
                       <button
                         onClick={() => markAsPaid(row.id)}
                         disabled={payingId === row.id}
-                        className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-700 disabled:opacity-60"
+                        className="px-3 py-1.5 rounded-lg bg-gold-500 text-surface-950 text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
                       >
                         {payingId === row.id ? 'Salvando...' : 'Marcar pago'}
                       </button>
                     ) : (
-                      <span className="text-xs text-slate-400">—</span>
+                      <span className="text-xs text-surface-500">—</span>
                     )}
                   </td>
                 </tr>
               ))}
               {data.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-12 text-center text-slate-400">Nenhuma comissão encontrada no período.</td>
+                  <td colSpan={9} className="px-4 py-12 text-center text-surface-500">Nenhuma comissão encontrada no período.</td>
                 </tr>
               )}
             </tbody>

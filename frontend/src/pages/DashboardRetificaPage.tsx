@@ -289,8 +289,8 @@ export function DashboardRetificaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-6 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-slate-300">
+      <div className="min-h-screen bg-surface-950 text-white p-6 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-surface-600">
           <Loader2 className="animate-spin" size={20} />
           Carregando dashboard de retifica...
         </div>
@@ -300,7 +300,7 @@ export function DashboardRetificaPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-6">
+      <div className="min-h-screen bg-surface-950 text-white p-6">
         <div className="max-w-6xl mx-auto">
           <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200">
             {error}
@@ -311,17 +311,17 @@ export function DashboardRetificaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-6">
+    <div className="min-h-screen bg-surface-950 text-white p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-5">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 to-slate-800 p-5"
+          className="rounded-2xl border border-white/10 bg-gradient-to-r from-surface-900 to-surface-800 p-5"
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-xl md:text-2xl font-black tracking-tight">Dashboard Retifica</h1>
-              <p className="text-slate-400 text-sm mt-1">
+              <p className="text-surface-500 text-sm mt-1">
                 Monitoramento operacional completo: fluxo, tempo por fase, aprovacao tecnica e entregas.
               </p>
             </div>
@@ -333,7 +333,7 @@ export function DashboardRetificaPage() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                     period === p.key
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                      : 'bg-white/5 text-surface-600 hover:bg-white/10'
                   }`}
                 >
                   {p.label}
@@ -341,7 +341,7 @@ export function DashboardRetificaPage() {
               ))}
               <button
                 onClick={load}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 text-xs font-bold"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-surface-600 hover:bg-white/10 text-xs font-bold"
               >
                 <RefreshCw size={13} /> Atualizar
               </button>
@@ -437,11 +437,11 @@ export function DashboardRetificaPage() {
           </ChartShell>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-slate-900/60 p-4">
+        <div className="rounded-xl border border-white/10 bg-black/60 p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <div>
               <h3 className="text-sm font-black text-white">Acoes Prioritarias</h3>
-              <p className="text-xs text-slate-400">Motores com tempo acima do SLA da fase atual.</p>
+              <p className="text-xs text-surface-500">Motores com tempo acima do SLA da fase atual.</p>
             </div>
             <button
               onClick={() => navigate('/kanban-retifica')}
@@ -469,10 +469,10 @@ export function DashboardRetificaPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-sm font-black text-white">
                       <span>#{item.shortId}</span>
-                      <span className="text-slate-300">{item.statusLabel}</span>
-                      <span className="text-slate-400">{item.elapsedText}</span>
+                      <span className="text-surface-600">{item.statusLabel}</span>
+                      <span className="text-surface-500">{item.elapsedText}</span>
                     </div>
-                    <p className="text-xs text-slate-300 truncate">{item.customer} • {item.motorLabel}</p>
+                    <p className="text-xs text-surface-600 truncate">{item.customer} • {item.motorLabel}</p>
                     <p
                       className={`text-xs mt-1 inline-flex items-center gap-1 ${
                         item.level === 'danger' ? 'text-red-300' : 'text-amber-300'
@@ -494,12 +494,12 @@ export function DashboardRetificaPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-slate-900/60 p-4">
-          <div className="flex items-center gap-2 text-slate-300 text-sm font-bold mb-2">
+        <div className="rounded-xl border border-white/10 bg-black/60 p-4">
+          <div className="flex items-center gap-2 text-surface-600 text-sm font-bold mb-2">
             <Wrench size={14} className="text-cyan-400" />
             Leitura operacional
           </div>
-          <p className="text-slate-400 text-sm">
+          <p className="text-surface-500 text-sm">
             O painel usa ordens do tipo RETIFICA_MOTOR com status do fluxo da retifica. O tempo medio por fase
             considera o campo statusChangedAt (fallback para updatedAt/criatedAt), permitindo detectar gargalos no
             processo tecnico antes do prazo estourar.
@@ -548,9 +548,9 @@ function MetricCard({
 
 function ChartShell({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-slate-900/60 p-4">
+    <div className="rounded-xl border border-white/10 bg-black/60 p-4">
       <h3 className="text-sm font-black text-white">{title}</h3>
-      <p className="text-xs text-slate-400 mb-3">{hint}</p>
+      <p className="text-xs text-surface-500 mb-3">{hint}</p>
       {children}
     </div>
   );

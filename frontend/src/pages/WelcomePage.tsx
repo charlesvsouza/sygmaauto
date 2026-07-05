@@ -95,7 +95,7 @@ export default function WelcomePage() {
               <span className="text-xl font-black tracking-tight text-white">
                 Sigma<span className="bg-gradient-to-r from-gold-400 to-gold-500 bg-clip-text text-transparent">Auto</span>
               </span>
-              <p className="text-[11px] text-zinc-500 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
+              <p className="text-[11px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
             </div>
           </motion.div>
 
@@ -117,7 +117,7 @@ export default function WelcomePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="text-zinc-400 text-lg mb-8 leading-relaxed"
+                className="text-surface-500 text-lg mb-8 leading-relaxed"
               >
                 Sua plataforma de gestão automotiva completa está pronta. Acesse agora e comece a operar.
               </motion.p>
@@ -151,7 +151,7 @@ export default function WelcomePage() {
                   </div>
                   <div>
                     <h3 className="font-black text-white mb-1">{item.title}</h3>
-                    <p className="text-sm text-zinc-500 leading-snug">{item.description}</p>
+                    <p className="text-sm text-surface-400 leading-snug">{item.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -162,11 +162,11 @@ export default function WelcomePage() {
           <div className="mt-12 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-zinc-600 uppercase tracking-widest">SigmaAuto Cloud Online</span>
+              <span className="text-xs font-medium text-surface-500 uppercase tracking-widest">SigmaAuto Cloud Online</span>
             </div>
 
             <div className="flex flex-col md:items-end gap-2">
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-surface-400">
                 Redirecionando em <span className="text-white font-black">{seconds}s</span>
               </p>
               <div className="w-48 h-1 bg-white/10 rounded-full overflow-hidden">

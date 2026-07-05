@@ -85,7 +85,7 @@ export function SupportPage() {
         />
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white text-sm font-medium transition-colors mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-surface-400 hover:text-white text-sm font-medium transition-colors mb-8">
             <ArrowLeft size={14} />
             Voltar ao site
           </Link>
@@ -99,7 +99,7 @@ export function SupportPage() {
                 Central de{' '}
                 <span className="gradient-text">ajuda e documentação</span>
               </h1>
-              <p className="text-zinc-400 leading-relaxed">
+              <p className="text-surface-400 leading-relaxed">
                 Acesse o manual completo, encontre respostas rápidas e fale com o time quando precisar de apoio operacional.
               </p>
             </div>
@@ -112,7 +112,7 @@ export function SupportPage() {
                 <div key={s.label} className="rounded-2xl border border-white/[0.07] bg-[#0f0f12] p-5 text-center">
                   <s.icon size={20} className="text-amber-400 mx-auto mb-2" />
                   <p className="text-2xl font-black text-white">{s.value}</p>
-                  <p className="text-zinc-600 text-xs mt-1">{s.label}</p>
+                  <p className="text-surface-500 text-xs mt-1">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -141,10 +141,10 @@ export function SupportPage() {
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${
                   ch.accent ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-white/5 border border-white/10'
                 }`}>
-                  <Icon size={22} className={ch.accent ? 'text-amber-400' : 'text-zinc-400'} />
+                  <Icon size={22} className={ch.accent ? 'text-amber-400' : 'text-surface-400'} />
                 </div>
                 <h2 className="text-lg font-black text-white mb-3">{ch.title}</h2>
-                <p className="text-zinc-500 text-sm leading-relaxed flex-1">{ch.description}</p>
+                <p className="text-surface-400 text-sm leading-relaxed flex-1">{ch.description}</p>
                 <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-amber-400">
                   {ch.cta} <ChevronRight size={13} />
                 </div>
@@ -177,7 +177,7 @@ export function SupportPage() {
                 className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5"
               >
                 <p className="font-bold text-white text-sm mb-2">{item.question}</p>
-                <p className="text-zinc-500 text-sm leading-relaxed">{item.answer}</p>
+                <p className="text-surface-400 text-sm leading-relaxed">{item.answer}</p>
               </motion.div>
             ))}
           </div>

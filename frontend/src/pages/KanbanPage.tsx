@@ -11,7 +11,7 @@ import {
 
 // ─── Status visíveis no Kanban (exclui estados terminais) ────────────────────
 const KANBAN_COLUMNS = [
-  { status: 'ABERTA',               label: 'Abertas',              color: 'border-surface-600',  bg: 'bg-slate-500/10',  dot: 'bg-surface-500' },
+  { status: 'ABERTA',               label: 'Abertas',              color: 'border-surface-600',  bg: 'bg-surface-500/10',  dot: 'bg-surface-500' },
   { status: 'EM_DIAGNOSTICO',       label: 'Diagnóstico',          color: 'border-indigo-500', bg: 'bg-indigo-500/10', dot: 'bg-indigo-400' },
   { status: 'ORCAMENTO_PRONTO',     label: 'Orçamento Pronto',     color: 'border-blue-500',   bg: 'bg-blue-500/10',   dot: 'bg-blue-400' },
   { status: 'AGUARDANDO_APROVACAO', label: 'Ag. Aprovação',        color: 'border-orange-500', bg: 'bg-orange-500/10', dot: 'bg-orange-400' },

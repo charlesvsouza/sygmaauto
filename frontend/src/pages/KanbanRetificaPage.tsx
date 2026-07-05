@@ -14,7 +14,7 @@ import { PHASE_SLA_HOURS } from '../lib/retificaConstants';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
 const KANBAN_COLUMNS = [
-  { status: 'ABERTA',                        label: 'Recebido',             color: 'border-surface-600',   bg: 'bg-slate-500/10',   dot: 'bg-surface-500' },
+  { status: 'ABERTA',                        label: 'Recebido',             color: 'border-surface-600',   bg: 'bg-surface-500/10',   dot: 'bg-surface-500' },
   { status: 'DESMONTAGEM',                   label: 'Desmontagem',          color: 'border-orange-500',  bg: 'bg-orange-500/10',  dot: 'bg-orange-400' },
   { status: 'METROLOGIA',                    label: 'Metrologia',           color: 'border-blue-500',    bg: 'bg-blue-500/10',    dot: 'bg-blue-400' },
   { status: 'ORCAMENTO_RETIFICA',            label: 'Orç. Técnico',         color: 'border-indigo-500',  bg: 'bg-indigo-500/10',  dot: 'bg-indigo-400' },

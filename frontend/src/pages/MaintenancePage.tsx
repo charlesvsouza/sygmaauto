@@ -30,14 +30,14 @@ export function MaintenancePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Manutenção Preventiva</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-surface-50">Manutenção Preventiva</h1>
+          <p className="text-sm text-surface-400 mt-0.5">
             Veículos com intervalo de manutenção vencido — lembretes enviados via WhatsApp automaticamente às 8h.
           </p>
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-surface-800 hover:bg-white/10 text-surface-200 rounded-lg text-sm font-medium transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           Atualizar
@@ -45,9 +45,9 @@ export function MaintenancePage() {
       </div>
 
       {/* Info card */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
-        <Bell className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-        <div className="text-sm text-amber-800">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex gap-3">
+        <Bell className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <div className="text-sm text-amber-300">
           <strong>Lembrete automático ativo:</strong> todo dia às 8h o sistema verifica veículos com
           manutenção vencida (por KM ou por data) e envia mensagem WhatsApp ao cliente. Configure o
           intervalo de manutenção em cada veículo para ativar este recurso.
@@ -64,8 +64,8 @@ export function MaintenancePage() {
       ) : dueVehicles.length === 0 ? (
         <div className="text-center py-20">
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-3" />
-          <p className="text-slate-600 font-medium">Nenhum veículo com manutenção vencida</p>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-surface-300 font-medium">Nenhum veículo com manutenção vencida</p>
+          <p className="text-surface-500 text-sm mt-1">
             Todos os veículos cadastrados estão dentro do intervalo configurado.
           </p>
         </div>
@@ -80,36 +80,36 @@ export function MaintenancePage() {
                 initial="hidden"
                 animate="visible"
                 transition={{ delay: i * 0.05 }}
-                className="bg-white border border-red-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-surface-900 border border-red-500/25 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center shrink-0">
                     <Car className="w-5 h-5 text-red-500" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-surface-50">
                         {v.brand} {v.model}
                       </span>
-                      <span className="text-xs font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                      <span className="text-xs font-mono bg-surface-800 px-2 py-0.5 rounded text-surface-300">
                         {v.plate}
                       </span>
-                      <span className="ml-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+                      <span className="ml-auto text-xs bg-red-500/15 text-red-300 px-2 py-0.5 rounded-full font-medium">
                         Manutenção vencida
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600 mb-1">
+                    <p className="text-sm text-surface-300 mb-1">
                       Cliente: <strong>{v.customer?.name}</strong>
                       {v.customer?.phone && (
-                        <span className="ml-2 text-slate-400">{v.customer.phone}</span>
+                        <span className="ml-2 text-surface-500">{v.customer.phone}</span>
                       )}
                     </p>
-                    <p className="text-sm text-amber-700 flex items-center gap-1">
+                    <p className="text-sm text-amber-300 flex items-center gap-1">
                       <Wrench className="w-3.5 h-3.5" />
                       {row.reason}
                     </p>
                     {v.reminderSentAt && (
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-surface-500 mt-1">
                         Último lembrete enviado:{' '}
                         {new Date(v.reminderSentAt).toLocaleDateString('pt-BR', {
                           day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',

@@ -30,7 +30,7 @@ export function SuperAdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-surface-950 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,10 +41,10 @@ export function SuperAdminLoginPage() {
             <Shield className="text-red-400 w-8 h-8" />
           </div>
           <h1 className="text-2xl font-black text-white">Super Admin</h1>
-          <p className="text-slate-400 text-sm mt-1">Acesso restrito — área de manutenção global</p>
+          <p className="text-surface-400 text-sm mt-1">Acesso restrito — área de manutenção global</p>
         </div>
 
-        <div className="bg-slate-900/60 border border-white/10 rounded-[2rem] p-8">
+        <div className="bg-surface-900/60 border border-white/10 rounded-[2rem] p-8">
           {error && (
             <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4 mb-6 text-sm">
               <AlertCircle size={16} />
@@ -54,14 +54,14 @@ export function SuperAdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Email</label>
+              <label className="text-xs font-semibold text-surface-400 uppercase tracking-widest">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
+                  className="w-full bg-surface-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
                   placeholder={companyContacts.general}
                   required
                 />
@@ -69,21 +69,21 @@ export function SuperAdminLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Senha</label>
+              <label className="text-xs font-semibold text-surface-400 uppercase tracking-widest">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-12 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
+                  className="w-full bg-surface-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-12 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
                   placeholder="••••••••••••"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-200"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>

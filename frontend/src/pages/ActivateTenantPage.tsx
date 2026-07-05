@@ -96,20 +96,20 @@ export function ActivateTenantPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-2xl z-10"
       >
-        <div className="bg-slate-950/80 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl p-5 sm:p-7 md:p-8">
+        <div className="bg-surface-950/80 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl p-5 sm:p-7 md:p-8">
           <div className="mb-5 sm:mb-6">
             <h1 className="text-xl sm:text-2xl font-black">Ativação Inicial</h1>
-            <p className="text-slate-400 text-sm mt-1">Finalize o cadastro em poucos campos para liberar o tenant.</p>
+            <p className="text-surface-400 text-sm mt-1">Finalize o cadastro em poucos campos para liberar o tenant.</p>
           </div>
 
           {invite && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5">
               <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-                <p className="text-slate-400 text-[11px] uppercase tracking-wider">Plano</p>
+                <p className="text-surface-400 text-[11px] uppercase tracking-wider">Plano</p>
                 <p className="font-bold text-white text-sm mt-0.5">{invite.tenant?.plan?.name || 'START'}</p>
               </div>
               <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-                <p className="text-slate-400 text-[11px] uppercase tracking-wider">Expira em</p>
+                <p className="text-surface-400 text-[11px] uppercase tracking-wider">Expira em</p>
                 <p className="font-bold text-white text-sm mt-0.5">{new Date(invite.expiresAt).toLocaleString('pt-BR')}</p>
               </div>
             </div>
@@ -124,25 +124,25 @@ export function ActivateTenantPage() {
 
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Nome da Empresa</label>
+                  <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Nome da Empresa</label>
                   <div className="relative">
-                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                     <input value={tenantName} onChange={(e) => setTenantName(e.target.value)} className="input-dark h-11 pl-10" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Nome MASTER</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Nome MASTER</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                       <input value={masterName} onChange={(e) => setMasterName(e.target.value)} className="input-dark h-11 pl-10" required />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Email MASTER</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Email MASTER</label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                       <input type="email" value={masterEmail} onChange={(e) => setMasterEmail(e.target.value)} className="input-dark h-11 pl-10" required />
                     </div>
                   </div>
@@ -150,20 +150,20 @@ export function ActivateTenantPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Email Recuperação</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Email Recuperação</label>
                     <div className="relative">
-                      <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                       <input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} className="input-dark h-11 pl-10" placeholder="Opcional" />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Documento</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Documento</label>
                     <input value={taxId} onChange={(e) => setTaxId(formatCpfCnpj(e.target.value))} className="input-dark h-11" placeholder="CPF/CNPJ" />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Tipo de Documento</label>
+                  <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Tipo de Documento</label>
                   <select value={companyType} onChange={(e) => setCompanyType(e.target.value)} className="input-dark h-11">
                     <option value="CNPJ">CNPJ</option>
                     <option value="MEI">MEI</option>
@@ -173,22 +173,22 @@ export function ActivateTenantPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Senha</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Senha</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                       <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" placeholder="Mínimo 6 caracteres" required minLength={6} />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-200">
                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider ml-1">Confirmar Senha</label>
+                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Confirmar Senha</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
                       <input type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" required minLength={6} />
-                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-200">
                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                     </div>

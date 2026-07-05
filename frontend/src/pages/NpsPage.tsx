@@ -4,9 +4,9 @@ import { Loader2, MessageCircle, Star, TrendingUp, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 function classifyScore(score: number) {
-  if (score >= 9) return { label: 'Promotor', color: 'text-emerald-700', bg: 'bg-emerald-100' };
-  if (score >= 7) return { label: 'Neutro', color: 'text-amber-700', bg: 'bg-amber-100' };
-  return { label: 'Detrator', color: 'text-red-700', bg: 'bg-red-100' };
+  if (score >= 9) return { label: 'Promotor', color: 'text-emerald-300', bg: 'bg-emerald-500/15' };
+  if (score >= 7) return { label: 'Neutro', color: 'text-amber-300', bg: 'bg-amber-500/15' };
+  return { label: 'Detrator', color: 'text-red-300', bg: 'bg-red-500/15' };
 }
 
 function ScoreButton({ value, active }: { value: number; active: boolean }) {
@@ -17,7 +17,7 @@ function ScoreButton({ value, active }: { value: number; active: boolean }) {
   return (
     <div
       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-        ${active ? color : 'bg-slate-100 text-slate-400'}`}
+        ${active ? color : 'bg-surface-800 text-surface-500'}`}
     >
       {value}
     </div>
@@ -46,16 +46,16 @@ export function NpsPage() {
 
   const score: number | null = data?.npsScore ?? null;
   const scoreColor =
-    score === null ? 'text-slate-400' :
-    score >= 50 ? 'text-emerald-600' :
+    score === null ? 'text-surface-500' :
+    score >= 50 ? 'text-emerald-400' :
     score >= 0 ? 'text-amber-500' :
-    'text-red-600';
+    'text-red-400';
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">NPS — Satisfação do Cliente</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
+        <h1 className="text-2xl font-bold text-surface-50">NPS — Satisfação do Cliente</h1>
+        <p className="text-sm text-surface-400 mt-0.5">
           Pesquisa enviada automaticamente 24h após a entrega do veículo.
         </p>
       </div>
@@ -65,15 +65,15 @@ export function NpsPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-2xl shadow-sm border p-6 text-center col-span-2 lg:col-span-1"
+          className="bg-surface-900 rounded-2xl shadow-sm border p-6 text-center col-span-2 lg:col-span-1"
         >
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+          <p className="text-xs font-semibold text-surface-400 uppercase tracking-wide mb-1">
             Score NPS
           </p>
           <p className={`text-5xl font-black ${scoreColor}`}>
             {score !== null ? score : '—'}
           </p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-surface-500 mt-1">
             {score === null ? 'Sem respostas ainda' :
              score >= 75 ? 'Excelente 🏆' :
              score >= 50 ? 'Muito bom 👍' :
@@ -82,9 +82,9 @@ export function NpsPage() {
         </motion.div>
 
         {[
-          { label: 'Promotores (9–10)', value: data?.promoters ?? 0, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Neutros (7–8)', value: data?.passives ?? 0, icon: Users, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { label: 'Detratores (0–6)', value: data?.detractors ?? 0, icon: MessageCircle, color: 'text-red-600', bg: 'bg-red-50' },
+          { label: 'Promotores (9–10)', value: data?.promoters ?? 0, icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { label: 'Neutros (7–8)', value: data?.passives ?? 0, icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { label: 'Detratores (0–6)', value: data?.detractors ?? 0, icon: MessageCircle, color: 'text-red-400', bg: 'bg-red-500/10' },
         ].map((card, i) => (
           <motion.div
             key={card.label}
@@ -94,7 +94,7 @@ export function NpsPage() {
             className={`${card.bg} rounded-2xl border p-5`}
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-slate-500">{card.label}</p>
+              <p className="text-xs font-semibold text-surface-400">{card.label}</p>
               <card.icon className={`w-4 h-4 ${card.color}`} />
             </div>
             <p className={`text-3xl font-bold ${card.color}`}>{card.value}</p>
@@ -104,21 +104,21 @@ export function NpsPage() {
 
       {/* Métricas secundárias */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-xs text-slate-500 mb-1">Total de respostas</p>
-          <p className="text-2xl font-bold text-slate-900">{data?.total ?? 0}</p>
+        <div className="bg-surface-900 border rounded-xl p-4">
+          <p className="text-xs text-surface-400 mb-1">Total de respostas</p>
+          <p className="text-2xl font-bold text-surface-50">{data?.total ?? 0}</p>
         </div>
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-xs text-slate-500 mb-1">Aguardando resposta</p>
-          <p className="text-2xl font-bold text-slate-700">{data?.pending ?? 0}</p>
+        <div className="bg-surface-900 border rounded-xl p-4">
+          <p className="text-xs text-surface-400 mb-1">Aguardando resposta</p>
+          <p className="text-2xl font-bold text-surface-200">{data?.pending ?? 0}</p>
         </div>
       </div>
 
       {/* Lista de comentários recentes */}
       {(data?.recent?.length ?? 0) > 0 && (
-        <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-surface-900 border rounded-2xl overflow-hidden shadow-sm">
           <div className="px-5 py-4 border-b">
-            <h2 className="font-semibold text-slate-800">Avaliações recentes</h2>
+            <h2 className="font-semibold text-surface-100">Avaliações recentes</h2>
           </div>
           <div className="divide-y">
             {data.recent.map((r: any) => {
@@ -130,18 +130,18 @@ export function NpsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="font-medium text-slate-900 text-sm truncate">
+                      <span className="font-medium text-surface-50 text-sm truncate">
                         {r.customer?.name ?? 'Cliente'}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${cls.bg} ${cls.color}`}>
                         {cls.label}
                       </span>
-                      <span className="ml-auto text-xs text-slate-400 shrink-0">
+                      <span className="ml-auto text-xs text-surface-500 shrink-0">
                         {new Date(r.answeredAt).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                     {r.comment && (
-                      <p className="text-sm text-slate-600 italic">"{r.comment}"</p>
+                      <p className="text-sm text-surface-300 italic">"{r.comment}"</p>
                     )}
                   </div>
                 </div>
@@ -153,9 +153,9 @@ export function NpsPage() {
 
       {(data?.total ?? 0) === 0 && (
         <div className="text-center py-16">
-          <Star className="w-14 h-14 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 font-medium">Nenhuma avaliação recebida ainda</p>
-          <p className="text-slate-400 text-sm mt-1">
+          <Star className="w-14 h-14 text-surface-600 mx-auto mb-3" />
+          <p className="text-surface-400 font-medium">Nenhuma avaliação recebida ainda</p>
+          <p className="text-surface-500 text-sm mt-1">
             As pesquisas são enviadas automaticamente 24h após a entrega do veículo.
           </p>
         </div>

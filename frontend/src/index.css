@@ -134,15 +134,15 @@ textarea {
 @layer components {
   /* Cards */
   .card {
-    @apply bg-white rounded-xl border border-slate-200/60 shadow-card transition-all duration-200;
+    @apply bg-surface-900 rounded-xl border border-white/[0.06] shadow-card transition-all duration-200;
   }
   
   .card:hover {
-    @apply shadow-card-hover border-slate-300/80;
+    @apply shadow-card-hover border-white/[0.12];
   }
   
   .card-flat {
-    @apply bg-white rounded-xl border border-slate-200/60 shadow-soft;
+    @apply bg-surface-900 rounded-xl border border-white/[0.06] shadow-soft;
   }
 
   /* Botões */
@@ -151,15 +151,15 @@ textarea {
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-700 hover:to-primary-800 active:scale-[0.98];
+    @apply bg-gold-500 text-surface-950 hover:bg-gold-400 active:scale-[0.98];
   }
   
   .btn-secondary {
-    @apply bg-slate-100 text-slate-700 hover:bg-slate-200 active:bg-slate-300;
+    @apply bg-surface-800 text-surface-200 hover:bg-surface-700 active:bg-surface-700;
   }
   
   .btn-ghost {
-    @apply text-slate-600 hover:bg-slate-100 active:bg-slate-200;
+    @apply text-surface-300 hover:bg-white/5 active:bg-white/10;
   }
   
   .btn-danger {
@@ -176,7 +176,7 @@ textarea {
 
   /* Inputs */
   .input {
-    @apply w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all;
+    @apply w-full px-3.5 py-2.5 bg-surface-950/40 border border-white/10 rounded-lg text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40 transition-all;
   }
 
   .input-dark {
@@ -190,7 +190,7 @@ textarea {
 
   /* Label */
   .label {
-    @apply block text-sm font-medium text-slate-700 mb-1.5;
+    @apply block text-sm font-medium text-surface-300 mb-1.5;
   }
 
   /* Badges de status */
@@ -199,36 +199,36 @@ textarea {
   }
   
   .badge-orcamento {
-    @apply bg-amber-100 text-amber-700;
+    @apply bg-amber-500/15 text-amber-300;
   }
   
   .badge-pendente {
-    @apply bg-amber-100 text-amber-700;
+    @apply bg-amber-500/15 text-amber-300;
   }
   
   .badge-execucao {
-    @apply bg-blue-100 text-blue-700;
+    @apply bg-blue-500/15 text-blue-300;
   }
   
   .badge-pronto {
-    @apply bg-violet-100 text-violet-700;
+    @apply bg-violet-500/15 text-violet-300;
   }
   
   .badge-finalizado {
-    @apply bg-emerald-100 text-emerald-700;
+    @apply bg-emerald-500/15 text-emerald-300;
   }
   
   .badge-pago {
-    @apply bg-teal-100 text-teal-700;
+    @apply bg-teal-500/15 text-teal-300;
   }
   
   .badge-cancelado {
-    @apply bg-red-100 text-red-700;
+    @apply bg-red-500/15 text-red-300;
   }
 
   /* Tabela */
   .table-container {
-    @apply overflow-x-auto rounded-xl border border-slate-200;
+    @apply overflow-x-auto rounded-xl border border-white/10;
   }
   
   .table {
@@ -236,15 +236,15 @@ textarea {
   }
   
   .table th {
-    @apply px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50 border-b border-slate-200;
+    @apply px-4 py-3 text-left text-xs font-semibold text-surface-400 uppercase tracking-wider bg-surface-900 border-b border-white/10;
   }
   
   .table td {
-    @apply px-4 py-3 text-slate-700 border-b border-slate-100;
+    @apply px-4 py-3 text-surface-200 border-b border-white/5;
   }
   
   .table tr:hover td {
-    @apply bg-slate-50/50;
+    @apply bg-white/[0.03];
   }
   
   .table tr:last-child td {
@@ -253,15 +253,15 @@ textarea {
 
   /* Sidebar menu */
   .sidebar-link {
-    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 font-medium transition-all;
+    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-surface-300 font-medium transition-all;
   }
   
   .sidebar-link:hover {
-    @apply bg-slate-100/80 text-slate-900;
+    @apply bg-white/5 text-surface-50;
   }
   
   .sidebar-link.active {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md;
+    @apply bg-gold-500/15 text-gold-400 shadow-md;
   }
 
   /* Page header */
@@ -270,11 +270,11 @@ textarea {
   }
   
   .page-title {
-    @apply text-2xl font-bold text-slate-900;
+    @apply text-2xl font-bold text-surface-50;
   }
   
   .page-subtitle {
-    @apply text-sm text-slate-500 mt-0.5;
+    @apply text-sm text-surface-400 mt-0.5;
   }
 
   /* Empty state */
@@ -283,15 +283,15 @@ textarea {
   }
   
   .empty-state-icon {
-    @apply w-16 h-16 text-slate-300 mb-4;
+    @apply w-16 h-16 text-surface-600 mb-4;
   }
   
   .empty-state-title {
-    @apply text-lg font-semibold text-slate-700 mb-2;
+    @apply text-lg font-semibold text-surface-200 mb-2;
   }
   
   .empty-state-text {
-    @apply text-sm text-slate-500 max-w-sm;
+    @apply text-sm text-surface-400 max-w-sm;
   }
 
   /* Stat card */
@@ -300,11 +300,11 @@ textarea {
   }
   
   .stat-value {
-    @apply text-2xl font-bold text-slate-900;
+    @apply text-2xl font-bold text-surface-50;
   }
   
   .stat-label {
-    @apply text-sm text-slate-500;
+    @apply text-sm text-surface-400;
   }
 
   /* Page action bar */
@@ -314,15 +314,15 @@ textarea {
 
   /* Modal overlay */
   .modal-backdrop {
-    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40;
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-40;
   }
   
   .modal {
-    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl z-50;
+    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-900 rounded-2xl shadow-2xl z-50;
   }
   
   .modal-header {
-    @apply flex items-center justify-between p-5 border-b border-slate-200;
+    @apply flex items-center justify-between p-5 border-b border-white/10;
   }
   
   .modal-body {
@@ -330,21 +330,21 @@ textarea {
   }
   
   .modal-footer {
-    @apply flex items-center justify-end gap-3 p-5 border-t border-slate-200;
+    @apply flex items-center justify-end gap-3 p-5 border-t border-white/10;
   }
 
   /* Progress bar */
   .progress-bar {
-    @apply h-2 bg-slate-100 rounded-full overflow-hidden;
+    @apply h-2 bg-surface-800 rounded-full overflow-hidden;
   }
   
   .progress-fill {
-    @apply h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500;
+    @apply h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-600 transition-all duration-500;
   }
 
   /* Avatar */
   .avatar {
-    @apply inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-600 font-medium;
+    @apply inline-flex items-center justify-center rounded-full bg-surface-800 text-surface-300 font-medium;
   }
   
   .avatar-sm {
@@ -361,29 +361,29 @@ textarea {
 
   /* Dropdown menu */
   .dropdown {
-    @apply absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50;
+    @apply absolute top-full right-0 mt-1 w-48 bg-surface-900 rounded-lg shadow-lg border border-white/10 py-1 z-50;
   }
   
   .dropdown-item {
-    @apply flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-100;
+    @apply flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-200 hover:bg-white/5;
   }
 
   /* Tabs */
   .tabs {
-    @apply flex gap-1 p-1 bg-slate-100 rounded-lg;
+    @apply flex gap-1 p-1 bg-surface-800 rounded-lg;
   }
   
   .tab {
-    @apply px-4 py-2 text-sm font-medium text-slate-600 rounded-md transition-all;
+    @apply px-4 py-2 text-sm font-medium text-surface-300 rounded-md transition-all;
   }
   
   .tab-active {
-    @apply bg-white text-slate-900 shadow-sm;
+    @apply bg-surface-950 text-surface-50 shadow-sm;
   }
 
   /* Chip/Tag */
   .chip {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-surface-800 text-surface-300;
   }
 
   .glass-card {
@@ -413,7 +413,7 @@ textarea {
 
 /*utilitários*/
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-800;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-400 to-gold-600;
 }
 
 .bg-gradient-main {

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
+import { useToast } from '../components/ui';
 import {
   formatCpfCnpj,
   formatPhone,
@@ -45,6 +46,7 @@ type TenantForm = {
 
 export function SettingsPage() {
   const { user, updateTenant } = useAuthStore();
+  const toast = useToast();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const autoCheckoutHandledRef = useRef(false);
@@ -87,14 +89,14 @@ export function SettingsPage() {
   const isTradeNameMissing = !tenantData.name.trim();
 
   const ROLE_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
-    MASTER:     { label: 'Master',     color: 'bg-slate-900 text-white',          desc: 'Proprietário — acesso total' },
-    ADMIN:      { label: 'Admin',      color: 'bg-violet-100 text-violet-700',    desc: 'Gerência administrativa' },
-    GERENTE:    { label: 'Gerente',    color: 'bg-blue-100 text-blue-700',        desc: 'Gerência operacional' },
-    CHEFE_OFICINA: { label: 'Chefe Oficina', color: 'bg-rose-100 text-rose-700',  desc: 'Liderança técnica por área' },
-    FINANCEIRO: { label: 'Financeiro', color: 'bg-emerald-100 text-emerald-700',  desc: 'Fechamento e pagamentos' },
-    SECRETARIA: { label: 'Secretaria', color: 'bg-cyan-100 text-cyan-700',        desc: 'Recepção e cadastros' },
-    MECANICO:   { label: 'Mecânico',   color: 'bg-amber-100 text-amber-700',      desc: 'Execução de serviços' },
-    PRODUTIVO:  { label: 'Produtivo',  color: 'bg-amber-100 text-amber-800',      desc: 'Técnico (legado)' },
+    MASTER:     { label: 'Master',     color: 'bg-gold-500 text-surface-950',          desc: 'Proprietário — acesso total' },
+    ADMIN:      { label: 'Admin',      color: 'bg-violet-500/15 text-violet-300',    desc: 'Gerência administrativa' },
+    GERENTE:    { label: 'Gerente',    color: 'bg-blue-500/15 text-blue-300',        desc: 'Gerência operacional' },
+    CHEFE_OFICINA: { label: 'Chefe Oficina', color: 'bg-rose-500/15 text-rose-300',  desc: 'Liderança técnica por área' },
+    FINANCEIRO: { label: 'Financeiro', color: 'bg-emerald-500/15 text-emerald-300',  desc: 'Fechamento e pagamentos' },
+    SECRETARIA: { label: 'Secretaria', color: 'bg-cyan-500/15 text-cyan-300',        desc: 'Recepção e cadastros' },
+    MECANICO:   { label: 'Mecânico',   color: 'bg-amber-500/15 text-amber-300',      desc: 'Execução de serviços' },
+    PRODUTIVO:  { label: 'Produtivo',  color: 'bg-amber-500/15 text-amber-300',      desc: 'Técnico (legado)' },
   };
 
   useEffect(() => { loadData(); }, []);
@@ -244,7 +246,7 @@ export function SettingsPage() {
       window.location.href = checkoutUrl;
     } catch (error: any) {
       const message = error.response?.data?.message || error.message || 'Falha ao iniciar checkout online';
-      alert(message);
+      toast.error(message);
     } finally {
       setCheckoutLoadingPlan(null);
     }
@@ -276,8 +278,8 @@ export function SettingsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-slate-900" />
-        <p className="text-slate-500 font-medium">Carregando painel de controle...</p>
+        <Loader2 className="w-10 h-10 animate-spin text-surface-50" />
+        <p className="text-surface-400 font-medium">Carregando painel de controle...</p>
       </div>
     );
   }
@@ -285,8 +287,8 @@ export function SettingsPage() {
   return (
     <div className="space-y-6 pb-10">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Configurações</h1>
-        <p className="text-slate-500 font-medium text-sm">Gestão da oficina, operações, equipe e assinatura</p>
+        <h1 className="text-2xl font-black text-surface-50 tracking-tight uppercase">Configurações</h1>
+        <p className="text-surface-400 font-medium text-sm">Gestão da oficina, operações, equipe e assinatura</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -296,10 +298,10 @@ export function SettingsPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between bg-surface-950/40">
+              <h2 className="text-base font-bold text-surface-50 flex items-center gap-2">
                 <Building className="w-5 h-5" /> Cadastro da Oficina
               </h2>
             </div>
@@ -308,9 +310,9 @@ export function SettingsPage() {
 
                 {/* 1º campo: CPF / CNPJ com lookup automático */}
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-surface-200 mb-1">
                     CPF / CNPJ
-                    <span className="ml-2 text-xs text-slate-400 font-normal">(preencha primeiro — CNPJ busca dados automaticamente)</span>
+                    <span className="ml-2 text-xs text-surface-500 font-normal">(preencha primeiro — CNPJ busca dados automaticamente)</span>
                   </label>
                   <div className="relative">
                     <input
@@ -319,27 +321,27 @@ export function SettingsPage() {
                       placeholder={tenantData.legalNature === 'PF' ? '000.000.000-00' : '00.000.000/0000-00'}
                       value={tenantData.taxId}
                       onChange={(e) => handleDocChange(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                      className="w-full rounded-lg border border-white/15 px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {lookingUpDoc
                         ? <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
-                        : <Search className="w-4 h-4 text-slate-400" />}
+                        : <Search className="w-4 h-4 text-surface-500" />}
                     </div>
                   </div>
                   {lookupError && (
-                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-600">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-400">
                       <AlertCircle className="w-3.5 h-3.5" /> {lookupError}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Natureza Jurídica</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Natureza Jurídica</label>
                   <select
                     value={tenantData.legalNature}
                     onChange={(e) => setTenantData({ ...tenantData, legalNature: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   >
                     <option value="PF">Pessoa Física (PF)</option>
                     <option value="PJ">Pessoa Jurídica (PJ)</option>
@@ -347,7 +349,7 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome Fantasia</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Nome Fantasia</label>
                   <input
                     type="text"
                     value={tenantData.name}
@@ -355,12 +357,12 @@ export function SettingsPage() {
                     className={cn(
                       'w-full rounded-lg border px-3 py-2 text-sm transition-all',
                       isTradeNameMissing
-                        ? 'border-amber-300 bg-amber-50/40 focus:ring-2 focus:ring-amber-500'
-                        : 'border-slate-300 focus:ring-2 focus:ring-indigo-500',
+                        ? 'border-amber-500/40 bg-amber-500/10/40 focus:ring-2 focus:ring-amber-500'
+                        : 'border-white/15 focus:ring-2 focus:ring-indigo-500',
                     )}
                   />
                   {isTradeNameMissing && (
-                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-700">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-300">
                       <AlertCircle className="w-3.5 h-3.5" />
                       Preencha o Nome Fantasia para exibir corretamente em orçamentos, O.S. e relatórios.
                     </p>
@@ -368,101 +370,101 @@ export function SettingsPage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Razão Social / Nome Civil</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Razão Social / Nome Civil</label>
                   <input
                     type="text"
                     value={tenantData.legalName}
                     onChange={(e) => setTenantData({ ...tenantData, legalName: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Phone Number ID (Meta)</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">WhatsApp Phone Number ID (Meta)</label>
                   <input
                     type="text"
                     value={tenantData.whatsappMetaPhoneNumberId}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappMetaPhoneNumberId: e.target.value })}
                     placeholder="Ex: 123456789012345"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Número exibido no WhatsApp</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Número exibido no WhatsApp</label>
                   <input
                     type="text"
                     value={tenantData.whatsappDisplayNumber}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappDisplayNumber: e.target.value })}
                     placeholder="Ex: +55 21 99999-9999"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Inscrição Estadual</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Inscrição Estadual</label>
                   <input
                     type="text"
                     value={tenantData.stateRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, stateRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Inscrição Municipal</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Inscrição Municipal</label>
                   <input
                     type="text"
                     value={tenantData.municipalRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, municipalRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefone</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Telefone</label>
                   <input
                     type="text"
                     inputMode="numeric"
                     placeholder="(00) 00000-0000"
                     value={tenantData.phone}
                     onChange={(e) => setTenantData({ ...tenantData, phone: formatPhone(e.target.value) })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">E-mail</label>
                   <input
                     type="email"
                     inputMode="email"
                     placeholder="contato@suaoficina.com.br"
                     value={tenantData.email}
                     onChange={(e) => setTenantData({ ...tenantData, email: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Endereço</label>
+                  <label className="block text-sm font-medium text-surface-200 mb-1">Endereço</label>
                   <input
                     type="text"
                     value={tenantData.address}
                     onChange={(e) => setTenantData({ ...tenantData, address: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
               </div>
 
               {saveError && (
-                <p className="mt-4 flex items-center gap-1.5 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                <p className="mt-4 flex items-center gap-1.5 text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
                   <AlertCircle className="w-4 h-4 shrink-0" /> {saveError}
                 </p>
               )}
 
               <div className="mt-5 flex items-center justify-end gap-2">
                 {saveSuccess && (
-                  <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+                  <span className="flex items-center gap-1.5 text-xs text-green-400 font-medium">
                     <CheckCircle className="w-3.5 h-3.5" /> Perfil salvo!
                   </span>
                 )}
@@ -482,14 +484,14 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
+              <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                 <Wrench className="w-5 h-5" /> Operações
               </h2>
               {!isMaster && (
-                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
                   <Lock className="w-3 h-3" /> Admin
                 </div>
               )}
@@ -497,14 +499,14 @@ export function SettingsPage() {
             <form onSubmit={handleSaveOps} className="p-5 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">
                     Mão de Obra (R$/h)
                   </label>
-                  <p className="text-[11px] text-slate-400 ml-1 mb-1">
+                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
                     Base de cálculo para mão de obra.
                   </p>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">R$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">R$</span>
                     <input
                       type="number"
                       step="0.01"
@@ -515,21 +517,21 @@ export function SettingsPage() {
                       className={cn(
                         "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         isMaster
-                          ? "border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900"
-                          : "border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed"
+                          ? "border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500/40"
+                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
                 </div>
 
                 {/* Preview do cálculo */}
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 space-y-2">
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Exemplos</p>
+                <div className="p-3 bg-surface-950/40 rounded-lg border border-white/5 space-y-2">
+                  <p className="text-[10px] font-bold text-surface-400 uppercase tracking-widest">Exemplos</p>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {[0.5, 1.0, 2.0].map((h) => (
-                      <div key={h} className="bg-white rounded-lg p-2 border border-slate-200">
-                        <p className="text-[10px] text-slate-400 font-bold">{h === 0.5 ? '30m' : h === 1.0 ? '1h' : '2h'}</p>
-                        <p className="text-xs font-bold text-slate-900 mt-0.5">
+                      <div key={h} className="bg-surface-900 rounded-lg p-2 border border-white/10">
+                        <p className="text-[10px] text-surface-500 font-bold">{h === 0.5 ? '30m' : h === 1.0 ? '1h' : '2h'}</p>
+                        <p className="text-xs font-bold text-surface-50 mt-0.5">
                           R$ {(opsData.laborHourlyRate * h).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
@@ -539,12 +541,12 @@ export function SettingsPage() {
 
                 {/* Campo: Horas de Diagnóstico */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Diagnóstico (h)</label>
-                  <p className="text-[11px] text-slate-400 ml-1 mb-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">Diagnóstico (h)</label>
+                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
                     Tempo padrão para diagnóstico.
                   </p>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">h</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">h</span>
                     <input
                       type="number"
                       step="0.5"
@@ -555,23 +557,23 @@ export function SettingsPage() {
                       className={cn(
                         "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         isMaster
-                          ? "border-slate-200 bg-slate-50/50 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900"
-                          : "border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed"
+                          ? "border-white/10 bg-surface-950/40 focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500/40"
+                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
-                  <p className="text-[10px] text-slate-400 ml-1 mt-1">
+                  <p className="text-[10px] text-surface-500 ml-1 mt-1">
                     ≈ R$ {(opsData.laborHourlyRate * opsData.diagnosticHours).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Comissão Global (%)</label>
-                  <p className="text-[11px] text-slate-400 ml-1 mb-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">Comissão Global (%)</label>
+                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
                     Valor padrão quando não há comissão individual.
                   </p>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">%</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
                     <input
                       type="number"
                       step="0.1"
@@ -582,8 +584,8 @@ export function SettingsPage() {
                       className={cn(
                         "w-full pl-12 pr-5 py-4 rounded-2xl border text-xl font-black transition-all",
                         isMaster
-                          ? "border-slate-200 bg-slate-50/50 focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900"
-                          : "border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed"
+                          ? "border-white/10 bg-surface-950/40 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40"
+                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
@@ -593,12 +595,12 @@ export function SettingsPage() {
               {isMaster && (
                 <div className="space-y-2 pt-2">
                   {opsError && (
-                    <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {opsError}
                     </div>
                   )}
                   {opsSuccess && (
-                    <div className="flex items-center gap-2 text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-green-300 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
                       ✓ Configurações operacionais salvas com sucesso!
                     </div>
                   )}
@@ -617,19 +619,19 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                   <Palette className="w-5 h-5" /> Aparência
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">Tema visual da plataforma</p>
+                <p className="text-xs text-surface-400 mt-0.5">Tema visual da plataforma</p>
               </div>
             </div>
 
             <div className="p-5 space-y-3">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Tema</p>
+              <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">Tema</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {THEME_PRESETS.map((preset) => {
                   const active = themePreset === preset.id;
@@ -641,8 +643,8 @@ export function SettingsPage() {
                       className={cn(
                         'text-left rounded-lg border p-3 transition-all',
                         active
-                          ? 'border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-400'
-                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+                          ? 'border-blue-500 bg-blue-500/10 shadow-sm ring-1 ring-blue-400'
+                          : 'border-white/10 bg-surface-900 hover:border-white/20 hover:shadow-sm'
                       )}
                     >
                       {/* Swatches */}
@@ -655,8 +657,8 @@ export function SettingsPage() {
                           />
                         ))}
                       </div>
-                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-blue-700' : 'text-slate-900')}>{preset.label}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">{preset.description}</p>
+                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-blue-300' : 'text-surface-50')}>{preset.label}</p>
+                      <p className="text-[10px] text-surface-400 mt-0.5 leading-tight">{preset.description}</p>
                     </button>
                   );
                 })}
@@ -669,19 +671,19 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                   <Users className="w-5 h-5" /> Sua Equipe
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">{users.length} membro{users.length !== 1 ? 's' : ''}</p>
+                <p className="text-xs text-surface-400 mt-0.5">{users.length} membro{users.length !== 1 ? 's' : ''}</p>
               </div>
               {canManageUsers && (
                 <button
                   onClick={() => navigate('/users')}
-                  className="flex items-center gap-1 px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition-all uppercase tracking-wide"
+                  className="flex items-center gap-1 px-4 py-2 bg-gold-500 text-surface-950 rounded-lg text-xs font-bold hover:bg-gold-400 transition-all uppercase tracking-wide"
                 >
                   Gerenciar <ArrowRight size={12} />
                 </button>
@@ -690,11 +692,11 @@ export function SettingsPage() {
 
             <div className="p-5">
               {users.length === 0 ? (
-                <p className="text-center text-xs text-slate-400 py-6">Nenhum membro cadastrado.</p>
+                <p className="text-center text-xs text-surface-500 py-6">Nenhum membro cadastrado.</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {users.map((u) => {
-                    const roleCfg = ROLE_CONFIG[u.role] ?? { label: u.role, color: 'bg-slate-100 text-slate-700', desc: '' };
+                    const roleCfg = ROLE_CONFIG[u.role] ?? { label: u.role, color: 'bg-surface-800 text-surface-200', desc: '' };
                     const isMe = u.id === user?.userId;
 
                     return (
@@ -702,7 +704,7 @@ export function SettingsPage() {
                         key={u.id}
                         className={cn(
                           'flex flex-col p-3 rounded-lg border transition-all',
-                          u.isActive ? 'bg-slate-50 border-slate-100 hover:border-slate-300' : 'bg-slate-50/50 border-slate-100 opacity-60'
+                          u.isActive ? 'bg-surface-950/40 border-white/5 hover:border-white/20' : 'bg-surface-950/40 border-white/5 opacity-60'
                         )}
                       >
                         <div className="flex items-center gap-2 mb-2">
@@ -710,16 +712,16 @@ export function SettingsPage() {
                             {u.name[0]?.toUpperCase()}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold text-slate-900 text-xs truncate">{u.name}</p>
+                            <p className="font-bold text-surface-50 text-xs truncate">{u.name}</p>
                             {isMe && <span className="text-[8px] px-1 py-0.5 bg-primary-100 text-primary-700 rounded font-black">Você</span>}
                           </div>
                         </div>
-                        <p className="text-[10px] text-slate-500 truncate mb-2">{u.email}</p>
+                        <p className="text-[10px] text-surface-400 truncate mb-2">{u.email}</p>
                         <div className="flex items-center justify-between">
                           <span className={cn('text-[8px] px-2 py-1 rounded font-bold', roleCfg.color)}>
                             {roleCfg.label}
                           </span>
-                          {!u.isActive && <span className="text-[8px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded font-bold">Inativo</span>}
+                          {!u.isActive && <span className="text-[8px] px-1.5 py-0.5 bg-red-500/15 text-red-400 rounded font-bold">Inativo</span>}
                         </div>
                       </div>
                     );
@@ -735,7 +737,7 @@ export function SettingsPage() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-slate-900 rounded-lg p-6 text-white shadow-xl relative overflow-hidden"
+            className="bg-surface-900 rounded-lg p-6 text-white shadow-xl relative overflow-hidden"
           >
             <div className="relative z-10">
               <h2 className="text-base font-bold flex items-center gap-2 uppercase tracking-wide mb-5">
@@ -743,16 +745,16 @@ export function SettingsPage() {
               </h2>
 
               <div className="mb-6 p-4 bg-white/10 rounded-lg border border-white/10 backdrop-blur-md">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Plano Atual</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
                   <h3 className="text-2xl font-black text-white">{getPlanLabel(currentPlan)}</h3>
                   <div className="px-2 py-0.5 bg-primary-500 rounded text-[8px] font-black uppercase">Ativo</div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1 font-medium">Renovação automática em breve.</p>
+                <p className="text-xs text-surface-500 mt-1 font-medium">Renovação automática em breve.</p>
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Mudar de Plano</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider ml-1">Mudar de Plano</p>
                 {plans.map((plan) => (
                   <div
                     key={plan.id}
@@ -771,20 +773,20 @@ export function SettingsPage() {
                         </div>
                         <p className="text-lg font-black mt-0.5">
                           R$ {Number(plan.price).toLocaleString('pt-BR')}
-                          <span className="text-[10px] font-bold text-slate-400 ml-1">/mês</span>
+                          <span className="text-[10px] font-bold text-surface-500 ml-1">/mês</span>
                         </p>
                       </div>
                       {currentPlan === plan.name
                         ? <CheckCircle className="text-primary-400" size={20} />
-                        : <ArrowRight className="text-slate-600" size={20} />
+                        : <ArrowRight className="text-surface-300" size={20} />
                       }
                     </div>
 
                     <div className="grid grid-cols-1 gap-1.5">
                       {isDowngrade(plan.name) ? (
                         <div className="h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center gap-1.5 px-3">
-                          <Lock size={10} className="text-slate-500" />
-                          <span className="text-[9px] font-bold uppercase tracking-tight text-slate-500">Após vencimento</span>
+                          <Lock size={10} className="text-surface-400" />
+                          <span className="text-[9px] font-bold uppercase tracking-tight text-surface-400">Após vencimento</span>
                         </div>
                       ) : (
                         <button
