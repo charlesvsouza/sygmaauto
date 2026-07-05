@@ -37,7 +37,7 @@ export function MaintenancePage() {
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-4 py-2 bg-surface-800 hover:bg-white/10 text-surface-200 rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-surface-800 hover:bg-ink/5 text-surface-200 rounded-lg text-sm font-medium transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           Atualizar
@@ -46,8 +46,8 @@ export function MaintenancePage() {
 
       {/* Info card */}
       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex gap-3">
-        <Bell className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-        <div className="text-sm text-amber-300">
+        <Bell className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="text-sm text-amber-700">
           <strong>Lembrete automático ativo:</strong> todo dia às 8h o sistema verifica veículos com
           manutenção vencida (por KM ou por data) e envia mensagem WhatsApp ao cliente. Configure o
           intervalo de manutenção em cada veículo para ativar este recurso.
@@ -63,7 +63,7 @@ export function MaintenancePage() {
         <div className="text-center py-20 text-red-500">{error}</div>
       ) : dueVehicles.length === 0 ? (
         <div className="text-center py-20">
-          <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-3" />
+          <CheckCircle2 className="w-14 h-14 text-emerald-600 mx-auto mb-3" />
           <p className="text-surface-300 font-medium">Nenhum veículo com manutenção vencida</p>
           <p className="text-surface-500 text-sm mt-1">
             Todos os veículos cadastrados estão dentro do intervalo configurado.
@@ -94,7 +94,7 @@ export function MaintenancePage() {
                       <span className="text-xs font-mono bg-surface-800 px-2 py-0.5 rounded text-surface-300">
                         {v.plate}
                       </span>
-                      <span className="ml-auto text-xs bg-red-500/15 text-red-300 px-2 py-0.5 rounded-full font-medium">
+                      <span className="ml-auto text-xs bg-red-500/15 text-red-700 px-2 py-0.5 rounded-full font-medium">
                         Manutenção vencida
                       </span>
                     </div>
@@ -104,7 +104,7 @@ export function MaintenancePage() {
                         <span className="ml-2 text-surface-500">{v.customer.phone}</span>
                       )}
                     </p>
-                    <p className="text-sm text-amber-300 flex items-center gap-1">
+                    <p className="text-sm text-amber-700 flex items-center gap-1">
                       <Wrench className="w-3.5 h-3.5" />
                       {row.reason}
                     </p>

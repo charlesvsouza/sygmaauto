@@ -4,10 +4,82 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Densidade da navegação da sidebar (ajustada por altura da viewport) */
-  --nav-py: 6px;
-  --nav-px: 10px;
+/* ===================================================================
+   TEMA — variáveis semânticas (claro "verde-água" por padrão).
+   O seletor de tema da Settings troca [data-theme] no <html>.
+   =================================================================== */
+:root,
+:root[data-theme='light'] {
+  /* Superfícies */
+  --app: 238 243 242;          /* #eef3f2 fundo do app */
+  --panel: 255 255 255;        /* #ffffff painéis */
+  --panel-2: 240 245 244;      /* #f0f5f4 preenchimento sutil */
+  --line: 220 230 228;         /* #dce6e4 borda fina */
+  --line-strong: 199 214 211;  /* #c7d6d3 */
+
+  /* Texto */
+  --ink: 22 47 43;             /* #162f2b texto principal */
+  --muted: 90 107 104;         /* #5a6b68 texto secundário (AA) */
+  --faint: 122 138 135;        /* #7a8a87 texto fraco */
+
+  /* Acento verde-água */
+  --accent: 31 157 143;        /* #1f9d8f */
+  --accent-hover: 20 134 122;  /* #14867a */
+  --accent-fg: 255 255 255;    /* texto sobre acento */
+  --accent-soft: 224 244 241;  /* #e0f4f1 fundo suave */
+
+  /* Sidebar (teal profundo) */
+  --sidebar: 18 63 59;         /* #123f3b */
+  --sidebar-ink: 200 220 216;
+  --sidebar-active: 31 157 143;
+
+  /* Escala surface INVERTIDA p/ tema claro (mantém usos existentes válidos) */
+  --surface-50: 22 47 43;      /* ink */
+  --surface-100: 30 54 49;
+  --surface-200: 44 63 58;
+  --surface-300: 74 91 87;
+  --surface-400: 106 123 119;
+  --surface-500: 90 107 104;   /* muted */
+  --surface-600: 122 138 135;  /* faint */
+  --surface-700: 199 214 211;  /* linhas fortes */
+  --surface-800: 236 242 240;  /* preenchimento */
+  --surface-900: 255 255 255;  /* painéis */
+  --surface-950: 238 243 242;  /* fundo do app */
+
+  --radius: 8px;
+}
+
+:root[data-theme='dark'] {
+  --app: 8 9 10;
+  --panel: 24 24 29;
+  --panel-2: 40 40 47;
+  --line: 46 46 53;
+  --line-strong: 62 62 69;
+
+  --ink: 236 236 240;
+  --muted: 148 148 157;
+  --faint: 120 120 128;
+
+  --accent: 45 179 163;
+  --accent-hover: 31 157 143;
+  --accent-fg: 8 9 10;
+  --accent-soft: 20 45 42;
+
+  --sidebar: 18 24 29;
+  --sidebar-ink: 200 205 210;
+  --sidebar-active: 45 179 163;
+
+  --surface-50: 247 247 248;
+  --surface-100: 236 236 240;
+  --surface-200: 224 224 230;
+  --surface-300: 205 205 211;
+  --surface-400: 164 164 173;
+  --surface-500: 138 138 147;
+  --surface-600: 120 120 128;
+  --surface-700: 62 62 69;
+  --surface-800: 46 46 53;
+  --surface-900: 40 40 47;
+  --surface-950: 24 24 29;
 }
 
 * {
@@ -22,8 +94,8 @@ html, body, #root {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #08090a;
-  color: #ececf0;
+  background-color: rgb(var(--app));
+  color: rgb(var(--ink));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -40,434 +112,160 @@ textarea {
   min-height: 44px;
 }
 
-/* Scrollbar moderna */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+/* Scrollbar discreta */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgb(var(--line-strong)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 4px;
-}
+/* ===================================================================
+   SHELL — sidebar + header (padrão claro, sidebar teal)
+   =================================================================== */
+:root { --nav-py: 6px; --nav-px: 10px; }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ===== Shell do app — tema dark premium (variante Conservadora) ===== */
 .app-sidebar {
-  background: #18181d;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgb(var(--sidebar));
+  border-right: 1px solid rgb(var(--sidebar) / 0.6);
 }
 
-.sidebar-nav-link {
-  padding: var(--nav-py) var(--nav-px);
-}
+.sidebar-nav-link { padding: var(--nav-py) var(--nav-px); }
 
 .sidebar-nav-link-active {
-  background-color: rgba(212, 168, 67, 0.15);
-  color: #e6bc5e;
-  box-shadow: inset 2px 0 0 #d4a843;
+  background-color: rgb(var(--sidebar-active) / 0.16);
+  color: #ffffff;
+  box-shadow: inset 2px 0 0 rgb(var(--sidebar-active));
 }
 
-.sidebar-nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.04);
-}
+.sidebar-nav-link:hover { background-color: rgb(255 255 255 / 0.06); }
 
-.sidebar-nav-label {
-  font-size: clamp(11px, 0.72vw, 13px);
-}
+.sidebar-nav-label { font-size: clamp(11px, 0.72vw, 13px); }
 
 .sidebar-pro-badge {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #a4a4ad;
+  background-color: rgb(255 255 255 / 0.1);
+  color: rgb(var(--sidebar-ink));
 }
 
 .app-shell-header {
-  background: rgba(40, 40, 47, 0.9);
-  backdrop-filter: saturate(140%) blur(6px);
+  background: rgb(var(--panel));
+  border-bottom: 1px solid rgb(var(--line));
 }
 
-@media (max-height: 900px) {
-  :root {
-    --nav-py: 5px;
-    --nav-px: 9px;
-  }
-}
+@media (max-height: 900px) { :root { --nav-py: 5px; --nav-px: 9px; } }
+@media (max-height: 780px) { :root { --nav-py: 4px; --nav-px: 8px; } }
+@media (max-height: 660px) { :root { --nav-py: 3px; --nav-px: 8px; } }
 
-@media (max-height: 780px) {
-  :root {
-    --nav-py: 4px;
-    --nav-px: 8px;
-  }
-}
+.app-sidebar nav::-webkit-scrollbar { width: 4px; }
+.app-sidebar nav::-webkit-scrollbar-track { background: transparent; }
+.app-sidebar nav::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.15); border-radius: 2px; }
+.app-sidebar nav::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.25); }
 
-@media (max-height: 660px) {
-  :root {
-    --nav-py: 3px;
-    --nav-px: 8px;
-  }
-}
-
-/* Scrollbar fina e discreta para o nav da sidebar */
-.app-sidebar nav::-webkit-scrollbar {
-  width: 4px;
-}
-.app-sidebar nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-.app-sidebar nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
-}
-.app-sidebar nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-/* Componentes base */
+/* ===================================================================
+   COMPONENTES BASE — padrão claro Oficina Integrada
+   =================================================================== */
 @layer components {
-  /* Cards */
-  .card {
-    @apply bg-surface-900 rounded-xl border border-white/[0.06] shadow-card transition-all duration-200;
+  /* Painel (era .card) — seção estruturada, borda fina, raio discreto */
+  .card, .panel {
+    @apply bg-panel rounded-lg border border-line shadow-sm;
   }
-  
-  .card:hover {
-    @apply shadow-card-hover border-white/[0.12];
+  .card-flat { @apply bg-panel rounded-lg border border-line; }
+
+  /* Cabeçalho de painel (título + ações + colapso) */
+  .panel-head {
+    @apply flex items-center justify-between px-4 py-3 border-b border-line;
   }
-  
-  .card-flat {
-    @apply bg-surface-900 rounded-xl border border-white/[0.06] shadow-soft;
-  }
+  .panel-title { @apply text-sm font-semibold text-ink; }
 
   /* Botões */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium text-sm transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
-  .btn-primary {
-    @apply bg-gold-500 text-surface-950 hover:bg-gold-400 active:scale-[0.98];
-  }
-  
-  .btn-secondary {
-    @apply bg-surface-800 text-surface-200 hover:bg-surface-700 active:bg-surface-700;
-  }
-  
-  .btn-ghost {
-    @apply text-surface-300 hover:bg-white/5 active:bg-white/10;
-  }
-  
-  .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 active:bg-red-800;
-  }
-  
-  .btn-sm {
-    @apply px-3 py-1.5 text-xs;
-  }
-  
-  .btn-lg {
-    @apply px-6 py-3 text-base;
-  }
+  .btn-primary { @apply bg-accent text-accent-fg hover:bg-accent-hover; }
+  .btn-secondary { @apply bg-panel-2 text-ink border border-line hover:bg-line/60; }
+  .btn-ghost { @apply text-muted hover:bg-ink/5 hover:text-ink; }
+  .btn-danger { @apply bg-danger text-white hover:bg-danger/90; }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-6 py-3 text-base; }
 
   /* Inputs */
   .input {
-    @apply w-full px-3.5 py-2.5 bg-surface-950/40 border border-white/10 rounded-lg text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40 transition-all;
+    @apply w-full px-3.5 py-2.5 bg-panel border border-line rounded-md text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors;
   }
-
   .input-dark {
-    @apply w-full px-4 py-3 bg-surface-950/40 border border-white/10 rounded-xl text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/40 transition-all;
+    @apply w-full px-4 py-3 bg-panel border border-line rounded-md text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors;
   }
+  .input-error { @apply border-danger focus:ring-danger/20 focus:border-danger; }
+  .label { @apply block text-sm font-medium text-muted mb-1.5; }
 
-  
-  .input-error {
-    @apply border-red-500 focus:ring-red-500/20 focus:border-red-500;
-  }
-
-  /* Label */
-  .label {
-    @apply block text-sm font-medium text-surface-300 mb-1.5;
-  }
-
-  /* Badges de status */
-  .badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
-  }
-  
-  .badge-orcamento {
-    @apply bg-amber-500/15 text-amber-300;
-  }
-  
-  .badge-pendente {
-    @apply bg-amber-500/15 text-amber-300;
-  }
-  
-  .badge-execucao {
-    @apply bg-blue-500/15 text-blue-300;
-  }
-  
-  .badge-pronto {
-    @apply bg-violet-500/15 text-violet-300;
-  }
-  
-  .badge-finalizado {
-    @apply bg-emerald-500/15 text-emerald-300;
-  }
-  
-  .badge-pago {
-    @apply bg-teal-500/15 text-teal-300;
-  }
-  
-  .badge-cancelado {
-    @apply bg-red-500/15 text-red-300;
-  }
+  /* Chips de status */
+  .badge { @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium; }
+  .badge-orcamento { @apply bg-amber-100 text-amber-800; }
+  .badge-pendente { @apply bg-amber-100 text-amber-800; }
+  .badge-execucao { @apply bg-blue-100 text-blue-800; }
+  .badge-pronto { @apply bg-accent-soft text-accent; }
+  .badge-finalizado { @apply bg-emerald-100 text-emerald-800; }
+  .badge-pago { @apply bg-teal-100 text-teal-800; }
+  .badge-cancelado { @apply bg-red-100 text-red-800; }
 
   /* Tabela */
-  .table-container {
-    @apply overflow-x-auto rounded-xl border border-white/10;
-  }
-  
-  .table {
-    @apply w-full text-sm;
-  }
-  
+  .table-container { @apply overflow-x-auto rounded-lg border border-line; }
+  .table { @apply w-full text-sm; }
   .table th {
-    @apply px-4 py-3 text-left text-xs font-semibold text-surface-400 uppercase tracking-wider bg-surface-900 border-b border-white/10;
+    @apply px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider bg-panel-2 border-b border-line;
   }
-  
-  .table td {
-    @apply px-4 py-3 text-surface-200 border-b border-white/5;
-  }
-  
-  .table tr:hover td {
-    @apply bg-white/[0.03];
-  }
-  
-  .table tr:last-child td {
-    @apply border-b-0;
-  }
+  .table td { @apply px-4 py-3 text-ink border-b border-line; }
+  .table tr:hover td { @apply bg-panel-2; }
+  .table tr:last-child td { @apply border-b-0; }
 
-  /* Sidebar menu */
-  .sidebar-link {
-    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-surface-300 font-medium transition-all;
-  }
-  
-  .sidebar-link:hover {
-    @apply bg-white/5 text-surface-50;
-  }
-  
-  .sidebar-link.active {
-    @apply bg-gold-500/15 text-gold-400 shadow-md;
-  }
+  /* Sidebar legacy links */
+  .sidebar-link { @apply flex items-center gap-3 px-3.5 py-2.5 rounded-md text-muted font-medium transition-colors; }
+  .sidebar-link:hover { @apply bg-ink/5 text-ink; }
+  .sidebar-link.active { @apply bg-accent-soft text-accent; }
 
-  /* Page header */
-  .page-header {
-    @apply flex items-center justify-between mb-6;
-  }
-  
-  .page-title {
-    @apply text-2xl font-bold text-surface-50;
-  }
-  
-  .page-subtitle {
-    @apply text-sm text-surface-400 mt-0.5;
-  }
+  /* Cabeçalhos de página */
+  .page-header { @apply flex items-center justify-between mb-6; }
+  .page-title { @apply text-2xl font-bold text-ink; }
+  .page-subtitle { @apply text-sm text-muted mt-0.5; }
 
   /* Empty state */
-  .empty-state {
-    @apply flex flex-col items-center justify-center py-16 text-center;
-  }
-  
-  .empty-state-icon {
-    @apply w-16 h-16 text-surface-600 mb-4;
-  }
-  
-  .empty-state-title {
-    @apply text-lg font-semibold text-surface-200 mb-2;
-  }
-  
-  .empty-state-text {
-    @apply text-sm text-surface-400 max-w-sm;
-  }
+  .empty-state { @apply flex flex-col items-center justify-center py-16 text-center; }
+  .empty-state-icon { @apply w-16 h-16 text-faint mb-4; }
+  .empty-state-title { @apply text-lg font-semibold text-ink mb-2; }
+  .empty-state-text { @apply text-sm text-muted max-w-sm; }
 
-  /* Stat card */
-  .stat-card {
-    @apply card p-5;
-  }
-  
-  .stat-value {
-    @apply text-2xl font-bold text-surface-50;
-  }
-  
-  .stat-label {
-    @apply text-sm text-surface-400;
-  }
+  /* Stat */
+  .stat-card { @apply card p-5; }
+  .stat-value { @apply text-2xl font-bold text-ink; }
+  .stat-label { @apply text-sm text-muted; }
 
-  /* Page action bar */
-  .action-bar {
-    @apply flex items-center gap-3;
-  }
+  .action-bar { @apply flex items-center gap-3; }
 
-  /* Modal overlay */
-  .modal-backdrop {
-    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-40;
-  }
-  
-  .modal {
-    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-900 rounded-2xl shadow-2xl z-50;
-  }
-  
-  .modal-header {
-    @apply flex items-center justify-between p-5 border-b border-white/10;
-  }
-  
-  .modal-body {
-    @apply p-5;
-  }
-  
-  .modal-footer {
-    @apply flex items-center justify-end gap-3 p-5 border-t border-white/10;
-  }
+  /* Modal */
+  .modal-backdrop { @apply fixed inset-0 bg-black/50 z-40; }
+  .modal { @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-panel rounded-xl shadow-xl z-50; }
+  .modal-header { @apply flex items-center justify-between p-5 border-b border-line; }
+  .modal-body { @apply p-5; }
+  .modal-footer { @apply flex items-center justify-end gap-3 p-5 border-t border-line; }
 
-  /* Progress bar */
-  .progress-bar {
-    @apply h-2 bg-surface-800 rounded-full overflow-hidden;
-  }
-  
-  .progress-fill {
-    @apply h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-600 transition-all duration-500;
-  }
+  /* Progress */
+  .progress-bar { @apply h-2 bg-panel-2 rounded-full overflow-hidden; }
+  .progress-fill { @apply h-full rounded-full bg-accent transition-all duration-500; }
 
   /* Avatar */
-  .avatar {
-    @apply inline-flex items-center justify-center rounded-full bg-surface-800 text-surface-300 font-medium;
-  }
-  
-  .avatar-sm {
-    @apply w-8 h-8 text-xs;
-  }
-  
-  .avatar-md {
-    @apply w-10 h-10 text-sm;
-  }
-  
-  .avatar-lg {
-    @apply w-12 h-12 text-base;
-  }
+  .avatar { @apply inline-flex items-center justify-center rounded-full bg-panel-2 text-muted font-medium; }
+  .avatar-sm { @apply w-8 h-8 text-xs; }
+  .avatar-md { @apply w-10 h-10 text-sm; }
+  .avatar-lg { @apply w-12 h-12 text-base; }
 
-  /* Dropdown menu */
-  .dropdown {
-    @apply absolute top-full right-0 mt-1 w-48 bg-surface-900 rounded-lg shadow-lg border border-white/10 py-1 z-50;
-  }
-  
-  .dropdown-item {
-    @apply flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-200 hover:bg-white/5;
-  }
+  /* Dropdown */
+  .dropdown-menu { @apply absolute top-full right-0 mt-1 w-48 bg-panel rounded-lg shadow-lg border border-line py-1 z-50; }
+  .dropdown-item { @apply flex items-center gap-2 w-full px-3 py-2 text-sm text-ink hover:bg-panel-2; }
 
   /* Tabs */
-  .tabs {
-    @apply flex gap-1 p-1 bg-surface-800 rounded-lg;
-  }
-  
-  .tab {
-    @apply px-4 py-2 text-sm font-medium text-surface-300 rounded-md transition-all;
-  }
-  
-  .tab-active {
-    @apply bg-surface-950 text-surface-50 shadow-sm;
-  }
+  .tabs { @apply flex gap-1 p-1 bg-panel-2 rounded-lg; }
+  .tab { @apply px-4 py-2 text-sm font-medium text-muted rounded-md transition-colors; }
+  .tab-active { @apply bg-panel text-ink shadow-sm; }
 
-  /* Chip/Tag */
-  .chip {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-surface-800 text-surface-300;
-  }
-
-  .glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    @apply shadow-lg;
-  }
+  .chip { @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-panel-2 text-muted; }
 }
 
-/* Animações de transição */
-.animate-in {
-  animation: animateIn 0.3s ease-out forwards;
-}
-
-@keyframes animateIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/*utilitários*/
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-400 to-gold-600;
-}
-
-.bg-gradient-main {
-  background: linear-gradient(135deg, #082f49 0%, #1e3a8a 100%);
-}
-
-@media (max-width: 1024px) {
-  .page-header {
-    @apply flex-col items-start gap-3;
-  }
-
-  .action-bar {
-    @apply flex-wrap w-full;
-  }
-
-  .action-bar > * {
-    @apply w-full;
-  }
-
-  .modal {
-    @apply w-[calc(100%-1.5rem)] max-w-none;
-  }
-
-  .table th,
-  .table td {
-    @apply px-3 py-2.5;
-  }
-}
-
-@media (max-width: 640px) {
-  body {
-    font-size: 15px;
-  }
-
-  .card,
-  .card-flat,
-  .stat-card {
-    @apply rounded-2xl;
-  }
-
-  .btn {
-    @apply w-full;
-  }
-
-  .btn-sm,
-  .btn-lg {
-    @apply w-full;
-  }
-
-  .tabs {
-    @apply overflow-x-auto;
-  }
-
-  .tab {
-    @apply whitespace-nowrap;
-  }
-}
+.gradient-text { color: rgb(var(--accent)); }

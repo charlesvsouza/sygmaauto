@@ -86,7 +86,7 @@ function SupplierCombobox({ suppliers, value, onChange }: {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold text-left flex items-center justify-between"
+        className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold text-left flex items-center justify-between"
       >
         <span className={selected ? 'text-surface-50' : 'text-surface-500'}>
           {selected ? selected.name : 'Selecionar fornecedor...'}
@@ -100,9 +100,9 @@ function SupplierCombobox({ suppliers, value, onChange }: {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute z-50 top-full left-0 right-0 mt-2 bg-surface-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden"
+            className="absolute z-50 top-full left-0 right-0 mt-2 bg-surface-900 border border-line rounded-lg shadow-xl overflow-hidden"
           >
-            <div className="p-2 border-b border-white/5">
+            <div className="p-2 border-b border-line">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                 <input
@@ -111,7 +111,7 @@ function SupplierCombobox({ suppliers, value, onChange }: {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Buscar fornecedor..."
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-accent/40"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ function SupplierCombobox({ suppliers, value, onChange }: {
               <button
                 type="button"
                 onClick={() => { onChange(''); setOpen(false); setQ(''); }}
-                className="w-full px-4 py-2.5 text-sm text-surface-500 hover:bg-white/5 text-left transition-colors"
+                className="w-full px-4 py-2.5 text-sm text-surface-500 hover:bg-ink/5 text-left transition-colors"
               >
                 Nenhum (sem fornecedor)
               </button>
@@ -132,7 +132,7 @@ function SupplierCombobox({ suppliers, value, onChange }: {
                     type="button"
                     onClick={() => { onChange(s.id); setOpen(false); setQ(''); }}
                     className={cn(
-                      'w-full px-4 py-2.5 text-sm text-left flex items-center justify-between hover:bg-white/5 transition-colors',
+                      'w-full px-4 py-2.5 text-sm text-left flex items-center justify-between hover:bg-ink/5 transition-colors',
                       value === s.id && 'bg-primary-50 text-primary-700 font-bold'
                     )}
                   >
@@ -173,42 +173,42 @@ function SupplierModal({ onClose, onSaved }: { onClose: () => void; onSaved: () 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-        className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden">
-        <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+        className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+        <div className="px-8 py-6 border-b border-line flex items-center justify-between">
           <h2 className="text-lg font-black text-surface-50 uppercase">Novo Fornecedor</h2>
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors"><X size={18} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 space-y-1.5">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Razão Social / Nome *</label>
               <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gold-500/20" />
+                className="w-full px-4 py-2.5 rounded-xl border border-line text-sm font-bold focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">CNPJ / CPF</label>
               <input value={form.document} onChange={e => setForm({...form, document: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/20" />
+                className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Telefone</label>
               <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/20" />
+                className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Email</label>
               <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/20" />
+                className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Contato</label>
               <input value={form.contactName} onChange={e => setForm({...form, contactName: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/20" />
+                className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
-            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-white/5 rounded-xl transition-all">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-8 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-bold hover:bg-gold-400 transition-all active:scale-95">
+          <div className="flex justify-end gap-3 pt-4 border-t border-line">
+            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-ink/5 rounded-xl transition-all">Cancelar</button>
+            <button type="submit" disabled={saving} className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all active:scale-95">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Cadastrar'}
             </button>
           </div>
@@ -353,29 +353,29 @@ export function InventoryPage() {
         <div className="flex gap-3">
           <button onClick={() => setShowImportNFModal(true)}
             disabled={!canManageParts}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl border-2 border-indigo-500/30 text-indigo-300 font-bold hover:border-indigo-500/40 hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-50">
+            className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-indigo-500/30 text-indigo-700 font-bold hover:border-indigo-500/40 hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-50">
             <FileSpreadsheet className="w-4 h-4" /> Importar NF
           </button>
           <button onClick={() => setShowSupplierModal(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl border-2 border-white/10 text-surface-200 font-bold hover:border-white/20 hover:bg-white/5 transition-all text-sm">
+            className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-line text-surface-200 font-bold hover:border-line hover:bg-ink/5 transition-all text-sm">
             <Truck className="w-4 h-4" /> Fornecedor
           </button>
           <button onClick={openNew}
             disabled={!canManageParts}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gold-500 text-surface-950 font-black shadow-lg hover:bg-gold-400 transition-all active:scale-95">
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-surface-950 font-black shadow-lg hover:bg-accent-hover transition-all active:scale-95">
             <Plus className="w-5 h-5" /> Nova Peça
           </button>
         </div>
       </div>
 
       {errorMessage && (
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-300 text-sm font-semibold">
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-700 text-sm font-semibold">
           {errorMessage}
         </div>
       )}
 
       {!canManageParts && (
-        <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 text-sky-300 text-sm font-semibold">
+        <div className="rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sky-700 text-sm font-semibold">
           Seu usuario nao tem permissao para cadastrar ou editar pecas. Use MASTER ou ADMIN.
         </div>
       )}
@@ -388,8 +388,8 @@ export function InventoryPage() {
           { label: 'Valor em Estoque', value: `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: Package, color: 'bg-emerald-500' },
         ].map((kpi) => (
           <motion.div key={kpi.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-surface-900 rounded-[2rem] border border-white/10 p-6 flex items-center gap-5 shadow-sm">
-            <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md', kpi.color)}>
+            className="bg-surface-900 rounded-xl border border-line p-6 flex items-center gap-5 shadow-sm">
+            <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center text-white shadow-md', kpi.color)}>
               <kpi.icon size={22} />
             </div>
             <div>
@@ -401,17 +401,17 @@ export function InventoryPage() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm overflow-hidden">
+      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
         {/* Filtros */}
-        <div className="p-6 border-b border-white/5 flex flex-col sm:flex-row gap-4">
+        <div className="p-6 border-b border-line flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
             <input type="text" placeholder="Buscar por nome, código interno ou SKU..."
               value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/20 font-medium" />
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 font-medium" />
           </div>
           <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-white/10 text-sm font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-gold-500/20 bg-surface-900">
+            className="px-4 py-2.5 rounded-xl border border-line text-sm font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent/40 bg-surface-900">
             <option value="">Todas as categorias</option>
             {CATEGORIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
           </select>
@@ -431,7 +431,7 @@ export function InventoryPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/5">
+                <tr className="border-b border-line">
                   <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Código / Peça</th>
                   <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Categoria</th>
                   <th className="px-6 py-4 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Fornecedor</th>
@@ -440,12 +440,12 @@ export function InventoryPage() {
                   <th className="px-6 py-4 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 {filtered.map((part) => {
                   const stock = part.currentStock || 0;
                   const low = stock <= (part.minStock || 0);
                   return (
-                    <tr key={part.id} className="hover:bg-white/5 transition-colors group">
+                    <tr key={part.id} className="hover:bg-ink/5 transition-colors group">
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-bold text-surface-50 text-sm">{part.name}</p>
@@ -474,7 +474,7 @@ export function InventoryPage() {
                       <td className="px-6 py-4 text-center">
                         <span className={cn(
                           'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black',
-                          low ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-300'
+                          low ? 'bg-red-500/10 text-red-600' : 'bg-emerald-500/10 text-emerald-700'
                         )}>
                           {low && <AlertTriangle className="w-3 h-3" />}
                           {stock} {part.unit}
@@ -490,7 +490,7 @@ export function InventoryPage() {
                           <button onClick={() => { setShowMovModal(part); setMovType('ENTRY'); }}
                             title="Entrada"
                             disabled={!canManageParts}
-                            className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-400 transition-colors">
+                            className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-600 transition-colors">
                             <ArrowDownLeft className="w-4 h-4" />
                           </button>
                           <button onClick={() => { setShowMovModal(part); setMovType('EXIT'); }}
@@ -501,7 +501,7 @@ export function InventoryPage() {
                           </button>
                           <button onClick={() => openEdit(part)}
                             disabled={!canManageParts}
-                            className="p-2 rounded-lg hover:bg-white/5 text-surface-300 transition-colors">
+                            className="p-2 rounded-lg hover:bg-ink/5 text-surface-300 transition-colors">
                             <Edit className="w-4 h-4" />
                           </button>
                         </div>
@@ -523,12 +523,12 @@ export function InventoryPage() {
               onClick={() => setShowModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
-              <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40 shrink-0">
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
+              <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40 shrink-0">
                 <h2 className="text-xl font-black text-surface-50 uppercase">
                   {editingPart ? 'Editar Peça' : 'Cadastrar Peça'}
                 </h2>
-                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-full text-surface-500 hover:text-surface-50 transition-colors">
+                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -539,7 +539,7 @@ export function InventoryPage() {
                   <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Nome da Peça *</label>
                   <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
                     placeholder="Ex: Pastilha de Freio Dianteira"
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold" />
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -547,7 +547,7 @@ export function InventoryPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Categoria / Área</label>
                     <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold">
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold">
                       <option value="">Selecionar...</option>
                       {CATEGORIES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                     </select>
@@ -557,7 +557,7 @@ export function InventoryPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Tipo / Unidade</label>
                     <select value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold">
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold">
                       {UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
                     </select>
                   </div>
@@ -576,13 +576,13 @@ export function InventoryPage() {
                     </div>
                     <input value={formData.internalCode} onChange={e => setFormData({...formData, internalCode: e.target.value})}
                       placeholder="Ex: FRE-001"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-mono font-bold" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-mono font-bold" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">SKU / Ref. Fabricante</label>
                     <input value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})}
                       placeholder="Ex: TRW-GDB1535"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
                 </div>
 
@@ -592,13 +592,13 @@ export function InventoryPage() {
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Preço de Venda (R$) *</label>
                     <input required type="number" step="0.01" min="0" value={formData.unitPrice}
                       onChange={e => setFormData({...formData, unitPrice: Number(e.target.value)})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Custo / Preço de Compra (R$)</label>
                     <input type="number" step="0.01" min="0" value={formData.costPrice}
                       onChange={e => setFormData({...formData, costPrice: Number(e.target.value)})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
                 </div>
 
@@ -608,19 +608,19 @@ export function InventoryPage() {
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Estoque Mínimo</label>
                     <input type="number" min="0" value={formData.minStock}
                       onChange={e => setFormData({...formData, minStock: Number(e.target.value)})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Quantidade em Estoque</label>
                     <input type="number" min="0" value={formData.currentStock}
                       onChange={e => setFormData({...formData, currentStock: Number(e.target.value)})}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Localização</label>
                     <input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}
                       placeholder="Ex: Prateleira A2"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm" />
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
                 </div>
 
@@ -642,20 +642,20 @@ export function InventoryPage() {
                   <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Observações / Compatibilidade</label>
                   <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
                     placeholder="Veículos compatíveis, especificações técnicas, etc."
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm min-h-[70px] resize-none" />
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[70px] resize-none" />
                 </div>
 
                 {partError && (
-                  <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                  <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                     {partError}
                   </p>
                 )}
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                <div className="flex justify-end gap-3 pt-4 border-t border-line">
                   <button type="button" onClick={() => { setShowModal(false); setPartError(''); }}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:bg-white/5 transition-all">Cancelar</button>
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:bg-ink/5 transition-all">Cancelar</button>
                   <button type="submit"
-                    className="px-8 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-bold hover:bg-gold-400 transition-all shadow-sm active:scale-95">
+                    className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
                     {editingPart ? 'Salvar Alterações' : 'Cadastrar Peça'}
                   </button>
                 </div>
@@ -672,23 +672,23 @@ export function InventoryPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowMovModal(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden">
-              <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="px-8 py-6 border-b border-line flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-black text-surface-50 uppercase">Movimentação</h2>
                   <p className="text-sm text-surface-400 font-medium mt-0.5">{showMovModal.name}</p>
                 </div>
-                <button onClick={() => setShowMovModal(null)} className="p-2 hover:bg-white/5 rounded-full text-surface-500"><X size={18} /></button>
+                <button onClick={() => setShowMovModal(null)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500"><X size={18} /></button>
               </div>
               <div className="p-8 space-y-5">
                 <div className="grid grid-cols-2 gap-3">
                   {(['ENTRY', 'EXIT'] as const).map((t) => (
                     <button key={t} type="button" onClick={() => setMovType(t)}
                       className={cn(
-                        'py-3 rounded-2xl font-black text-sm border-2 flex items-center justify-center gap-2 transition-all',
+                        'py-3 rounded-lg font-black text-sm border-2 flex items-center justify-center gap-2 transition-all',
                         movType === t
-                          ? t === 'ENTRY' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300' : 'border-red-500 bg-red-500/10 text-red-400'
-                          : 'border-white/10 text-surface-400 hover:border-white/20'
+                          ? t === 'ENTRY' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700' : 'border-red-500 bg-red-500/10 text-red-600'
+                          : 'border-line text-surface-400 hover:border-line'
                       )}>
                       {t === 'ENTRY' ? <><ArrowDownLeft className="w-4 h-4" /> Entrada</> : <><ArrowUpRight className="w-4 h-4" /> Saída</>}
                     </button>
@@ -697,7 +697,7 @@ export function InventoryPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Quantidade</label>
                   <input type="number" min="1" value={movQty} onChange={e => setMovQty(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 text-xl font-black text-center focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all" />
+                    className="w-full px-4 py-3 rounded-lg border border-line text-xl font-black text-center focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
                   <p className="text-xs text-surface-500 text-center">
                     Estoque atual: <strong>{showMovModal.currentStock || 0} {showMovModal.unit}</strong>
                     {movType === 'EXIT' && ` → ${Math.max(0, (showMovModal.currentStock || 0) - movQty)} após saída`}
@@ -707,15 +707,15 @@ export function InventoryPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Observação</label>
                   <input value={movNote} onChange={e => setMovNote(e.target.value)} placeholder="Nota fiscal, motivo, etc."
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 text-sm focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all" />
+                    className="w-full px-4 py-3 rounded-lg border border-line text-sm focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
                 </div>
                 {movError && (
-                  <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                  <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                     {movError}
                   </p>
                 )}
                 <div className="flex justify-end gap-3 pt-2">
-                  <button onClick={() => { setShowMovModal(null); setMovError(''); }} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-white/5 rounded-xl transition-all">Cancelar</button>
+                  <button onClick={() => { setShowMovModal(null); setMovError(''); }} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-ink/5 rounded-xl transition-all">Cancelar</button>
                   <button onClick={handleMovement}
                     className={cn('px-8 py-2.5 text-white rounded-xl font-bold transition-all active:scale-95 shadow-sm',
                       movType === 'ENTRY' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-500 hover:bg-red-600')}>

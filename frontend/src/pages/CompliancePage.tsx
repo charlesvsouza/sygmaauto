@@ -92,7 +92,7 @@ export function CompliancePage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="relative rounded-[2rem] border border-[#ff7b2f]/20 bg-[linear-gradient(135deg,rgba(255,123,47,0.12),rgba(40,85,214,0.08))] p-8 md:p-10 overflow-hidden"
+          className="relative rounded-xl border border-[#ff7b2f]/20 bg-[linear-gradient(135deg,rgba(255,123,47,0.12),rgba(40,85,214,0.08))] p-8 md:p-10 overflow-hidden"
         >
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[#ff7b2f]/15 blur-3xl" />
           <div className="max-w-4xl relative z-10">
@@ -109,7 +109,7 @@ export function CompliancePage() {
               O objetivo aqui e transparencia operacional: mostrar o que ja existe, o que esta em amadurecimento e o que ainda depende de revisao juridica e formalizacao adicional.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-[#090e17]/55 p-5 text-sm text-white/70 leading-relaxed">
+            <div className="mt-6 rounded-lg border border-line bg-[#090e17]/55 p-5 text-sm text-white/70 leading-relaxed">
               <p className="font-bold text-white">Importante</p>
               <p className="mt-2">
                 Este conteudo nao representa certificacao, parecer juridico ou declaracao de conformidade plena. Trata-se de uma central de governanca e transparencia em revisao continua.
@@ -128,7 +128,7 @@ export function CompliancePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] p-6"
+              className="rounded-xl border border-line bg-ink/5 p-6"
             >
               <p className="text-[11px] uppercase tracking-[0.22em] text-white/35 font-bold">{item.title}</p>
               <p className="mt-3 text-3xl font-black text-white">{item.value}</p>
@@ -157,10 +157,10 @@ export function CompliancePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.06 }}
-              className="rounded-3xl border border-white/10 bg-[#0c1220]/70 p-6"
+              className="rounded-xl border border-line bg-[#0c1220]/70 p-6"
             >
               <div className="flex items-start gap-4">
-                <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff7b2f]/14 text-[#ff7b2f] border border-[#ff7b2f]/20">
+                <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ff7b2f]/14 text-[#ff7b2f] border border-[#ff7b2f]/20">
                   <Icon size={20} />
                 </div>
                 <div>
@@ -179,7 +179,7 @@ export function CompliancePage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl border border-white/10 bg-white/[0.04] p-7"
+            className="rounded-xl border border-line bg-ink/5 p-7"
           >
             <div className="flex items-center gap-3">
               <BadgeCheck className="text-[#ff7b2f]" size={20} />
@@ -189,7 +189,7 @@ export function CompliancePage() {
               {publicDocuments.map((item) => {
                 const isInternal = item.href.startsWith('/');
                 const content = (
-                  <div className="rounded-2xl border border-white/8 bg-[#090e17]/55 p-5 transition-colors hover:border-[#ff7b2f]/30">
+                  <div className="rounded-lg border border-line bg-[#090e17]/55 p-5 transition-colors hover:border-[#ff7b2f]/30">
                     <p className="text-base font-black text-white">{item.title}</p>
                     <p className="mt-2 text-sm leading-relaxed text-white/55">{item.description}</p>
                     <div className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#ffb182]">
@@ -216,7 +216,7 @@ export function CompliancePage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl border border-[#2855d6]/20 bg-[#2855d6]/8 p-7"
+            className="rounded-xl border border-[#2855d6]/20 bg-[#2855d6]/8 p-7"
           >
             <div className="flex items-center gap-3">
               <Mail className="text-[#8ca8ff]" size={20} />
@@ -227,12 +227,12 @@ export function CompliancePage() {
             </p>
             <a
               href={`mailto:${companyContacts.support}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/8 px-4 py-3 text-sm font-bold text-white hover:border-[#ff7b2f]/35 hover:bg-[#ff7b2f]/10 transition-all"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg border border-line bg-ink/5 px-4 py-3 text-sm font-bold text-white hover:border-[#ff7b2f]/35 hover:bg-[#ff7b2f]/10 transition-all"
             >
               <LifeBuoy size={16} />
               {companyContacts.support}
             </a>
-            <div className="mt-6 rounded-2xl border border-white/8 bg-[#090e17]/55 p-5">
+            <div className="mt-6 rounded-lg border border-line bg-[#090e17]/55 p-5">
               <p className="text-xs uppercase tracking-[0.2em] text-white/35 font-bold">Escopo atual</p>
               <p className="mt-3 text-sm text-white/58 leading-relaxed">
                 Recebimento inicial de pedidos de acesso, correcao, exportacao, eliminacao e duvidas sobre tratamento de dados no contexto da plataforma.
@@ -243,7 +243,7 @@ export function CompliancePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 md:p-10">
+        <div className="rounded-xl border border-line bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 md:p-10">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.24em] text-[#ff7b2f]/70 font-bold">Proximas consolidacoes</p>
@@ -262,7 +262,7 @@ export function CompliancePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="rounded-2xl border border-white/8 bg-[#090e17]/55 p-5 text-sm text-white/62 leading-relaxed"
+                className="rounded-lg border border-line bg-[#090e17]/55 p-5 text-sm text-white/62 leading-relaxed"
               >
                 {item}
               </motion.div>

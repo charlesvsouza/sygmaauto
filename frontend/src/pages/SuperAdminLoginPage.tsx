@@ -37,16 +37,16 @@ export function SuperAdminLoginPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-            <Shield className="text-red-400 w-8 h-8" />
+          <div className="w-16 h-16 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+            <Shield className="text-red-600 w-8 h-8" />
           </div>
           <h1 className="text-2xl font-black text-white">Super Admin</h1>
           <p className="text-surface-400 text-sm mt-1">Acesso restrito — área de manutenção global</p>
         </div>
 
-        <div className="bg-surface-900/60 border border-white/10 rounded-[2rem] p-8">
+        <div className="bg-surface-900/60 border border-line rounded-xl p-8">
           {error && (
-            <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4 mb-6 text-sm">
+            <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-4 mb-6 text-sm">
               <AlertCircle size={16} />
               {error}
             </div>
@@ -61,7 +61,7 @@ export function SuperAdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-surface-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
+                  className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
                   placeholder={companyContacts.general}
                   required
                 />
@@ -76,7 +76,7 @@ export function SuperAdminLoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-surface-950/60 border border-white/10 rounded-xl py-3 pl-10 pr-12 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
+                  className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-12 text-sm text-white focus:ring-2 focus:ring-red-500/40 outline-none"
                   placeholder="••••••••••••"
                   required
                 />

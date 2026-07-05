@@ -199,10 +199,10 @@ function NumStepper({ value, onChange }: { value: number; onChange: (n: number) 
   return (
     <div className="flex items-center gap-2">
       <button type="button" onClick={() => onChange(Math.max(1, value - 1))}
-        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-surface-600 transition-colors"><Minus size={12} /></button>
+        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Minus size={12} /></button>
       <span className="w-6 text-center text-white font-black text-sm">{value}</span>
       <button type="button" onClick={() => onChange(Math.min(16, value + 1))}
-        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-surface-600 transition-colors"><Plus size={12} /></button>
+        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Plus size={12} /></button>
     </div>
   );
 }
@@ -210,7 +210,7 @@ function NumStepper({ value, onChange }: { value: number; onChange: (n: number) 
 function Section({ title, color = 'blue', open, onToggle, children }: {
   title: string; color?: 'blue' | 'amber'; open: boolean; onToggle: () => void; children: React.ReactNode;
 }) {
-  const bg   = color === 'amber' ? 'bg-amber-500/10 text-amber-300' : 'bg-blue-500/10 text-blue-300';
+  const bg   = color === 'amber' ? 'bg-amber-500/10 text-amber-700' : 'bg-blue-500/10 text-blue-700';
   const ring = color === 'amber' ? 'border-amber-500/30' : 'border-blue-500/30';
   return (
     <div className={`rounded-xl border ${ring}`}>
@@ -227,7 +227,7 @@ function Section({ title, color = 'blue', open, onToggle, children }: {
 function NInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <input type="number" step="0.001" min="0" value={value} onChange={(e) => onChange(e.target.value)} placeholder="—"
-      className="w-24 bg-surface-800 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
+      className="w-24 bg-surface-800 border border-line rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
   );
 }
 
@@ -236,7 +236,7 @@ function JournalTable({ rows, update, dotColor = 'blue' }: {
   update: (i: number, f: keyof JournalMeasure, v: string) => void;
   dotColor?: 'blue' | 'amber';
 }) {
-  const dot = dotColor === 'amber' ? 'bg-amber-500/15 text-amber-400' : 'bg-blue-500/15 text-blue-400';
+  const dot = dotColor === 'amber' ? 'bg-amber-500/15 text-amber-600' : 'bg-blue-500/15 text-blue-600';
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
@@ -247,7 +247,7 @@ function JournalTable({ rows, update, dotColor = 'blue' }: {
           <th className="py-1.5 pr-2">Ovalização (mm)</th>
           <th className="py-1.5">Conicidade (mm)</th>
         </tr></thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-line">
           {rows.map((r, i) => (
             <tr key={i}>
               <td className="py-1.5 pr-3"><span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-black text-xs ${dot}`}>{i + 1}</span></td>
@@ -275,10 +275,10 @@ function BoreTable({ rows, update }: {
           <th className="py-1.5 pr-2">Ø Nominal (mm)</th>
           <th className="py-1.5">Ø Medido (mm)</th>
         </tr></thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-line">
           {rows.map((r, i) => (
             <tr key={i}>
-              <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-400 font-black text-xs">{i + 1}</span></td>
+              <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-black text-xs">{i + 1}</span></td>
               <td className="py-1.5 pr-2"><NInput value={r.diametroNominal} onChange={(v) => update(i, 'diametroNominal', v)} /></td>
               <td className="py-1.5">    <NInput value={r.diametroMedido}  onChange={(v) => update(i, 'diametroMedido', v)} /></td>
             </tr>
@@ -396,14 +396,14 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4"
         onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
         <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-          className="bg-surface-900 border border-white/10 rounded-2xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl">
+          className="bg-surface-900 border border-line rounded-lg w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl">
 
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
             <div className="flex items-center gap-3">
               {step === 1
-                ? <Ruler className="text-blue-400 w-5 h-5" />
-                : <FlaskConical className="text-emerald-400 w-5 h-5" />}
+                ? <Ruler className="text-blue-600 w-5 h-5" />
+                : <FlaskConical className="text-emerald-600 w-5 h-5" />}
               <div>
                 <h2 className="text-white font-black text-lg">
                   {step === 1 ? 'Ficha de Metrologia' : 'Diagnóstico Técnico'}
@@ -418,10 +418,10 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
             <div className="flex items-center gap-3">
               {/* Progress dots */}
               <div className="flex gap-1.5">
-                <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 1 ? 'bg-blue-500' : 'bg-white/20'}`} />
-                <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 2 ? 'bg-emerald-500' : 'bg-white/20'}`} />
+                <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 1 ? 'bg-blue-500' : 'bg-ink/5'}`} />
+                <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 2 ? 'bg-emerald-500' : 'bg-ink/5'}`} />
               </div>
-              <button type="button" onClick={onCancel} className="p-2 text-surface-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
+              <button type="button" onClick={onCancel} className="p-2 text-surface-400 hover:text-white rounded-lg hover:bg-ink/5 transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -437,13 +437,13 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                   <div>
                     <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do cabeçote (mm)</label>
                     <input type="number" step="0.001" min="0" value={empCab} onChange={(e) => setEmpCab(e.target.value)} placeholder="ex: 0.050"
-                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
+                      className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
                     <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                   <div>
                     <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do bloco (mm)</label>
                     <input type="number" step="0.001" min="0" value={empBlo} onChange={(e) => setEmpBlo(e.target.value)} placeholder="ex: 0.050"
-                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
+                      className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
                     <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                 </div>
@@ -465,10 +465,10 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                       <th className="py-1.5 pr-2">Conicidade (mm)</th>
                       <th className="py-1.5">Folga Pistão (mm)</th>
                     </tr></thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-line">
                       {cils.map((c, i) => (
                         <tr key={i}>
-                          <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-400 font-black text-xs">{i + 1}</span></td>
+                          <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-black text-xs">{i + 1}</span></td>
                           <td className="py-1.5 pr-2"><NInput value={c.diametroNominal} onChange={(v) => updCyl(i, 'diametroNominal', v)} /></td>
                           <td className="py-1.5 pr-2"><NInput value={c.diametroMedido}  onChange={(v) => updCyl(i, 'diametroMedido', v)} /></td>
                           <td className="py-1.5 pr-2"><NInput value={c.ovalização}      onChange={(v) => updCyl(i, 'ovalização', v)} /></td>
@@ -524,13 +524,13 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                   <div>
                     <label className="text-surface-500 text-xs font-semibold block mb-1.5">Técnico responsável</label>
                     <input value={tecnico} onChange={(e) => setTecnico(e.target.value)} placeholder="Nome do técnico"
-                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors" />
+                      className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors" />
                   </div>
                   <div>
                     <label className="text-surface-500 text-xs font-semibold block mb-1.5">Observações técnicas</label>
                     <textarea value={obs} onChange={(e) => setObs(e.target.value)}
                       placeholder="Desgaste irregular, trincas, recomendações..." rows={2}
-                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors resize-none" />
+                      className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors resize-none" />
                   </div>
                 </div>
               </Section>
@@ -544,8 +544,8 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
 
               {/* Banner de instrução */}
               <div className="flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/8 px-4 py-3">
-                <AlertTriangle size={16} className="text-emerald-400 mt-0.5 shrink-0" />
-                <p className="text-emerald-300 text-xs leading-relaxed">
+                <AlertTriangle size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <p className="text-emerald-700 text-xs leading-relaxed">
                   Com base nas medidas inseridas, o sistema identificou os serviços e peças abaixo. 
                   Marque ou desmarque conforme a decisão técnica — os itens selecionados serão 
                   adicionados automaticamente à OS.
@@ -556,18 +556,18 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {services.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-300 flex items-center gap-1.5">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-700 flex items-center gap-1.5">
                       <Wrench size={12} /> Serviços
                     </h3>
                     <button type="button" onClick={() => addCustomItem('service')}
-                      className="text-[10px] text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 transition-colors">
+                      className="text-[10px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 transition-colors">
                       <Plus size={10} /> Adicionar
                     </button>
                   </div>
                   <div className="space-y-1.5">
                     {services.map((it) => (
                       <label key={it.id} className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${
-                        it.selected ? 'border-blue-500/40 bg-blue-500/8' : 'border-white/5 bg-white/2 opacity-50'
+                        it.selected ? 'border-blue-500/40 bg-blue-500/8' : 'border-line bg-ink/5 opacity-50'
                       }`}>
                         <input type="checkbox" checked={it.selected} onChange={() => toggleDiagItem(it.id)}
                           className="mt-0.5 accent-blue-500 w-3.5 h-3.5 shrink-0" />
@@ -585,18 +585,18 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {parts.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-amber-700 flex items-center gap-1.5">
                       <Package size={12} /> Peças
                     </h3>
                     <button type="button" onClick={() => addCustomItem('part')}
-                      className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1 transition-colors">
+                      className="text-[10px] text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1 transition-colors">
                       <Plus size={10} /> Adicionar
                     </button>
                   </div>
                   <div className="space-y-1.5">
                     {parts.map((it) => (
                       <label key={it.id} className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${
-                        it.selected ? 'border-amber-500/40 bg-amber-500/8' : 'border-white/5 bg-white/2 opacity-50'
+                        it.selected ? 'border-amber-500/40 bg-amber-500/8' : 'border-line bg-ink/5 opacity-50'
                       }`}>
                         <input type="checkbox" checked={it.selected} onChange={() => toggleDiagItem(it.id)}
                           className="mt-0.5 accent-amber-500 w-3.5 h-3.5 shrink-0" />
@@ -605,7 +605,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                         {it.quantity > 1 && (
-                          <span className="text-[10px] text-amber-400 font-black shrink-0 mt-0.5">× {it.quantity}</span>
+                          <span className="text-[10px] text-amber-600 font-black shrink-0 mt-0.5">× {it.quantity}</span>
                         )}
                       </label>
                     ))}
@@ -617,16 +617,16 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <div className="text-center py-8 text-surface-400 text-xs">
                   Nenhuma anomalia detectada nas medidas informadas. Você pode adicionar itens manualmente.
                   <div className="flex justify-center gap-3 mt-4">
-                    <button type="button" onClick={() => addCustomItem('service')} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-300 rounded-lg text-xs font-semibold"><Wrench size={12} /> Serviço</button>
-                    <button type="button" onClick={() => addCustomItem('part')} className="flex items-center gap-1 px-3 py-1.5 bg-amber-600/20 text-amber-300 rounded-lg text-xs font-semibold"><Package size={12} /> Peça</button>
+                    <button type="button" onClick={() => addCustomItem('service')} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-700 rounded-lg text-xs font-semibold"><Wrench size={12} /> Serviço</button>
+                    <button type="button" onClick={() => addCustomItem('part')} className="flex items-center gap-1 px-3 py-1.5 bg-amber-600/20 text-amber-700 rounded-lg text-xs font-semibold"><Package size={12} /> Peça</button>
                   </div>
                 </div>
               )}
 
               {/* Resumo */}
               {selectedCount > 0 && (
-                <div className="rounded-xl border border-white/10 bg-white/3 px-4 py-2.5 flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="rounded-xl border border-line bg-ink/5 px-4 py-2.5 flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
                   <p className="text-surface-600 text-xs">
                     <span className="font-black text-white">{selectedCount}</span> ite{selectedCount > 1 ? 'ns' : 'm'} selecionado{selectedCount > 1 ? 's' : ''} para adicionar à OS
                   </p>
@@ -637,7 +637,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-line shrink-0">
             {step === 1 ? (
               <>
                 <button type="button" onClick={onCancel} className="px-4 py-2 text-surface-500 hover:text-white text-sm font-semibold transition-colors">

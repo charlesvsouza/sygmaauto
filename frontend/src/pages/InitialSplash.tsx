@@ -117,7 +117,7 @@ export function InitialSplash() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 text-emerald-400/80 text-[10px] uppercase tracking-widest"
+                  className="flex items-center gap-2 text-emerald-600/80 text-[10px] uppercase tracking-widest"
                 >
                   <Shield size={12} /> Pronto
                 </motion.div>

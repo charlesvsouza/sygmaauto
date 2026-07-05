@@ -147,7 +147,7 @@ export function PlansCheckoutPage() {
         </motion.div>
 
         <div className="mt-9 grid lg:grid-cols-2 gap-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div className="rounded-xl border border-line bg-ink/5 p-6">
             <p className="text-xs uppercase tracking-widest text-white/50">1. Plano</p>
             <div className="mt-4 grid sm:grid-cols-3 gap-3">
               {plans.map((plan) => {
@@ -157,10 +157,10 @@ export function PlansCheckoutPage() {
                     key={plan.name}
                     type="button"
                     onClick={() => setSelectedPlan(plan.name)}
-                    className={`rounded-2xl border p-4 text-left transition-all ${
+                    className={`rounded-lg border p-4 text-left transition-all ${
                       active
                         ? 'border-[#ff7b2f]/70 bg-[#ff7b2f]/10 shadow-[0_0_20px_rgba(255,123,47,0.25)]'
-                        : 'border-white/12 bg-white/5 hover:border-white/30'
+                        : 'border-line bg-ink/5 hover:border-line'
                     }`}
                   >
                     <p className="text-[11px] uppercase tracking-widest text-white/45">{plan.name}</p>
@@ -182,16 +182,16 @@ export function PlansCheckoutPage() {
                     key={cycle.value}
                     type="button"
                     onClick={() => setBillingCycle(cycle.value)}
-                    className={`rounded-2xl border p-4 text-left transition-all ${
+                    className={`rounded-lg border p-4 text-left transition-all ${
                       active
                         ? 'border-[#ff7b2f]/70 bg-[#ff7b2f]/10 shadow-[0_0_20px_rgba(255,123,47,0.25)]'
-                        : 'border-white/12 bg-white/5 hover:border-white/30'
+                        : 'border-line bg-ink/5 hover:border-line'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">{cycle.label}</p>
                       {cycle.badge && (
-                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full px-2 py-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 rounded-full px-2 py-1">
                           {cycle.badge}
                         </span>
                       )}
@@ -211,7 +211,7 @@ export function PlansCheckoutPage() {
                   <input
                     value={tenantName}
                     onChange={(e) => setTenantName(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
                     placeholder="Ex.: Oficina Almeida"
                   />
                 </label>
@@ -222,7 +222,7 @@ export function PlansCheckoutPage() {
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
                     placeholder="responsavel@empresa.com"
                   />
                 </label>
@@ -232,7 +232,7 @@ export function PlansCheckoutPage() {
                   <input
                     value={document}
                     onChange={(e) => setDocument(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
                     placeholder="Ex.: 123.456.789-00"
                   />
                 </label>
@@ -240,7 +240,7 @@ export function PlansCheckoutPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 p-6 h-fit">
+          <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 p-6 h-fit">
             <p className="text-xs uppercase tracking-[0.2em] text-[#ffccaa] font-bold">Resumo</p>
             <h2 className="mt-2 text-2xl font-black">Plano {selectedPlanDef.label}</h2>
             <p className="mt-2 text-sm text-white/75 leading-relaxed">{selectedPlanDef.description}</p>
@@ -255,12 +255,12 @@ export function PlansCheckoutPage() {
                 <span>{formatBrl(gross)}</span>
               </div>
               {selectedCycle.discountRate > 0 && (
-                <div className="flex items-center justify-between text-emerald-300">
+                <div className="flex items-center justify-between text-emerald-700">
                   <span>Desconto</span>
                   <span>- {formatBrl(annualDiscountValue)}</span>
                 </div>
               )}
-              <div className="h-px bg-white/15" />
+              <div className="h-px bg-ink/5" />
               <div className="flex items-center justify-between">
                 <span className="text-white/80">Total</span>
                 <span className="text-2xl font-black">{formatBrl(discountedTotal)}</span>
@@ -272,7 +272,7 @@ export function PlansCheckoutPage() {
             </div>
 
             {error && (
-              <p className="mt-5 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
+              <p className="mt-5 text-sm text-red-700 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
                 {error}
               </p>
             )}

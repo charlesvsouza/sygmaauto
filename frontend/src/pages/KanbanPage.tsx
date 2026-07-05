@@ -77,8 +77,8 @@ function getAlertLevel(os: any): { level: AlertLevel; reason: string } {
 
 function urgencyColor(date: string) {
   const h = (Date.now() - new Date(date).getTime()) / 3_600_000;
-  if (h > 48) return 'text-red-400';
-  if (h > 24) return 'text-amber-400';
+  if (h > 48) return 'text-red-600';
+  if (h > 24) return 'text-amber-600';
   return 'text-surface-400';
 }
 
@@ -102,7 +102,7 @@ function KanbanCard({
   const alertBorder =
     level === 'danger' ? 'border-red-500/70' :
     level === 'warning' ? 'border-amber-400/70' :
-    'border-white/10';
+    'border-line';
 
   const alertPulse = level === 'danger' ? 'animate-pulse' : '';
 
@@ -112,11 +112,11 @@ function KanbanCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-surface-800/60 border-2 ${alertBorder} ${alertPulse} rounded-xl p-3 space-y-2 hover:border-white/20 transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
+      className={`bg-surface-800/60 border-2 ${alertBorder} ${alertPulse} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
     >
       {level !== 'none' && (
         <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black ${
-          level === 'danger' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
+          level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
           <span className="truncate">{reason}</span>
@@ -159,7 +159,7 @@ function KanbanCard({
         <button
           onClick={() => onAdvance(os.id, next)}
           disabled={isAdv}
-          className="w-full mt-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
+          className="w-full mt-1 py-1.5 rounded-lg bg-ink/5 hover:bg-ink/5 text-white/60 hover:text-white font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
         >
           {isAdv ? (
             <Loader2 size={11} className="animate-spin" />
@@ -240,16 +240,16 @@ export function KanbanPage() {
   return (
     <div className={`min-h-screen flex flex-col ${tvMode ? 'bg-surface-950' : 'bg-surface-950'}`}>
       {/* Header */}
-      <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
+      <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-line ${tvMode ? 'py-3' : 'py-4'}`}>
         <div className="flex items-start gap-3">
           <button
             onClick={() => navigate('/dashboard')}
-            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-line bg-ink/5 text-surface-200 hover:text-white hover:bg-ink/5 transition-all shrink-0"
             aria-label="Voltar para dashboard"
           >
             <ArrowLeft size={18} />
           </button>
-          <Tv2 className="text-cyan-400 w-5 h-5 mt-2 shrink-0" />
+          <Tv2 className="text-cyan-600 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban de Pátio
@@ -258,7 +258,7 @@ export function KanbanPage() {
               {tenant?.name} · {totalActive} OS ativas · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
-              <p className="text-red-300 text-[11px] font-bold mt-0.5 animate-pulse">
+              <p className="text-red-700 text-[11px] font-bold mt-0.5 animate-pulse">
                 {activeAlerts} alerta{activeAlerts !== 1 ? 's' : ''} de prazo ativo{activeAlerts !== 1 ? 's' : ''}
               </p>
             )}
@@ -270,14 +270,14 @@ export function KanbanPage() {
             <>
               <button
                 onClick={() => scrollColumns('left', columnWidth)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ink/5 text-surface-200 hover:text-white hover:bg-ink/5 transition-all text-xs font-bold"
               >
                 <ChevronLeft size={14} />
                 Colunas
               </button>
               <button
                 onClick={() => scrollColumns('right', columnWidth)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ink/5 text-surface-200 hover:text-white hover:bg-ink/5 transition-all text-xs font-bold"
               >
                 Colunas
                 <ChevronRight size={14} />
@@ -286,13 +286,13 @@ export function KanbanPage() {
           )}
           <button
             onClick={() => load(false)}
-            className="p-2 text-surface-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+            className="p-2 text-surface-400 hover:text-white hover:bg-ink/5 rounded-xl transition-all"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
           <button
             onClick={() => setTvMode((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-cyan-500/20 text-cyan-400' : 'bg-white/5 text-surface-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-cyan-500/20 text-cyan-600' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -304,7 +304,7 @@ export function KanbanPage() {
       <AnimatePresence>
         {error && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
+            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-3 text-sm">
             <AlertCircle size={15} /> {error}
           </motion.div>
         )}
@@ -313,7 +313,7 @@ export function KanbanPage() {
       {/* Board */}
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-cyan-400" size={40} />
+          <Loader2 className="animate-spin text-cyan-600" size={40} />
         </div>
       ) : (
         <div
@@ -345,7 +345,7 @@ export function KanbanPage() {
                   </div>
 
                   {/* Column body */}
-                  <div className={`flex-1 rounded-2xl border ${col.color}/30 ${col.bg} p-2 space-y-2 overflow-y-auto`}
+                  <div className={`flex-1 rounded-lg border ${col.color}/30 ${col.bg} p-2 space-y-2 overflow-y-auto`}
                     style={{ minHeight: 120 }}>
                     <AnimatePresence>
                       {colOrders.length === 0 ? (

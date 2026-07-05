@@ -184,7 +184,7 @@ export function CustomersPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-semibold hover:bg-gold-400 transition-all shadow-sm hover:shadow-md active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm hover:shadow-md active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Cliente
@@ -192,8 +192,8 @@ export function CustomersPage() {
       </div>
 
       {/* Main Content Card */}
-      <div className="bg-surface-900 rounded-3xl border border-white/10 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
+      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-line flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
             <input
@@ -201,7 +201,7 @@ export function CustomersPage() {
               placeholder="Buscar por nome, documento ou email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-2xl border border-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm bg-surface-900"
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-line focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm bg-surface-900"
             />
           </div>
           <div className="flex items-center gap-2 text-sm text-surface-400 whitespace-nowrap px-2">
@@ -219,7 +219,7 @@ export function CustomersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-surface-950/40 text-surface-400 border-b border-white/5">
+                <tr className="bg-surface-950/40 text-surface-400 border-b border-line">
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Cliente</th>
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Documento</th>
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Contato</th>
@@ -227,12 +227,12 @@ export function CustomersPage() {
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 {filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="group hover:bg-white/5 transition-colors">
+                  <tr key={customer.id} className="group hover:bg-ink/5 transition-colors">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-surface-800 rounded-full flex items-center justify-center text-surface-50 font-bold border border-white/10">
+                        <div className="w-10 h-10 bg-surface-800 rounded-full flex items-center justify-center text-surface-50 font-bold border border-line">
                           {customer.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -262,7 +262,7 @@ export function CustomersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-800 text-surface-100 border border-white/10">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-800 text-surface-100 border border-line">
                         {customer._count?.vehicles || 0} veículo(s)
                       </span>
                     </td>
@@ -270,7 +270,7 @@ export function CustomersPage() {
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => handleEdit(customer)}
-                          className="p-2 hover:bg-white/10 rounded-lg text-surface-300 hover:text-surface-50 transition-colors"
+                          className="p-2 hover:bg-ink/5 rounded-lg text-surface-300 hover:text-surface-50 transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -312,11 +312,11 @@ export function CustomersPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40">
+              <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-surface-900 border border-white/10 shadow-sm flex items-center justify-center text-surface-50">
+                  <div className="w-12 h-12 rounded-lg bg-surface-900 border border-line shadow-sm flex items-center justify-center text-surface-50">
                     {editingCustomer ? <Edit2 size={24} /> : <Plus size={24} />}
                   </div>
                   <div>
@@ -328,7 +328,7 @@ export function CustomersPage() {
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                  className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -336,7 +336,7 @@ export function CustomersPage() {
 
               <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-surface-950/40">
                 {error && (
-                  <div className="p-4 bg-danger/10 border border-danger/20 rounded-2xl flex items-center gap-3 text-red-300 text-sm font-medium">
+                  <div className="p-4 bg-danger/10 border border-danger/20 rounded-lg flex items-center gap-3 text-red-700 text-sm font-medium">
                     <AlertTriangle size={18} />
                     {error}
                   </div>
@@ -344,8 +344,8 @@ export function CustomersPage() {
 
                 <form id="customer-form" onSubmit={handleSubmit} className="space-y-8">
                   {/* Dados Básicos */}
-                  <div className="bg-surface-900 rounded-3xl border border-white/10 p-6 shadow-sm space-y-6">
-                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-white/5 pb-3">
+                  <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm space-y-6">
+                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-line pb-3">
                       <User size={16} className="text-surface-500" /> Informações Pessoais
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -356,7 +356,7 @@ export function CustomersPage() {
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -366,7 +366,7 @@ export function CustomersPage() {
                           value={formData.document}
                           onChange={(e) => setFormData({ ...formData, document: formatCpfCnpj(e.target.value) })}
                           placeholder="000.000.000-00 ou 00.000.000/0000-00"
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -375,7 +375,7 @@ export function CustomersPage() {
                           type="text"
                           value={formData.rg}
                           onChange={(e) => setFormData({ ...formData, rg: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -385,7 +385,7 @@ export function CustomersPage() {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="email@exemplo.com"
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -395,7 +395,7 @@ export function CustomersPage() {
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                     </div>
@@ -407,7 +407,7 @@ export function CustomersPage() {
                           type="text"
                           value={formData.nacionalidade}
                           onChange={(e) => setFormData({ ...formData, nacionalidade: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -415,7 +415,7 @@ export function CustomersPage() {
                         <select
                           value={formData.estado_civil}
                           onChange={(e) => setFormData({ ...formData, estado_civil: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         >
                           <option value="">Selecione...</option>
                           <option value="Solteiro(a)">Solteiro(a)</option>
@@ -431,15 +431,15 @@ export function CustomersPage() {
                           type="text"
                           value={formData.profissao}
                           onChange={(e) => setFormData({ ...formData, profissao: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Endereço */}
-                  <div className="bg-surface-900 rounded-3xl border border-white/10 p-6 shadow-sm space-y-6">
-                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-white/5 pb-3">
+                  <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm space-y-6">
+                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-line pb-3">
                       <Home size={16} className="text-surface-500" /> Endereço
                     </div>
                     
@@ -451,14 +451,14 @@ export function CustomersPage() {
                           value={formData.cep}
                           onChange={(e) => setFormData({ ...formData, cep: formatCep(e.target.value) })}
                           placeholder="00000-000"
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={handleLookupCep}
                         disabled={loadingCep || formData.cep.replace(/\D/g, '').length !== 8}
-                        className="h-[46px] px-6 rounded-2xl border border-white/10 text-sm font-bold hover:bg-white/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0 bg-surface-900"
+                        className="h-[46px] px-6 rounded-lg border border-line text-sm font-bold hover:bg-ink/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0 bg-surface-900"
                       >
                         {loadingCep ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                         Buscar CEP
@@ -472,7 +472,7 @@ export function CustomersPage() {
                           type="text"
                           value={formData.address}
                           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -481,7 +481,7 @@ export function CustomersPage() {
                           type="text"
                           value={formData.cidade}
                           onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -491,33 +491,33 @@ export function CustomersPage() {
                           maxLength={2}
                           value={formData.estado}
                           onChange={(e) => setFormData({ ...formData, estado: e.target.value.toUpperCase() })}
-                          className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Observações */}
-                  <div className="bg-surface-900 rounded-3xl border border-white/10 p-6 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-white/5 pb-3">
+                  <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-line pb-3">
                       <FileText size={16} className="text-surface-500" /> Observações Internas
                     </div>
                     <textarea
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       placeholder="Alguma nota importante sobre este cliente?"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm min-h-[100px]"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[100px]"
                     />
                   </div>
                 </form>
               </div>
 
-              <div className="px-8 py-6 border-t border-white/5 bg-surface-900 flex items-center justify-end gap-3">
+              <div className="px-8 py-6 border-t border-line bg-surface-900 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-white/5 transition-all"
+                  className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-ink/5 transition-all"
                 >
                   Cancelar
                 </button>
@@ -525,7 +525,7 @@ export function CustomersPage() {
                   type="submit"
                   form="customer-form"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-8 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-bold hover:bg-gold-400 transition-all shadow-sm hover:shadow-lg disabled:opacity-50 active:scale-95"
+                  className="inline-flex items-center gap-2 px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm hover:shadow-lg disabled:opacity-50 active:scale-95"
                 >
                   {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save size={18} />}
                   {editingCustomer ? 'Salvar Alterações' : 'Cadastrar Cliente'}

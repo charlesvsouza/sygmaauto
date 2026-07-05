@@ -96,7 +96,7 @@ export function ActivateTenantPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-2xl z-10"
       >
-        <div className="bg-surface-950/80 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl p-5 sm:p-7 md:p-8">
+        <div className="bg-surface-950/80 backdrop-blur-xl rounded-xl border border-line shadow-2xl p-5 sm:p-7 md:p-8">
           <div className="mb-5 sm:mb-6">
             <h1 className="text-xl sm:text-2xl font-black">Ativação Inicial</h1>
             <p className="text-surface-400 text-sm mt-1">Finalize o cadastro em poucos campos para liberar o tenant.</p>
@@ -104,11 +104,11 @@ export function ActivateTenantPage() {
 
           {invite && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5">
-              <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+              <div className="bg-ink/5 rounded-xl p-3 border border-line">
                 <p className="text-surface-400 text-[11px] uppercase tracking-wider">Plano</p>
                 <p className="font-bold text-white text-sm mt-0.5">{invite.tenant?.plan?.name || 'START'}</p>
               </div>
-              <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+              <div className="bg-ink/5 rounded-xl p-3 border border-line">
                 <p className="text-surface-400 text-[11px] uppercase tracking-wider">Expira em</p>
                 <p className="font-bold text-white text-sm mt-0.5">{new Date(invite.expiresAt).toLocaleString('pt-BR')}</p>
               </div>
@@ -119,8 +119,8 @@ export function ActivateTenantPage() {
             <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-blue-500" size={30} /></div>
           ) : (
             <>
-              {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-4">{error}</div>}
-              {success && <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-xl text-sm mb-4">{success}</div>}
+              {error && <div className="bg-red-500/10 border border-red-500/20 text-red-600 p-3 rounded-xl text-sm mb-4">{error}</div>}
+              {success && <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 p-3 rounded-xl text-sm mb-4">{success}</div>}
 
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div className="space-y-1">
@@ -202,8 +202,8 @@ export function ActivateTenantPage() {
             </>
           )}
 
-          <div className="mt-5 pt-4 border-t border-white/10 text-center">
-            <Link to="/login" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-semibold">
+          <div className="mt-5 pt-4 border-t border-line text-center">
+            <Link to="/login" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-semibold">
               <ArrowLeft size={15} /> Voltar ao login
             </Link>
           </div>

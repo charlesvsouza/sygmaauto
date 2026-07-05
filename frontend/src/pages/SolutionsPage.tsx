@@ -30,7 +30,7 @@ export function SolutionsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08 }}
-            className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6"
+            className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6"
           >
             <div className="w-11 h-11 rounded-xl bg-[#ff7b2f]/12 flex items-center justify-center mb-4">
               <Icon size={22} className="text-[#ff7b2f]" />
@@ -48,7 +48,7 @@ export function SolutionsPage() {
             ['2. Execução', 'Diagnóstico, peças, mão de obra e atualização de status com visão da equipe.'],
             ['3. Gestão', 'Receba, analise indicadores e acompanhe resultados do negócio em tempo real.'],
           ].map(([title, text]) => (
-            <div key={title} className="rounded-3xl border border-white/8 bg-white/4 p-6">
+            <div key={title} className="rounded-xl border border-line bg-ink/5 p-6">
               <p className="text-sm font-black text-white">{title}</p>
               <p className="mt-3 text-sm text-white/55 leading-relaxed">{text}</p>
             </div>
@@ -57,7 +57,7 @@ export function SolutionsPage() {
         <div className="mt-8">
           <Link
             to="/planos"
-            className="inline-flex items-center gap-2 h-11 px-6 rounded-2xl bg-[#ff7b2f] text-white font-black text-sm hover:bg-[#f06820] transition-colors"
+            className="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-[#ff7b2f] text-white font-black text-sm hover:bg-[#f06820] transition-colors"
           >
             Ver planos e modalidades <ArrowRight size={16} />
           </Link>

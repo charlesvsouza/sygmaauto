@@ -307,14 +307,14 @@ export function FinancialPage() {
         <motion.div variants={itemVariants} className="flex gap-3">
           <button
             onClick={handlePrint}
-            className="h-12 px-6 rounded-2xl bg-surface-900 border border-white/10 text-surface-200 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+            className="h-12 px-6 rounded-lg bg-surface-900 border border-line text-surface-200 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
           >
             <Printer size={18} className="text-surface-500" /> Imprimir Relatório
           </button>
           <button
             onClick={() => setShowAddModal(true)}
             disabled={!canManageFinancial}
-            className="h-12 px-6 rounded-2xl bg-gold-500 text-surface-950 font-bold text-sm shadow-xl shadow-black/40 hover:bg-gold-400 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-12 px-6 rounded-lg bg-accent text-surface-950 font-bold text-sm shadow-xl shadow-black/40 hover:bg-accent-hover transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             title={!canManageFinancial ? 'Sem permissao para lancamentos financeiros' : undefined}
           >
             <Plus size={18} /> Lançar Movimentação
@@ -325,7 +325,7 @@ export function FinancialPage() {
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Chart */}
-        <motion.div variants={itemVariants} className="md:col-span-2 bg-surface-900 rounded-[2.5rem] border border-white/10 p-8 shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <motion.div variants={itemVariants} className="md:col-span-2 bg-surface-900 rounded-xl border border-line p-8 shadow-sm flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export function FinancialPage() {
         </motion.div>
 
         <div className="grid grid-cols-1 gap-6">
-          <motion.div variants={itemVariants} className="bg-surface-900 rounded-[2.5rem] p-6 text-white shadow-xl relative overflow-hidden group">
+          <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 text-white shadow-xl relative overflow-hidden group">
             <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-4">Ticket Médio</p>
             <h3 className="text-3xl font-black tracking-tight">R$ {fmtBR(metrics.ticketMedio, 0)}</h3>
             <div className="flex items-center gap-2 mt-4 text-[10px] text-surface-500 font-bold uppercase">
@@ -372,7 +372,7 @@ export function FinancialPage() {
             </div>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="bg-surface-900 rounded-[2.5rem] p-6 border border-white/10 shadow-sm relative overflow-hidden group">
+          <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 border border-line shadow-sm relative overflow-hidden group">
             <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-4">Lucratividade</p>
             <div className="flex items-end gap-2">
               <h3 className="text-3xl font-black text-surface-50 tracking-tight">{metrics.lucratividade.toFixed(1)}%</h3>
@@ -390,14 +390,14 @@ export function FinancialPage() {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="bg-primary-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary-500/20 flex flex-col justify-between relative overflow-hidden">
+        <motion.div variants={itemVariants} className="bg-primary-600 rounded-xl p-8 text-white shadow-xl shadow-primary-500/20 flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10">
             <p className="text-[10px] font-black text-primary-200 uppercase tracking-widest mb-2">Fluxo Disponível</p>
-            <h3 className={cn('text-4xl font-black tracking-tighter', summary.balance < 0 && 'text-red-200')}>
+            <h3 className={cn('text-4xl font-black tracking-tighter', summary.balance < 0 && 'text-red-700')}>
               R$ {fmtBR(summary.balance)}
             </h3>
             <div className="mt-6 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-ink/5 flex items-center justify-center">
                 <CheckCircle2 size={16} />
               </div>
               <p className="text-[10px] font-bold text-primary-100 uppercase tracking-widest">
@@ -405,44 +405,44 @@ export function FinancialPage() {
               </p>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-ink/5 rounded-full -mr-16 -mt-16 blur-3xl" />
         </motion.div>
       </div>
 
       {/* Quick Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div variants={itemVariants} className="bg-emerald-500/10 border border-emerald-500/25 p-6 rounded-[2rem] flex items-center justify-between group">
+        <motion.div variants={itemVariants} className="bg-emerald-500/10 border border-emerald-500/25 p-6 rounded-xl flex items-center justify-between group">
           <div>
-            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Entradas Acumuladas</p>
+            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Entradas Acumuladas</p>
             <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.income)}</h4>
           </div>
-          <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-12 transition-transform">
+          <div className="w-12 h-12 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-12 transition-transform">
             <ArrowDownLeft size={24} />
           </div>
         </motion.div>
-        <motion.div variants={itemVariants} className="bg-red-500/10 border border-red-500/25 p-6 rounded-[2rem] flex items-center justify-between group">
+        <motion.div variants={itemVariants} className="bg-red-500/10 border border-red-500/25 p-6 rounded-xl flex items-center justify-between group">
           <div>
-            <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Saídas Totais</p>
+            <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-1">Saídas Totais</p>
             <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.expense)}</h4>
           </div>
-          <div className="w-12 h-12 bg-red-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:-rotate-12 transition-transform">
+          <div className="w-12 h-12 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:-rotate-12 transition-transform">
             <ArrowUpRight size={24} />
           </div>
         </motion.div>
-        <motion.div variants={itemVariants} className="bg-surface-950/40 border border-white/10 p-6 rounded-[2rem] flex items-center justify-between group">
+        <motion.div variants={itemVariants} className="bg-surface-950/40 border border-line p-6 rounded-xl flex items-center justify-between group">
           <div>
             <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Projeção Próx. Mês</p>
             <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.income * 1.1, 0)}</h4>
           </div>
-          <div className="w-12 h-12 bg-gold-500 text-surface-950 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-accent text-surface-950 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
             <TrendingUp size={24} />
           </div>
         </motion.div>
       </div>
 
       {/* Transactions Table */}
-      <motion.div variants={itemVariants} className="bg-surface-900 rounded-[2.5rem] border border-white/10 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-950/40">
+      <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-line flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-950/40">
           <div>
             <h3 className="text-xl font-black text-surface-50 tracking-tight uppercase">Livro Caixa</h3>
             <p className="text-sm text-surface-400 font-medium">Registro cronológico de todas as operações</p>
@@ -455,10 +455,10 @@ export function FinancialPage() {
                 placeholder="Filtrar descrição ou categoria..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-6 py-3.5 rounded-2xl border border-white/10 bg-surface-900 text-sm font-bold focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all"
+                className="w-full pl-12 pr-6 py-3.5 rounded-lg border border-line bg-surface-900 text-sm font-bold focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all"
               />
             </div>
-            <button className="p-3.5 border border-white/10 rounded-2xl hover:bg-white/5 transition-all text-surface-500">
+            <button className="p-3.5 border border-line rounded-lg hover:bg-ink/5 transition-all text-surface-500">
               <Filter size={20} />
             </button>
           </div>
@@ -473,14 +473,14 @@ export function FinancialPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-surface-950/40 text-surface-400 border-b border-white/5 font-black uppercase tracking-[0.2em] text-[9px]">
+                <tr className="bg-surface-950/40 text-surface-400 border-b border-line font-black uppercase tracking-[0.2em] text-[9px]">
                   <th className="px-8 py-5">Movimentação / Data</th>
                   <th className="px-8 py-5">Histórico do Lançamento</th>
                   <th className="px-8 py-5 text-center">Classificação</th>
                   <th className="px-8 py-5 text-right">Valor Final</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 <AnimatePresence>
                   {filteredTransactions.map((t, idx) => (
                     <motion.tr
@@ -488,13 +488,13 @@ export function FinancialPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.02 }}
-                      className="group hover:bg-white/5 transition-colors"
+                      className="group hover:bg-ink/5 transition-colors"
                     >
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
                           <div className={cn(
                             'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm',
-                            t.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                            t.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-600'
                           )}>
                             {t.type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                           </div>
@@ -513,12 +513,12 @@ export function FinancialPage() {
                         )}
                       </td>
                       <td className="px-8 py-6 text-center">
-                        <span className="px-3 py-1 bg-surface-800 rounded-full text-[10px] font-black text-surface-400 uppercase tracking-widest border border-white/10">
+                        <span className="px-3 py-1 bg-surface-800 rounded-full text-[10px] font-black text-surface-400 uppercase tracking-widest border border-line">
                           {t.category || 'Geral'}
                         </span>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <p className={cn('text-lg font-black tracking-tighter', t.type === 'INCOME' ? 'text-emerald-400' : 'text-red-400')}>
+                        <p className={cn('text-lg font-black tracking-tighter', t.type === 'INCOME' ? 'text-emerald-600' : 'text-red-600')}>
                           {t.type === 'INCOME' ? '+' : '−'} R$ {fmtBR(t.amount)}
                         </p>
                       </td>
@@ -547,9 +547,9 @@ export function FinancialPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative bg-surface-900 rounded-[3rem] shadow-2xl w-full max-w-lg overflow-hidden">
-              <div className="px-10 py-8 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
+              <div className="px-10 py-8 border-b border-line bg-surface-950/40 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gold-500 text-surface-950 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-accent text-surface-950 rounded-lg flex items-center justify-center">
                     <Banknote size={24} />
                   </div>
                   <div>
@@ -557,36 +557,36 @@ export function FinancialPage() {
                     <p className="text-xs text-surface-400 font-bold uppercase tracking-widest">Movimentação Manual</p>
                   </div>
                 </div>
-                <button onClick={() => setShowAddModal(false)} className="p-3 hover:bg-white/10 rounded-2xl text-surface-500 hover:text-surface-50 transition-colors">
+                <button onClick={() => setShowAddModal(false)} className="p-3 hover:bg-ink/5 rounded-lg text-surface-500 hover:text-surface-50 transition-colors">
                   <X size={24} />
                 </button>
               </div>
 
               <form onSubmit={handleAddTransaction} className="p-10 space-y-6">
-                <div className="grid grid-cols-2 gap-4 p-1 bg-surface-800 rounded-2xl mb-6">
-                  <button type="button" onClick={() => setFormData({ ...formData, type: 'INCOME' })} className={cn('py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', formData.type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg' : 'text-surface-400 hover:bg-white/50')}>Entrada</button>
-                  <button type="button" onClick={() => setFormData({ ...formData, type: 'EXPENSE' })} className={cn('py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', formData.type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg' : 'text-surface-400 hover:bg-white/50')}>Saída</button>
+                <div className="grid grid-cols-2 gap-4 p-1 bg-surface-800 rounded-lg mb-6">
+                  <button type="button" onClick={() => setFormData({ ...formData, type: 'INCOME' })} className={cn('py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', formData.type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg' : 'text-surface-400 hover:bg-ink/5')}>Entrada</button>
+                  <button type="button" onClick={() => setFormData({ ...formData, type: 'EXPENSE' })} className={cn('py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', formData.type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg' : 'text-surface-400 hover:bg-ink/5')}>Saída</button>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Descrição do Lançamento</label>
-                  <input type="text" required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-5 py-3.5 rounded-2xl border border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all font-bold text-sm" placeholder="Ex: Aluguel do Galpão" />
+                  <input type="text" required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm" placeholder="Ex: Aluguel do Galpão" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Valor (R$)</label>
-                    <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-2xl border border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all font-black text-lg" />
+                    <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-black text-lg" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Data</label>
-                    <input type="date" required value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="w-full px-5 py-3.5 rounded-2xl border border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all font-bold text-sm" />
+                    <input type="date" required value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Categoria / Classificação</label>
-                  <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-5 py-3.5 rounded-2xl border border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all font-bold text-sm">
+                  <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm">
                     <option value="Geral">Geral</option>
                     <option value="Aluguel">Aluguel</option>
                     <option value="Energia/Água">Energia/Água</option>
@@ -599,14 +599,14 @@ export function FinancialPage() {
 
                 <div className="pt-6">
                   {transactionError && (
-                    <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
+                    <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
                       {transactionError}
                     </p>
                   )}
                   <button
                     type="submit"
                     disabled={!canManageFinancial}
-                    className="w-full py-5 bg-gold-500 text-surface-950 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-gold-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-5 bg-accent text-surface-950 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Confirmar Lançamento
                   </button>

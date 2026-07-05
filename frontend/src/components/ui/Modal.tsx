@@ -48,19 +48,19 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative w-full rounded-lg border border-white/[0.12] bg-surface-950 text-surface-100 shadow-card-hover',
+          'relative w-full rounded-lg border border-line bg-surface-950 text-surface-100 shadow-card-hover',
           sizeMap[size],
           className,
         )}
       >
         {title != null && (
-          <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+          <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <h2 className="text-base font-semibold tracking-[0.02em] text-surface-50">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="rounded-md p-1 text-surface-400 transition-colors hover:bg-white/5 hover:text-surface-100"
+              className="rounded-md p-1 text-surface-400 transition-colors hover:bg-ink/5 hover:text-surface-100"
               aria-label="Fechar"
             >
               <X size={18} />
@@ -69,7 +69,7 @@ export function Modal({
         )}
         <div className="px-5 py-4">{children}</div>
         {footer && (
-          <div className="flex justify-end gap-2 border-t border-white/[0.08] px-5 py-4">
+          <div className="flex justify-end gap-2 border-t border-line px-5 py-4">
             {footer}
           </div>
         )}

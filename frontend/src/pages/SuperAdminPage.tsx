@@ -110,11 +110,11 @@ export function SuperAdminPage() {
   const getTenantStatusBadge = (tenant: any) => {
     if (tenant.status === 'PENDING_SETUP') {
       const isExpired = tenant.setupInviteExpiresAt && new Date(tenant.setupInviteExpiresAt) < new Date();
-      if (isExpired) return { label: 'EXPIRADO', cls: 'bg-red-500/10 text-red-400' };
-      return { label: 'PENDENTE SETUP', cls: 'bg-amber-500/10 text-amber-400' };
+      if (isExpired) return { label: 'EXPIRADO', cls: 'bg-red-500/10 text-red-600' };
+      return { label: 'PENDENTE SETUP', cls: 'bg-amber-500/10 text-amber-600' };
     }
-    if (tenant.subscription?.status === 'ACTIVE') return { label: 'ATIVO', cls: 'bg-emerald-500/10 text-emerald-400' };
-    if (tenant.subscription?.status === 'TRIALING') return { label: 'TRIAL', cls: 'bg-sky-500/10 text-sky-400' };
+    if (tenant.subscription?.status === 'ACTIVE') return { label: 'ATIVO', cls: 'bg-emerald-500/10 text-emerald-600' };
+    if (tenant.subscription?.status === 'TRIALING') return { label: 'TRIAL', cls: 'bg-sky-500/10 text-sky-600' };
     return { label: tenant.subscription?.status ?? 'SEM PLANO', cls: 'bg-surface-800 text-surface-500' };
   };
 
@@ -197,10 +197,10 @@ export function SuperAdminPage() {
 
   return (
     <div className="min-h-screen bg-surface-950 text-white">
-      <div className="border-b border-white/10 px-8 py-4 flex items-center justify-between">
+      <div className="border-b border-line px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20">
-            <Shield className="text-red-400 w-5 h-5" />
+            <Shield className="text-red-600 w-5 h-5" />
           </div>
           <div>
             <h1 className="font-black text-white text-lg">Super Admin</h1>
@@ -211,10 +211,10 @@ export function SuperAdminPage() {
           <button onClick={() => setShowProvisionModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all text-sm font-bold">
             <Plus size={16} /> Novo Tenant
           </button>
-          <button onClick={loadData} className="p-2 text-surface-500 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+          <button onClick={loadData} className="p-2 text-surface-500 hover:text-white hover:bg-ink/5 rounded-xl transition-all">
             <RefreshCw size={16} />
           </button>
-          <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold">
+          <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold">
             <LogOut size={16} /> Sair
           </button>
         </div>
@@ -224,14 +224,14 @@ export function SuperAdminPage() {
         <AnimatePresence>
           {error && (
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl p-4 text-sm">
+              className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg p-4 text-sm">
               <AlertCircle size={16} /> {error}
               <button onClick={() => setError(null)} className="ml-auto"><X size={14} /></button>
             </motion.div>
           )}
           {successMsg && (
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl p-4 text-sm">
+              className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-lg p-4 text-sm">
               <CheckCircle2 size={16} /> {successMsg}
               <button onClick={() => setSuccessMsg(null)} className="ml-auto"><X size={14} /></button>
             </motion.div>
@@ -241,12 +241,12 @@ export function SuperAdminPage() {
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Tenants', value: stats.totalTenants, icon: Building, color: 'text-blue-400' },
-              { label: 'Usuarios', value: stats.totalUsers, icon: Users, color: 'text-emerald-400' },
-              { label: 'Ordens de Servico', value: stats.totalServiceOrders, icon: FileText, color: 'text-amber-400' },
-              { label: 'Receita Total', value: `R$ ${Number(stats.totalRevenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-purple-400' },
+              { label: 'Tenants', value: stats.totalTenants, icon: Building, color: 'text-blue-600' },
+              { label: 'Usuarios', value: stats.totalUsers, icon: Users, color: 'text-emerald-600' },
+              { label: 'Ordens de Servico', value: stats.totalServiceOrders, icon: FileText, color: 'text-amber-600' },
+              { label: 'Receita Total', value: `R$ ${Number(stats.totalRevenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-purple-600' },
             ].map((s) => (
-              <div key={s.label} className="bg-black/60 border border-white/10 rounded-2xl p-5">
+              <div key={s.label} className="bg-black/60 border border-line rounded-lg p-5">
                 <div className="flex items-center gap-3 mb-2">
                   <s.icon className={`${s.color} w-5 h-5`} />
                   <span className="text-surface-500 text-xs font-semibold uppercase tracking-widest">{s.label}</span>
@@ -260,12 +260,12 @@ export function SuperAdminPage() {
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
             <h2 className="text-lg font-black text-white flex items-center gap-2">
-              <BarChart3 className="text-blue-400 w-5 h-5" /> Tenants Cadastrados
+              <BarChart3 className="text-blue-600 w-5 h-5" /> Tenants Cadastrados
             </h2>
             <div className="flex gap-2 sm:ml-auto">
               {(['all', 'pending', 'active'] as const).map((f) => (
                 <button key={f} onClick={() => setFilterStatus(f)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-white/5 text-surface-500 hover:bg-white/10'}`}>
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-ink/5 text-surface-500 hover:bg-ink/5'}`}>
                   {f === 'all' ? `Todos (${tenants.length})` : f === 'pending' ? `Pendentes (${tenants.filter(t => t.status === 'PENDING_SETUP').length})` : `Ativos (${tenants.filter(t => t.status !== 'PENDING_SETUP' && t.subscription?.status === 'ACTIVE').length})`}
                 </button>
               ))}
@@ -278,11 +278,11 @@ export function SuperAdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTenants.map((tenant) => (
                 <motion.div key={tenant.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-                  className="bg-black/60 border border-white/10 p-5 rounded-2xl">
+                  className="bg-black/60 border border-line p-5 rounded-lg">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/10">
-                        <Building className="text-blue-400 w-5 h-5" />
+                        <Building className="text-blue-600 w-5 h-5" />
                       </div>
                       <div>
                         <h3 className="font-bold text-white">{tenant.name}</h3>
@@ -301,7 +301,7 @@ export function SuperAdminPage() {
                       { label: 'OS', val: tenant._count?.serviceOrders ?? 0, icon: FileText },
                       { label: 'Pecas', val: tenant._count?.parts ?? 0, icon: Package },
                     ].map((c) => (
-                      <div key={c.label} className="bg-white/5 rounded-xl px-3 py-2 flex items-center gap-2">
+                      <div key={c.label} className="bg-ink/5 rounded-xl px-3 py-2 flex items-center gap-2">
                         <c.icon className="w-3.5 h-3.5 text-surface-400" />
                         <span className="text-surface-500">{c.label}</span>
                         <span className="text-white font-bold ml-auto">{c.val}</span>
@@ -315,23 +315,23 @@ export function SuperAdminPage() {
 
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleViewDetails(tenant)}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold py-2 rounded-xl transition-all">
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-ink/5 hover:bg-ink/5 text-white text-xs font-bold py-2 rounded-xl transition-all">
                       <Eye size={13} /> Detalhes
                     </button>
                     {tenant.status !== 'PENDING_SETUP' && (
                       <button onClick={() => handleImpersonate(tenant.id)} disabled={impersonating === tenant.id}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
                         {impersonating === tenant.id ? <Loader2 size={13} className="animate-spin" /> : <LogIn size={13} />} Acessar
                       </button>
                     )}
                     {tenant.status === 'PENDING_SETUP' && (
                       <button onClick={() => handleResendInvite(tenant.id)} disabled={resendingId === tenant.id}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
                         {resendingId === tenant.id ? <Loader2 size={13} className="animate-spin" /> : <Mail size={13} />} Reenviar
                       </button>
                     )}
                     <button onClick={() => { setPendingDelete({ id: tenant.id, name: tenant.name }); setDeleteConfirmText(''); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold py-2 rounded-xl transition-all">
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 text-xs font-bold py-2 rounded-xl transition-all">
                       <Trash2 size={13} /> Excluir
                     </button>
                   </div>
@@ -347,8 +347,8 @@ export function SuperAdminPage() {
           <div className="fixed inset-0 z-50 flex">
             <div className="flex-1 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedTenant(null)} />
             <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30 }}
-              className="w-full max-w-lg bg-surface-900 border-l border-white/10 h-full overflow-y-auto">
-              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              className="w-full max-w-lg bg-surface-900 border-l border-line h-full overflow-y-auto">
+              <div className="p-6 border-b border-line flex items-center justify-between">
                 <h2 className="font-black text-white">Detalhes do Tenant</h2>
                 <button onClick={() => setSelectedTenant(null)} className="text-surface-500 hover:text-white"><X size={20} /></button>
               </div>
@@ -367,24 +367,24 @@ export function SuperAdminPage() {
                   </div>
 
                   {selectedTenant.status === 'PENDING_SETUP' && (
-                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 space-y-2">
-                      <p className="text-amber-400 text-xs font-bold flex items-center gap-2"><Mail size={13} /> Convite Pendente</p>
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 space-y-2">
+                      <p className="text-amber-600 text-xs font-bold flex items-center gap-2"><Mail size={13} /> Convite Pendente</p>
                       <p className="text-surface-500 text-xs">Email: <span className="text-white">{selectedTenant.setupInviteEmail ?? '—'}</span></p>
                       {selectedTenant.setupInviteExpiresAt && (
-                        <p className="text-surface-500 text-xs">Expira em: <span className={`font-bold ${new Date(selectedTenant.setupInviteExpiresAt) < new Date() ? 'text-red-400' : 'text-white'}`}>{new Date(selectedTenant.setupInviteExpiresAt).toLocaleString('pt-BR')}</span></p>
+                        <p className="text-surface-500 text-xs">Expira em: <span className={`font-bold ${new Date(selectedTenant.setupInviteExpiresAt) < new Date() ? 'text-red-600' : 'text-white'}`}>{new Date(selectedTenant.setupInviteExpiresAt).toLocaleString('pt-BR')}</span></p>
                       )}
                       {selectedTenant.setupInviteToken && (
                         <div className="flex gap-2 mt-2">
                           <input readOnly value={`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`}
-                            className="flex-1 bg-surface-950 border border-white/10 rounded-xl text-xs text-surface-600 px-3 py-2 outline-none min-w-0" />
+                            className="flex-1 bg-surface-950 border border-line rounded-xl text-xs text-surface-600 px-3 py-2 outline-none min-w-0" />
                           <button onClick={() => copyToClipboard(`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`)}
-                            className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-xs text-white flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
-                            {copiedLink ? <CheckCircle2 size={13} className="text-emerald-400" /> : <Copy size={13} />} {copiedLink ? 'Copiado!' : 'Copiar'}
+                            className="px-3 py-2 bg-ink/5 hover:bg-ink/5 rounded-xl text-xs text-white flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
+                            {copiedLink ? <CheckCircle2 size={13} className="text-emerald-600" /> : <Copy size={13} />} {copiedLink ? 'Copiado!' : 'Copiar'}
                           </button>
                         </div>
                       )}
                       <button onClick={() => handleResendInvite(selectedTenant.id)} disabled={resendingId === selectedTenant.id}
-                        className="w-full mt-1 flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50">
+                        className="w-full mt-1 flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50">
                         {resendingId === selectedTenant.id ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />} Reenviar Convite
                       </button>
                     </div>
@@ -398,7 +398,7 @@ export function SuperAdminPage() {
                       ['Pecas', selectedTenant._count?.parts],
                       ['Transacoes', selectedTenant._count?.financialTransactions],
                     ].map(([l, v]) => (
-                      <div key={l as string} className="bg-white/5 rounded-xl p-3">
+                      <div key={l as string} className="bg-ink/5 rounded-xl p-3">
                         <p className="text-surface-500 text-xs">{l}</p>
                         <p className="text-white font-black text-lg">{v}</p>
                       </div>
@@ -411,7 +411,7 @@ export function SuperAdminPage() {
                     </h4>
                     <div className="space-y-2">
                       {selectedTenant.users?.map((u: any) => (
-                        <div key={u.id} className="flex items-center gap-3 bg-white/5 rounded-xl p-3">
+                        <div key={u.id} className="flex items-center gap-3 bg-ink/5 rounded-xl p-3">
                           <div className="w-8 h-8 rounded-xl bg-surface-800 flex items-center justify-center text-xs font-bold text-white">
                             {u.name.charAt(0).toUpperCase()}
                           </div>
@@ -420,8 +420,8 @@ export function SuperAdminPage() {
                             <p className="text-surface-400 text-xs truncate">{u.email}</p>
                           </div>
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${
-                            u.role === 'MASTER' ? 'bg-amber-500/10 text-amber-400' :
-                            u.role === 'ADMIN' ? 'bg-blue-500/10 text-blue-400' :
+                            u.role === 'MASTER' ? 'bg-amber-500/10 text-amber-600' :
+                            u.role === 'ADMIN' ? 'bg-blue-500/10 text-blue-600' :
                             'bg-surface-800 text-surface-500'
                           }`}>{u.role}</span>
                         </div>
@@ -432,24 +432,24 @@ export function SuperAdminPage() {
                   {/* Acesso como MASTER (impersonação) */}
                   {selectedTenant.status !== 'PENDING_SETUP' && (
                     <button onClick={() => handleImpersonate(selectedTenant.id)} disabled={impersonating === selectedTenant.id}
-                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black py-3 rounded-2xl transition-all">
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black py-3 rounded-lg transition-all">
                       {impersonating === selectedTenant.id ? <Loader2 size={16} className="animate-spin" /> : <LogIn size={16} />}
                       Acessar como MASTER
                     </button>
                   )}
 
                   {/* Status */}
-                  <div className="bg-white/5 rounded-2xl p-4 space-y-3">
+                  <div className="bg-ink/5 rounded-lg p-4 space-y-3">
                     <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Status do Tenant</p>
                     <div className="flex gap-2">
                       <button onClick={() => handleUpdateStatus(selectedTenant.id, 'ACTIVE')}
                         disabled={updatingStatus || selectedTenant.status === 'ACTIVE'}
-                        className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 disabled:opacity-40">
+                        className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 disabled:opacity-40">
                         {updatingStatus ? <Loader2 size={14} className="animate-spin mx-auto" /> : 'Ativar'}
                       </button>
                       <button onClick={() => handleUpdateStatus(selectedTenant.id, 'SUSPENDED')}
                         disabled={updatingStatus || selectedTenant.status === 'SUSPENDED'}
-                        className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 disabled:opacity-40">
+                        className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 disabled:opacity-40">
                         Suspender
                       </button>
                     </div>
@@ -457,14 +457,14 @@ export function SuperAdminPage() {
 
                   {/* Alterar Plano */}
                   {selectedTenant.subscription && (
-                    <div className="bg-white/5 rounded-2xl p-4 space-y-3">
+                    <div className="bg-ink/5 rounded-lg p-4 space-y-3">
                       <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Alterar Plano</p>
                       <p className="text-xs text-surface-400">Atual: <span className="text-white font-bold">{selectedTenant.subscription?.plan?.name ?? 'N/A'}</span></p>
                       <div className="flex gap-2">
                         {['START', 'PRO', 'REDE'].map((plan) => (
                           <button key={plan} onClick={() => handleUpdatePlan(selectedTenant.id, plan)}
                             disabled={updatingPlan || selectedTenant.subscription?.plan?.name === plan}
-                            className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 disabled:opacity-40">
+                            className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 disabled:opacity-40">
                             {updatingPlan ? <Loader2 size={12} className="animate-spin mx-auto" /> : plan}
                           </button>
                         ))}
@@ -474,7 +474,7 @@ export function SuperAdminPage() {
 
                   {/* Estender Assinatura */}
                   {selectedTenant.subscription && (
-                    <div className="bg-white/5 rounded-2xl p-4 space-y-3">
+                    <div className="bg-ink/5 rounded-lg p-4 space-y-3">
                       <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Estender Assinatura</p>
                       {selectedTenant.subscription?.currentPeriodEnd && (
                         <p className="text-xs text-surface-400">Expira em: <span className="text-white">{new Date(selectedTenant.subscription.currentPeriodEnd).toLocaleDateString('pt-BR')}</span></p>
@@ -483,7 +483,7 @@ export function SuperAdminPage() {
                         {[30, 60, 90].map((days) => (
                           <button key={days} onClick={() => handleExtendSubscription(selectedTenant.id, days)}
                             disabled={extendingDays !== null}
-                            className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 disabled:opacity-40">
+                            className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 disabled:opacity-40">
                             {extendingDays === days ? <Loader2 size={12} className="animate-spin mx-auto" /> : `+${days}d`}
                           </button>
                         ))}
@@ -492,7 +492,7 @@ export function SuperAdminPage() {
                   )}
 
                   <button onClick={() => { setPendingDelete({ id: selectedTenant.id, name: selectedTenant.name }); setDeleteConfirmText(''); }}
-                    className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-3 rounded-2xl transition-all">
+                    className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 font-bold py-3 rounded-lg transition-all">
                     <Trash2 size={16} /> Excluir este Tenant
                   </button>
                 </div>
@@ -506,10 +506,10 @@ export function SuperAdminPage() {
         {pendingDelete && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-surface-900 border border-red-500/20 rounded-[2rem] p-8 w-full max-w-md">
+              className="bg-surface-900 border border-red-500/20 rounded-xl p-8 w-full max-w-md">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center">
-                  <AlertTriangle className="text-red-400 w-6 h-6" />
+                <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center">
+                  <AlertTriangle className="text-red-600 w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="font-black text-white text-lg">Excluir Tenant</h3>
@@ -530,18 +530,18 @@ export function SuperAdminPage() {
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder={pendingDelete.name}
-                className="w-full bg-surface-950 border border-white/10 rounded-xl py-3 px-4 text-sm text-white mb-6 outline-none focus:ring-2 focus:ring-red-500/40"
+                className="w-full bg-surface-950 border border-line rounded-xl py-3 px-4 text-sm text-white mb-6 outline-none focus:ring-2 focus:ring-red-500/40"
               />
 
               <div className="flex gap-3">
                 <button onClick={() => setPendingDelete(null)}
-                  className="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-2xl transition-all">
+                  className="flex-1 bg-ink/5 hover:bg-ink/5 text-white font-bold py-3 rounded-lg transition-all">
                   Cancelar
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== pendingDelete.name || deleteLoading}
-                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-black py-3 rounded-2xl transition-all flex items-center justify-center gap-2">
+                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-black py-3 rounded-lg transition-all flex items-center justify-center gap-2">
                   {deleteLoading ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                   Excluir
                 </button>

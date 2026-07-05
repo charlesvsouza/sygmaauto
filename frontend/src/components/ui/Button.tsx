@@ -6,11 +6,11 @@ type Size = 'sm' | 'md' | 'lg';
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-gold-500 text-surface-950 hover:bg-gold-400 border border-transparent font-semibold',
+    'bg-accent text-surface-950 hover:bg-accent-hover border border-transparent font-semibold',
   secondary:
-    'bg-transparent text-gold-400 border border-gold-500/30 hover:border-gold-400 hover:text-gold-300',
+    'bg-transparent text-accent border border-accent/40 hover:border-accent/40 hover:text-accent',
   ghost:
-    'bg-transparent text-surface-200 hover:bg-white/5 border border-transparent',
+    'bg-transparent text-surface-200 hover:bg-ink/5 border border-transparent',
   danger:
     'bg-danger text-white hover:bg-danger/90 border border-transparent font-semibold',
 };
@@ -31,7 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        'inline-flex items-center justify-center gap-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/40 disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-50 disabled:cursor-not-allowed',
         variants[variant],
         sizes[size],
         className,

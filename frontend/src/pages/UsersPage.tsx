@@ -207,7 +207,7 @@ export function UsersPage() {
       case 'MASTER':
         return <span className="badge bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 flex items-center gap-1.5 font-black text-[10px] uppercase tracking-widest"><Star size={12} fill="currentColor" /> Master</span>;
       case 'ADMIN':
-        return <span className="badge bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-black text-[10px] uppercase tracking-widest"><Shield size={12} /> Admin</span>;
+        return <span className="badge bg-purple-500/10 text-purple-600 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-black text-[10px] uppercase tracking-widest"><Shield size={12} /> Admin</span>;
       case 'GERENTE':
         return <span className="badge bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Gerente</span>;
       case 'CHEFE_OFICINA':
@@ -215,11 +215,11 @@ export function UsersPage() {
       case 'FINANCEIRO':
         return <span className="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Financeiro</span>;
       case 'SECRETARIA':
-        return <span className="badge bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Secretaria</span>;
+        return <span className="badge bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Secretaria</span>;
       case 'MECANICO':
         return <span className="badge bg-orange-500/10 text-orange-500 border border-orange-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Mecânico</span>;
       default:
-        return <span className="badge bg-surface-500/10 text-surface-500 border border-white/10 px-3 py-1 font-black text-[10px] uppercase tracking-widest">{role}</span>;
+        return <span className="badge bg-surface-500/10 text-surface-500 border border-line px-3 py-1 font-black text-[10px] uppercase tracking-widest">{role}</span>;
     }
   };
 
@@ -245,14 +245,14 @@ export function UsersPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="btn btn-primary h-12 px-8 rounded-2xl shadow-xl shadow-primary-100 font-bold"
+          className="btn btn-primary h-12 px-8 rounded-lg shadow-xl shadow-primary-100 font-bold"
         >
           <Plus size={20} /> Novo Usuário
         </button>
       </div>
 
-      <div className="card border-white/5 overflow-hidden">
-        <div className="p-6 border-b border-white/5 bg-surface-950/40">
+      <div className="card border-line overflow-hidden">
+        <div className="p-6 border-b border-line bg-surface-950/40">
           <div className="relative max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
             <input
@@ -260,7 +260,7 @@ export function UsersPage() {
               placeholder="Buscar por nome ou email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-900 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-surface-50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
+              className="w-full bg-surface-900 border border-line rounded-lg py-3 pl-12 pr-4 text-surface-50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
             />
           </div>
         </div>
@@ -273,7 +273,7 @@ export function UsersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-surface-950/40 border-b border-white/5">
+                <tr className="bg-surface-950/40 border-b border-line">
                   <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Colaborador</th>
                   <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Nível de Acesso</th>
                   <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Área/Função</th>
@@ -282,7 +282,7 @@ export function UsersPage() {
                   <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 <AnimatePresence>
                   {filteredUsers.map((user, idx) => (
                     <motion.tr
@@ -290,19 +290,19 @@ export function UsersPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.05 }}
-                      className="group hover:bg-white/5 transition-colors"
+                      className="group hover:bg-ink/5 transition-colors"
                     >
                       <td className="py-6 px-8">
                         <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg ${
-                            user.role === 'MASTER'     ? 'bg-amber-500/15 text-amber-400' :
-                            user.role === 'ADMIN'      ? 'bg-purple-500/15 text-purple-400' :
-                            user.role === 'GERENTE'    ? 'bg-blue-500/15 text-blue-400' :
-                            user.role === 'CHEFE_OFICINA' ? 'bg-rose-500/15 text-rose-400' :
-                            user.role === 'FINANCEIRO' ? 'bg-emerald-500/15 text-emerald-400' :
-                            user.role === 'SECRETARIA' ? 'bg-cyan-500/15 text-cyan-400' :
-                            user.role === 'MECANICO'   ? 'bg-orange-500/15 text-orange-400' :
-                            'bg-gold-500 text-surface-950'
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${
+                            user.role === 'MASTER'     ? 'bg-amber-500/15 text-amber-600' :
+                            user.role === 'ADMIN'      ? 'bg-purple-500/15 text-purple-600' :
+                            user.role === 'GERENTE'    ? 'bg-blue-500/15 text-blue-600' :
+                            user.role === 'CHEFE_OFICINA' ? 'bg-rose-500/15 text-rose-600' :
+                            user.role === 'FINANCEIRO' ? 'bg-emerald-500/15 text-emerald-600' :
+                            user.role === 'SECRETARIA' ? 'bg-cyan-500/15 text-cyan-600' :
+                            user.role === 'MECANICO'   ? 'bg-orange-500/15 text-orange-600' :
+                            'bg-accent text-surface-950'
                           }`}>
                             {user.name[0]}
                           </div>
@@ -341,7 +341,7 @@ export function UsersPage() {
                       </td>
                       <td className="py-6 px-8">
                         {user.isActive ? (
-                          <div className="flex items-center gap-2 text-emerald-400 text-xs font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-emerald-600 text-xs font-black uppercase tracking-widest">
                             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                             Ativo
                           </div>
@@ -356,21 +356,21 @@ export function UsersPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleEdit(user)}
-                            className="p-3 hover:bg-blue-500/10 text-surface-600 hover:text-blue-400 rounded-2xl transition-all"
+                            className="p-3 hover:bg-blue-500/10 text-surface-600 hover:text-blue-600 rounded-lg transition-all"
                             title="Editar"
                           >
                             <Edit size={18} />
                           </button>
                           <button
                             onClick={() => openResetPasswordModal(user)}
-                            className="p-3 hover:bg-amber-500/10 text-surface-600 hover:text-amber-400 rounded-2xl transition-all"
+                            className="p-3 hover:bg-amber-500/10 text-surface-600 hover:text-amber-600 rounded-lg transition-all"
                             title="Redefinir senha"
                           >
                             <KeyRound size={18} />
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
-                            className="p-3 hover:bg-red-500/10 text-surface-600 hover:text-red-400 rounded-2xl transition-all"
+                            className="p-3 hover:bg-red-500/10 text-surface-600 hover:text-red-600 rounded-lg transition-all"
                             title="Excluir"
                             disabled={user.role === 'MASTER'}
                           >
@@ -403,7 +403,7 @@ export function UsersPage() {
             className="bg-surface-900 rounded-[3rem] p-10 w-full max-w-2xl shadow-2xl animate-in"
           >
             <div className="flex items-center gap-5 mb-10">
-              <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-200">
+              <div className="w-14 h-14 bg-primary-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary-200">
                 <UserCircle size={32} />
               </div>
               <div>
@@ -422,7 +422,7 @@ export function UsersPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                     placeholder="Nome do colaborador"
                     required
                   />
@@ -433,7 +433,7 @@ export function UsersPage() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                     placeholder="email@oficina.com"
                     required
                     disabled={!!editingUser}
@@ -445,7 +445,7 @@ export function UsersPage() {
                     type="email"
                     value={formData.recoveryEmail}
                     onChange={(e) => setFormData({ ...formData, recoveryEmail: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                     placeholder="recuperacao@dominio.com"
                   />
                 </div>
@@ -457,7 +457,7 @@ export function UsersPage() {
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                        className="input h-14 bg-surface-950/40 border-line font-bold"
                         placeholder="Mínimo 6 caracteres"
                         required={!editingUser}
                         minLength={6}
@@ -477,7 +477,7 @@ export function UsersPage() {
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                   >
                     <option value="CHEFE_OFICINA">CHEFE OFICINA — Liderança técnica por área</option>
                     <option value="ADMIN">ADMIN — Administrador</option>
@@ -492,7 +492,7 @@ export function UsersPage() {
                   <select
                     value={formData.workshopArea}
                     onChange={(e) => setFormData({ ...formData, workshopArea: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                   >
                     <option value="">Selecione...</option>
                     {workshopAreas.map((area) => (
@@ -505,7 +505,7 @@ export function UsersPage() {
                   <select
                     value={formData.jobFunction}
                     onChange={(e) => setFormData({ ...formData, jobFunction: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                   >
                     <option value="">Selecione...</option>
                     {jobFunctions.map((job) => (
@@ -521,7 +521,7 @@ export function UsersPage() {
                     step="0.1"
                     value={formData.commissionPercent}
                     onChange={(e) => setFormData({ ...formData, commissionPercent: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                     placeholder="Vazio = comissão global"
                   />
                 </div>
@@ -530,7 +530,7 @@ export function UsersPage() {
                   <select
                     value={formData.chiefId}
                     onChange={(e) => setFormData({ ...formData, chiefId: e.target.value })}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                   >
                     <option value="">Sem chefe definido</option>
                     {users
@@ -542,19 +542,19 @@ export function UsersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-5 bg-surface-950/40 rounded-2xl border border-white/5">
+              <div className="flex items-center gap-3 p-5 bg-surface-950/40 rounded-lg border border-line">
                 <input
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-5 h-5 rounded-lg border-white/15 text-primary-600"
+                  className="w-5 h-5 rounded-lg border-line text-primary-600"
                 />
                 <label htmlFor="isActive" className="text-sm font-bold text-surface-200 cursor-pointer">Usuário ativo e autorizado a acessar o sistema</label>
               </div>
 
               {userError && (
-                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                   {userError}
                 </p>
               )}
@@ -584,10 +584,10 @@ export function UsersPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-surface-900 rounded-[2.5rem] p-8 w-full max-w-xl shadow-2xl"
+            className="bg-surface-900 rounded-xl p-8 w-full max-w-xl shadow-2xl"
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-amber-500/15 text-amber-400 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-amber-500/15 text-amber-600 rounded-lg flex items-center justify-center">
                 <KeyRound size={24} />
               </div>
               <div>
@@ -608,7 +608,7 @@ export function UsersPage() {
                     type={showResetPassword ? 'text' : 'password'}
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
-                    className="input h-14 bg-surface-950/40 border-white/10 font-bold"
+                    className="input h-14 bg-surface-950/40 border-line font-bold"
                     placeholder="Minimo 6 caracteres"
                     minLength={6}
                     required
@@ -624,7 +624,7 @@ export function UsersPage() {
               </div>
 
               {resetError && (
-                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                   {resetError}
                 </p>
               )}
@@ -637,7 +637,7 @@ export function UsersPage() {
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary h-12 px-8 rounded-2xl font-black text-xs uppercase tracking-widest">
+                <button type="submit" className="btn btn-primary h-12 px-8 rounded-lg font-black text-xs uppercase tracking-widest">
                   Salvar Nova Senha
                 </button>
               </div>

@@ -378,8 +378,8 @@ export function KPIsPage() {
                 className={cn(
                   'px-3 py-2 rounded-xl text-xs font-black transition-all border',
                   active
-                    ? 'bg-gold-500 text-surface-950 border-surface-600'
-                    : 'bg-surface-900 text-surface-300 border-white/10 hover:bg-white/5',
+                    ? 'bg-accent text-surface-950 border-surface-600'
+                    : 'bg-surface-900 text-surface-300 border-line hover:bg-ink/5',
                 )}
               >
                 {label}
@@ -388,7 +388,7 @@ export function KPIsPage() {
           })}
           <button
             onClick={load}
-            className="px-3 py-2 rounded-xl text-xs font-black border border-white/10 text-surface-300 hover:bg-white/5"
+            className="px-3 py-2 rounded-xl text-xs font-black border border-line text-surface-300 hover:bg-ink/5"
           >
             Atualizar
           </button>
@@ -396,26 +396,26 @@ export function KPIsPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-300 text-sm font-semibold">
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-700 text-sm font-semibold">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {[
-          { title: 'Receita líquida', value: money(atual.receitaLiquida), icon: DollarSign, tone: 'text-emerald-400' },
-          { title: 'Margem bruta', value: `${money(atual.margemBruta)} (${pct(atual.margemBrutaPerc)})`, icon: TrendingIcon, tone: atual.margemBruta >= 0 ? 'text-emerald-400' : 'text-red-400' },
-          { title: 'EBITDA', value: `${money(atual.ebitda)} (${pct(atual.ebitdaPerc)})`, icon: Activity, tone: atual.ebitda >= 0 ? 'text-emerald-400' : 'text-red-400' },
+          { title: 'Receita líquida', value: money(atual.receitaLiquida), icon: DollarSign, tone: 'text-emerald-600' },
+          { title: 'Margem bruta', value: `${money(atual.margemBruta)} (${pct(atual.margemBrutaPerc)})`, icon: TrendingIcon, tone: atual.margemBruta >= 0 ? 'text-emerald-600' : 'text-red-600' },
+          { title: 'EBITDA', value: `${money(atual.ebitda)} (${pct(atual.ebitdaPerc)})`, icon: Activity, tone: atual.ebitda >= 0 ? 'text-emerald-600' : 'text-red-600' },
           { title: 'OS entregues', value: String(atual.osEntregues || 0), icon: Gauge, tone: 'text-surface-50' },
-          { title: 'Ticket médio', value: money(atual.ticketMedio), icon: BarChart3, tone: 'text-blue-400' },
+          { title: 'Ticket médio', value: money(atual.ticketMedio), icon: BarChart3, tone: 'text-blue-600' },
         ].map((kpi) => (
           <motion.div
             key={kpi.title}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm"
+            className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm"
           >
-            <div className="w-10 h-10 rounded-xl bg-gold-500 text-surface-950 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-accent text-surface-950 flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
             <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{kpi.title}</p>
@@ -424,7 +424,7 @@ export function KPIsPage() {
         ))}
       </div>
 
-      <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+      <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
         <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Fase 1 · Indicadores de Performance Operacional</h3>
         <p className="text-xs text-surface-400 mb-4">Métricas mais usadas em gestão de concessionárias e autocenters para acompanhamento diário.</p>
 
@@ -501,7 +501,7 @@ export function KPIsPage() {
                 tone="blue"
               />
             </div>
-            <div className="mt-3 rounded-xl border border-white/10 bg-surface-950/40 p-3 text-xs text-surface-300 font-medium">
+            <div className="mt-3 rounded-xl border border-line bg-surface-950/40 p-3 text-xs text-surface-300 font-medium">
               Interpretação rápida:
               {fase1.elr >= fase1.elrMeta
                 ? ' ELR acima da meta de referência, boa captura de valor por hora técnica.'
@@ -511,7 +511,7 @@ export function KPIsPage() {
         </div>
       </section>
 
-      <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+      <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
         <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Fase 2 · Qualidade e Agenda</h3>
         <p className="text-xs text-surface-400 mb-4">Leituras para melhorar previsibilidade operacional e qualidade de execução.</p>
 
@@ -565,7 +565,7 @@ export function KPIsPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="rounded-xl border border-white/10 p-3 bg-surface-950/40">
+            <div className="rounded-xl border border-line p-3 bg-surface-950/40">
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Leitura de First Time Fix</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.firstTimeFixRate >= 92
@@ -573,7 +573,7 @@ export function KPIsPage() {
                   : 'Há espaço para reduzir retornos. Priorize checklist técnico e validação final antes da entrega.'}
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 p-3 bg-surface-950/40">
+            <div className="rounded-xl border border-line p-3 bg-surface-950/40">
               <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Leitura de No-show (estimado)</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.noShowRate <= 8
@@ -581,7 +581,7 @@ export function KPIsPage() {
                   : 'Taxa elevada. Reforce confirmações automáticas e política de reagendamento.'}
               </p>
             </div>
-            <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3 text-xs text-blue-300 font-medium">
+            <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3 text-xs text-blue-700 font-medium">
               Observação: no-show está em modo proxy (estimativa), até existir status dedicado de falta no fluxo da OS.
             </div>
           </div>
@@ -589,7 +589,7 @@ export function KPIsPage() {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 1 · Financeiro</h3>
           <p className="text-xs text-surface-400 mb-4">Visão de estrutura do resultado para o período selecionado.</p>
           <ResponsiveContainer width="100%" height={260}>
@@ -607,7 +607,7 @@ export function KPIsPage() {
           </ResponsiveContainer>
         </section>
 
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 2 · Comparativo de períodos</h3>
           <p className="text-xs text-surface-400 mb-4">Receita líquida e EBITDA para leitura de tendência.</p>
           <ResponsiveContainer width="100%" height={260}>
@@ -624,7 +624,7 @@ export function KPIsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6 lg:col-span-1 xl:col-span-2">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6 lg:col-span-1 xl:col-span-2">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 3 · Operações de oficina</h3>
           <p className="text-xs text-surface-400 mb-4">Fluxo de OS por etapa para gestão do gargalo operacional.</p>
           <ResponsiveContainer width="100%" height={260}>
@@ -647,7 +647,7 @@ export function KPIsPage() {
           </div>
         </section>
 
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Status da fila</h3>
           <p className="text-xs text-surface-400 mb-4">Distribuição por status atual.</p>
           <ResponsiveContainer width="100%" height={260}>
@@ -664,7 +664,7 @@ export function KPIsPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 4 · Estoque e suprimentos</h3>
           <p className="text-xs text-surface-400 mb-4">Itens com risco de ruptura e impacto no caixa.</p>
 
@@ -686,7 +686,7 @@ export function KPIsPage() {
           </ResponsiveContainer>
         </section>
 
-        <section className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm p-6">
+        <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
           <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 5 · Pessoas e performance</h3>
           <p className="text-xs text-surface-400 mb-4">Comissões como leitura rápida de produtividade técnica.</p>
 
@@ -698,17 +698,17 @@ export function KPIsPage() {
 
           <div className="space-y-2">
             {(commissions.leadership || []).slice(0, 6).map((p: any, idx: number) => (
-              <div key={p.userId} className="flex items-center gap-3 rounded-xl border border-white/5 p-3">
-                <span className="w-8 h-8 rounded-lg bg-gold-500 text-surface-950 text-xs font-black flex items-center justify-center">{idx + 1}</span>
+              <div key={p.userId} className="flex items-center gap-3 rounded-xl border border-line p-3">
+                <span className="w-8 h-8 rounded-lg bg-accent text-surface-950 text-xs font-black flex items-center justify-center">{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-surface-100 truncate">{p.name}</p>
                   <p className="text-xs text-surface-500">{p.count} OS executadas</p>
                 </div>
-                <span className="text-sm font-black text-emerald-400">{money(p.total)}</span>
+                <span className="text-sm font-black text-emerald-600">{money(p.total)}</span>
               </div>
             ))}
             {(commissions.leadership || []).length === 0 && (
-              <div className="rounded-xl border border-white/5 p-4 text-sm text-surface-500">
+              <div className="rounded-xl border border-line p-4 text-sm text-surface-500">
                 Sem dados de liderança de comissões no momento.
               </div>
             )}
@@ -738,14 +738,14 @@ function InfoCard({
 }) {
   const toneClasses: Record<string, string> = {
     slate: 'text-surface-50 bg-surface-800',
-    green: 'text-emerald-300 bg-emerald-500/15',
-    amber: 'text-amber-300 bg-amber-500/15',
-    blue: 'text-blue-300 bg-blue-500/15',
-    purple: 'text-purple-300 bg-purple-500/15',
+    green: 'text-emerald-700 bg-emerald-500/15',
+    amber: 'text-amber-700 bg-amber-500/15',
+    blue: 'text-blue-700 bg-blue-500/15',
+    purple: 'text-purple-700 bg-purple-500/15',
   };
 
   return (
-    <div className="rounded-xl border border-white/10 p-3">
+    <div className="rounded-xl border border-line p-3">
       <div className="flex items-center gap-2 mb-1">
         {Icon && (
           <span className={cn('w-6 h-6 rounded-md flex items-center justify-center', toneClasses[tone])}>

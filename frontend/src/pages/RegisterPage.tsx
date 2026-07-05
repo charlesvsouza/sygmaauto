@@ -64,16 +64,16 @@ export function RegisterPage() {
   return (
     <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background Glow (dourado, sutil) */}
-      <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-gold-500/[0.06] rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold-600/[0.05] rounded-full blur-[120px]" />
+      <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 rounded-[2.5rem] overflow-hidden border border-white/5 shadow-card-hover bg-surface-900 z-10"
+        className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-line shadow-card-hover bg-surface-900 z-10"
       >
         {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-gold-500/10 to-transparent border-r border-white/5">
+        <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-accent/10 to-transparent border-r border-line">
           <div>
             <div className="flex items-center gap-3 mb-8">
               <SigmaAutoLogo variant="full" />
@@ -81,7 +81,7 @@ export function RegisterPage() {
 
             <h1 className="text-4xl font-bold leading-tight mb-6">
               Transforme sua <br />
-              <span className="text-gold-400">Oficina hoje.</span>
+              <span className="text-accent">Oficina hoje.</span>
             </h1>
             <p className="text-surface-400 text-lg leading-relaxed">
               Gestão completa, do financeiro ao estoque, em uma única plataforma premium.
@@ -91,11 +91,11 @@ export function RegisterPage() {
 
           <div className="space-y-6">
             <div className="flex items-center gap-4 text-sm text-surface-300">
-              <div className="w-1.5 h-1.5 bg-gold-400 rounded-full" />
+              <div className="w-1.5 h-1.5 bg-accent rounded-full" />
               Suporte a CNPJ, MEI e CPF
             </div>
             <div className="flex items-center gap-4 text-sm text-surface-300">
-              <div className="w-1.5 h-1.5 bg-gold-400 rounded-full" />
+              <div className="w-1.5 h-1.5 bg-accent rounded-full" />
               Gestão Multi-tenant Segura
             </div>
           </div>
@@ -112,7 +112,7 @@ export function RegisterPage() {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm mb-6"
+              className="bg-red-500/10 border border-red-500/20 text-red-600 p-4 rounded-xl text-sm mb-6"
             >
               {error}
             </motion.div>
@@ -251,7 +251,7 @@ export function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gold-500 hover:bg-gold-400 text-surface-950 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-6 shadow-lg shadow-gold-500/20"
+              className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-6 shadow-lg shadow-accent/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -266,7 +266,7 @@ export function RegisterPage() {
 
           <p className="text-center text-surface-500 text-sm mt-8">
             Já possui uma conta?{' '}
-            <Link to="/login" className="text-gold-400 hover:text-gold-300 font-semibold transition-colors">
+            <Link to="/login" className="text-accent hover:text-accent font-semibold transition-colors">
               Fazer Login
             </Link>
           </p>

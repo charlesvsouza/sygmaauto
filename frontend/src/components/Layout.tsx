@@ -120,17 +120,17 @@ export function Layout() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-base text-surface-100">
+    <div className="min-h-screen flex bg-app text-surface-100">
       {/* Sidebar - Desktop */}
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
-        <div className="px-4 py-2.5 border-b border-white/10">
+        <div className="px-4 py-2.5 border-b border-line">
           <SigmaAutoLogo variant="full" size={34} />
           <div className="mt-1.5 pl-0.5">
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               planName === 'START'
-                ? 'bg-surface-800 text-surface-300'
-                : 'bg-gold-500/15 text-gold-400'
+                ? 'bg-white/10 text-white/80'
+                : 'bg-white/15 text-white'
             }`}>
               {getPlanLabel(planName)}
             </span>
@@ -140,9 +140,9 @@ export function Layout() {
         {/* Navigation */}
         <nav className="flex-1 min-h-0 px-3 py-2 overflow-y-auto">
           {navGroups.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? 'mt-1.5 pt-1.5 border-t border-white/5' : ''}>
+            <div key={gi} className={gi > 0 ? 'mt-1.5 pt-1.5 border-t border-line' : ''}>
               {group.label && (
-                <p className="text-[8px] font-black text-surface-500 uppercase tracking-widest px-2.5 mb-1">
+                <p className="text-[8px] font-black text-white/45 uppercase tracking-widest px-2.5 mb-1">
                   {group.label}
                 </p>
               )}
@@ -155,7 +155,7 @@ export function Layout() {
                       <button
                         key={item.to}
                         onClick={() => setUpgradeModal({ kind: 'retifica' })}
-                        className="sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all opacity-60 text-surface-300 hover:text-surface-50 hover:opacity-80 w-full text-left"
+                        className="sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all opacity-60 text-sidebar-ink hover:text-white hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-4 h-4 shrink-0" />
                         <span className="sidebar-nav-label leading-tight">{item.label}</span>
@@ -168,7 +168,7 @@ export function Layout() {
                       <button
                         key={item.to}
                         onClick={() => setUpgradeModal({ kind: 'feature', feature: item.feature! })}
-                        className="sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all opacity-60 text-surface-300 hover:text-surface-50 hover:opacity-80 w-full text-left"
+                        className="sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all opacity-60 text-sidebar-ink hover:text-white hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-4 h-4 shrink-0" />
                         <span className="sidebar-nav-label leading-tight">{item.label}</span>
@@ -184,7 +184,7 @@ export function Layout() {
                       `sidebar-nav-link flex items-center gap-2.5 rounded-lg transition-all ${
                         isActive
                           ? 'sidebar-nav-link-active font-medium'
-                          : 'text-surface-300 hover:text-surface-50'
+                          : 'text-sidebar-ink hover:text-white'
                       }`
                     }
                   >
@@ -211,18 +211,18 @@ export function Layout() {
       <div className={`app-sidebar fixed inset-y-0 left-0 w-64 z-50 transform transition-transform lg:hidden ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+        <div className="p-5 border-b border-line flex items-center justify-between">
           <SigmaAutoLogo variant="full" size={36} />
-          <button onClick={() => setSidebarOpen(false)} className="text-surface-400 hover:text-surface-100">
+          <button onClick={() => setSidebarOpen(false)} className="text-sidebar-ink hover:text-white">
             <X className="w-6 h-6" />
           </button>
         </div>
         
         <nav className="flex-1 p-4 overflow-y-auto">
           {navGroups.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-white/5' : ''}>
+            <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-line' : ''}>
               {group.label && (
-                <p className="text-[9px] font-black text-surface-500 uppercase tracking-widest px-3 mb-1.5">
+                <p className="text-[9px] font-black text-white/45 uppercase tracking-widest px-3 mb-1.5">
                   {group.label}
                 </p>
               )}
@@ -235,11 +235,11 @@ export function Layout() {
                       <button
                         key={item.to}
                         onClick={() => { setSidebarOpen(false); setUpgradeModal({ kind: 'retifica' }); }}
-                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all opacity-60 text-surface-400 hover:text-surface-50 hover:bg-white/5 hover:opacity-80 w-full text-left"
+                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all opacity-60 text-sidebar-ink hover:text-white hover:bg-white/10 hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-5 h-5" />
                         <span className="text-sm">{item.label}</span>
-                        <span className="ml-auto text-xs bg-surface-800 px-1.5 py-0.5 rounded text-surface-400">RET</span>
+                        <span className="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded text-white/80">RET</span>
                       </button>
                     );
                   }
@@ -248,11 +248,11 @@ export function Layout() {
                       <button
                         key={item.to}
                         onClick={() => { setSidebarOpen(false); setUpgradeModal({ kind: 'feature', feature: item.feature! }); }}
-                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all opacity-60 text-surface-400 hover:text-surface-50 hover:bg-white/5 hover:opacity-80 w-full text-left"
+                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all opacity-60 text-sidebar-ink hover:text-white hover:bg-white/10 hover:opacity-80 w-full text-left"
                       >
                         <item.icon className="w-5 h-5" />
                         <span className="text-sm">{item.label}</span>
-                        <span className="ml-auto text-xs bg-surface-800 px-1.5 py-0.5 rounded text-surface-400">{getFeatureMinPlan(item.feature!)}</span>
+                        <span className="ml-auto text-xs bg-white/10 px-1.5 py-0.5 rounded text-white/80">{getFeatureMinPlan(item.feature!)}</span>
                       </button>
                     );
                   }
@@ -264,8 +264,8 @@ export function Layout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all ${
                         isActive
-                          ? 'bg-gold-500/15 text-gold-400 font-medium'
-                          : 'text-surface-400 hover:text-surface-50 hover:bg-white/5'
+                          ? 'bg-white/15 text-white font-medium'
+                          : 'text-sidebar-ink hover:text-white hover:bg-white/10'
                       }`
                     }
                   >
@@ -279,10 +279,10 @@ export function Layout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-line">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-surface-400 hover:text-danger hover:bg-danger/10"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sidebar-ink hover:text-red-300 hover:bg-white/5"
           >
             <LogOut className="w-4 h-4" />
             <span className="text-sm">Sair</span>
@@ -293,7 +293,7 @@ export function Layout() {
       {/* Main content */}
       <main className="app-main-frame flex-1 lg:ml-64 min-w-0">
         {/* Header mobile */}
-        <header className="lg:hidden bg-surface-900 border-b border-white/5 px-4 py-3 flex items-center justify-between sticky top-0 z-20">
+        <header className="lg:hidden bg-surface-900 border-b border-line px-4 py-3 flex items-center justify-between sticky top-0 z-20">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-surface-300 hover:text-surface-100">
             <Menu className="w-6 h-6" />
           </button>
@@ -304,7 +304,7 @@ export function Layout() {
         </header>
 
         {/* Header desktop */}
-        <header className="app-shell-header hidden lg:flex items-center justify-between px-4 xl:px-8 py-4 border-b border-white/5 sticky top-0 z-10 gap-4">
+        <header className="app-shell-header hidden lg:flex items-center justify-between px-4 xl:px-8 py-4 border-b border-line sticky top-0 z-10 gap-4">
           <div>
             <h2 className="text-lg font-semibold text-surface-50">
               {tenant?.name || 'Minha Oficina'}
@@ -318,12 +318,12 @@ export function Layout() {
               <input
                 type="text"
                 placeholder="Buscar..."
-                className="w-44 xl:w-64 pl-9 pr-4 py-2 bg-surface-950/40 border border-white/10 rounded-lg text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40"
+                className="w-44 xl:w-64 pl-9 pr-4 py-2 bg-surface-950/40 border border-line rounded-lg text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
               />
             </div>
 
             {/* Notifications */}
-            <button className="relative p-2 text-surface-400 hover:text-surface-100 hover:bg-white/5 rounded-lg">
+            <button className="relative p-2 text-surface-400 hover:text-surface-100 hover:bg-ink/5 rounded-lg">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full" />
             </button>
@@ -336,13 +336,13 @@ export function Layout() {
             )}
 
             {/* Divider */}
-            <div className="w-px h-6 bg-white/10" />
+            <div className="w-px h-6 bg-ink/5" />
 
             {/* User avatar + name + logout */}
             <div className="relative group">
-              <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-white/5 transition-all">
-                <div className="w-8 h-8 bg-surface-800 border border-white/10 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-xs font-semibold text-gold-400">
+              <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-ink/5 transition-all">
+                <div className="w-8 h-8 bg-surface-800 border border-line rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-xs font-semibold text-accent">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -352,8 +352,8 @@ export function Layout() {
                 </div>
               </button>
               {/* Dropdown on hover */}
-              <div className="absolute right-0 top-full mt-1 w-52 bg-surface-900 rounded-xl shadow-card-hover border border-white/10 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                <div className="px-3 py-2 border-b border-white/5">
+              <div className="absolute right-0 top-full mt-1 w-52 bg-surface-900 rounded-xl shadow-card-hover border border-line py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="px-3 py-2 border-b border-line">
                   <p className="text-xs font-semibold text-surface-100 truncate">{user?.name}</p>
                   <p className="text-[10px] text-surface-500 truncate">{user?.email}</p>
                 </div>
@@ -382,12 +382,12 @@ export function Layout() {
           onClick={() => setUpgradeModal(null)}
         >
           <div
-            className="bg-surface-950 border border-white/10 text-surface-100 rounded-2xl p-6 max-w-sm w-full shadow-card-hover"
+            className="bg-surface-950 border border-line text-surface-100 rounded-lg p-6 max-w-sm w-full shadow-card-hover"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gold-500/15 rounded-xl flex items-center justify-center">
-                <Award className="w-5 h-5 text-gold-400" />
+              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center">
+                <Award className="w-5 h-5 text-accent" />
               </div>
               <div>
                 <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">{upgradeModal.kind === 'retifica' ? 'Modo Especializado' : 'Recurso Premium'}</p>

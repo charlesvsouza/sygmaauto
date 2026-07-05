@@ -18,9 +18,9 @@ const fmt = (v: number) =>
 const pct = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`;
 
 const KPI_COLOR_CLASS: Record<string, string> = {
-  emerald: 'text-emerald-400',
-  blue: 'text-blue-400',
-  red: 'text-red-400',
+  emerald: 'text-emerald-600',
+  blue: 'text-blue-600',
+  red: 'text-red-600',
 };
 
 const DRE_PRINT_STYLE = `
@@ -46,16 +46,16 @@ const DRE_PRINT_STYLE = `
 function DRERow({ label, value, indent = 0, highlight = false, positive = true, note }: {
   label: string; value: number; indent?: number; highlight?: boolean; positive?: boolean; note?: string;
 }) {
-  const color = value >= 0 ? 'text-emerald-400' : 'text-red-400';
+  const color = value >= 0 ? 'text-emerald-600' : 'text-red-600';
   return (
     <tr className={highlight ? 'bg-surface-950/40 font-bold' : ''}>
-      <td className={`py-3 px-4 text-sm text-surface-200 border-b border-white/5 ${indent > 0 ? 'pl-' + (4 + indent * 4) : ''}`}>
+      <td className={`py-3 px-4 text-sm text-surface-200 border-b border-line ${indent > 0 ? 'pl-' + (4 + indent * 4) : ''}`}>
         <span style={{ paddingLeft: `${indent * 16}px` }} className="flex items-center gap-1">
           {label}
           {note && <span title={note} className="text-surface-500 cursor-help"><Info className="w-3 h-3 inline" /></span>}
         </span>
       </td>
-      <td className={`py-3 px-4 text-sm text-right font-mono border-b border-white/5 ${highlight ? color : value < 0 ? 'text-red-400' : 'text-surface-50'}`}>
+      <td className={`py-3 px-4 text-sm text-right font-mono border-b border-line ${highlight ? color : value < 0 ? 'text-red-600' : 'text-surface-50'}`}>
         {fmt(value)}
       </td>
     </tr>
@@ -79,7 +79,7 @@ function BarMini({ label, receita, despesa, resultado }: { label: string; receit
         />
       </div>
       <span className="text-[10px] text-surface-400 font-medium">{label}</span>
-      <span className={`text-[10px] font-bold ${resultado >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+      <span className={`text-[10px] font-bold ${resultado >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
         {resultado >= 0 ? '+' : ''}{fmt(resultado)}
       </span>
     </div>
@@ -254,8 +254,8 @@ export function DREPage() {
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           {/* Seletores de mês e ano */}
-          <div className="flex items-center gap-1 bg-surface-900 border border-white/10 rounded-2xl px-2 py-1.5 shadow-sm">
-            <button onClick={prevMonth} className="p-1.5 hover:bg-white/5 rounded-xl transition-colors">
+          <div className="flex items-center gap-1 bg-surface-900 border border-line rounded-lg px-2 py-1.5 shadow-sm">
+            <button onClick={prevMonth} className="p-1.5 hover:bg-ink/5 rounded-xl transition-colors">
               <ChevronLeft className="w-4 h-4 text-surface-300" />
             </button>
             <select
@@ -280,14 +280,14 @@ export function DREPage() {
             <button
               onClick={nextMonth}
               disabled={year === currentYear && month === now.getMonth() + 1}
-              className="p-1.5 hover:bg-white/5 rounded-xl transition-colors disabled:opacity-30"
+              className="p-1.5 hover:bg-ink/5 rounded-xl transition-colors disabled:opacity-30"
             >
               <ChevronRight className="w-4 h-4 text-surface-300" />
             </button>
           </div>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-surface-950 text-sm font-bold rounded-xl hover:bg-gold-400 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-accent text-surface-950 text-sm font-bold rounded-xl hover:bg-accent-hover transition-all shadow-sm"
           >
             <Printer className="w-4 h-4" /> Imprimir
           </button>
@@ -300,7 +300,7 @@ export function DREPage() {
           <p className="text-surface-400 font-medium animate-pulse">Calculando DRE...</p>
         </div>
       ) : error ? (
-        <div className="flex items-center justify-center py-20 text-red-400 font-medium">{error}</div>
+        <div className="flex items-center justify-center py-20 text-red-600 font-medium">{error}</div>
       ) : dre && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -315,12 +315,12 @@ export function DREPage() {
               { label: 'Margem Bruta', value: dre.margemBruta, icon: TrendingUp, color: dre.margemBruta >= 0 ? 'emerald' : 'red' },
               { label: 'EBITDA', value: dre.ebitda, icon: dre.ebitda >= 0 ? TrendingUp : TrendingDown, color: dre.ebitda >= 0 ? 'emerald' : 'red' },
             ].map((card) => (
-              <div key={card.label} className={`bg-surface-900 rounded-3xl border border-white/10 shadow-sm p-5`}>
+              <div key={card.label} className={`bg-surface-900 rounded-xl border border-line shadow-sm p-5`}>
                 <div className={`flex items-center gap-2 ${KPI_COLOR_CLASS[card.color] ?? 'text-surface-300'} mb-2`}>
                   <card.icon className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wider">{card.label}</span>
                 </div>
-                <p className={`text-2xl font-black ${card.value >= 0 ? 'text-surface-50' : 'text-red-400'}`}>
+                <p className={`text-2xl font-black ${card.value >= 0 ? 'text-surface-50' : 'text-red-600'}`}>
                   {fmt(card.value)}
                 </p>
                 {card.label === 'Margem Bruta' && (
@@ -339,8 +339,8 @@ export function DREPage() {
           {/* Tabela DRE + Gráfico */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tabela DRE */}
-            <div className="lg:col-span-2 bg-surface-900 rounded-3xl border border-white/10 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 bg-surface-950/40 border-b border-white/5 flex items-center justify-between">
+            <div className="lg:col-span-2 bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+              <div className="px-6 py-4 bg-surface-950/40 border-b border-line flex items-center justify-between">
                 <h2 className="font-bold text-surface-50">Estrutura do DRE</h2>
                 <span className="text-xs text-surface-400 font-medium capitalize">
                   {new Date(year, month - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
@@ -349,7 +349,7 @@ export function DREPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <tbody>
-                    <tr className="bg-gold-500 text-surface-950">
+                    <tr className="bg-accent text-surface-950">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Receita</td>
                     </tr>
                     <DRERow label="(+) Receita Bruta" value={dre.receitaBruta} />
@@ -357,12 +357,12 @@ export function DREPage() {
                     <DRERow label="Receita Manual (lançamentos)" value={detalhes.receitaManual} indent={1} />
                     <DRERow label="(-) Deduções (impostos estimados ~8%)" value={-dre.deducoes} note="Estimativa simplificada." />
                     <DRERow label="(=) Receita Líquida" value={dre.receitaLiquida} highlight />
-                    <tr className="bg-gold-500 text-surface-950">
+                    <tr className="bg-accent text-surface-950">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Custo dos Produtos</td>
                     </tr>
                     <DRERow label="(-) CMV — Custo das Peças Utilizadas" value={-dre.cmv} note="Custo de compra das peças usadas nas OS entregues." />
                     <DRERow label="(=) Margem Bruta" value={dre.margemBruta} highlight />
-                    <tr className="bg-gold-500 text-surface-950">
+                    <tr className="bg-accent text-surface-950">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Despesas Operacionais</td>
                     </tr>
                     <DRERow label="(-) Total de Despesas" value={-dre.despesasOperacionais} />
@@ -370,21 +370,21 @@ export function DREPage() {
                       <DRERow key={cat} label={cat} value={-(val as number)} indent={1} />
                     ))}
                     <DRERow label="(=) EBITDA" value={dre.ebitda} highlight />
-                    <tr className="bg-gold-500 text-surface-950">
+                    <tr className="bg-accent text-surface-950">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Resultado</td>
                     </tr>
                     <DRERow label="(=) Resultado Líquido do Período" value={dre.resultadoLiquido} highlight />
                   </tbody>
                 </table>
               </div>
-              <p className="px-6 py-3 text-xs text-surface-500 border-t border-white/5">
+              <p className="px-6 py-3 text-xs text-surface-500 border-t border-line">
                 * Deduções fiscais e CMV são estimativas. Consulte seu contador para o DRE oficial.
               </p>
             </div>
 
             {/* Gráfico de histórico + breakdown despesas */}
             <div className="space-y-4">
-              <div className="bg-surface-900 rounded-3xl border border-white/10 shadow-sm p-5">
+              <div className="bg-surface-900 rounded-xl border border-line shadow-sm p-5">
                 <h3 className="font-bold text-surface-50 text-sm mb-4">Histórico 6 meses</h3>
                 <div className="flex items-end justify-between gap-1 px-2">
                   {historico.map((h: any) => (
@@ -398,7 +398,7 @@ export function DREPage() {
               </div>
 
               {Object.keys(detalhes.despesasPorCategoria).length > 0 && (
-                <div className="bg-surface-900 rounded-3xl border border-white/10 shadow-sm p-5">
+                <div className="bg-surface-900 rounded-xl border border-line shadow-sm p-5">
                   <h3 className="font-bold text-surface-50 text-sm mb-3">Despesas por Categoria</h3>
                   <div className="space-y-2">
                     {Object.entries(detalhes.despesasPorCategoria as Record<string, number>)

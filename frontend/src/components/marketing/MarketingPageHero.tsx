@@ -27,7 +27,7 @@ export function MarketingPageHero({
           <p className="mt-4 text-white/55 text-base max-w-2xl leading-relaxed">{description}</p>
         </div>
         {aside ? (
-          <div className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6">
+          <div className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6">
             {aside}
           </div>
         ) : null}

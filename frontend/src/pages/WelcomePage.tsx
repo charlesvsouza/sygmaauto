@@ -53,23 +53,23 @@ export default function WelcomePage() {
         <motion.div
           animate={{ scale: [1, 1.22, 1], opacity: [0.12, 0.3, 0.12] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-[440px] h-[440px] bg-gold-500/20 rounded-full blur-[100px]"
+          className="w-[440px] h-[440px] bg-accent/20 rounded-full blur-[100px]"
         />
         <motion.div
           animate={{ scale: [0.85, 1.2, 1.35], opacity: [0, 0.15, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: 0.5 }}
-          className="absolute w-[700px] h-[700px] rounded-full border border-gold-400/20 blur-[2px]"
+          className="absolute w-[700px] h-[700px] rounded-full border border-accent/40 blur-[2px]"
         />
         <motion.div
           animate={{ scale: [0.9, 1.3, 0.9], opacity: [0.4, 0.8, 0.4] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute w-4 h-4 rounded-full bg-gold-400/70 blur-[1px]"
+          className="absolute w-4 h-4 rounded-full bg-accent/70 blur-[1px]"
         />
       </div>
 
       {/* BG blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold-600/10 rounded-full blur-[130px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold-600/10 rounded-full blur-[130px]" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[130px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[130px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -77,9 +77,9 @@ export default function WelcomePage() {
         transition={{ duration: 0.8 }}
         className="z-10 w-full max-w-4xl px-6"
       >
-        <div className="bg-white/[0.03] p-8 md:p-12 rounded-[2.5rem] border border-white/10 relative overflow-hidden backdrop-blur-md">
+        <div className="bg-ink/5 p-8 md:p-12 rounded-xl border border-line relative overflow-hidden backdrop-blur-md">
           {/* top line */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
           {/* Logo */}
           <motion.div
@@ -88,12 +88,12 @@ export default function WelcomePage() {
             transition={{ delay: 0.2 }}
             className="flex items-center gap-3 mb-10"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-gold-500 to-gold-600 rounded-2xl flex items-center justify-center shadow-lg shadow-gold-500/20">
+            <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
               <Zap className="text-white" size={22} />
             </div>
             <div>
               <span className="text-xl font-black tracking-tight text-white">
-                Sigma<span className="bg-gradient-to-r from-gold-400 to-gold-500 bg-clip-text text-transparent">Auto</span>
+                Sigma<span className="bg-gradient-to-r from-accent to-accent bg-clip-text text-transparent">Auto</span>
               </span>
               <p className="text-[11px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
             </div>
@@ -108,7 +108,7 @@ export default function WelcomePage() {
                 className="text-4xl md:text-5xl font-black leading-tight mb-6"
               >
                 Bem-vindo ao seu <br />
-                <span className="bg-gradient-to-r from-gold-400 to-gold-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-accent to-accent bg-clip-text text-transparent">
                   Novo Escritório.
                 </span>
               </motion.h1>
@@ -129,7 +129,7 @@ export default function WelcomePage() {
               >
                 <button
                   onClick={goToLogin}
-                  className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-black rounded-2xl hover:brightness-110 transition-all hover:scale-105 shadow-xl shadow-gold-500/20"
+                  className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-accent text-white font-black rounded-lg hover:brightness-110 transition-all hover:scale-105 shadow-xl shadow-accent/20"
                 >
                   Ir para o login
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -144,9 +144,9 @@ export default function WelcomePage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 + idx * 0.1 }}
-                  className="p-5 rounded-3xl bg-white/[0.04] border border-white/[0.06] flex items-start gap-4 hover:bg-white/[0.07] transition-colors"
+                  className="p-5 rounded-xl bg-ink/5 border border-line flex items-start gap-4 hover:bg-ink/5 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/20 flex items-center justify-center text-gold-400 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/40 flex items-center justify-center text-accent shrink-0">
                     <item.icon size={20} />
                   </div>
                   <div>
@@ -159,7 +159,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Footer */}
-          <div className="mt-12 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="mt-12 pt-8 border-t border-line flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-xs font-medium text-surface-500 uppercase tracking-widest">SigmaAuto Cloud Online</span>
@@ -169,9 +169,9 @@ export default function WelcomePage() {
               <p className="text-xs text-surface-400">
                 Redirecionando em <span className="text-white font-black">{seconds}s</span>
               </p>
-              <div className="w-48 h-1 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-48 h-1 bg-ink/5 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-gold-500 to-gold-600"
+                  className="h-full bg-gradient-to-r from-accent to-accent"
                   initial={{ width: '0%' }}
                   animate={{ width: '100%' }}
                   transition={{ duration: AUTO_REDIRECT_MS / 1000, ease: 'linear' }}

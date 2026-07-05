@@ -52,7 +52,7 @@ export function WhatsappPage() {
   }, []);
 
   const stateColor: Record<ConnectionState, string> = {
-    open: 'text-emerald-400',
+    open: 'text-emerald-600',
     connecting: 'text-amber-500',
     close: 'text-red-500',
     unknown: 'text-surface-500',
@@ -73,8 +73,8 @@ export function WhatsappPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-green-500/15 flex items-center justify-center">
-            <MessageCircle size={22} className="text-green-400" />
+          <div className="w-10 h-10 rounded-lg bg-green-500/15 flex items-center justify-center">
+            <MessageCircle size={22} className="text-green-600" />
           </div>
           <div>
             <h1 className="text-xl font-black text-surface-50">WhatsApp Automático</h1>
@@ -82,11 +82,11 @@ export function WhatsappPage() {
           </div>
         </div>
 
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 space-y-4">
-          <div className="flex items-center gap-2 text-amber-300 font-bold">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-6 space-y-4">
+          <div className="flex items-center gap-2 text-amber-700 font-bold">
             <WifiOff size={18} /> Provider WhatsApp não configurado
           </div>
-          <p className="text-sm text-amber-300">
+          <p className="text-sm text-amber-700">
             Para ativar o WhatsApp automático, o administrador precisa configurar o provider
             <strong> {providerName}</strong> no servidor e definir as variáveis de ambiente.
           </p>
@@ -100,8 +100,8 @@ export function WhatsappPage() {
               META_WHATSAPP_APP_SECRET=app-secret-meta
             </code>
           </div>
-          {status?.message && <p className="text-xs text-amber-300">{status.message}</p>}
-          <p className="text-xs text-amber-400">
+          {status?.message && <p className="text-xs text-amber-700">{status.message}</p>}
+          <p className="text-xs text-amber-600">
             Consulte o manual de implantação ou entre em contato com o suporte técnico.
           </p>
         </div>
@@ -113,8 +113,8 @@ export function WhatsappPage() {
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-green-500/15 flex items-center justify-center">
-          <MessageCircle size={22} className="text-green-400" />
+        <div className="w-10 h-10 rounded-lg bg-green-500/15 flex items-center justify-center">
+          <MessageCircle size={22} className="text-green-600" />
         </div>
         <div>
           <h1 className="text-xl font-black text-surface-50">WhatsApp Automático</h1>
@@ -122,7 +122,7 @@ export function WhatsappPage() {
         </div>
         <button
           onClick={fetchStatus}
-          className="ml-auto p-2 hover:bg-white/5 rounded-xl transition"
+          className="ml-auto p-2 hover:bg-ink/5 rounded-xl transition"
           title="Atualizar status"
         >
           <RefreshCw size={16} className="text-surface-500" />
@@ -131,10 +131,10 @@ export function WhatsappPage() {
 
       {/* Status card */}
       <div className={cn(
-        'rounded-2xl border p-6 flex items-center gap-4',
+        'rounded-lg border p-6 flex items-center gap-4',
         status?.connected
           ? 'bg-emerald-500/10 border-emerald-500/30'
-          : 'bg-surface-950/40 border-white/10',
+          : 'bg-surface-950/40 border-line',
       )}>
         {status?.connected ? (
           <Wifi size={28} className="text-emerald-500 shrink-0" />
@@ -153,7 +153,7 @@ export function WhatsappPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-surface-900 p-6 space-y-3">
+      <div className="rounded-lg border border-line bg-surface-900 p-6 space-y-3">
         <div className="flex items-center gap-2 font-bold text-surface-100">
           <AlertCircle size={18} className="text-surface-400" /> Integração Oficial (Meta Cloud)
         </div>
@@ -163,7 +163,7 @@ export function WhatsappPage() {
       </div>
 
       {/* Gatilhos configurados */}
-      <div className="rounded-2xl border border-white/10 bg-surface-900 p-6 space-y-3">
+      <div className="rounded-lg border border-line bg-surface-900 p-6 space-y-3">
         <p className="font-bold text-surface-100 text-sm">Mensagens automáticas ativas</p>
         {[
           { status: 'Orçamento pronto (Aguardando Aprovação)', active: true, desc: 'Envia link de aprovação ao cliente' },
@@ -172,7 +172,7 @@ export function WhatsappPage() {
           { status: 'Entregue', active: true, desc: 'Mensagem de agradecimento pós-serviço' },
           { status: 'Cancelado', active: true, desc: 'Informa cancelamento da OS' },
         ].map((item) => (
-          <div key={item.status} className="flex items-start gap-3 py-2 border-b border-white/5 last:border-0">
+          <div key={item.status} className="flex items-start gap-3 py-2 border-b border-line last:border-0">
             <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
             <div>
               <p className="text-sm font-semibold text-surface-200">{item.status}</p>

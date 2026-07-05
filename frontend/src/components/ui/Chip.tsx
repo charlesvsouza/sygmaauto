@@ -8,7 +8,7 @@ const chipStyles: Record<ChipVariant, string> = {
   warn: 'bg-[#3a2e1e] text-[#f0c87a]',
   err: 'bg-[#3a1f1f] text-[#f0a6a6]',
   neutral: 'bg-surface-900 text-surface-300',
-  gold: 'bg-gold-500/15 text-gold-400',
+  gold: 'bg-accent/10 text-accent',
 };
 
 export interface ChipProps extends HTMLAttributes<HTMLSpanElement> {

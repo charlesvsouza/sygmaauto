@@ -8,7 +8,7 @@ import { Calendar, ChevronLeft, ChevronRight, Plus, RefreshCw, Loader2 } from 'l
 const STATUS_CHIPS: Record<string, string> = {
   neutral: 'bg-surface-100 text-surface-700 border border-surface-200',
   golden: 'bg-surface-900 text-white border border-transparent',
-  positive: 'bg-gold-500/15 text-gold-700 border border-gold-200',
+  positive: 'bg-accent/10 text-accent border border-accent/40',
   negative: 'bg-danger/10 text-red-700 border border-red-200',
 };
 
@@ -109,27 +109,27 @@ export function AgendaPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-surface-50 tracking-tight flex items-center gap-2">
-            <Calendar className="text-gold-400" size={22} />
+            <Calendar className="text-accent" size={22} />
             Agenda da Semana
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">{weekLabel} · {totalSemana} OS agendada{totalSemana !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setWeekOffset(0)} className="px-3 py-2 text-xs font-bold text-surface-300 hover:bg-white/5 rounded-xl transition-all">
+          <button onClick={() => setWeekOffset(0)} className="px-3 py-2 text-xs font-bold text-surface-300 hover:bg-ink/5 rounded-xl transition-all">
             Hoje
           </button>
-          <button onClick={() => setWeekOffset(w => w - 1)} className="p-2 text-surface-400 hover:bg-white/5 rounded-xl transition-all">
+          <button onClick={() => setWeekOffset(w => w - 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={() => setWeekOffset(w => w + 1)} className="p-2 text-surface-400 hover:bg-white/5 rounded-xl transition-all">
+          <button onClick={() => setWeekOffset(w => w + 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
             <ChevronRight size={16} />
           </button>
-          <button onClick={load} disabled={loading} className="p-2 text-surface-400 hover:bg-white/5 rounded-xl transition-all disabled:opacity-50">
+          <button onClick={load} disabled={loading} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all disabled:opacity-50">
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
           <button
             onClick={() => navigate('/service-orders')}
-            className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-surface-950 rounded-xl text-xs font-bold hover:bg-gold-400 transition-all shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-accent text-surface-950 rounded-xl text-xs font-bold hover:bg-accent-hover transition-all shadow-lg"
           >
             <Plus size={14} />
             Nova OS
@@ -145,22 +145,22 @@ export function AgendaPage() {
           return (
             <div
               key={day.toISOString()}
-              className={`rounded-2xl border flex flex-col min-h-[220px] ${
+              className={`rounded-lg border flex flex-col min-h-[220px] ${
                 isToday
-                  ? 'border-gold-500/40 bg-gold-500/10'
-                  : 'border-white/10 bg-surface-900'
+                  ? 'border-accent/40 bg-accent/10'
+                  : 'border-line bg-surface-900'
               }`}
             >
               {/* Cabeçalho do dia */}
-              <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-gold-500/20 bg-gold-500/15' : 'border-white/5 bg-surface-950/40'}`}>
-                <p className={`text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-gold-400' : 'text-surface-500'}`}>
+              <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-accent/40 bg-accent/10' : 'border-line bg-surface-950/40'}`}>
+                <p className={`text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-accent' : 'text-surface-500'}`}>
                   {WEEKDAYS[day.getDay()]}
                 </p>
-                <p className={`text-xl font-black leading-tight ${isToday ? 'text-gold-300' : 'text-surface-100'}`}>
+                <p className={`text-xl font-black leading-tight ${isToday ? 'text-accent' : 'text-surface-100'}`}>
                   {day.getDate()}
                 </p>
                 {dayOrders.length > 0 && (
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${isToday ? 'bg-gold-500/20 text-gold-300' : 'bg-surface-800 text-surface-300'}`}>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${isToday ? 'bg-accent/20 text-accent' : 'bg-surface-800 text-surface-300'}`}>
                     {dayOrders.length}
                   </span>
                 )}
@@ -175,7 +175,7 @@ export function AgendaPage() {
                   <button
                     key={o.id}
                     onClick={() => navigate('/service-orders')}
-                    className="w-full text-left rounded-xl p-2 bg-surface-900 border border-white/5 hover:border-white/20 hover:shadow-sm transition-all"
+                    className="w-full text-left rounded-xl p-2 bg-surface-900 border border-line hover:border-line hover:shadow-sm transition-all"
                   >
                     <p className="text-[10px] font-black text-surface-400 mb-0.5">{fmtTime(o.scheduledDate)}</p>
                     <p className="text-[11px] font-bold text-surface-100 leading-tight truncate">{o.customer?.name || 'Cliente'}</p>
@@ -195,23 +195,23 @@ export function AgendaPage() {
 
       {/* Lista consolidada */}
       {totalSemana > 0 && (
-        <div className="bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/5">
+        <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-line">
             <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest">Lista da Semana</h3>
           </div>
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-line">
             {weekDays.flatMap((day) =>
               ordersForDay(day).map((o) => (
                 <div
                   key={o.id}
                   onClick={() => navigate('/service-orders')}
-                  className="flex items-center gap-4 px-6 py-3 hover:bg-white/5 cursor-pointer transition-colors"
+                  className="flex items-center gap-4 px-6 py-3 hover:bg-ink/5 cursor-pointer transition-colors"
                 >
                   <div className="w-20 shrink-0 text-right">
                     <p className="text-xs font-black text-surface-200">
                       {WEEKDAYS[day.getDay()]}, {day.getDate()}/{day.getMonth() + 1}
                     </p>
-                    <p className="text-[11px] text-gold-400 font-bold">{fmtTime(o.scheduledDate)}</p>
+                    <p className="text-[11px] text-accent font-bold">{fmtTime(o.scheduledDate)}</p>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-surface-100 truncate">{o.customer?.name || 'Cliente'}</p>

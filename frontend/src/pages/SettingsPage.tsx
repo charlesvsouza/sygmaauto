@@ -89,14 +89,14 @@ export function SettingsPage() {
   const isTradeNameMissing = !tenantData.name.trim();
 
   const ROLE_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
-    MASTER:     { label: 'Master',     color: 'bg-gold-500 text-surface-950',          desc: 'Proprietário — acesso total' },
-    ADMIN:      { label: 'Admin',      color: 'bg-violet-500/15 text-violet-300',    desc: 'Gerência administrativa' },
-    GERENTE:    { label: 'Gerente',    color: 'bg-blue-500/15 text-blue-300',        desc: 'Gerência operacional' },
-    CHEFE_OFICINA: { label: 'Chefe Oficina', color: 'bg-rose-500/15 text-rose-300',  desc: 'Liderança técnica por área' },
-    FINANCEIRO: { label: 'Financeiro', color: 'bg-emerald-500/15 text-emerald-300',  desc: 'Fechamento e pagamentos' },
-    SECRETARIA: { label: 'Secretaria', color: 'bg-cyan-500/15 text-cyan-300',        desc: 'Recepção e cadastros' },
-    MECANICO:   { label: 'Mecânico',   color: 'bg-amber-500/15 text-amber-300',      desc: 'Execução de serviços' },
-    PRODUTIVO:  { label: 'Produtivo',  color: 'bg-amber-500/15 text-amber-300',      desc: 'Técnico (legado)' },
+    MASTER:     { label: 'Master',     color: 'bg-accent text-surface-950',          desc: 'Proprietário — acesso total' },
+    ADMIN:      { label: 'Admin',      color: 'bg-violet-500/15 text-violet-700',    desc: 'Gerência administrativa' },
+    GERENTE:    { label: 'Gerente',    color: 'bg-blue-500/15 text-blue-700',        desc: 'Gerência operacional' },
+    CHEFE_OFICINA: { label: 'Chefe Oficina', color: 'bg-rose-500/15 text-rose-700',  desc: 'Liderança técnica por área' },
+    FINANCEIRO: { label: 'Financeiro', color: 'bg-emerald-500/15 text-emerald-700',  desc: 'Fechamento e pagamentos' },
+    SECRETARIA: { label: 'Secretaria', color: 'bg-cyan-500/15 text-cyan-700',        desc: 'Recepção e cadastros' },
+    MECANICO:   { label: 'Mecânico',   color: 'bg-amber-500/15 text-amber-700',      desc: 'Execução de serviços' },
+    PRODUTIVO:  { label: 'Produtivo',  color: 'bg-amber-500/15 text-amber-700',      desc: 'Técnico (legado)' },
   };
 
   useEffect(() => { loadData(); }, []);
@@ -298,9 +298,9 @@ export function SettingsPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between bg-surface-950/40">
+            <div className="px-5 py-3 border-b border-line flex items-center justify-between bg-surface-950/40">
               <h2 className="text-base font-bold text-surface-50 flex items-center gap-2">
                 <Building className="w-5 h-5" /> Cadastro da Oficina
               </h2>
@@ -321,7 +321,7 @@ export function SettingsPage() {
                       placeholder={tenantData.legalNature === 'PF' ? '000.000.000-00' : '00.000.000/0000-00'}
                       value={tenantData.taxId}
                       onChange={(e) => handleDocChange(e.target.value)}
-                      className="w-full rounded-lg border border-white/15 px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                      className="w-full rounded-lg border border-line px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {lookingUpDoc
@@ -330,7 +330,7 @@ export function SettingsPage() {
                     </div>
                   </div>
                   {lookupError && (
-                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-400">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-600">
                       <AlertCircle className="w-3.5 h-3.5" /> {lookupError}
                     </p>
                   )}
@@ -341,7 +341,7 @@ export function SettingsPage() {
                   <select
                     value={tenantData.legalNature}
                     onChange={(e) => setTenantData({ ...tenantData, legalNature: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   >
                     <option value="PF">Pessoa Física (PF)</option>
                     <option value="PJ">Pessoa Jurídica (PJ)</option>
@@ -358,11 +358,11 @@ export function SettingsPage() {
                       'w-full rounded-lg border px-3 py-2 text-sm transition-all',
                       isTradeNameMissing
                         ? 'border-amber-500/40 bg-amber-500/10/40 focus:ring-2 focus:ring-amber-500'
-                        : 'border-white/15 focus:ring-2 focus:ring-indigo-500',
+                        : 'border-line focus:ring-2 focus:ring-indigo-500',
                     )}
                   />
                   {isTradeNameMissing && (
-                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-300">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-amber-700">
                       <AlertCircle className="w-3.5 h-3.5" />
                       Preencha o Nome Fantasia para exibir corretamente em orçamentos, O.S. e relatórios.
                     </p>
@@ -375,7 +375,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.legalName}
                     onChange={(e) => setTenantData({ ...tenantData, legalName: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -386,7 +386,7 @@ export function SettingsPage() {
                     value={tenantData.whatsappMetaPhoneNumberId}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappMetaPhoneNumberId: e.target.value })}
                     placeholder="Ex: 123456789012345"
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -397,7 +397,7 @@ export function SettingsPage() {
                     value={tenantData.whatsappDisplayNumber}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappDisplayNumber: e.target.value })}
                     placeholder="Ex: +55 21 99999-9999"
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -407,7 +407,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.stateRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, stateRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -417,7 +417,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.municipalRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, municipalRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -429,7 +429,7 @@ export function SettingsPage() {
                     placeholder="(00) 00000-0000"
                     value={tenantData.phone}
                     onChange={(e) => setTenantData({ ...tenantData, phone: formatPhone(e.target.value) })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -441,7 +441,7 @@ export function SettingsPage() {
                     placeholder="contato@suaoficina.com.br"
                     value={tenantData.email}
                     onChange={(e) => setTenantData({ ...tenantData, email: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
@@ -451,20 +451,20 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.address}
                     onChange={(e) => setTenantData({ ...tenantData, address: e.target.value })}
-                    className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
               </div>
 
               {saveError && (
-                <p className="mt-4 flex items-center gap-1.5 text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                <p className="mt-4 flex items-center gap-1.5 text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
                   <AlertCircle className="w-4 h-4 shrink-0" /> {saveError}
                 </p>
               )}
 
               <div className="mt-5 flex items-center justify-end gap-2">
                 {saveSuccess && (
-                  <span className="flex items-center gap-1.5 text-xs text-green-400 font-medium">
+                  <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
                     <CheckCircle className="w-3.5 h-3.5" /> Perfil salvo!
                   </span>
                 )}
@@ -484,9 +484,9 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
+            <div className="px-5 py-3 border-b border-line bg-surface-950/40 flex items-center justify-between">
               <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                 <Wrench className="w-5 h-5" /> Operações
               </h2>
@@ -517,19 +517,19 @@ export function SettingsPage() {
                       className={cn(
                         "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         isMaster
-                          ? "border-white/10 bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500/40"
-                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
+                          ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+                          : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
                 </div>
 
                 {/* Preview do cálculo */}
-                <div className="p-3 bg-surface-950/40 rounded-lg border border-white/5 space-y-2">
+                <div className="p-3 bg-surface-950/40 rounded-lg border border-line space-y-2">
                   <p className="text-[10px] font-bold text-surface-400 uppercase tracking-widest">Exemplos</p>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {[0.5, 1.0, 2.0].map((h) => (
-                      <div key={h} className="bg-surface-900 rounded-lg p-2 border border-white/10">
+                      <div key={h} className="bg-surface-900 rounded-lg p-2 border border-line">
                         <p className="text-[10px] text-surface-500 font-bold">{h === 0.5 ? '30m' : h === 1.0 ? '1h' : '2h'}</p>
                         <p className="text-xs font-bold text-surface-50 mt-0.5">
                           R$ {(opsData.laborHourlyRate * h).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -557,8 +557,8 @@ export function SettingsPage() {
                       className={cn(
                         "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         isMaster
-                          ? "border-white/10 bg-surface-950/40 focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500/40"
-                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
+                          ? "border-line bg-surface-950/40 focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+                          : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
@@ -582,10 +582,10 @@ export function SettingsPage() {
                       onChange={(e) => isMaster && setOpsData({ ...opsData, defaultCommissionPercent: Number(e.target.value) })}
                       disabled={!isMaster}
                       className={cn(
-                        "w-full pl-12 pr-5 py-4 rounded-2xl border text-xl font-black transition-all",
+                        "w-full pl-12 pr-5 py-4 rounded-lg border text-xl font-black transition-all",
                         isMaster
-                          ? "border-white/10 bg-surface-950/40 focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40"
-                          : "border-white/5 bg-surface-950/40 text-surface-500 cursor-not-allowed"
+                          ? "border-line bg-surface-950/40 focus:ring-4 focus:ring-accent/40 focus:border-accent/40"
+                          : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
                       )}
                     />
                   </div>
@@ -595,17 +595,17 @@ export function SettingsPage() {
               {isMaster && (
                 <div className="space-y-2 pt-2">
                   {opsError && (
-                    <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-red-600 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {opsError}
                     </div>
                   )}
                   {opsSuccess && (
-                    <div className="flex items-center gap-2 text-xs text-green-300 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-green-700 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
                       ✓ Configurações operacionais salvas com sucesso!
                     </div>
                   )}
                   <div className="flex justify-end">
-                    <button type="submit" disabled={savingOps} className="btn btn-primary h-14 px-10 rounded-2xl font-black shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
+                    <button type="submit" disabled={savingOps} className="btn btn-primary h-14 px-10 rounded-lg font-black shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
                       {savingOps ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Operações'}
                     </button>
                   </div>
@@ -619,9 +619,9 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
+            <div className="px-5 py-3 border-b border-line bg-surface-950/40 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                   <Palette className="w-5 h-5" /> Aparência
@@ -644,7 +644,7 @@ export function SettingsPage() {
                         'text-left rounded-lg border p-3 transition-all',
                         active
                           ? 'border-blue-500 bg-blue-500/10 shadow-sm ring-1 ring-blue-400'
-                          : 'border-white/10 bg-surface-900 hover:border-white/20 hover:shadow-sm'
+                          : 'border-line bg-surface-900 hover:border-line hover:shadow-sm'
                       )}
                     >
                       {/* Swatches */}
@@ -657,7 +657,7 @@ export function SettingsPage() {
                           />
                         ))}
                       </div>
-                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-blue-300' : 'text-surface-50')}>{preset.label}</p>
+                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-blue-700' : 'text-surface-50')}>{preset.label}</p>
                       <p className="text-[10px] text-surface-400 mt-0.5 leading-tight">{preset.description}</p>
                     </button>
                   );
@@ -671,9 +671,9 @@ export function SettingsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-surface-900 rounded-lg border border-white/10 shadow-sm overflow-hidden"
+            className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 border-b border-white/5 bg-surface-950/40 flex items-center justify-between">
+            <div className="px-5 py-3 border-b border-line bg-surface-950/40 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
                   <Users className="w-5 h-5" /> Sua Equipe
@@ -683,7 +683,7 @@ export function SettingsPage() {
               {canManageUsers && (
                 <button
                   onClick={() => navigate('/users')}
-                  className="flex items-center gap-1 px-4 py-2 bg-gold-500 text-surface-950 rounded-lg text-xs font-bold hover:bg-gold-400 transition-all uppercase tracking-wide"
+                  className="flex items-center gap-1 px-4 py-2 bg-accent text-surface-950 rounded-lg text-xs font-bold hover:bg-accent-hover transition-all uppercase tracking-wide"
                 >
                   Gerenciar <ArrowRight size={12} />
                 </button>
@@ -704,7 +704,7 @@ export function SettingsPage() {
                         key={u.id}
                         className={cn(
                           'flex flex-col p-3 rounded-lg border transition-all',
-                          u.isActive ? 'bg-surface-950/40 border-white/5 hover:border-white/20' : 'bg-surface-950/40 border-white/5 opacity-60'
+                          u.isActive ? 'bg-surface-950/40 border-line hover:border-line' : 'bg-surface-950/40 border-line opacity-60'
                         )}
                       >
                         <div className="flex items-center gap-2 mb-2">
@@ -721,7 +721,7 @@ export function SettingsPage() {
                           <span className={cn('text-[8px] px-2 py-1 rounded font-bold', roleCfg.color)}>
                             {roleCfg.label}
                           </span>
-                          {!u.isActive && <span className="text-[8px] px-1.5 py-0.5 bg-red-500/15 text-red-400 rounded font-bold">Inativo</span>}
+                          {!u.isActive && <span className="text-[8px] px-1.5 py-0.5 bg-red-500/15 text-red-600 rounded font-bold">Inativo</span>}
                         </div>
                       </div>
                     );
@@ -744,7 +744,7 @@ export function SettingsPage() {
                 <Shield className="w-5 h-5 text-primary-400" /> Assinatura
               </h2>
 
-              <div className="mb-6 p-4 bg-white/10 rounded-lg border border-white/10 backdrop-blur-md">
+              <div className="mb-6 p-4 bg-ink/5 rounded-lg border border-line backdrop-blur-md">
                 <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
                   <h3 className="text-2xl font-black text-white">{getPlanLabel(currentPlan)}</h3>
@@ -762,7 +762,7 @@ export function SettingsPage() {
                       'w-full p-3.5 rounded-lg border-2 transition-all text-left relative',
                       currentPlan === plan.name
                         ? 'border-primary-500 bg-primary-500/10'
-                        : 'border-white/10 bg-white/5'
+                        : 'border-line bg-ink/5'
                     )}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -784,7 +784,7 @@ export function SettingsPage() {
 
                     <div className="grid grid-cols-1 gap-1.5">
                       {isDowngrade(plan.name) ? (
-                        <div className="h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center gap-1.5 px-3">
+                        <div className="h-8 rounded-lg bg-ink/5 border border-line flex items-center justify-center gap-1.5 px-3">
                           <Lock size={10} className="text-surface-400" />
                           <span className="text-[9px] font-bold uppercase tracking-tight text-surface-400">Após vencimento</span>
                         </div>

@@ -110,10 +110,10 @@ const REPORT_TYPES = [
 ];
 
 const COLOR_MAP: Record<string, string> = {
-  blue:    'bg-blue-500/10   border-blue-500/30   text-blue-400',
-  emerald: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-  purple:  'bg-purple-500/10  border-purple-500/30  text-purple-400',
-  amber:   'bg-amber-500/10   border-amber-500/30   text-amber-400',
+  blue:    'bg-blue-500/10   border-blue-500/30   text-blue-600',
+  emerald: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600',
+  purple:  'bg-purple-500/10  border-purple-500/30  text-purple-600',
+  amber:   'bg-amber-500/10   border-amber-500/30   text-amber-600',
 };
 const ICON_BG: Record<string, string> = {
   blue: 'bg-blue-600', emerald: 'bg-emerald-600', purple: 'bg-purple-600', amber: 'bg-amber-600',
@@ -585,28 +585,28 @@ const ICON_BG: Record<string, string> = {
               { label: 'Faturamento', value: `R$ ${fmtBR(summary.totalRevenue, 0)}`, icon: DollarSign, color: 'emerald' },
               { label: 'Ticket Médio', value: `R$ ${fmtBR(summary.ticketMedio, 0)}`, icon: TrendingUp, color: 'blue' },
             ].map((k) => (
-              <div key={k.label} className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm">
+              <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
                 <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
                 <p className="text-2xl font-black text-surface-50">{k.value}</p>
               </div>
             ))}
           </div>
-          <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+          <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-line bg-surface-950/40">
               <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Ordens de Serviço ({orders.length})</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-white/5">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
                   <th className="px-6 py-4 text-left">Abertura</th>
                   <th className="px-6 py-4 text-left">Cliente</th>
                   <th className="px-6 py-4 text-left">Veículo</th>
                   <th className="px-6 py-4 text-left">Status</th>
                   <th className="px-6 py-4 text-right">Valor</th>
                 </tr></thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-line">
                   {orders.slice(0, 50).map((o: any) => (
-                    <tr key={o.id} className="hover:bg-white/5 transition-colors">
+                    <tr key={o.id} className="hover:bg-ink/5 transition-colors">
                       <td className="px-6 py-3 font-medium text-surface-300">{fmtDate(o.createdAt)}</td>
                       <td className="px-6 py-3 font-bold text-surface-50">{o.customer?.name ?? '—'}</td>
                       <td className="px-6 py-3 text-surface-400">{o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model}` : '—'}</td>
@@ -615,7 +615,7 @@ const ICON_BG: Record<string, string> = {
                           {STATUS_LABEL[o.status] ?? o.status}
                         </span>
                       </td>
-                      <td className={cn('px-6 py-3 text-right font-black', ['ENTREGUE','FATURADO'].includes(o.status) ? 'text-emerald-400' : 'text-surface-600')}>
+                      <td className={cn('px-6 py-3 text-right font-black', ['ENTREGUE','FATURADO'].includes(o.status) ? 'text-emerald-600' : 'text-surface-600')}>
                         {['ENTREGUE','FATURADO'].includes(o.status) ? `R$ ${fmtBR(o.totalCost)}` : '—'}
                       </td>
                     </tr>
@@ -626,11 +626,11 @@ const ICON_BG: Record<string, string> = {
             </div>
           </div>
           {topCustomers.length > 0 && (
-            <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+            <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-line bg-surface-950/40">
                 <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Top Clientes</h4>
               </div>
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-line">
                 {topCustomers.map((c: any, i: number) => (
                   <div key={i} className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -638,7 +638,7 @@ const ICON_BG: Record<string, string> = {
                       <span className="font-bold text-surface-50">{c.name}</span>
                       <span className="text-xs text-surface-500">{c.count} OS</span>
                     </div>
-                    <span className="font-black text-emerald-400">R$ {fmtBR(c.total)}</span>
+                    <span className="font-black text-emerald-600">R$ {fmtBR(c.total)}</span>
                   </div>
                 ))}
               </div>
@@ -662,15 +662,15 @@ const ICON_BG: Record<string, string> = {
       ];
       return (
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+          <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-line bg-surface-950/40">
               <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">DRE — {periodo.label}</h4>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-line">
               {dreRows.map((r, i) => (
                 <div key={i} className={cn('flex items-center justify-between px-6 py-3', r.highlight && 'bg-surface-950/40')}>
                   <span className={cn('text-sm', r.indent ? 'pl-4 text-surface-500' : 'font-bold text-surface-50')}>{r.label}</span>
-                  <span className={cn('font-black text-sm', r.value >= 0 ? 'text-emerald-400' : 'text-red-500')}>
+                  <span className={cn('font-black text-sm', r.value >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                     {r.value >= 0 ? '+' : '−'} R$ {fmtBR(Math.abs(r.value))}
                   </span>
                 </div>
@@ -678,16 +678,16 @@ const ICON_BG: Record<string, string> = {
             </div>
           </div>
           <div className="space-y-4">
-            <div className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm">
+            <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
               <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-3">Detalhes</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-surface-400">OS entregues</span><span className="font-bold">{detalhes.osEntregues}</span></div>
-                <div className="flex justify-between"><span className="text-surface-400">Receita de OS</span><span className="font-bold text-emerald-400">R$ {fmtBR(detalhes.receitaBrutaOS)}</span></div>
+                <div className="flex justify-between"><span className="text-surface-400">Receita de OS</span><span className="font-bold text-emerald-600">R$ {fmtBR(detalhes.receitaBrutaOS)}</span></div>
                 <div className="flex justify-between"><span className="text-surface-400">Receita manual</span><span className="font-bold">R$ {fmtBR(detalhes.receitaManual)}</span></div>
               </div>
             </div>
             {historico.length > 0 && (
-              <div className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm">
+              <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
                 <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-3">Histórico 6 meses</p>
                 <div className="space-y-2">
                   {historico.map((h: any, i: number) => (
@@ -697,7 +697,7 @@ const ICON_BG: Record<string, string> = {
                         <div className={cn('h-full rounded-full', h.resultado >= 0 ? 'bg-emerald-500' : 'bg-red-400')}
                           style={{ width: `${Math.min((Math.abs(h.resultado) / Math.max(historico.map((x: any) => Math.abs(x.resultado)).reduce((a: number, b: number) => Math.max(a, b), 1))) * 100, 100)}%` }} />
                       </div>
-                      <span className={cn('font-bold w-24 text-right', h.resultado >= 0 ? 'text-emerald-400' : 'text-red-500')}>
+                      <span className={cn('font-bold w-24 text-right', h.resultado >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                         R$ {fmtBR(h.resultado, 0)}
                       </span>
                     </div>
@@ -721,33 +721,33 @@ const ICON_BG: Record<string, string> = {
               { label: 'EBITDA', value: fmt(dre.ebitda) },
               { label: 'Resultado Líquido', value: fmt(dre.resultadoLiquido) },
             ].map((k) => (
-              <div key={k.label} className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm">
+              <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
                 <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
                 <p className="text-2xl font-black text-surface-50">{k.value}</p>
               </div>
             ))}
           </div>
-          <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+          <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-line bg-surface-950/40">
               <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Evolução Mensal — {periodo.label}</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-white/5">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
                   <th className="px-6 py-4 text-left">Mês</th>
                   <th className="px-6 py-4 text-right">Receita</th>
                   <th className="px-6 py-4 text-right">Despesa</th>
                   <th className="px-6 py-4 text-right">EBITDA</th>
                   <th className="px-6 py-4 text-right">Resultado</th>
                 </tr></thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-line">
                   {meses.map((m: any) => (
-                    <tr key={m.mesNum} className="hover:bg-white/5">
+                    <tr key={m.mesNum} className="hover:bg-ink/5">
                       <td className="px-6 py-3 font-bold text-surface-200">{m.mes}</td>
-                      <td className="px-6 py-3 text-right text-emerald-400 font-bold">{fmt(m.receita)}</td>
+                      <td className="px-6 py-3 text-right text-emerald-600 font-bold">{fmt(m.receita)}</td>
                       <td className="px-6 py-3 text-right text-red-500">{fmt(m.despesa)}</td>
-                      <td className={cn('px-6 py-3 text-right font-bold', m.ebitda >= 0 ? 'text-emerald-400' : 'text-red-500')}>{fmt(m.ebitda)}</td>
-                      <td className={cn('px-6 py-3 text-right font-black', m.resultado >= 0 ? 'text-emerald-400' : 'text-red-500')}>{fmt(m.resultado)}</td>
+                      <td className={cn('px-6 py-3 text-right font-bold', m.ebitda >= 0 ? 'text-emerald-600' : 'text-red-500')}>{fmt(m.ebitda)}</td>
+                      <td className={cn('px-6 py-3 text-right font-black', m.resultado >= 0 ? 'text-emerald-600' : 'text-red-500')}>{fmt(m.resultado)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -766,11 +766,11 @@ const ICON_BG: Record<string, string> = {
           {keys.map((key) => {
             const p = periodos[key];
             return (
-              <div key={key} className="bg-surface-900 rounded-2xl border border-white/10 shadow-sm overflow-hidden">
+              <div key={key} className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden">
                 <div className="px-6 py-3 bg-surface-900 flex items-center justify-between">
                   <span className="text-xs font-black text-white uppercase tracking-widest">{p.label}</span>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-0 divide-x divide-white/5">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-0 divide-x divide-line">
                   {[
                     { label: 'Receita Bruta', value: fmt(p.receitaBruta) },
                     { label: 'Margem Bruta', value: `${fmt(p.margemBruta)} (${p.margemBrutaPerc.toFixed(1)}%)` },
@@ -798,28 +798,28 @@ const ICON_BG: Record<string, string> = {
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: 'Total', value: `R$ ${fmtBR(totals.total)}`, color: 'text-surface-50' },
-              { label: 'Pendente', value: `R$ ${fmtBR(totals.pending)}`, color: 'text-amber-400' },
-              { label: 'Pago', value: `R$ ${fmtBR(totals.paid)}`, color: 'text-emerald-400' },
+              { label: 'Pendente', value: `R$ ${fmtBR(totals.pending)}`, color: 'text-amber-600' },
+              { label: 'Pago', value: `R$ ${fmtBR(totals.paid)}`, color: 'text-emerald-600' },
             ].map((k) => (
-              <div key={k.label} className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm text-center">
+              <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm text-center">
                 <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-1">{k.label}</p>
                 <p className={cn('text-2xl font-black', k.color)}>{k.value}</p>
               </div>
             ))}
           </div>
-          <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+          <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-line bg-surface-950/40">
               <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Ranking de Comissões</h4>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-line">
               {(leadership?.leaderboard ?? []).map((l: any, i: number) => (
                 <div key={l.userId} className="flex items-center gap-4 px-6 py-4">
-                  <span className={cn('w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black', i === 0 ? 'bg-amber-500/15 text-amber-400' : 'bg-surface-800 text-surface-400')}>{i + 1}°</span>
+                  <span className={cn('w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black', i === 0 ? 'bg-amber-500/15 text-amber-600' : 'bg-surface-800 text-surface-400')}>{i + 1}°</span>
                   <div className="flex-1">
                     <p className="font-bold text-surface-50">{l.name}</p>
                     <p className="text-xs text-surface-500">{l.count} OS executadas</p>
                   </div>
-                  <span className="font-black text-emerald-400">R$ {fmtBR(l.total)}</span>
+                  <span className="font-black text-emerald-600">R$ {fmtBR(l.total)}</span>
                 </div>
               ))}
               {(leadership?.leaderboard ?? []).length === 0 && <EmptyState msg="Nenhuma comissão no período." />}
@@ -832,9 +832,9 @@ const ICON_BG: Record<string, string> = {
     if (type === 'purchase') {
       const { items = [], summary } = reportData;
       const urgencyBadge: Record<string, string> = {
-        CRITICO: 'bg-red-500/15 text-red-300 border-red-500/30',
-        URGENTE: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-        ATENCAO: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+        CRITICO: 'bg-red-500/15 text-red-700 border-red-500/30',
+        URGENTE: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+        ATENCAO: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
       };
       const urgencyLabel: Record<string, string> = { CRITICO: 'Crítico', URGENTE: 'Urgente', ATENCAO: 'Atenção' };
       return (
@@ -842,23 +842,23 @@ const ICON_BG: Record<string, string> = {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Itens a Repor', value: summary.total, color: 'text-surface-50' },
-              { label: 'Críticos', value: summary.criticalCount, color: 'text-red-400' },
-              { label: 'Urgentes', value: summary.urgentCount, color: 'text-amber-400' },
+              { label: 'Críticos', value: summary.criticalCount, color: 'text-red-600' },
+              { label: 'Urgentes', value: summary.urgentCount, color: 'text-amber-600' },
               { label: 'Custo Estimado', value: `R$ ${fmtBR(summary.totalEstimatedCost, 0)}`, color: 'text-surface-50' },
             ].map((k) => (
-              <div key={k.label} className="bg-surface-900 rounded-2xl border border-white/10 p-5 shadow-sm">
+              <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
                 <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
                 <p className={cn('text-2xl font-black', k.color)}>{k.value}</p>
               </div>
             ))}
           </div>
-          <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-white/5 bg-surface-950/40">
+          <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-line bg-surface-950/40">
               <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Peças para Reposição</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-white/5">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
                   <th className="px-6 py-4 text-left">Prioridade</th>
                   <th className="px-6 py-4 text-left">Peça</th>
                   <th className="px-6 py-4 text-center">Atual</th>
@@ -867,9 +867,9 @@ const ICON_BG: Record<string, string> = {
                   <th className="px-6 py-4 text-center">Sugerido</th>
                   <th className="px-6 py-4 text-right">Custo Est.</th>
                 </tr></thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-line">
                   {items.map((p: any) => (
-                    <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                    <tr key={p.id} className="hover:bg-ink/5 transition-colors">
                       <td className="px-6 py-3">
                         <span className={cn('px-2 py-0.5 rounded-full text-[9px] font-black uppercase border', urgencyBadge[p.urgency] ?? 'bg-surface-800 text-surface-400')}>
                           {urgencyLabel[p.urgency] ?? p.urgency}
@@ -880,7 +880,7 @@ const ICON_BG: Record<string, string> = {
                         {p.internalCode && <p className="text-xs text-surface-500">Cód: {p.internalCode}</p>}
                         {p.supplier?.name && <p className="text-xs text-surface-500">Forn: {p.supplier.name}</p>}
                       </td>
-                      <td className={cn('px-6 py-3 text-center font-bold', p.currentStock === 0 ? 'text-red-400' : 'text-surface-200')}>
+                      <td className={cn('px-6 py-3 text-center font-bold', p.currentStock === 0 ? 'text-red-600' : 'text-surface-200')}>
                         {p.currentStock} {p.unit}
                       </td>
                       <td className="px-6 py-3 text-center text-surface-400">{p.minStock} {p.unit}</td>
@@ -946,10 +946,10 @@ const ICON_BG: Record<string, string> = {
               key={r.id}
               onClick={() => { setType(r.id); setReportData(null); }}
               className={cn(
-                'relative text-left p-6 rounded-[2rem] border-2 transition-all group',
+                'relative text-left p-6 rounded-xl border-2 transition-all group',
                 active
                   ? `${COLOR_MAP[r.color]} shadow-lg`
-                  : 'bg-surface-900 border-white/10 hover:border-white/20 hover:shadow-md shadow-sm',
+                  : 'bg-surface-900 border-line hover:border-line hover:shadow-md shadow-sm',
               )}
             >
               <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white mb-4 shadow-md', ICON_BG[r.color])}>
@@ -964,7 +964,7 @@ const ICON_BG: Record<string, string> = {
       </div>
 
       {/* Filters */}
-      <div className="bg-surface-900 rounded-[2rem] border border-white/10 p-6 shadow-sm">
+      <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm">
         <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-5 flex items-center gap-2">
           <Calendar size={14} /> Parâmetros — {selectedReport.label}
         </h3>
@@ -975,17 +975,17 @@ const ICON_BG: Record<string, string> = {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Inicial</label>
                 <input type="date" value={osStart} onChange={(e) => setOsStart(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Final</label>
                 <input type="date" value={osEnd} onChange={(e) => setOsEnd(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Status</label>
                 <select value={osStatus} onChange={(e) => setOsStatus(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todos</option>
                   {Object.entries(STATUS_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                 </select>
@@ -998,7 +998,7 @@ const ICON_BG: Record<string, string> = {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Mês</label>
                 <select value={dreMonth} onChange={(e) => setDreMonth(Number(e.target.value))}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
                     .map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
                 </select>
@@ -1006,7 +1006,7 @@ const ICON_BG: Record<string, string> = {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Ano</label>
                 <select value={dreYear} onChange={(e) => setDreYear(Number(e.target.value))}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
@@ -1017,7 +1017,7 @@ const ICON_BG: Record<string, string> = {
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Ano</label>
               <select value={dreAnualYear} onChange={(e) => setDreAnualYear(Number(e.target.value))}
-                className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
+                className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                 {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
@@ -1034,17 +1034,17 @@ const ICON_BG: Record<string, string> = {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Inicial</label>
                 <input type="date" value={commStart} onChange={(e) => setCommStart(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Final</label>
                 <input type="date" value={commEnd} onChange={(e) => setCommEnd(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Área</label>
                 <select value={commArea} onChange={(e) => setCommArea(e.target.value)}
-                  className="h-11 px-4 rounded-xl border border-white/10 bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
+                  className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todas</option>
                   <option value="MECANICA">Mecânica</option>
                   <option value="ELETRICA">Elétrica</option>
@@ -1065,7 +1065,7 @@ const ICON_BG: Record<string, string> = {
           <button
             onClick={generate}
             disabled={loading}
-            className="h-11 px-8 bg-gold-500 text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-gold-400 transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
+            className="h-11 px-8 bg-accent text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
             {loading ? 'Gerando...' : 'Gerar Relatório'}
@@ -1075,13 +1075,13 @@ const ICON_BG: Record<string, string> = {
             <>
               <button
                 onClick={() => setShowPreview(true)}
-                className="h-11 px-6 bg-surface-900 border border-white/10 text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
+                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
                 <FileText size={16} className="text-surface-500" /> Visualizar PDF
               </button>
               <button
                 onClick={handlePrint}
-                className="h-11 px-6 bg-surface-900 border border-white/10 text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
+                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
                 <Printer size={16} className="text-surface-500" /> Imprimir
               </button>
@@ -1094,7 +1094,7 @@ const ICON_BG: Record<string, string> = {
       <AnimatePresence>
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-24 gap-4 bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm">
+            className="flex flex-col items-center justify-center py-24 gap-4 bg-surface-900 rounded-xl border border-line shadow-sm">
             <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
             <p className="text-surface-400 font-black uppercase tracking-widest text-[10px]">Processando Dados...</p>
           </motion.div>
@@ -1106,7 +1106,7 @@ const ICON_BG: Record<string, string> = {
         )}
         {!loading && !reportData && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-20 bg-surface-900 rounded-[2rem] border border-dashed border-white/10">
+            className="flex flex-col items-center justify-center py-20 bg-surface-900 rounded-xl border border-dashed border-line">
             <div className="w-16 h-16 bg-surface-950/40 rounded-full flex items-center justify-center mb-4">
               <selectedReport.icon size={32} className="text-surface-600" />
             </div>
@@ -1124,9 +1124,9 @@ const ICON_BG: Record<string, string> = {
               onClick={() => setShowPreview(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 20 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden">
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden">
               {/* Modal header */}
-              <div className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-surface-950/40 shrink-0">
+              <div className="flex items-center justify-between px-8 py-5 border-b border-line bg-surface-950/40 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center text-white', ICON_BG[selectedReport.color])}>
                     <selectedReport.icon size={18} />
@@ -1138,11 +1138,11 @@ const ICON_BG: Record<string, string> = {
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={handlePrint}
-                    className="h-9 px-5 bg-gold-500 text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gold-400 transition-all flex items-center gap-2">
+                    className="h-9 px-5 bg-accent text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-2">
                     <Printer size={14} /> Imprimir / Salvar PDF
                   </button>
                   <button onClick={() => setShowPreview(false)}
-                    className="p-2 hover:bg-white/5 rounded-xl text-surface-500 hover:text-surface-200 transition-colors">
+                    className="p-2 hover:bg-ink/5 rounded-xl text-surface-500 hover:text-surface-200 transition-colors">
                     <X size={20} />
                   </button>
                 </div>

@@ -29,8 +29,8 @@ export function ContactPage() {
 
       <section className="max-w-6xl mx-auto px-6 pb-16 grid lg:grid-cols-[360px_minmax(0,1fr)] gap-8">
         <div className="space-y-4">
-          <a href="mailto:contato@sigmaauto.com.br" className="flex items-center gap-3 rounded-3xl border border-white/8 bg-white/4 p-5 text-white/70 hover:text-white transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-white/6 flex items-center justify-center">
+          <a href="mailto:contato@sigmaauto.com.br" className="flex items-center gap-3 rounded-xl border border-line bg-ink/5 p-5 text-white/70 hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center">
               <Mail size={18} className="text-[#ff7b2f]" />
             </div>
             <div>
@@ -38,8 +38,8 @@ export function ContactPage() {
               <p className="text-sm">contato@sigmaauto.com.br</p>
             </div>
           </a>
-          <a href="mailto:suporte@sigmaauto.com.br" className="flex items-center gap-3 rounded-3xl border border-white/8 bg-white/4 p-5 text-white/70 hover:text-white transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-white/6 flex items-center justify-center">
+          <a href="mailto:suporte@sigmaauto.com.br" className="flex items-center gap-3 rounded-xl border border-line bg-ink/5 p-5 text-white/70 hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center">
               <MessageCircle size={18} className="text-[#ff7b2f]" />
             </div>
             <div>
@@ -47,8 +47,8 @@ export function ContactPage() {
               <p className="text-sm">suporte@sigmaauto.com.br</p>
             </div>
           </a>
-          <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-3xl border border-white/8 bg-white/4 p-5 text-white/70 hover:text-white transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-white/6 flex items-center justify-center">
+          <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-line bg-ink/5 p-5 text-white/70 hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center">
               <Phone size={18} className="text-[#ff7b2f]" />
             </div>
             <div>
@@ -59,7 +59,7 @@ export function ContactPage() {
         </div>
 
         {contactSent ? (
-          <div className="rounded-3xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/8 p-8 text-center">
+          <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/8 p-8 text-center">
             <CheckCircle2 size={44} className="text-[#ff7b2f] mx-auto mb-4" />
             <h2 className="text-2xl font-black text-white">Mensagem registrada</h2>
             <p className="mt-3 text-sm text-white/55">Nossa equipe responderá em breve no e-mail informado.</p>
@@ -74,7 +74,7 @@ export function ContactPage() {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6 space-y-4">
             <div>
               <label className="block text-xs text-white/50 mb-2 font-medium">Seu nome</label>
               <input
@@ -82,7 +82,7 @@ export function ContactPage() {
                 required
                 value={contactForm.name}
                 onChange={(event) => setContactForm((current) => ({ ...current, name: event.target.value }))}
-                className="w-full h-11 rounded-2xl bg-white/6 border border-white/10 px-4 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50"
+                className="w-full h-11 rounded-lg bg-ink/5 border border-line px-4 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50"
                 placeholder="Nome completo"
               />
             </div>
@@ -93,7 +93,7 @@ export function ContactPage() {
                 required
                 value={contactForm.email}
                 onChange={(event) => setContactForm((current) => ({ ...current, email: event.target.value }))}
-                className="w-full h-11 rounded-2xl bg-white/6 border border-white/10 px-4 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50"
+                className="w-full h-11 rounded-lg bg-ink/5 border border-line px-4 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50"
                 placeholder="voce@empresa.com.br"
               />
             </div>
@@ -104,13 +104,13 @@ export function ContactPage() {
                 rows={6}
                 value={contactForm.message}
                 onChange={(event) => setContactForm((current) => ({ ...current, message: event.target.value }))}
-                className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50 resize-none"
+                className="w-full rounded-lg bg-ink/5 border border-line px-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#ff7b2f]/50 resize-none"
                 placeholder="Conte um pouco sobre sua necessidade"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-2xl bg-[#ff7b2f] text-white font-black text-sm hover:bg-[#f06820] transition-colors"
+              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-[#ff7b2f] text-white font-black text-sm hover:bg-[#f06820] transition-colors"
             >
               Enviar mensagem <Send size={16} />
             </button>

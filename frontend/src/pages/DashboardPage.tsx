@@ -330,7 +330,7 @@ export function DashboardPage() {
           </p>
         </div>
         <button onClick={() => navigate('/service-orders?new=true')}
-          className="flex items-center gap-2 px-6 py-3 bg-gold-500 text-surface-950 font-black rounded-2xl shadow-lg hover:bg-gold-400 transition-all active:scale-95 self-start md:self-auto">
+          className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-950 font-black rounded-lg shadow-lg hover:bg-accent-hover transition-all active:scale-95 self-start md:self-auto">
           <Plus size={18} /> Nova OS
         </button>
       </div>
@@ -340,9 +340,9 @@ export function DashboardPage() {
         {kpiCards.map((kpi, i) => (
           <motion.div key={kpi.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
             onClick={() => navigate(kpi.to)}
-            className="bg-surface-900 p-6 rounded-[2rem] border border-white/10 shadow-sm hover:shadow-xl transition-all cursor-pointer group relative overflow-hidden">
+            className="bg-surface-900 p-6 rounded-xl border border-line shadow-sm hover:shadow-xl transition-all cursor-pointer group relative overflow-hidden">
             <div className="relative z-10">
-              <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 transition-transform', kpi.color)}>
+              <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 transition-transform', kpi.color)}>
                 <kpi.icon size={22} />
               </div>
               <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">{kpi.title}</p>
@@ -355,7 +355,7 @@ export function DashboardPage() {
       </div>
 
       {/* KPIs de Oficina */}
-      <div className="bg-surface-900 rounded-3xl border border-white/10 p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-surface-900 rounded-xl border border-line p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-black text-surface-400 uppercase tracking-widest">Período de Análise</span>
           {[7, 30, 90].map((days) => (
@@ -365,8 +365,8 @@ export function DashboardPage() {
               className={cn(
                 'px-3 py-1.5 rounded-lg text-xs font-black transition-all',
                 productivityWindowDays === days
-                  ? 'bg-gold-500 text-surface-950'
-                  : 'bg-surface-800 text-surface-300 hover:bg-white/10'
+                  ? 'bg-accent text-surface-950'
+                  : 'bg-surface-800 text-surface-300 hover:bg-ink/5'
               )}
             >
               {days} dias
@@ -378,7 +378,7 @@ export function DashboardPage() {
           <select
             value={selectedWorkshopArea}
             onChange={(e) => setSelectedWorkshopArea(e.target.value)}
-            className="h-9 rounded-lg border border-white/10 bg-surface-950/40 px-3 text-xs font-bold"
+            className="h-9 rounded-lg border border-line bg-surface-950/40 px-3 text-xs font-bold"
           >
             <option value="ALL">Todas as áreas</option>
             {Object.entries(WORKSHOP_AREA_LABEL).map(([value, label]) => (
@@ -421,8 +421,8 @@ export function DashboardPage() {
             icon: Clock,
           },
         ].map((kpi) => (
-          <div key={kpi.title} className="bg-surface-900 rounded-3xl border border-white/10 p-5 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-gold-500 text-surface-950 flex items-center justify-center mb-3">
+          <div key={kpi.title} className="bg-surface-900 rounded-xl border border-line p-5 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-accent text-surface-950 flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
             <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{kpi.title}</p>
@@ -438,7 +438,7 @@ export function DashboardPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="lg:col-span-1 xl:col-span-2 bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8"
+          className="lg:col-span-1 xl:col-span-2 bg-surface-900 rounded-xl border border-line shadow-sm p-8"
         >
           <div className="mb-6">
             <h3 className="text-lg font-black text-surface-50 tracking-tight flex items-center gap-2">
@@ -469,7 +469,7 @@ export function DashboardPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8"
+          className="bg-surface-900 rounded-xl border border-line shadow-sm p-8"
         >
           <div className="mb-5">
             <h3 className="text-lg font-black text-surface-50 tracking-tight flex items-center gap-2">
@@ -479,7 +479,7 @@ export function DashboardPage() {
           </div>
           <div className="space-y-3">
             {productivityData.topByFunction.map((row: any) => (
-              <div key={row.functionKey} className="rounded-2xl border border-white/5 bg-surface-950/40 px-4 py-3">
+              <div key={row.functionKey} className="rounded-lg border border-line bg-surface-950/40 px-4 py-3">
                 <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest">{row.functionLabel}</p>
                 <p className="text-sm font-black text-surface-50 mt-1">{row.professional}</p>
                 <p className="text-[11px] text-surface-400 mt-1">
@@ -488,7 +488,7 @@ export function DashboardPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-white/5">
+          <div className="mt-4 pt-4 border-t border-line">
             <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-2">Produção por Área</p>
             <div className="space-y-2">
               {productivityData.areaBreakdown.length === 0 && (
@@ -520,7 +520,7 @@ export function DashboardPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.24 }}
-        className="bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8"
+        className="bg-surface-900 rounded-xl border border-line shadow-sm p-8"
       >
         <div className="mb-6">
           <h3 className="text-lg font-black text-surface-50 tracking-tight">Tendência de Produtividade</h3>
@@ -545,7 +545,7 @@ export function DashboardPage() {
 
         {/* Faturamento últimos 6 meses */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="lg:col-span-2 bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8">
+          className="lg:col-span-2 bg-surface-900 rounded-xl border border-line shadow-sm p-8">
           <div className="mb-6">
             <h3 className="text-lg font-black text-surface-50 tracking-tight">Faturamento — Últimos 6 Meses</h3>
             <p className="text-sm text-surface-500 font-medium">Receita de OS concluídas por período</p>
@@ -566,7 +566,7 @@ export function DashboardPage() {
 
         {/* Pizza / Distribuição OS */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8">
+          className="bg-surface-900 rounded-xl border border-line shadow-sm p-8">
           <div className="mb-6">
             <h3 className="text-lg font-black text-surface-50 tracking-tight">Distribuição de OS</h3>
             <p className="text-sm text-surface-500 font-medium">{stats.totalOrders} ordens no total</p>
@@ -598,7 +598,7 @@ export function DashboardPage() {
 
         {/* OS por Status */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="lg:col-span-2 bg-surface-900 rounded-[2rem] border border-white/10 shadow-sm p-8">
+          className="lg:col-span-2 bg-surface-900 rounded-xl border border-line shadow-sm p-8">
           <div className="mb-6">
             <h3 className="text-lg font-black text-surface-50 tracking-tight">Volume por Status</h3>
             <p className="text-sm text-surface-500 font-medium">Ordens de serviço distribuídas pelo funil</p>
@@ -631,15 +631,15 @@ export function DashboardPage() {
         <div className="space-y-4">
           {/* Insight Card */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-surface-900 to-surface-800 rounded-[2rem] p-7 text-white shadow-xl relative overflow-hidden">
+            className="bg-gradient-to-br from-surface-900 to-surface-800 rounded-xl p-7 text-white shadow-xl relative overflow-hidden">
             <div className="relative z-10">
-              <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center mb-4">
-                <Zap className="text-amber-400" size={20} fill="currentColor" />
+              <div className="w-10 h-10 bg-ink/5 rounded-lg flex items-center justify-center mb-4">
+                <Zap className="text-amber-600" size={20} fill="currentColor" />
               </div>
               <h3 className="text-base font-black mb-2 tracking-tight">Insight</h3>
               <p className="text-surface-600 text-xs leading-relaxed mb-5">{insightMessage}</p>
               <button onClick={() => navigate('/service-orders')}
-                className="w-full py-3 bg-surface-900 text-surface-50 font-black rounded-xl hover:bg-white/5 transition-all active:scale-95 text-sm">
+                className="w-full py-3 bg-surface-900 text-surface-50 font-black rounded-xl hover:bg-ink/5 transition-all active:scale-95 text-sm">
                 Ver Ordens
               </button>
             </div>
@@ -651,53 +651,53 @@ export function DashboardPage() {
             {stats.lowStockCount > 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 onClick={() => navigate('/inventory')}
-                className="p-4 bg-red-500/10 border border-red-500/25 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-red-500/30 transition-colors">
+                className="p-4 bg-red-500/10 border border-red-500/25 rounded-lg flex items-center gap-3 cursor-pointer hover:border-red-500/30 transition-colors">
                 <div className="w-9 h-9 bg-red-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-red-500/20">
                   <AlertTriangle size={16} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-red-300">Estoque Crítico</p>
-                  <p className="text-xs text-red-400">{stats.lowStockCount} itens abaixo do mínimo</p>
+                  <p className="text-sm font-bold text-red-700">Estoque Crítico</p>
+                  <p className="text-xs text-red-600">{stats.lowStockCount} itens abaixo do mínimo</p>
                 </div>
-                <ArrowRight size={14} className="text-red-400 shrink-0" />
+                <ArrowRight size={14} className="text-red-600 shrink-0" />
               </motion.div>
             )}
             {stats.waitingParts > 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 onClick={() => navigate('/service-orders')}
-                className="p-4 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-amber-500/30 transition-colors">
+                className="p-4 bg-amber-500/10 border border-amber-500/25 rounded-lg flex items-center gap-3 cursor-pointer hover:border-amber-500/30 transition-colors">
                 <div className="w-9 h-9 bg-amber-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
                   <Wrench size={16} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-amber-300">Aguardando Peças</p>
-                  <p className="text-xs text-amber-400">{stats.waitingParts} OS bloqueadas</p>
+                  <p className="text-sm font-bold text-amber-700">Aguardando Peças</p>
+                  <p className="text-xs text-amber-600">{stats.waitingParts} OS bloqueadas</p>
                 </div>
-                <ArrowRight size={14} className="text-amber-400 shrink-0" />
+                <ArrowRight size={14} className="text-amber-600 shrink-0" />
               </motion.div>
             )}
             {stats.scheduledToday > 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 onClick={() => navigate('/service-orders')}
-                className="p-4 bg-blue-500/10 border border-blue-500/25 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-blue-500/30 transition-colors">
+                className="p-4 bg-blue-500/10 border border-blue-500/25 rounded-lg flex items-center gap-3 cursor-pointer hover:border-blue-500/30 transition-colors">
                 <div className="w-9 h-9 bg-blue-500 text-white rounded-xl flex items-center justify-center shrink-0">
                   <Calendar size={16} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-blue-300">Agendamentos Hoje</p>
-                  <p className="text-xs text-blue-400">{stats.scheduledToday} OS agendadas</p>
+                  <p className="text-sm font-bold text-blue-700">Agendamentos Hoje</p>
+                  <p className="text-xs text-blue-600">{stats.scheduledToday} OS agendadas</p>
                 </div>
-                <ArrowRight size={14} className="text-blue-400 shrink-0" />
+                <ArrowRight size={14} className="text-blue-600 shrink-0" />
               </motion.div>
             )}
             {stats.lowStockCount === 0 && stats.waitingParts === 0 && (
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl flex items-center gap-3">
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/25 rounded-lg flex items-center gap-3">
                 <div className="w-9 h-9 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
                   <CheckCircle size={16} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-emerald-300">Tudo em ordem</p>
-                  <p className="text-xs text-emerald-400">Sem alertas críticos no momento</p>
+                  <p className="text-sm font-bold text-emerald-700">Tudo em ordem</p>
+                  <p className="text-xs text-emerald-600">Sem alertas críticos no momento</p>
                 </div>
               </div>
             )}
@@ -706,12 +706,12 @@ export function DashboardPage() {
           {/* Agenda do Dia */}
           {agendaHoje.length > 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="mt-4 rounded-2xl border border-blue-500/25 bg-blue-500/10 overflow-hidden"
+              className="mt-4 rounded-lg border border-blue-500/25 bg-blue-500/10 overflow-hidden"
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-blue-500/25">
                 <div className="flex items-center gap-2">
                   <Calendar size={14} className="text-blue-500" />
-                  <p className="text-xs font-black text-blue-300 uppercase tracking-widest">Agenda de Hoje</p>
+                  <p className="text-xs font-black text-blue-700 uppercase tracking-widest">Agenda de Hoje</p>
                 </div>
                 <button onClick={() => navigate('/agenda')} className="text-[10px] font-black text-blue-500 hover:underline">
                   Ver completa →
@@ -723,7 +723,7 @@ export function DashboardPage() {
                     onClick={() => navigate('/service-orders')}
                     className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-blue-500/15/50 transition-colors"
                   >
-                    <span className="text-[11px] font-black text-blue-300 w-11 shrink-0">
+                    <span className="text-[11px] font-black text-blue-700 w-11 shrink-0">
                       {new Date(o.scheduledDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -732,7 +732,7 @@ export function DashboardPage() {
                         {o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model} — ${o.vehicle.plate}` : (o.equipmentBrand || 'Sem veículo')}
                       </p>
                     </div>
-                    <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-200 text-blue-300">
+                    <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-200 text-blue-700">
                       #{o.id.slice(-5).toUpperCase()}
                     </span>
                   </div>
@@ -746,7 +746,7 @@ export function DashboardPage() {
 
           {planName === 'START' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="p-6 bg-surface-950/40 rounded-[2rem] border border-white/10 flex flex-col items-center text-center">
+              className="p-6 bg-surface-950/40 rounded-xl border border-line flex flex-col items-center text-center">
               <TrendingUp className="text-surface-500 mb-3" size={28} />
               <h4 className="font-bold text-surface-50 text-sm">Potencialize com PRO</h4>
               <p className="text-xs text-surface-400 mt-1.5 mb-4 leading-relaxed">

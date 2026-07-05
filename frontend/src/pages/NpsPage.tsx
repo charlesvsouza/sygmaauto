@@ -4,9 +4,9 @@ import { Loader2, MessageCircle, Star, TrendingUp, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 function classifyScore(score: number) {
-  if (score >= 9) return { label: 'Promotor', color: 'text-emerald-300', bg: 'bg-emerald-500/15' };
-  if (score >= 7) return { label: 'Neutro', color: 'text-amber-300', bg: 'bg-amber-500/15' };
-  return { label: 'Detrator', color: 'text-red-300', bg: 'bg-red-500/15' };
+  if (score >= 9) return { label: 'Promotor', color: 'text-emerald-700', bg: 'bg-emerald-500/15' };
+  if (score >= 7) return { label: 'Neutro', color: 'text-amber-700', bg: 'bg-amber-500/15' };
+  return { label: 'Detrator', color: 'text-red-700', bg: 'bg-red-500/15' };
 }
 
 function ScoreButton({ value, active }: { value: number; active: boolean }) {
@@ -47,9 +47,9 @@ export function NpsPage() {
   const score: number | null = data?.npsScore ?? null;
   const scoreColor =
     score === null ? 'text-surface-500' :
-    score >= 50 ? 'text-emerald-400' :
+    score >= 50 ? 'text-emerald-600' :
     score >= 0 ? 'text-amber-500' :
-    'text-red-400';
+    'text-red-600';
 
   return (
     <div className="space-y-6">
@@ -65,7 +65,7 @@ export function NpsPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-surface-900 rounded-2xl shadow-sm border p-6 text-center col-span-2 lg:col-span-1"
+          className="bg-surface-900 rounded-lg shadow-sm border p-6 text-center col-span-2 lg:col-span-1"
         >
           <p className="text-xs font-semibold text-surface-400 uppercase tracking-wide mb-1">
             Score NPS
@@ -82,16 +82,16 @@ export function NpsPage() {
         </motion.div>
 
         {[
-          { label: 'Promotores (9–10)', value: data?.promoters ?? 0, icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Neutros (7–8)', value: data?.passives ?? 0, icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Detratores (0–6)', value: data?.detractors ?? 0, icon: MessageCircle, color: 'text-red-400', bg: 'bg-red-500/10' },
+          { label: 'Promotores (9–10)', value: data?.promoters ?? 0, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
+          { label: 'Neutros (7–8)', value: data?.passives ?? 0, icon: Users, color: 'text-amber-600', bg: 'bg-amber-500/10' },
+          { label: 'Detratores (0–6)', value: data?.detractors ?? 0, icon: MessageCircle, color: 'text-red-600', bg: 'bg-red-500/10' },
         ].map((card, i) => (
           <motion.div
             key={card.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (i + 1) * 0.1 }}
-            className={`${card.bg} rounded-2xl border p-5`}
+            className={`${card.bg} rounded-lg border p-5`}
           >
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-surface-400">{card.label}</p>
@@ -116,7 +116,7 @@ export function NpsPage() {
 
       {/* Lista de comentários recentes */}
       {(data?.recent?.length ?? 0) > 0 && (
-        <div className="bg-surface-900 border rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-surface-900 border rounded-lg overflow-hidden shadow-sm">
           <div className="px-5 py-4 border-b">
             <h2 className="font-semibold text-surface-100">Avaliações recentes</h2>
           </div>

@@ -158,7 +158,7 @@ export function ServicesPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-semibold hover:bg-gold-400 transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Serviço
@@ -166,13 +166,13 @@ export function ServicesPage() {
       </div>
 
       {errorMessage && (
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-300 text-sm font-semibold">
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-700 text-sm font-semibold">
           {errorMessage}
         </div>
       )}
 
-      <div className="bg-surface-900 rounded-3xl border border-white/10 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
+      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-line flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
             <input
@@ -180,7 +180,7 @@ export function ServicesPage() {
               placeholder="Buscar por nome ou categoria..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-2xl border border-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm bg-surface-900"
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-line focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm bg-surface-900"
             />
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto">
@@ -188,7 +188,7 @@ export function ServicesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-              className="px-3 py-2.5 rounded-xl border border-white/10 bg-surface-900 text-xs font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              className="px-3 py-2.5 rounded-xl border border-line bg-surface-900 text-xs font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent/40"
             >
               <option value="name">Nome (A-Z)</option>
               <option value="price">Preço (maior)</option>
@@ -205,7 +205,7 @@ export function ServicesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px]">
               <thead>
-                <tr className="border-b border-white/5 bg-surface-950/40">
+                <tr className="border-b border-line bg-surface-950/40">
                   <th className="px-6 py-3 text-left text-[10px] font-black text-surface-400 uppercase tracking-widest">Serviço</th>
                   <th className="px-6 py-3 text-left text-[10px] font-black text-surface-400 uppercase tracking-widest">Categoria</th>
                   <th className="px-6 py-3 text-center text-[10px] font-black text-surface-400 uppercase tracking-widest">Duração</th>
@@ -215,14 +215,14 @@ export function ServicesPage() {
                   <th className="px-6 py-3 text-right text-[10px] font-black text-surface-400 uppercase tracking-widest">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 {filteredServices.map((service) => {
                   const vh = Number(service.hourlyRate || 0);
                   const tmo = Number(service.tmo || 0);
                   const finalPrice = tmo > 0 && vh > 0 ? tmo * vh : Number(service.basePrice || 0);
 
                   return (
-                    <motion.tr key={service.id} layout className="group hover:bg-white/5 transition-colors">
+                    <motion.tr key={service.id} layout className="group hover:bg-ink/5 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
                           <div className="w-9 h-9 rounded-xl bg-surface-800 text-surface-100 flex items-center justify-center shrink-0">
@@ -298,15 +298,15 @@ export function ServicesPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
             >
-              <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40">
+              <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40">
                 <h2 className="text-xl font-black text-surface-50 uppercase">
                   {editingService ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                  className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -318,14 +318,14 @@ export function ServicesPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-bold"
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold"
                     placeholder="Ex: Alinhamento e Balanceamento"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-2xl border border-white/5">
+                  <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
                     <label className="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1">
                       <DollarSign size={10} /> Valor Hora (VH)
                     </label>
@@ -338,7 +338,7 @@ export function ServicesPage() {
                       placeholder="0.00"
                     />
                   </div>
-                  <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-2xl border border-white/5">
+                  <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
                     <label className="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1">
                       <Clock size={10} /> Tempo (TMO)
                     </label>
@@ -361,7 +361,7 @@ export function ServicesPage() {
                       step="0.01"
                       value={formData.basePrice}
                       onChange={(e) => setFormData({ ...formData, basePrice: Number(e.target.value) })}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -370,7 +370,7 @@ export function ServicesPage() {
                       type="number"
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     />
                   </div>
                 </div>
@@ -381,7 +381,7 @@ export function ServicesPage() {
                     type="text"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     placeholder="Ex: Mecânica, Elétrica, Suspensão"
                   />
                 </div>
@@ -391,26 +391,26 @@ export function ServicesPage() {
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm min-h-[100px]"
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[100px]"
                     placeholder="Detalhes sobre o que é executado neste serviço..."
                   />
                 </div>
 
                 {modalError && (
-                  <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                  <p className="text-sm text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
                     {modalError}
                   </p>
                 )}
 
-                <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+                <div className="flex justify-end gap-3 pt-6 border-t border-line">
                   <button
                     type="button"
                     onClick={() => { setShowModal(false); setModalError(''); }}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-white/5 transition-all"
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-ink/5 transition-all"
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className="px-8 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-bold hover:bg-gold-400 transition-all shadow-sm active:scale-95">
+                  <button type="submit" className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
                     {editingService ? 'Salvar Alterações' : 'Cadastrar Serviço'}
                   </button>
                 </div>

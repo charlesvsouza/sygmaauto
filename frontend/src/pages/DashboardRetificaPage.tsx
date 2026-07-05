@@ -302,7 +302,7 @@ export function DashboardRetificaPage() {
     return (
       <div className="min-h-screen bg-surface-950 text-white p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200">
+          <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-700">
             {error}
           </div>
         </div>
@@ -316,7 +316,7 @@ export function DashboardRetificaPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/10 bg-gradient-to-r from-surface-900 to-surface-800 p-5"
+          className="rounded-lg border border-line bg-gradient-to-r from-surface-900 to-surface-800 p-5"
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -333,7 +333,7 @@ export function DashboardRetificaPage() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                     period === p.key
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white/5 text-surface-600 hover:bg-white/10'
+                      : 'bg-ink/5 text-surface-600 hover:bg-ink/5'
                   }`}
                 >
                   {p.label}
@@ -341,7 +341,7 @@ export function DashboardRetificaPage() {
               ))}
               <button
                 onClick={load}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-surface-600 hover:bg-white/10 text-xs font-bold"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ink/5 text-surface-600 hover:bg-ink/5 text-xs font-bold"
               >
                 <RefreshCw size={13} /> Atualizar
               </button>
@@ -437,7 +437,7 @@ export function DashboardRetificaPage() {
           </ChartShell>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-black/60 p-4">
+        <div className="rounded-xl border border-line bg-black/60 p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <div>
               <h3 className="text-sm font-black text-white">Acoes Prioritarias</h3>
@@ -452,7 +452,7 @@ export function DashboardRetificaPage() {
           </div>
 
           {!acoesCriticas.length ? (
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-200 text-sm">
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-700 text-sm">
               Nenhum motor em estado de atencao critica no momento.
             </div>
           ) : (
@@ -475,7 +475,7 @@ export function DashboardRetificaPage() {
                     <p className="text-xs text-surface-600 truncate">{item.customer} • {item.motorLabel}</p>
                     <p
                       className={`text-xs mt-1 inline-flex items-center gap-1 ${
-                        item.level === 'danger' ? 'text-red-300' : 'text-amber-300'
+                        item.level === 'danger' ? 'text-red-700' : 'text-amber-700'
                       }`}
                     >
                       {item.level === 'danger' ? <AlertTriangle size={12} /> : <Timer size={12} />}
@@ -484,7 +484,7 @@ export function DashboardRetificaPage() {
                   </div>
                   <button
                     onClick={() => navigate(`/kanban-retifica?os=${item.id}`)}
-                    className="shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+                    className="shrink-0 px-3 py-1.5 rounded-lg bg-ink/5 hover:bg-ink/5 text-white text-xs font-bold"
                   >
                     Tratar no Kanban
                   </button>
@@ -494,9 +494,9 @@ export function DashboardRetificaPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-black/60 p-4">
+        <div className="rounded-xl border border-line bg-black/60 p-4">
           <div className="flex items-center gap-2 text-surface-600 text-sm font-bold mb-2">
-            <Wrench size={14} className="text-cyan-400" />
+            <Wrench size={14} className="text-cyan-600" />
             Leitura operacional
           </div>
           <p className="text-surface-500 text-sm">
@@ -524,10 +524,10 @@ function MetricCard({
   tone: 'blue' | 'amber' | 'emerald' | 'violet';
 }) {
   const toneClass: Record<typeof tone, string> = {
-    blue: 'from-blue-500/20 to-blue-700/5 border-blue-500/30 text-blue-300',
-    amber: 'from-amber-500/20 to-amber-700/5 border-amber-500/30 text-amber-300',
-    emerald: 'from-emerald-500/20 to-emerald-700/5 border-emerald-500/30 text-emerald-300',
-    violet: 'from-violet-500/20 to-violet-700/5 border-violet-500/30 text-violet-300',
+    blue: 'from-blue-500/20 to-blue-700/5 border-blue-500/30 text-blue-700',
+    amber: 'from-amber-500/20 to-amber-700/5 border-amber-500/30 text-amber-700',
+    emerald: 'from-emerald-500/20 to-emerald-700/5 border-emerald-500/30 text-emerald-700',
+    violet: 'from-violet-500/20 to-violet-700/5 border-violet-500/30 text-violet-700',
   };
 
   return (
@@ -548,7 +548,7 @@ function MetricCard({
 
 function ChartShell({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/60 p-4">
+    <div className="rounded-xl border border-line bg-black/60 p-4">
       <h3 className="text-sm font-black text-white">{title}</h3>
       <p className="text-xs text-surface-500 mb-3">{hint}</p>
       {children}

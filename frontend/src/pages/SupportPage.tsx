@@ -109,8 +109,8 @@ export function SupportPage() {
                 { icon: Clock, value: '< 4h', label: 'Resposta', color: 'orange' },
                 { icon: Shield, value: '99.95%', label: 'Uptime', color: 'amber' },
               ].map((s) => (
-                <div key={s.label} className="rounded-2xl border border-white/[0.07] bg-[#0f0f12] p-5 text-center">
-                  <s.icon size={20} className="text-amber-400 mx-auto mb-2" />
+                <div key={s.label} className="rounded-lg border border-line bg-[#0f0f12] p-5 text-center">
+                  <s.icon size={20} className="text-amber-600 mx-auto mb-2" />
                   <p className="text-2xl font-black text-white">{s.value}</p>
                   <p className="text-surface-500 text-xs mt-1">{s.label}</p>
                 </div>
@@ -132,20 +132,20 @@ export function SupportPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className={`rounded-3xl border p-7 flex flex-col h-full transition-all duration-300 ${
+                className={`rounded-xl border p-7 flex flex-col h-full transition-all duration-300 ${
                   ch.accent
                     ? 'border-amber-500/30 bg-amber-500/[0.05] hover:border-amber-500/50'
-                    : 'border-white/[0.07] bg-[#0f0f12] hover:border-white/15'
+                    : 'border-line bg-[#0f0f12] hover:border-line'
                 }`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${
-                  ch.accent ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-white/5 border border-white/10'
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-5 ${
+                  ch.accent ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-ink/5 border border-line'
                 }`}>
-                  <Icon size={22} className={ch.accent ? 'text-amber-400' : 'text-surface-400'} />
+                  <Icon size={22} className={ch.accent ? 'text-amber-600' : 'text-surface-400'} />
                 </div>
                 <h2 className="text-lg font-black text-white mb-3">{ch.title}</h2>
                 <p className="text-surface-400 text-sm leading-relaxed flex-1">{ch.description}</p>
-                <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-amber-400">
+                <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-amber-600">
                   {ch.cta} <ChevronRight size={13} />
                 </div>
               </motion.div>
@@ -163,7 +163,7 @@ export function SupportPage() {
         </div>
 
         {/* FAQ */}
-        <div className="rounded-3xl border border-white/[0.07] bg-[#0f0f12] p-8 lg:p-10">
+        <div className="rounded-xl border border-line bg-[#0f0f12] p-8 lg:p-10">
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
           <h2 className="text-2xl font-black text-white mb-8">Perguntas frequentes</h2>
           <div className="grid md:grid-cols-2 gap-5">
@@ -174,7 +174,7 @@ export function SupportPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06 }}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5"
+                className="rounded-lg border border-line bg-ink/5 p-5"
               >
                 <p className="font-bold text-white text-sm mb-2">{item.question}</p>
                 <p className="text-surface-400 text-sm leading-relaxed">{item.answer}</p>

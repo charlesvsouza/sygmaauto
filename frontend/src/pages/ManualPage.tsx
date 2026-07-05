@@ -67,7 +67,7 @@ export default function ManualPage() {
   return (
     <main className="min-h-screen bg-[#060608] pt-16">
       {/* Top bar */}
-      <div className="sticky top-16 z-40 bg-[#0f0f12]/95 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-16 z-40 bg-[#0f0f12]/95 backdrop-blur-xl border-b border-line">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -79,7 +79,7 @@ export default function ManualPage() {
             </Link>
             <span className="text-surface-200">/</span>
             <span className="flex items-center gap-1.5 text-white text-sm font-semibold">
-              <BookOpenText size={14} className="text-amber-400" />
+              <BookOpenText size={14} className="text-amber-600" />
               Manual do Usuário
             </span>
             <span className="hidden sm:inline text-[11px] text-surface-500 bg-surface-800/60 px-2 py-0.5 rounded-full font-medium">
@@ -89,7 +89,7 @@ export default function ManualPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownload}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-surface-400 hover:text-white hover:border-white/20 text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line text-surface-400 hover:text-white hover:border-line text-xs font-semibold transition-all"
             >
               <Download size={13} />
               <span className="hidden sm:inline">Baixar .md</span>
@@ -119,7 +119,7 @@ export default function ManualPage() {
                 placeholder="Buscar capítulo..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder:text-surface-500 focus:outline-none focus:border-amber-500/30 transition-all"
+                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-ink/5 border border-line text-white text-xs placeholder:text-surface-500 focus:outline-none focus:border-amber-500/30 transition-all"
               />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-white">
@@ -140,9 +140,9 @@ export default function ManualPage() {
                   <a
                     key={chapter}
                     href={`#${anchor}`}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-surface-400 hover:text-white hover:bg-white/5 text-[12px] font-medium transition-all group"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-surface-400 hover:text-white hover:bg-ink/5 text-[12px] font-medium transition-all group"
                   >
-                    <ChevronRight size={11} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-amber-400" />
+                    <ChevronRight size={11} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-amber-600" />
                     <span className="leading-snug">{chapter}</span>
                   </a>
                 )
@@ -150,14 +150,14 @@ export default function ManualPage() {
             </nav>
 
             {/* Support box */}
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] p-4 mt-4">
-              <p className="text-xs font-bold text-amber-400 mb-1">Precisa de ajuda?</p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.05] p-4 mt-4">
+              <p className="text-xs font-bold text-amber-600 mb-1">Precisa de ajuda?</p>
               <p className="text-[11px] text-surface-400 leading-relaxed mb-3">
                 Nosso suporte responde em até 4h úteis.
               </p>
               <a
                 href="mailto:suporte@sigmaauto.com.br"
-                className="text-[11px] text-amber-400 font-semibold hover:underline block"
+                className="text-[11px] text-amber-600 font-semibold hover:underline block"
               >
                 suporte@sigmaauto.com.br →
               </a>
@@ -169,14 +169,14 @@ export default function ManualPage() {
         <div className="flex-1 min-w-0">
           {loading && (
             <div className="flex flex-col items-center justify-center py-32 gap-4">
-              <Loader2 size={32} className="text-amber-400 animate-spin" />
+              <Loader2 size={32} className="text-amber-600 animate-spin" />
               <p className="text-surface-400 text-sm">Carregando manual...</p>
             </div>
           )}
 
           {error && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center">
-              <p className="text-red-400 font-bold mb-2">Erro ao carregar manual</p>
+            <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-8 text-center">
+              <p className="text-red-600 font-bold mb-2">Erro ao carregar manual</p>
               <p className="text-surface-400 text-sm">{error}</p>
             </div>
           )}
@@ -187,18 +187,18 @@ export default function ManualPage() {
               className="prose prose-invert prose-amber max-w-none
                 prose-headings:font-black prose-headings:tracking-tight
                 prose-h1:text-3xl prose-h1:gradient-text prose-h1:mb-8
-                prose-h2:text-xl prose-h2:text-white prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/[0.06] prose-h2:pb-3
+                prose-h2:text-xl prose-h2:text-white prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-line prose-h2:pb-3
                 prose-h3:text-base prose-h3:text-surface-100 prose-h3:mt-6 prose-h3:mb-2
                 prose-p:text-surface-400 prose-p:leading-relaxed prose-p:text-sm
                 prose-li:text-surface-400 prose-li:text-sm
                 prose-strong:text-white prose-strong:font-bold
-                prose-a:text-amber-400 prose-a:no-underline hover:prose-a:underline
-                prose-code:text-amber-300 prose-code:bg-amber-500/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
+                prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline
+                prose-code:text-amber-700 prose-code:bg-amber-500/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
                 prose-blockquote:border-l-amber-500 prose-blockquote:text-surface-400
                 prose-table:text-sm
-                prose-th:text-white prose-th:font-bold prose-th:bg-white/5
-                prose-td:text-surface-400 prose-td:border-white/[0.06]
-                prose-hr:border-white/[0.06]"
+                prose-th:text-white prose-th:font-bold prose-th:bg-ink/5
+                prose-td:text-surface-400 prose-td:border-line
+                prose-hr:border-line"
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {content}

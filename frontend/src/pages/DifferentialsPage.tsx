@@ -29,7 +29,7 @@ export function DifferentialsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08 }}
-            className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6"
+            className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6"
           >
             <div className="w-11 h-11 rounded-xl bg-[#2855d6]/12 flex items-center justify-center mb-4">
               <Icon size={22} className="text-[#2855d6]" />
@@ -41,7 +41,7 @@ export function DifferentialsPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-8 grid md:grid-cols-3 gap-5">
+        <div className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-8 grid md:grid-cols-3 gap-5">
           {[
             ['Implantação curta', 'A oficina consegue iniciar rápido sem projeto pesado de onboarding.'],
             ['Baixa fricção', 'Interface focada em uso real, com menos cliques e menos dependência de treinamento.'],

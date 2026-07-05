@@ -29,7 +29,7 @@ export function NewsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08 }}
-            className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-6 flex flex-col"
+            className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6 flex flex-col"
           >
             <div className="flex items-center gap-2 mb-4">
               <span className="text-[10px] font-black uppercase tracking-widest bg-[#ff7b2f]/15 text-[#ff7b2f] px-2 py-0.5 rounded-full">
@@ -47,7 +47,7 @@ export function NewsPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm p-8 md:p-10">
+        <div className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-8 md:p-10">
           <h3 className="text-2xl font-black text-white">Como usamos essas atualizações</h3>
           <div className="mt-6 grid md:grid-cols-3 gap-5 text-sm text-white/55">
             <div>

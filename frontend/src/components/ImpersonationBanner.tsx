@@ -18,12 +18,12 @@ export function ImpersonationBanner() {
       <div className="flex items-center gap-2">
         <Shield size={13} />
         <span>MODO SUPERADMIN</span>
-        <span className="text-red-200">·</span>
+        <span className="text-red-700">·</span>
         <span>Gerenciando tenant:</span>
         <span className="bg-red-700 px-2 py-0.5 rounded-md">{impersonatingTenantName}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-red-200 hidden sm:inline">Token expira em 2h</span>
+        <span className="text-red-700 hidden sm:inline">Token expira em 2h</span>
         <button
           onClick={handleExit}
           className="flex items-center gap-1.5 bg-red-700 hover:bg-red-800 px-3 py-1.5 rounded-lg transition-all"
@@ -33,7 +33,7 @@ export function ImpersonationBanner() {
         </button>
         <button
           onClick={() => { stopImpersonation(); navigate('/admin'); }}
-          className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-all"
+          className="flex items-center gap-1.5 bg-ink/5 hover:bg-ink/5 px-3 py-1.5 rounded-lg transition-all"
         >
           <ExternalLink size={12} />
           Painel Admin

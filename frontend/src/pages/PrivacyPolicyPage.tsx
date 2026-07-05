@@ -16,7 +16,7 @@ export function PrivacyPolicyPage() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/8 bg-[#090e17]/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-line bg-[#090e17]/80 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
@@ -53,13 +53,13 @@ export function PrivacyPolicyPage() {
             <p className="mt-4">
               Ao criar uma conta ou utilizar nossos serviços, você concorda com os termos desta política. Recomendamos que a leia com atenção.
             </p>
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 leading-relaxed">
+            <div className="mt-6 rounded-lg border border-line bg-ink/5 p-5 text-sm text-white/70 leading-relaxed">
               <p className="font-bold text-white text-sm">Nota de transparência</p>
               <p className="mt-2">Esta política é uma base operacional ainda em revisão jurídica. Recomendamos também consultar nossa <a href="/compliance" className="text-[#ff7b2f] hover:underline">Central de Privacidade, LGPD e Compliance</a> para informações sobre o status real dos controles implementados e governança documental.</p>
             </div>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 1 */}
           <section>
@@ -67,14 +67,14 @@ export function PrivacyPolicyPage() {
             <p>
               O controlador dos seus dados pessoais é a <strong className="text-white">SigmaAuto</strong>, plataforma de ERP automotivo brasileira. Para exercer seus direitos ou tirar dúvidas sobre esta política, entre em contato:
             </p>
-            <div className="mt-4 rounded-2xl border border-white/8 bg-white/4 p-5 space-y-1 text-sm">
+            <div className="mt-4 rounded-lg border border-line bg-ink/5 p-5 space-y-1 text-sm">
               <p><span className="text-white/50">E-mail de privacidade:</span> <a href="mailto:privacidade@sigmaauto.com.br" className="text-[#ff7b2f]">privacidade@sigmaauto.com.br</a></p>
               <p><span className="text-white/50">E-mail de suporte:</span> <a href="mailto:suporte@sigmaauto.com.br" className="text-[#ff7b2f]">suporte@sigmaauto.com.br</a></p>
               <p><span className="text-white/50">Site:</span> <a href="https://sigmaauto.com.br" className="text-[#ff7b2f]">sigmaauto.com.br</a></p>
             </div>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 2 */}
           <section>
@@ -82,30 +82,30 @@ export function PrivacyPolicyPage() {
             <p className="mb-4">Coletamos somente os dados necessários para a prestação dos nossos serviços:</p>
 
             <div className="space-y-4">
-              <div className="rounded-2xl border border-white/8 bg-white/4 p-5">
+              <div className="rounded-lg border border-line bg-ink/5 p-5">
                 <p className="font-bold text-white text-sm mb-2">2.1 Dados cadastrais da empresa</p>
                 <p className="text-sm">Razão social, nome fantasia, CNPJ/CPF, endereço, telefone e e-mail da oficina, fornecidos no momento do cadastro ou nas configurações do sistema.</p>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/4 p-5">
+              <div className="rounded-lg border border-line bg-ink/5 p-5">
                 <p className="font-bold text-white text-sm mb-2">2.2 Dados de usuários da plataforma</p>
                 <p className="text-sm">Nome, e-mail e senha (armazenada com hash criptográfico) dos usuários convidados para acessar o sistema (mecânicos, gestores, administrativos).</p>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/4 p-5">
+              <div className="rounded-lg border border-line bg-ink/5 p-5">
                 <p className="font-bold text-white text-sm mb-2">2.3 Dados operacionais gerados no uso</p>
                 <p className="text-sm">Clientes da oficina, veículos, ordens de serviço, peças, registros financeiros e demais informações inseridas pelos usuários na plataforma. Esses dados pertencem ao cliente (oficina) e são tratados por nós como operadores.</p>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/4 p-5">
+              <div className="rounded-lg border border-line bg-ink/5 p-5">
                 <p className="font-bold text-white text-sm mb-2">2.4 Dados de pagamento</p>
                 <p className="text-sm">Informações de pagamento das assinaturas são processadas diretamente pelo <strong className="text-white">Mercado Pago</strong>. Não armazenamos dados de cartão de crédito.</p>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/4 p-5">
+              <div className="rounded-lg border border-line bg-ink/5 p-5">
                 <p className="font-bold text-white text-sm mb-2">2.5 Dados de uso e técnicos</p>
                 <p className="text-sm">Endereço IP, tipo de navegador, sistema operacional, páginas acessadas, horários de acesso e logs de erro — coletados automaticamente para fins de segurança, diagnóstico técnico e melhoria do serviço.</p>
               </div>
             </div>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 3 */}
           <section>
@@ -126,7 +126,7 @@ export function PrivacyPolicyPage() {
             </ul>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 4 */}
           <section>
@@ -149,7 +149,7 @@ export function PrivacyPolicyPage() {
             </ul>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 5 */}
           <section>
@@ -162,7 +162,7 @@ export function PrivacyPolicyPage() {
                 ['Controle de acesso', 'Sistema de perfis com permissões granulares (MASTER, ADMIN, GERENTE, MECÂNICO, FINANCEIRO).'],
                 ['Backups automáticos', 'Backups periódicos do banco de dados com retenção mínima de 30 dias.'],
               ].map(([titulo, desc]) => (
-                <div key={titulo as string} className="rounded-2xl border border-white/8 bg-white/4 p-5">
+                <div key={titulo as string} className="rounded-lg border border-line bg-ink/5 p-5">
                   <p className="font-bold text-white text-sm mb-1">{titulo}</p>
                   <p className="text-xs text-white/55 leading-relaxed">{desc}</p>
                 </div>
@@ -170,7 +170,7 @@ export function PrivacyPolicyPage() {
             </div>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 6 */}
           <section>
@@ -185,7 +185,7 @@ export function PrivacyPolicyPage() {
             </ul>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 7 */}
           <section>
@@ -200,7 +200,7 @@ export function PrivacyPolicyPage() {
                 ['Revogação de consentimento', 'Retirar consentimentos concedidos anteriormente.'],
                 ['Oposição', 'Opor-se ao tratamento de dados em casos permitidos por lei.'],
               ].map(([direito, desc]) => (
-                <div key={direito as string} className="rounded-xl border border-white/8 bg-white/3 p-4">
+                <div key={direito as string} className="rounded-xl border border-line bg-ink/5 p-4">
                   <p className="font-bold text-white text-sm mb-1">{direito}</p>
                   <p className="text-xs text-white/50">{desc}</p>
                 </div>
@@ -209,7 +209,7 @@ export function PrivacyPolicyPage() {
             <p className="mt-4 text-sm">Responderemos às solicitações em até <strong className="text-white">15 dias úteis</strong>.</p>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 8 */}
           <section>
@@ -225,7 +225,7 @@ export function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 9 */}
           <section>
@@ -235,7 +235,7 @@ export function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 10 */}
           <section>
@@ -245,7 +245,7 @@ export function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 11 */}
           <section>
@@ -255,7 +255,7 @@ export function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <hr className="border-white/8" />
+          <hr className="border-line" />
 
           {/* 12 */}
           <section>
@@ -263,7 +263,7 @@ export function PrivacyPolicyPage() {
             <p>
               Para questões relacionadas a privacidade, exercício de direitos ou reclamações sobre o tratamento dos seus dados, entre em contato com nosso Encarregado de Proteção de Dados (DPO):
             </p>
-            <div className="mt-4 rounded-2xl border border-[#ff7b2f]/20 bg-[#ff7b2f]/5 p-6 space-y-2 text-sm">
+            <div className="mt-4 rounded-lg border border-[#ff7b2f]/20 bg-[#ff7b2f]/5 p-6 space-y-2 text-sm">
               <p className="font-bold text-white">SigmaAuto — Encarregado de Dados</p>
               <p><span className="text-white/50">E-mail:</span> <a href="mailto:privacidade@sigmaauto.com.br" className="text-[#ff7b2f] hover:underline">privacidade@sigmaauto.com.br</a></p>
               <p><span className="text-white/50">Prazo de resposta:</span> até 15 dias úteis</p>
@@ -276,7 +276,7 @@ export function PrivacyPolicyPage() {
         </div>
 
         {/* Footer da página */}
-        <div className="mt-16 pt-8 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-16 pt-8 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/25">© {new Date().getFullYear()} SigmaAuto · sigmaauto.com.br · Todos os direitos reservados</p>
           <button
             onClick={() => navigate('/')}

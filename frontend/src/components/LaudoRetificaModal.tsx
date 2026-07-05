@@ -404,12 +404,12 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
           initial={{ scale: 0.92, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.92, opacity: 0 }}
-          className="bg-surface-900 border border-white/10 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl"
+          className="bg-surface-900 border border-line rounded-lg w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
             <div className="flex items-center gap-3">
-              <FileText className="text-amber-400 w-5 h-5" />
+              <FileText className="text-amber-600 w-5 h-5" />
               <div>
                 <h2 className="text-white font-black text-lg">Laudo Técnico de Retífica</h2>
                 <p className="text-surface-400 text-xs">
@@ -427,7 +427,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-surface-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="p-2 text-surface-400 hover:text-white transition-colors rounded-lg hover:bg-ink/5"
               >
                 <X size={18} />
               </button>

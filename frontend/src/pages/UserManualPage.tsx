@@ -200,7 +200,7 @@ export function UserManualPage() {
       </blockquote>
     ),
     table: ({ children }) => (
-      <div className="overflow-x-auto rounded-2xl border border-[#d5c8b1] bg-[#fbf7ef] shadow-[0_10px_25px_rgba(43,31,20,0.05)]">
+      <div className="overflow-x-auto rounded-lg border border-[#d5c8b1] bg-[#fbf7ef] shadow-[0_10px_25px_rgba(43,31,20,0.05)]">
         <table className="min-w-full border-collapse text-left text-[0.98rem] leading-[1.9] text-[#332b26]">
           {children}
         </table>
@@ -215,7 +215,7 @@ export function UserManualPage() {
       const isBlockCode = content.includes('\n');
 
       return isBlockCode ? (
-        <code className="block overflow-x-auto rounded-2xl bg-[#2a2521] px-5 py-4 font-mono text-[0.92rem] leading-8 text-[#f4eadb] shadow-[0_16px_30px_rgba(26,20,15,0.18)]">
+        <code className="block overflow-x-auto rounded-lg bg-[#2a2521] px-5 py-4 font-mono text-[0.92rem] leading-8 text-[#f4eadb] shadow-[0_16px_30px_rgba(26,20,15,0.18)]">
           {children}
         </code>
       ) : (
@@ -312,7 +312,7 @@ export function UserManualPage() {
         <a
           href={MANUAL_URL}
           download="MANUAL_USUARIO.md"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/15 bg-white/5 text-sm font-bold text-white/80 hover:text-white hover:border-[#ff7b2f]/60 hover:bg-[#ff7b2f]/10 transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-line bg-ink/5 text-sm font-bold text-white/80 hover:text-white hover:border-[#ff7b2f]/60 hover:bg-[#ff7b2f]/10 transition-all"
         >
           <FileText size={16} />
           Baixar .md
@@ -346,7 +346,7 @@ export function UserManualPage() {
                     <li key={section.slug}>
                       <a
                         href={`#${section.slug}`}
-                        className="block rounded-2xl px-4 py-3 text-[0.95rem] leading-6 text-[#4a3e35] transition-colors hover:bg-[#e8dcc9] hover:text-[#2c231c]"
+                        className="block rounded-lg px-4 py-3 text-[0.95rem] leading-6 text-[#4a3e35] transition-colors hover:bg-[#e8dcc9] hover:text-[#2c231c]"
                       >
                         {section.title}
                       </a>

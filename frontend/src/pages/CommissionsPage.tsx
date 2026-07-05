@@ -178,7 +178,7 @@ export function CommissionsPage() {
         </div>
         <button
           onClick={exportCsv}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gold-500 text-surface-950 text-sm font-bold hover:bg-gold-400"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-surface-950 text-sm font-bold hover:bg-accent-hover"
         >
           <Download size={16} /> Exportar CSV
         </button>
@@ -191,25 +191,25 @@ export function CommissionsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
+        <div className="bg-surface-900 rounded-lg border border-line p-5">
           <p className="text-xs text-surface-400 font-bold uppercase tracking-wider">Total</p>
           <p className="text-2xl font-black text-surface-50 mt-1">{money(totals.total)}</p>
         </div>
-        <div className="bg-surface-900 rounded-2xl border border-amber-500/30 p-5">
-          <p className="text-xs text-amber-400 font-bold uppercase tracking-wider">Pendente</p>
-          <p className="text-2xl font-black text-amber-300 mt-1">{money(totals.pending)}</p>
+        <div className="bg-surface-900 rounded-lg border border-amber-500/30 p-5">
+          <p className="text-xs text-amber-600 font-bold uppercase tracking-wider">Pendente</p>
+          <p className="text-2xl font-black text-amber-700 mt-1">{money(totals.pending)}</p>
         </div>
-        <div className="bg-surface-900 rounded-2xl border border-emerald-500/30 p-5">
-          <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider">Pago</p>
-          <p className="text-2xl font-black text-emerald-300 mt-1">{money(totals.paid)}</p>
+        <div className="bg-surface-900 rounded-lg border border-emerald-500/30 p-5">
+          <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider">Pago</p>
+          <p className="text-2xl font-black text-emerald-700 mt-1">{money(totals.paid)}</p>
         </div>
       </div>
 
-      <div className="bg-surface-900 rounded-2xl border border-white/10 p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
+      <div className="bg-surface-900 rounded-lg border border-line p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
         <select
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          className="input bg-surface-950/40 border-white/10"
+          className="input bg-surface-950/40 border-line"
         >
           <option value="">Todos status</option>
           <option value="PENDENTE">Pendente</option>
@@ -219,7 +219,7 @@ export function CommissionsPage() {
         <select
           value={filters.userId}
           onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
-          className="input bg-surface-950/40 border-white/10"
+          className="input bg-surface-950/40 border-line"
           disabled={!canFilterByUser}
         >
           <option value="">Todos executores</option>
@@ -231,7 +231,7 @@ export function CommissionsPage() {
         <select
           value={filters.workshopArea}
           onChange={(e) => setFilters({ ...filters, workshopArea: e.target.value })}
-          className="input bg-surface-950/40 border-white/10"
+          className="input bg-surface-950/40 border-line"
         >
           <option value="">Todas áreas</option>
           <option value="MECANICA">Mecânica</option>
@@ -245,28 +245,28 @@ export function CommissionsPage() {
           type="date"
           value={filters.startDate}
           onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-          className="input bg-surface-950/40 border-white/10"
+          className="input bg-surface-950/40 border-line"
         />
 
         <input
           type="date"
           value={filters.endDate}
           onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-          className="input bg-surface-950/40 border-white/10"
+          className="input bg-surface-950/40 border-line"
         />
 
         <button onClick={load} className="btn btn-primary">Filtrar</button>
       </div>
 
       {leadership.length > 0 && (
-        <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
+        <div className="bg-surface-900 rounded-lg border border-line p-5">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-4 h-4 text-amber-500" />
             <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider">Visão de Liderança</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {leadership.slice(0, 8).map((p: any) => (
-              <div key={p.userId} className="rounded-xl border border-white/5 bg-surface-950/40 p-3">
+              <div key={p.userId} className="rounded-xl border border-line bg-surface-950/40 p-3">
                 <p className="text-xs font-black text-surface-50">{p.name}</p>
                 <p className="text-[10px] text-surface-400 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
                 <p className="text-sm font-black text-surface-50 mt-2">{money(p.total)}</p>
@@ -277,7 +277,7 @@ export function CommissionsPage() {
         </div>
       )}
 
-      <div className="bg-surface-900 rounded-2xl border border-white/10 p-5">
+      <div className="bg-surface-900 rounded-lg border border-line p-5">
         <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
         <p className="text-xs text-surface-400 mb-4">Valor total de comissões geradas por mês</p>
         {trendData.length === 0 ? (
@@ -302,7 +302,7 @@ export function CommissionsPage() {
         )}
       </div>
 
-      <div className="bg-surface-900 rounded-2xl border border-white/10 overflow-x-auto">
+      <div className="bg-surface-900 rounded-lg border border-line overflow-x-auto">
         {loading ? (
           <div className="h-56 flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-surface-400" />
@@ -324,7 +324,7 @@ export function CommissionsPage() {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.id} className="border-t border-white/5">
+                <tr key={row.id} className="border-t border-line">
                   <td className="px-4 py-3 font-bold text-surface-50">{row.user?.name || '—'}</td>
                   <td className="px-4 py-3 text-surface-400 text-xs">{row.user?.workshopArea || '—'}</td>
                   <td className="px-4 py-3 text-surface-300">{row.serviceOrderItem?.description || '—'}</td>
@@ -334,11 +334,11 @@ export function CommissionsPage() {
                   <td className="px-4 py-3 text-right font-black text-surface-50">{money(row.commissionValue)}</td>
                   <td className="px-4 py-3">
                     {row.status === 'PAGO' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-300 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
                         <CheckCircle2 size={12} /> Pago
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-300 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
                         <DollarSign size={12} /> Pendente
                       </span>
                     )}
@@ -348,7 +348,7 @@ export function CommissionsPage() {
                       <button
                         onClick={() => markAsPaid(row.id)}
                         disabled={payingId === row.id}
-                        className="px-3 py-1.5 rounded-lg bg-gold-500 text-surface-950 text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
+                        className="px-3 py-1.5 rounded-lg bg-accent text-surface-950 text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
                       >
                         {payingId === row.id ? 'Salvando...' : 'Marcar pago'}
                       </button>

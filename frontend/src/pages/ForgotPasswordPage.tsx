@@ -82,15 +82,15 @@ export function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gold-500/[0.06] rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold-600/[0.05] rounded-full blur-[120px]" />
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-[520px] z-10"
       >
-        <div className="bg-surface-900 p-8 md:p-10 rounded-[2.5rem] border border-white/5 relative overflow-hidden shadow-card-hover">
+        <div className="bg-surface-900 p-8 md:p-10 rounded-xl border border-line relative overflow-hidden shadow-card-hover">
           <div className="mb-8">
             <h1 className="text-2xl font-bold tracking-tight text-white">Revalidar Senha</h1>
             <p className="text-surface-300 text-sm mt-1">
@@ -99,13 +99,13 @@ export function ForgotPasswordPage() {
           </div>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500/30 text-red-300 p-4 rounded-xl text-sm mb-5">
+            <div className="bg-red-500/20 border border-red-500/30 text-red-700 p-4 rounded-xl text-sm mb-5">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl text-sm mb-5">
+            <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 p-4 rounded-xl text-sm mb-5">
               {success}
             </div>
           )}
@@ -120,7 +120,7 @@ export function ForgotPasswordPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                    className="w-full bg-surface-950/40 border border-line rounded-lg py-3.5 pl-12 pr-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40"
                     placeholder="seu@email.com"
                     required
                   />
@@ -135,7 +135,7 @@ export function ForgotPasswordPage() {
                     type="email"
                     value={recoveryEmail}
                     onChange={(e) => setRecoveryEmail(e.target.value)}
-                    className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                    className="w-full bg-surface-950/40 border border-line rounded-lg py-3.5 pl-12 pr-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40"
                     placeholder="recuperacao@email.com"
                     required
                   />
@@ -145,7 +145,7 @@ export function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !email || !recoveryEmail}
-                className="w-full bg-gold-500 hover:bg-gold-400 text-surface-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><KeyRound size={18} /> Validar e Gerar Token</>}
               </button>
@@ -153,7 +153,7 @@ export function ForgotPasswordPage() {
           ) : (
             <form onSubmit={submitNewPassword} className="space-y-5">
               {devToken && (
-                <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 p-4 rounded-xl text-sm">
+                <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 p-4 rounded-xl text-sm">
                   Token retornado pelo backend: <span className="font-bold">{devToken}</span>
                 </div>
               )}
@@ -164,7 +164,7 @@ export function ForgotPasswordPage() {
                   type="text"
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
-                  className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 px-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                  className="w-full bg-surface-950/40 border border-line rounded-lg py-3.5 px-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40"
                   placeholder="cole o token aqui"
                   required
                 />
@@ -178,7 +178,7 @@ export function ForgotPasswordPage() {
                     type={showNewPassword ? 'text' : 'password'}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-12 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                    className="w-full bg-surface-950/40 border border-line rounded-lg py-3.5 pl-12 pr-12 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40"
                     placeholder="mínimo 6 caracteres"
                     required
                     minLength={6}
@@ -196,7 +196,7 @@ export function ForgotPasswordPage() {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 px-4 pr-12 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                    className="w-full bg-surface-950/40 border border-line rounded-lg py-3.5 px-4 pr-12 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-accent/40"
                     placeholder="repita a nova senha"
                     required
                     minLength={6}
@@ -210,15 +210,15 @@ export function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !token || !newPassword || !confirmPassword}
-                className="w-full bg-gold-500 hover:bg-gold-400 text-surface-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Redefinir Senha'}
               </button>
             </form>
           )}
 
-          <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <Link to="/login" className="inline-flex items-center gap-2 text-gold-400 hover:text-gold-300 text-sm font-semibold">
+          <div className="mt-8 pt-6 border-t border-line text-center">
+            <Link to="/login" className="inline-flex items-center gap-2 text-accent hover:text-accent text-sm font-semibold">
               <ArrowLeft size={16} /> Voltar ao login
             </Link>
           </div>

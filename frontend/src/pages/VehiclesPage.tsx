@@ -184,15 +184,15 @@ export function VehiclesPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-semibold hover:bg-gold-400 transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Veículo
         </button>
       </div>
 
-      <div className="bg-surface-900 rounded-3xl border border-white/10 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
+      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-line flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
             <input
@@ -200,7 +200,7 @@ export function VehiclesPage() {
               placeholder="Buscar por placa, marca ou modelo..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-2xl border border-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm bg-surface-900"
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-line focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm bg-surface-900"
             />
           </div>
         </div>
@@ -214,7 +214,7 @@ export function VehiclesPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-surface-950/40 text-surface-400 border-b border-white/5">
+                <tr className="bg-surface-950/40 text-surface-400 border-b border-line">
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Placa</th>
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Veículo</th>
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Proprietário</th>
@@ -222,11 +222,11 @@ export function VehiclesPage() {
                   <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-line">
                 {filteredVehicles.map((vehicle) => (
-                  <tr key={vehicle.id} className="group hover:bg-white/5 transition-colors">
+                  <tr key={vehicle.id} className="group hover:bg-ink/5 transition-colors">
                     <td className="px-6 py-5">
-                      <span className="inline-flex items-center px-3 py-1 rounded-lg bg-gold-500 text-surface-950 font-mono font-bold text-sm shadow-sm">
+                      <span className="inline-flex items-center px-3 py-1 rounded-lg bg-accent text-surface-950 font-mono font-bold text-sm shadow-sm">
                         {vehicle.plate}
                       </span>
                     </td>
@@ -265,7 +265,7 @@ export function VehiclesPage() {
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => handleEdit(vehicle)}
-                          className="p-2 hover:bg-white/10 rounded-lg text-surface-300 hover:text-surface-50 transition-colors"
+                          className="p-2 hover:bg-ink/5 rounded-lg text-surface-300 hover:text-surface-50 transition-colors"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
@@ -306,15 +306,15 @@ export function VehiclesPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
+              className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
             >
-              <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40 shrink-0">
+              <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40 shrink-0">
                 <h2 className="text-xl font-bold text-surface-50">
                   {editingVehicle ? 'Editar Veículo' : 'Novo Veículo'}
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                  className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -327,7 +327,7 @@ export function VehiclesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, customerId: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     required
                   >
                     <option value="">Selecione um cliente...</option>
@@ -348,7 +348,7 @@ export function VehiclesPage() {
                         setFormData({ ...formData, plate: formatPlate(e.target.value) })
                       }
                       placeholder="ABC-1234"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm font-mono font-bold"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-mono font-bold"
                       required
                     />
                   </div>
@@ -360,7 +360,7 @@ export function VehiclesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, year: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       min="1900"
                       max={new Date().getFullYear() + 1}
                     />
@@ -376,7 +376,7 @@ export function VehiclesPage() {
                         setFormData({ ...formData, brand: e.target.value })
                       }
                       placeholder="Ex: Toyota"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       required
                     />
                   </div>
@@ -389,7 +389,7 @@ export function VehiclesPage() {
                         setFormData({ ...formData, model: e.target.value })
                       }
                       placeholder="Ex: Corolla"
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       required
                     />
                   </div>
@@ -403,7 +403,7 @@ export function VehiclesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, color: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -414,13 +414,13 @@ export function VehiclesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, km: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Manutenção Preventiva */}
-                <div className="pt-4 border-t border-white/5">
+                <div className="pt-4 border-t border-line">
                   <p className="text-xs font-bold text-surface-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                     <Wrench className="w-3.5 h-3.5" /> Manutenção Preventiva
                   </p>
@@ -432,7 +432,7 @@ export function VehiclesPage() {
                         value={formData.lastMaintenanceKm}
                         onChange={(e) => setFormData({ ...formData, lastMaintenanceKm: e.target.value })}
                         placeholder="Ex: 45000"
-                        className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -441,7 +441,7 @@ export function VehiclesPage() {
                         type="date"
                         value={formData.lastMaintenanceDate}
                         onChange={(e) => setFormData({ ...formData, lastMaintenanceDate: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -451,7 +451,7 @@ export function VehiclesPage() {
                         value={formData.maintenanceIntervalKm}
                         onChange={(e) => setFormData({ ...formData, maintenanceIntervalKm: e.target.value })}
                         placeholder="Ex: 10000"
-                        className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -461,7 +461,7 @@ export function VehiclesPage() {
                         value={formData.maintenanceIntervalDays}
                         onChange={(e) => setFormData({ ...formData, maintenanceIntervalDays: e.target.value })}
                         placeholder="Ex: 180"
-                        className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-surface-900 focus:outline-none focus:ring-4 focus:ring-gold-500/20 focus:border-gold-500/40 transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                       />
                     </div>
                   </div>
@@ -472,18 +472,18 @@ export function VehiclesPage() {
                     {saveError}
                   </p>
                 )}
-                <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+                <div className="flex justify-end gap-3 pt-6 border-t border-line">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-white/5 transition-all"
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:text-surface-50 hover:bg-ink/5 transition-all"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-8 py-2.5 bg-gold-500 text-surface-950 rounded-xl font-bold hover:bg-gold-400 transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     {editingVehicle ? 'Salvar Alterações' : 'Cadastrar Veículo'}
