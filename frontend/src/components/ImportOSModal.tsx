@@ -183,26 +183,26 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
   const totalCalculated = (data?.items || []).reduce((acc: number, item: any) => acc + (Number(item.quantity || 0) * Number(item.unitPrice || 0)), 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white rounded-[32px] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-surface-900 rounded-[32px] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
               <FileUp size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+              <h2 className="text-lg font-black text-surface-50 uppercase tracking-tight">
                 {isAppendMode ? 'Importar Orçamento Externo na O.S.' : 'Importar Orçamento PDF'}
               </h2>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">IA Assistida · Verifique os dados abaixo</p>
+              <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">IA Assistida · Verifique os dados abaixo</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -211,11 +211,11 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
         <div className="flex-1 overflow-y-auto p-8">
           {step === 'upload' ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-24 h-24 bg-slate-100 rounded-[32px] flex items-center justify-center text-slate-400 mb-6 border-2 border-dashed border-slate-300">
+              <div className="w-24 h-24 bg-surface-800 rounded-[32px] flex items-center justify-center text-surface-500 mb-6 border-2 border-dashed border-white/15">
                 <FileUp size={40} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-2">Selecione o arquivo PDF</h3>
-              <p className="text-sm text-slate-500 mb-8 text-center max-w-md">
+              <h3 className="text-xl font-black text-surface-50 mb-2">Selecione o arquivo PDF</h3>
+              <p className="text-sm text-surface-400 mb-8 text-center max-w-md">
                 Nossa IA irá ler o orçamento e extrair automaticamente os dados do cliente, veículo, peças e serviços.
               </p>
 
@@ -230,7 +230,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 htmlFor="pdf-upload"
                 className={cn(
                   "cursor-pointer px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl flex items-center gap-3",
-                  file ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200"
+                  file ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" : "bg-gold-500 text-surface-950 hover:bg-gold-400 shadow-black/40"
                 )}
               >
                 {file ? <CheckCircle2 size={20} /> : <FileUp size={20} />}
@@ -238,7 +238,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               </label>
 
               {error && (
-                <div className="mt-8 p-4 bg-red-50 text-red-700 rounded-2xl flex items-center gap-3 text-sm font-bold border border-red-100">
+                <div className="mt-8 p-4 bg-red-500/10 text-red-300 rounded-2xl flex items-center gap-3 text-sm font-bold border border-red-500/25">
                   <AlertCircle size={20} />
                   {error}
                 </div>
@@ -258,32 +258,32 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
             <div className="space-y-8">
               {!isAppendMode && <div className="grid grid-cols-2 gap-8">
                 {/* Cliente */}
-                <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200">
-                  <div className="flex items-center gap-2 mb-6 text-indigo-600 border-b border-slate-200 pb-3">
+                <div className="p-6 bg-surface-950/40 rounded-3xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-6 text-indigo-400 border-b border-white/10 pb-3">
                     <User size={18} />
                     <h4 className="text-xs font-black uppercase tracking-widest">Dados do Cliente</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Nome Completo</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Nome Completo</label>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 transition-all"
+                        className="w-full bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 transition-all"
                         value={data.customer.name}
                         onChange={(e) => updateCustomerField('name', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">CPF / CNPJ</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">CPF / CNPJ</label>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
+                        className="w-full bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.document}
                         onChange={(e) => updateCustomerField('document', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Telefone</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Telefone</label>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
+                        className="w-full bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.phone}
                         onChange={(e) => updateCustomerField('phone', e.target.value)}
                       />
@@ -292,23 +292,23 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 </div>
 
                 {/* Veículo */}
-                <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200">
-                  <div className="flex items-center gap-2 mb-6 text-emerald-600 border-b border-slate-200 pb-3">
+                <div className="p-6 bg-surface-950/40 rounded-3xl border border-white/10">
+                  <div className="flex items-center gap-2 mb-6 text-emerald-400 border-b border-white/10 pb-3">
                     <Car size={18} />
                     <h4 className="text-xs font-black uppercase tracking-widest">Dados do Veículo</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Marca / Modelo</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Marca / Modelo</label>
                       <div className="flex gap-2">
                         <input 
-                          className="w-1/3 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
+                          className="w-1/3 bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold"
                           placeholder="Marca"
                           value={data.vehicle.brand}
                           onChange={(e) => updateVehicleField('brand', e.target.value)}
                         />
                         <input 
-                          className="w-2/3 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
+                          className="w-2/3 bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold"
                           placeholder="Modelo"
                           value={data.vehicle.model}
                           onChange={(e) => updateVehicleField('model', e.target.value)}
@@ -316,17 +316,17 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Placa</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Placa</label>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold uppercase font-mono"
+                        className="w-full bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold uppercase font-mono"
                         value={data.vehicle.plate}
                         onChange={(e) => updateVehicleField('plate', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">KM Atual</label>
+                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">KM Atual</label>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
+                        className="w-full bg-surface-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-bold"
                         type="number"
                         value={data.vehicle.km}
                         onChange={(e) => updateVehicleField('km', e.target.value)}
@@ -337,47 +337,47 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               </div>}
 
               {isAppendMode && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-800 font-semibold">
+                <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl text-sm text-blue-300 font-semibold">
                   Os dados de cliente e veículo da O.S. serão mantidos. A importação irá adicionar os itens do PDF e anexar as observações extraídas.
                 </div>
               )}
 
               {/* Observações do PDF */}
               {(data.observations || data._warnings) && (
-                <div className="p-5 bg-amber-50 rounded-3xl border border-amber-200">
-                  <label className="text-[10px] font-black text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
+                <div className="p-5 bg-amber-500/10 rounded-3xl border border-amber-500/30">
+                  <label className="text-[10px] font-black text-amber-400 uppercase mb-2 block">Observações extraídas do PDF</label>
                   <textarea
-                    className="w-full bg-white border border-amber-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
+                    className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
                     rows={3}
                     value={data.observations || ''}
                     onChange={(e) => setData({ ...data, observations: e.target.value })}
                   />
                   {data._warnings && (
-                    <p className="text-[10px] text-amber-600 font-bold mt-1">{data._warnings.join(' ')}</p>
+                    <p className="text-[10px] text-amber-400 font-bold mt-1">{data._warnings.join(' ')}</p>
                   )}
                 </div>
               )}
 
               {/* Itens */}
-              <div className="border border-slate-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+              <div className="border border-white/10 rounded-3xl overflow-hidden bg-surface-900 shadow-sm">
                 <table className="w-full text-left">
-                  <thead className="bg-slate-900 text-white">
+                  <thead className="bg-gold-500 text-surface-950">
                     <tr>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Tipo</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Código / Descrição</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center w-24">Qtd</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right w-32">Unitário</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right w-16"></th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Tipo</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Código / Descrição</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-center w-24">Qtd</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-right w-32">Unitário</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-right w-16"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/5">
                     {data.items.map((item: any, idx: number) => (
-                      <tr key={idx} className="group hover:bg-slate-50 transition-colors">
+                      <tr key={idx} className="group hover:bg-white/5 transition-colors">
                         <td className="px-6 py-4">
                           <select 
                             className={cn(
                               "text-[10px] font-black uppercase px-2 py-1 rounded border-none focus:ring-0 cursor-pointer",
-                              item.type === 'part' ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+                              item.type === 'part' ? "bg-amber-500/15 text-amber-300" : "bg-blue-500/15 text-blue-300"
                             )}
                             value={item.type}
                             onChange={(e) => updateItemField(idx, 'type', e.target.value)}
@@ -389,13 +389,13 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
                             <input 
-                              className="text-[10px] font-black text-slate-400 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-slate-300"
+                              className="text-[10px] font-black text-surface-500 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-surface-600"
                               placeholder="Código de fábrica"
                               value={item.internalCode || ''}
                               onChange={(e) => updateItemField(idx, 'internalCode', e.target.value)}
                             />
                             <input 
-                              className="text-sm font-bold text-slate-700 bg-transparent border-none p-0 focus:ring-0 w-full"
+                              className="text-sm font-bold text-surface-200 bg-transparent border-none p-0 focus:ring-0 w-full"
                               value={item.description}
                               onChange={(e) => updateItemField(idx, 'description', e.target.value)}
                             />
@@ -404,17 +404,17 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4">
                           <input 
                             type="number"
-                            className="w-full bg-slate-100 border-none rounded-lg px-2 py-1 text-sm font-bold text-center focus:ring-2 focus:ring-indigo-500"
+                            className="w-full bg-surface-800 border-none rounded-lg px-2 py-1 text-sm font-bold text-center focus:ring-2 focus:ring-indigo-500"
                             value={item.quantity}
                             onChange={(e) => updateItemField(idx, 'quantity', e.target.value)}
                           />
                         </td>
                         <td className="px-6 py-4">
                           <div className="relative">
-                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">R$</span>
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-black text-surface-500">R$</span>
                             <input 
                               type="number"
-                              className="w-full bg-slate-100 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-black text-right focus:ring-2 focus:ring-indigo-500"
+                              className="w-full bg-surface-800 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-black text-right focus:ring-2 focus:ring-indigo-500"
                               value={item.unitPrice}
                               onChange={(e) => updateItemField(idx, 'unitPrice', e.target.value)}
                             />
@@ -423,7 +423,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4 text-right">
                           <button 
                             onClick={() => removeItem(idx)}
-                            className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                            className="p-2 text-surface-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -431,10 +431,10 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="bg-slate-50 border-t border-slate-200">
+                  <tfoot className="bg-surface-950/40 border-t border-white/10">
                     <tr>
-                      <td colSpan={3} className="px-6 py-6 font-black uppercase tracking-widest text-xs text-slate-500 text-right">Valor Total da O.S.</td>
-                      <td className="px-6 py-6 text-right font-black text-2xl text-slate-900">
+                      <td colSpan={3} className="px-6 py-6 font-black uppercase tracking-widest text-xs text-surface-400 text-right">Valor Total da O.S.</td>
+                      <td className="px-6 py-6 text-right font-black text-2xl text-surface-50">
                         R$ {totalCalculated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </td>
                       <td></td>
@@ -444,7 +444,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 text-red-700 rounded-2xl flex items-center gap-3 text-sm font-bold border border-red-100 shadow-sm">
+                <div className="p-4 bg-red-500/10 text-red-300 rounded-2xl flex items-center gap-3 text-sm font-bold border border-red-500/25 shadow-sm">
                   <AlertCircle size={20} />
                   {error}
                 </div>
@@ -454,10 +454,10 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
+        <div className="p-6 border-t border-white/5 bg-surface-950/40 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-200 transition-all"
+            className="px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest text-surface-400 hover:bg-white/10 transition-all"
           >
             Cancelar
           </button>
@@ -465,7 +465,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
             <button
               disabled={loading}
               onClick={handleConfirm}
-              className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2"
+              className="px-8 py-3 bg-gold-500 text-surface-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gold-400 transition-all shadow-xl shadow-black/40 flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {isAppendMode ? 'Importar na O.S. Aberta' : 'Confirmar e Abrir O.S.'}

@@ -48,7 +48,8 @@ Foi aprovada uma nova identidade visual: **tema dark premium com acento dourado*
 - `C:\sygmaauto\OPERACIONAL_INTERFACE.md`: documentação atualizada com nova diretriz
 - `C:\sygmaauto\README.md`, `C:\sygmaauto\ROADMAP.md`, `C:\sygmaauto\INDEX.md`: atualizados
 - **Camada 3 (Atendimento):** CustomersPage e VehiclesPage migradas de zinc/slate + `bg-white` → `surface` + `gold` (cards `surface-900`, tabelas/linhas com hover `white/5`, inputs foco dourado, botão primário `gold-500`, overlay de modal `black/60`). AgendaPage: neutros → surface, acento "hoje" azul → dourado, e chips de status agora usam o mesmo sistema de "tone" do ServiceOrdersPage (neutral/golden/positive/negative). Nenhuma das 3 usava `alert()` (erro já é inline).
-- **Próximo alvo:** Camada 4 — Oficina/Kanban (ServicesPage, InventoryPage, KanbanPage, KanbanRecepcaoPage, KanbanRetificaPage, RetificaMotoresPage + modais).
+- **Camada 4 (Oficina/Kanban):** ServicesPage, InventoryPage, RetificaMotoresPage migradas (slate + `bg-white` → surface + gold). Kanban trio (Kanban, KanbanRecepcao, KanbanRetifica) já eram dark — ajuste fino de neutros para `surface`, preservando `bg-white/N` (overlays) e a codificação de cor por coluna (`KANBAN_COLUMNS` já usava `border-*-500` / `bg-*-500/10` / `dot-*-400`, ótimos para dark). Chips de status coloridos preservam matiz mas viram versões escuras (`bg-*-500/15 text-*-300`). Modais (Metrologia, Checklist, ImportOS, ImportNF, LaudoRetifica) unificados: overlay `black/60`, container `surface-900`. `alert()` removido de ServicesPage (5), InventoryPage (2), ChecklistModal (1), LaudoRetificaModal (1) → `useToast().error()`.
+- **Próximo alvo:** Camada 5 — Financeiro/relatórios/admin (Financial, DRE, KPIs, Commissions, Reports, NPS, SuperAdmin, Settings, Maintenance, Support, UserManual, Dashboard, Users, Whatsapp).
 
 ### Referências
 - Análise completa: `C:\sygmaauto\DESIGN_REVIEW_SISTEMA.md`

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Printer, FileText } from 'lucide-react';
 import { pdfApi } from '../api/client';
 import type { MetrologiaData } from './MetrologiaModal';
+import { useToast } from './ui';
 
 // ─── Estilos do documento ──────────────────────────────────────────────────────
 const DOC_STYLES = `
@@ -358,6 +359,7 @@ interface Props {
 }
 
 export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
+  const toast = useToast();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Extrai metrologia do campo notes
@@ -385,7 +387,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert('Erro ao gerar laudo em PDF com Puppeteer.');
+      toast.error('Erro ao gerar laudo em PDF com Puppeteer.');
     }
   };
 
@@ -402,7 +404,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
           initial={{ scale: 0.92, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.92, opacity: 0 }}
-          className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl"
+          className="bg-surface-900 border border-white/10 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
@@ -410,7 +412,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
               <FileText className="text-amber-400 w-5 h-5" />
               <div>
                 <h2 className="text-white font-black text-lg">Laudo Técnico de Retífica</h2>
-                <p className="text-slate-500 text-xs">
+                <p className="text-surface-400 text-xs">
                   OS #{os.id.slice(-6).toUpperCase()} · {os.customer?.name ?? '—'}
                   {metrologia ? ` · ${metrologia.numeroCilindros} cilindros` : ''}
                 </p>
@@ -425,7 +427,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="p-2 text-surface-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
               >
                 <X size={18} />
               </button>
@@ -437,7 +439,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
             ref={iframeRef}
             srcDoc={fullDoc}
             title="Laudo Retífica"
-            className="flex-1 w-full rounded-b-2xl bg-white"
+            className="flex-1 w-full rounded-b-2xl bg-surface-900"
             style={{ border: 'none' }}
           />
         </motion.div>

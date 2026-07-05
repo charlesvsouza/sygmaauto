@@ -19,7 +19,7 @@ const PROGRESS_STEPS = [
 ];
 
 const STATUS_META: Record<string, { label: string; dot: string; badge: string; text: string }> = {
-  ABERTA:               { label: 'Aberta',           dot: 'bg-slate-400',   badge: 'bg-slate-700',      text: 'text-slate-300' },
+  ABERTA:               { label: 'Aberta',           dot: 'bg-surface-500',   badge: 'bg-surface-800',      text: 'text-surface-200' },
   EM_DIAGNOSTICO:       { label: 'Diagnóstico',      dot: 'bg-indigo-400',  badge: 'bg-indigo-500/20',  text: 'text-indigo-300' },
   ORCAMENTO_PRONTO:     { label: 'Orçamento Pronto', dot: 'bg-blue-400',    badge: 'bg-blue-500/20',    text: 'text-blue-300' },
   AGUARDANDO_APROVACAO: { label: 'Ag. Aprovação',    dot: 'bg-orange-400',  badge: 'bg-orange-500/20',  text: 'text-orange-300' },
@@ -96,13 +96,13 @@ function urgencyClass(date: string) {
   const h = (Date.now() - new Date(date).getTime()) / 3_600_000;
   if (h > 48) return 'text-red-400';
   if (h > 24) return 'text-amber-400';
-  return 'text-slate-400';
+  return 'text-surface-400';
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
   const idx = stepIndex(os.status);
-  const meta = STATUS_META[os.status] ?? { label: os.status, dot: 'bg-slate-400', badge: 'bg-slate-700', text: 'text-white' };
+  const meta = STATUS_META[os.status] ?? { label: os.status, dot: 'bg-surface-500', badge: 'bg-surface-800', text: 'text-white' };
   const { level, reason } = getAlertLevel(os);
   const statusRefDate = os.statusChangedAt || os.updatedAt || os.createdAt;
 
@@ -120,7 +120,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-slate-800/60 border-2 ${alertBorder} ${alertPulse} rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all`}
+      className={`bg-surface-800/60 border-2 ${alertBorder} ${alertPulse} rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all`}
     >
       {/* Alerta */}
       {level !== 'none' && (
@@ -134,14 +134,14 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
       {/* Header: veículo + badge + tempo */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-slate-700/80 flex items-center justify-center shrink-0">
-            <Car size={17} className="text-slate-400" />
+          <div className="w-9 h-9 rounded-xl bg-surface-800/80 flex items-center justify-center shrink-0">
+            <Car size={17} className="text-surface-400" />
           </div>
           <div className="min-w-0">
             <p className={`font-black text-white truncate leading-tight ${tvMode ? 'text-lg' : 'text-sm'}`}>
               {os.vehicle?.brand} {os.vehicle?.model}
             </p>
-            <p className="text-slate-500 text-xs font-mono tracking-wide">{os.vehicle?.plate}</p>
+            <p className="text-surface-400 text-xs font-mono tracking-wide">{os.vehicle?.plate}</p>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
@@ -156,14 +156,14 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
 
       {/* Cliente + número */}
       <div className="flex items-center gap-1.5">
-        <User size={11} className="text-slate-500 shrink-0" />
-        <span className="text-slate-300 text-xs truncate flex-1">{os.customer?.name}</span>
-        <span className="text-slate-600 text-xs font-mono shrink-0">#{os.id.slice(-6).toUpperCase()}</span>
+        <User size={11} className="text-surface-400 shrink-0" />
+        <span className="text-surface-200 text-xs truncate flex-1">{os.customer?.name}</span>
+        <span className="text-surface-500 text-xs font-mono shrink-0">#{os.id.slice(-6).toUpperCase()}</span>
       </div>
 
       {/* Queixa */}
       {os.complaint && (
-        <p className="text-slate-500 text-xs truncate italic">"{os.complaint}"</p>
+        <p className="text-surface-400 text-xs truncate italic">"{os.complaint}"</p>
       )}
 
       {/* Barra de progresso */}
@@ -174,12 +174,12 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
               <div
                 className={`w-2.5 h-2.5 rounded-full shrink-0 transition-all duration-300 ${
                   i < idx ? 'bg-emerald-500' :
-                  i === idx ? `${meta.dot} ring-2 ring-white/30 ring-offset-1 ring-offset-slate-800 scale-125` :
-                  'bg-slate-700'
+                  i === idx ? `${meta.dot} ring-2 ring-white/30 ring-offset-1 ring-offset-surface-800 scale-125` :
+                  'bg-surface-800'
                 }`}
               />
               {i < PROGRESS_STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-0.5 rounded-full ${i < idx ? 'bg-emerald-500' : 'bg-slate-700'}`} />
+                <div className={`flex-1 h-0.5 mx-0.5 rounded-full ${i < idx ? 'bg-emerald-500' : 'bg-surface-800'}`} />
               )}
             </div>
           ))}
@@ -191,8 +191,8 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
             <div key={step.status} className="flex-1 last:flex-none min-w-0 text-center">
               <span className={`text-[8px] leading-none block truncate ${
                 i === idx ? `font-bold ${meta.text}` :
-                i < idx ? 'text-emerald-600' :
-                'text-slate-600'
+                i < idx ? 'text-emerald-400' :
+                'text-surface-500'
               }`}>
                 {step.short}
               </span>
@@ -279,13 +279,13 @@ export function KanbanRecepcaoPage() {
   const prontos = orders.filter(o => o.status === 'PRONTO_ENTREGA').length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-surface-950">
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-4' : 'py-3'}`}>
         <div className="flex items-start gap-3">
           <button
             onClick={() => navigate('/dashboard')}
-            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all shrink-0"
             aria-label="Voltar para dashboard"
           >
             <ArrowLeft size={18} />
@@ -295,7 +295,7 @@ export function KanbanRecepcaoPage() {
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Painel de Recepção
             </h1>
-            <p className="text-slate-500 text-xs">
+            <p className="text-surface-400 text-xs">
               {tenant?.name} · {orders.length} veículo{orders.length !== 1 ? 's' : ''} em serviço · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           </div>
@@ -304,13 +304,13 @@ export function KanbanRecepcaoPage() {
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <button
             onClick={() => load(false)}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+            className="p-2 text-surface-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
           <button
             onClick={() => setAutoView((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/5 text-surface-400 hover:text-white'}`}
             title="Alterna automaticamente entre as 4 perspectivas a cada 2 minutos"
           >
             <RefreshCw size={14} className={autoView ? 'animate-spin' : ''} />
@@ -318,7 +318,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setTvMode(v => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -330,7 +330,7 @@ export function KanbanRecepcaoPage() {
       <div className="flex items-center gap-2 px-6 py-2.5 border-b border-white/5 overflow-x-auto">
         <button
           onClick={() => setFilterKey('TODOS')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${filterKey === 'TODOS' ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${filterKey === 'TODOS' ? 'bg-white/10 text-white' : 'text-surface-400 hover:text-white hover:bg-white/5'}`}
         >
           Todos
           <span className="bg-white/10 px-1.5 py-0.5 rounded-full font-black text-white">{orders.length}</span>
@@ -343,10 +343,10 @@ export function KanbanRecepcaoPage() {
             <button
               key={g.key}
               onClick={() => setFilterKey(active ? 'TODOS' : g.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${active ? `${g.activeBg} ${g.color}` : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${active ? `${g.activeBg} ${g.color}` : 'text-surface-400 hover:text-white hover:bg-white/5'}`}
             >
               {g.label}
-              <span className={`px-1.5 py-0.5 rounded-full font-black ${count > 0 ? `${g.activeBg} ${g.color}` : 'bg-white/5 text-slate-600'}`}>
+              <span className={`px-1.5 py-0.5 rounded-full font-black ${count > 0 ? `${g.activeBg} ${g.color}` : 'bg-white/5 text-surface-500'}`}>
                 {count}
               </span>
             </button>
@@ -392,7 +392,7 @@ export function KanbanRecepcaoPage() {
           <Loader2 className="animate-spin text-purple-400" size={40} />
         </div>
       ) : displayed.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-600">
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-surface-500">
           <Car size={48} />
           <p className="text-sm">Nenhum veículo em serviço no momento</p>
         </div>

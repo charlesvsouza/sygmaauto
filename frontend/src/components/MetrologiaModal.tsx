@@ -199,10 +199,10 @@ function NumStepper({ value, onChange }: { value: number; onChange: (n: number) 
   return (
     <div className="flex items-center gap-2">
       <button type="button" onClick={() => onChange(Math.max(1, value - 1))}
-        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"><Minus size={12} /></button>
+        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-surface-600 transition-colors"><Minus size={12} /></button>
       <span className="w-6 text-center text-white font-black text-sm">{value}</span>
       <button type="button" onClick={() => onChange(Math.min(16, value + 1))}
-        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"><Plus size={12} /></button>
+        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-surface-600 transition-colors"><Plus size={12} /></button>
     </div>
   );
 }
@@ -227,7 +227,7 @@ function Section({ title, color = 'blue', open, onToggle, children }: {
 function NInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <input type="number" step="0.001" min="0" value={value} onChange={(e) => onChange(e.target.value)} placeholder="—"
-      className="w-24 bg-slate-800 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500/60 placeholder:text-slate-600" />
+      className="w-24 bg-surface-800 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
   );
 }
 
@@ -240,7 +240,7 @@ function JournalTable({ rows, update, dotColor = 'blue' }: {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
-        <thead><tr className="text-slate-500 text-left">
+        <thead><tr className="text-surface-400 text-left">
           <th className="py-1.5 pr-3 w-10">#</th>
           <th className="py-1.5 pr-2">Ø Nominal (mm)</th>
           <th className="py-1.5 pr-2">Ø Medido (mm)</th>
@@ -270,7 +270,7 @@ function BoreTable({ rows, update }: {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
-        <thead><tr className="text-slate-500 text-left">
+        <thead><tr className="text-surface-400 text-left">
           <th className="py-1.5 pr-3 w-10">#</th>
           <th className="py-1.5 pr-2">Ø Nominal (mm)</th>
           <th className="py-1.5">Ø Medido (mm)</th>
@@ -396,7 +396,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4"
         onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
         <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-          className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl">
+          className="bg-surface-900 border border-white/10 rounded-2xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl">
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
@@ -408,7 +408,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <h2 className="text-white font-black text-lg">
                   {step === 1 ? 'Ficha de Metrologia' : 'Diagnóstico Técnico'}
                 </h2>
-                <p className="text-slate-500 text-xs">
+                <p className="text-surface-400 text-xs">
                   {step === 1
                     ? `OS #${osNumber} · passo 1 de 2 — preencha as medidas do motor`
                     : `OS #${osNumber} · passo 2 de 2 — confirme serviços e peças sugeridos`}
@@ -421,7 +421,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 1 ? 'bg-blue-500' : 'bg-white/20'}`} />
                 <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 2 ? 'bg-emerald-500' : 'bg-white/20'}`} />
               </div>
-              <button type="button" onClick={onCancel} className="p-2 text-slate-500 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
+              <button type="button" onClick={onCancel} className="p-2 text-surface-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -435,16 +435,16 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               <Section title="Empenamentos" open={open.emp} onToggle={() => toggle('emp')}>
                 <div className="grid grid-cols-2 gap-4 mt-1">
                   <div>
-                    <label className="text-slate-400 text-xs font-semibold block mb-1.5">Empenamento — Face do cabeçote (mm)</label>
+                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do cabeçote (mm)</label>
                     <input type="number" step="0.001" min="0" value={empCab} onChange={(e) => setEmpCab(e.target.value)} placeholder="ex: 0.050"
-                      className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-slate-600" />
-                    <p className="text-slate-600 text-[10px] mt-1">Limite típico: 0,05 mm</p>
+                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
+                    <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                   <div>
-                    <label className="text-slate-400 text-xs font-semibold block mb-1.5">Empenamento — Face do bloco (mm)</label>
+                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do bloco (mm)</label>
                     <input type="number" step="0.001" min="0" value={empBlo} onChange={(e) => setEmpBlo(e.target.value)} placeholder="ex: 0.050"
-                      className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-slate-600" />
-                    <p className="text-slate-600 text-[10px] mt-1">Limite típico: 0,05 mm</p>
+                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
+                    <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                 </div>
               </Section>
@@ -452,12 +452,12 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {/* Cilindros */}
               <Section title={`Cilindros (${numCyl})`} open={open.cil} onToggle={() => toggle('cil')}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-slate-400 text-xs font-semibold">Número de cilindros:</span>
+                  <span className="text-surface-500 text-xs font-semibold">Número de cilindros:</span>
                   <NumStepper value={numCyl} onChange={handleNumCyl} />
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
-                    <thead><tr className="text-slate-500 text-left">
+                    <thead><tr className="text-surface-400 text-left">
                       <th className="py-1.5 pr-3 w-10">Cil.</th>
                       <th className="py-1.5 pr-2">Ø Nominal (mm)</th>
                       <th className="py-1.5 pr-2">Ø Medido (mm)</th>
@@ -484,9 +484,9 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {/* Munhões principais */}
               <Section title={`Munhões do Virabrequim — Principais (${numMun})`} color="amber" open={open.mun} onToggle={() => toggle('mun')}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-slate-400 text-xs font-semibold">Quantidade:</span>
+                  <span className="text-surface-500 text-xs font-semibold">Quantidade:</span>
                   <NumStepper value={numMun} onChange={(n) => { setNumMun(n); setMunhoes((p) => adjustArr(p, n, EMPTY_JOURNAL)); }} />
-                  <span className="text-slate-600 text-[10px]">(geralmente cilindros + 1)</span>
+                  <span className="text-surface-300 text-[10px]">(geralmente cilindros + 1)</span>
                 </div>
                 <JournalTable rows={munhoes} update={updJou(setMunhoes)} dotColor="amber" />
               </Section>
@@ -494,7 +494,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {/* Moentes */}
               <Section title={`Moentes do Virabrequim — Munhões de Biela (${numMoe})`} color="amber" open={open.moe} onToggle={() => toggle('moe')}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-slate-400 text-xs font-semibold">Quantidade:</span>
+                  <span className="text-surface-500 text-xs font-semibold">Quantidade:</span>
                   <NumStepper value={numMoe} onChange={(n) => { setNumMoe(n); setMoentes((p) => adjustArr(p, n, EMPTY_JOURNAL)); }} />
                 </div>
                 <JournalTable rows={moentes} update={updJou(setMoentes)} dotColor="amber" />
@@ -503,7 +503,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {/* Mancais do bloco */}
               <Section title={`Mancais de Apoio do Bloco (${numMan})`} open={open.man} onToggle={() => toggle('man')}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-slate-400 text-xs font-semibold">Quantidade:</span>
+                  <span className="text-surface-500 text-xs font-semibold">Quantidade:</span>
                   <NumStepper value={numMan} onChange={(n) => { setNumMan(n); setMancais((p) => adjustArr(p, n, EMPTY_BORE)); }} />
                 </div>
                 <BoreTable rows={mancais} update={updBor(setMancais)} />
@@ -512,7 +512,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {/* Bielas */}
               <Section title={`Diâmetro Interno das Cabeças de Biela (${numBie})`} open={open.bie} onToggle={() => toggle('bie')}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-slate-400 text-xs font-semibold">Quantidade:</span>
+                  <span className="text-surface-500 text-xs font-semibold">Quantidade:</span>
                   <NumStepper value={numBie} onChange={(n) => { setNumBie(n); setBielas((p) => adjustArr(p, n, EMPTY_BORE)); }} />
                 </div>
                 <BoreTable rows={bielas} update={updBor(setBielas)} />
@@ -522,15 +522,15 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               <Section title="Técnico & Observações" open={open.fin} onToggle={() => toggle('fin')}>
                 <div className="grid grid-cols-2 gap-4 mt-1">
                   <div>
-                    <label className="text-slate-400 text-xs font-semibold block mb-1.5">Técnico responsável</label>
+                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Técnico responsável</label>
                     <input value={tecnico} onChange={(e) => setTecnico(e.target.value)} placeholder="Nome do técnico"
-                      className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors" />
+                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors" />
                   </div>
                   <div>
-                    <label className="text-slate-400 text-xs font-semibold block mb-1.5">Observações técnicas</label>
+                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Observações técnicas</label>
                     <textarea value={obs} onChange={(e) => setObs(e.target.value)}
                       placeholder="Desgaste irregular, trincas, recomendações..." rows={2}
-                      className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors resize-none" />
+                      className="w-full bg-surface-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors resize-none" />
                   </div>
                 </div>
               </Section>
@@ -573,7 +573,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           className="mt-0.5 accent-blue-500 w-3.5 h-3.5 shrink-0" />
                         <div className="min-w-0">
                           <p className="text-white text-xs font-semibold leading-snug">{it.description}</p>
-                          <p className="text-slate-500 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
+                          <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                       </label>
                     ))}
@@ -602,7 +602,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           className="mt-0.5 accent-amber-500 w-3.5 h-3.5 shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-white text-xs font-semibold leading-snug">{it.description}</p>
-                          <p className="text-slate-500 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
+                          <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                         {it.quantity > 1 && (
                           <span className="text-[10px] text-amber-400 font-black shrink-0 mt-0.5">× {it.quantity}</span>
@@ -614,7 +614,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               )}
 
               {diagItems.length === 0 && (
-                <div className="text-center py-8 text-slate-500 text-xs">
+                <div className="text-center py-8 text-surface-400 text-xs">
                   Nenhuma anomalia detectada nas medidas informadas. Você pode adicionar itens manualmente.
                   <div className="flex justify-center gap-3 mt-4">
                     <button type="button" onClick={() => addCustomItem('service')} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-300 rounded-lg text-xs font-semibold"><Wrench size={12} /> Serviço</button>
@@ -627,7 +627,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {selectedCount > 0 && (
                 <div className="rounded-xl border border-white/10 bg-white/3 px-4 py-2.5 flex items-center gap-2">
                   <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
-                  <p className="text-slate-300 text-xs">
+                  <p className="text-surface-600 text-xs">
                     <span className="font-black text-white">{selectedCount}</span> ite{selectedCount > 1 ? 'ns' : 'm'} selecionado{selectedCount > 1 ? 's' : ''} para adicionar à OS
                   </p>
                 </div>
@@ -640,7 +640,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
           <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 shrink-0">
             {step === 1 ? (
               <>
-                <button type="button" onClick={onCancel} className="px-4 py-2 text-slate-400 hover:text-white text-sm font-semibold transition-colors">
+                <button type="button" onClick={onCancel} className="px-4 py-2 text-surface-500 hover:text-white text-sm font-semibold transition-colors">
                   Cancelar
                 </button>
                 <button type="button" onClick={goToStep2}
@@ -650,7 +650,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               </>
             ) : (
               <>
-                <button type="button" onClick={() => setStep(1)} className="flex items-center gap-1.5 px-4 py-2 text-slate-400 hover:text-white text-sm font-semibold transition-colors">
+                <button type="button" onClick={() => setStep(1)} className="flex items-center gap-1.5 px-4 py-2 text-surface-500 hover:text-white text-sm font-semibold transition-colors">
                   <ChevronLeft size={15} /> Voltar às medidas
                 </button>
                 <button type="button" onClick={handleSave} disabled={saving || saved}

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { checklistApi } from '../api/client';
 import { X, Loader2, CheckCircle2, Camera, Trash2, ChevronDown } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useToast } from './ui';
 
 // ─── Áreas do veículo ──────────────────────────────────────────────────────
 const AREAS = [
@@ -25,11 +26,11 @@ const AREAS = [
 type Condition = 'OK' | 'RISCO' | 'AMASSADO' | 'QUEBRADO' | 'AUSENTE' | '';
 
 const CONDITIONS: { key: Condition; label: string; color: string }[] = [
-  { key: 'OK',       label: 'OK',       color: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
-  { key: 'RISCO',    label: 'Risco',    color: 'bg-amber-100 text-amber-700 border-amber-300' },
-  { key: 'AMASSADO', label: 'Amassado', color: 'bg-orange-100 text-orange-700 border-orange-300' },
-  { key: 'QUEBRADO', label: 'Quebrado', color: 'bg-red-100 text-red-700 border-red-300' },
-  { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-slate-100 text-slate-500 border-slate-300' },
+  { key: 'OK',       label: 'OK',       color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40' },
+  { key: 'RISCO',    label: 'Risco',    color: 'bg-amber-500/15 text-amber-300 border-amber-500/40' },
+  { key: 'AMASSADO', label: 'Amassado', color: 'bg-orange-500/15 text-orange-300 border-orange-500/40' },
+  { key: 'QUEBRADO', label: 'Quebrado', color: 'bg-red-500/15 text-red-300 border-red-500/40' },
+  { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-surface-800 text-surface-400 border-white/15' },
 ];
 
 interface ItemState {
@@ -85,6 +86,7 @@ function defaultItems(): ItemsMap {
 }
 
 export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onSaved }: Props) {
+  const toast = useToast();
   const [items, setItems] = useState<ItemsMap>(defaultItems);
   const [fuelLevel, setFuelLevel] = useState(4);
   const [observations, setObservations] = useState('');
@@ -176,7 +178,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
       }, 800);
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar checklist. Tente novamente.');
+      toast.error('Erro ao salvar checklist. Tente novamente.');
     } finally {
       setSaving(false);
     }
@@ -187,33 +189,33 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-4 px-2">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col">
+      <div className="bg-surface-900 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-2xl z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 bg-surface-900 rounded-t-2xl z-10">
           <div>
-            <h2 className="text-base font-bold text-slate-900">{title}</h2>
+            <h2 className="text-base font-bold text-surface-50">{title}</h2>
             {orderNumber && (
-              <p className="text-xs text-slate-500 mt-0.5">OS #{orderNumber}</p>
+              <p className="text-xs text-surface-400 mt-0.5">OS #{orderNumber}</p>
             )}
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition">
+          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-lg transition">
             <X size={18} />
           </button>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-slate-400" size={32} />
+            <Loader2 className="animate-spin text-surface-500" size={32} />
           </div>
         ) : (
           <div className="p-6 space-y-6 overflow-y-auto">
             {/* Responsável */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label className="block text-xs font-semibold text-surface-300 mb-1">
                 Responsável pela vistoria
               </label>
               <input
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
+                className="w-full border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/30"
                 placeholder="Nome do mecânico / recepcionista"
                 value={completedBy}
                 onChange={(e) => setCompletedBy(e.target.value)}
@@ -222,7 +224,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
             {/* Nível de combustível */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-2">
+              <label className="block text-xs font-semibold text-surface-300 mb-2">
                 Nível de Combustível
               </label>
               <div className="flex items-center gap-1">
@@ -233,8 +235,8 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                     className={cn(
                       'flex-1 h-8 rounded-lg text-xs font-bold border transition',
                       fuelLevel === i
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100',
+                        ? 'bg-gold-500 text-surface-950 border-surface-600'
+                        : 'bg-surface-950/40 text-surface-400 border-white/10 hover:bg-white/5',
                     )}
                     title={FUEL_LABELS[i]}
                   >
@@ -242,16 +244,16 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-slate-400 mt-1 text-center">{FUEL_LABELS[fuelLevel]}</p>
+              <p className="text-xs text-surface-500 mt-1 text-center">{FUEL_LABELS[fuelLevel]}</p>
             </div>
 
             {/* Itens por área */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-slate-600">
+                <label className="text-xs font-semibold text-surface-300">
                   Condição das Áreas
                 </label>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-surface-500">
                   {markedCount}/{AREAS.length} marcadas
                 </span>
               </div>
@@ -262,11 +264,11 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                   return (
                     <div
                       key={area.key}
-                      className="border border-slate-200 rounded-xl overflow-hidden"
+                      className="border border-white/10 rounded-xl overflow-hidden"
                     >
                       {/* Area header row */}
-                      <div className="flex items-center gap-2 px-3 py-2 bg-slate-50">
-                        <span className="text-xs font-semibold text-slate-700 flex-1">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-surface-950/40">
+                        <span className="text-xs font-semibold text-surface-200 flex-1">
                           {area.label}
                         </span>
                         {/* Condition buttons */}
@@ -279,7 +281,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                                 'text-[10px] font-bold px-2 py-0.5 rounded-lg border transition',
                                 item.condition === c.key
                                   ? c.color + ' shadow-sm'
-                                  : 'bg-white text-slate-400 border-slate-200 hover:bg-slate-100',
+                                  : 'bg-surface-900 text-surface-500 border-white/10 hover:bg-white/5',
                               )}
                             >
                               {c.label}
@@ -289,7 +291,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                         {/* Expand toggle */}
                         <button
                           onClick={() => toggleExpand(area.key)}
-                          className="p-1 hover:bg-slate-200 rounded transition"
+                          className="p-1 hover:bg-white/10 rounded transition"
                         >
                           <ChevronDown
                             size={14}
@@ -300,9 +302,9 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
                       {/* Expanded: notes + photos */}
                       {item.expanded && (
-                        <div className="px-3 py-2 border-t border-slate-100 space-y-2 bg-white">
+                        <div className="px-3 py-2 border-t border-white/5 space-y-2 bg-surface-900">
                           <input
-                            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-slate-300"
+                            className="w-full border border-white/10 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-gold-500/30"
                             placeholder="Observação sobre esta área (opcional)"
                             value={item.notes}
                             onChange={(e) => setNotes(area.key, e.target.value)}
@@ -314,7 +316,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                                 <img
                                   src={`data:${p.mimeType};base64,${p.data}`}
                                   alt=""
-                                  className="w-16 h-16 object-cover rounded-lg border border-slate-200"
+                                  className="w-16 h-16 object-cover rounded-lg border border-white/10"
                                 />
                                 <button
                                   onClick={() => removePhoto(area.key, idx)}
@@ -327,7 +329,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                             {item.photos.length < 3 && (
                               <button
                                 onClick={() => openCamera(area.key)}
-                                className="w-16 h-16 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:border-slate-400 hover:bg-slate-50 transition text-[10px] gap-1"
+                                className="w-16 h-16 rounded-lg border-2 border-dashed border-white/15 flex flex-col items-center justify-center text-surface-500 hover:border-white/20 hover:bg-white/5 transition text-[10px] gap-1"
                               >
                                 <Camera size={16} />
                                 <span>Foto</span>
@@ -344,12 +346,12 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
             {/* Observações gerais */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label className="block text-xs font-semibold text-surface-300 mb-1">
                 Observações Gerais
               </label>
               <textarea
                 rows={3}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 resize-none"
+                className="w-full border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/30 resize-none"
                 placeholder="Detalhes adicionais sobre a vistoria…"
                 value={observations}
                 onChange={(e) => setObservations(e.target.value)}
@@ -360,10 +362,10 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
         {/* Footer */}
         {!loading && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 sticky bottom-0 bg-white rounded-b-2xl">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/5 sticky bottom-0 bg-surface-900 rounded-b-2xl">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+              className="px-4 py-2 text-sm font-semibold text-surface-300 hover:bg-white/5 rounded-xl transition"
             >
               Cancelar
             </button>
@@ -374,7 +376,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                 'flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition',
                 saved
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-60',
+                  : 'bg-gold-500 text-surface-950 hover:bg-gold-400 disabled:opacity-60',
               )}
             >
               {saved ? (

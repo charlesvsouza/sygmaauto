@@ -25,17 +25,17 @@ const entryModes = [
 export function RetificaMotoresPage() {
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-white/10 bg-surface-900 p-6 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Modo especializado</p>
-            <h1 className="mt-2 text-3xl font-black text-slate-900">Retífica de Motores</h1>
-            <p className="mt-3 max-w-3xl text-sm text-slate-600">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-400">Modo especializado</p>
+            <h1 className="mt-2 text-3xl font-black text-surface-50">Retífica de Motores</h1>
+            <p className="mt-3 max-w-3xl text-sm text-surface-300">
               Esta area concentra a operacao hibrida de oficina + retifica. O tenant pode receber um veiculo com diagnostico de motor
               ou receber apenas o motor avulso, mantendo o mesmo trilho tecnico de desmontagem, medicao, aprovacao e entrega.
             </p>
           </div>
-          <div className="rounded-2xl bg-amber-50 p-3 text-amber-700">
+          <div className="rounded-2xl bg-amber-500/10 p-3 text-amber-300">
             <Cog className="h-8 w-8" />
           </div>
         </div>
@@ -43,43 +43,43 @@ export function RetificaMotoresPage() {
 
       <section className="grid gap-4 lg:grid-cols-2">
         {entryModes.map((mode) => (
-          <div key={mode.title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div key={mode.title} className="rounded-2xl border border-white/10 bg-surface-900 p-5 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
+              <div className="rounded-xl bg-surface-800 p-2 text-surface-200">
                 <mode.icon className="h-5 w-5" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900">{mode.title}</h2>
+              <h2 className="text-lg font-bold text-surface-50">{mode.title}</h2>
             </div>
-            <p className="mt-3 text-sm text-slate-600">{mode.description}</p>
+            <p className="mt-3 text-sm text-surface-300">{mode.description}</p>
           </div>
         ))}
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-white/10 bg-surface-900 p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-slate-700" />
-            <h2 className="text-lg font-bold text-slate-900">Fluxo operacional previsto</h2>
+            <ClipboardList className="h-5 w-5 text-surface-200" />
+            <h2 className="text-lg font-bold text-surface-50">Fluxo operacional previsto</h2>
           </div>
           <div className="mt-4 space-y-3">
             {flowSteps.map((step, index) => (
-              <div key={step} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-black text-white">
+              <div key={step} className="flex items-start gap-3 rounded-xl border border-white/5 bg-surface-950/40 p-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-900 text-xs font-black text-white">
                   {index + 1}
                 </div>
-                <p className="text-sm font-medium text-slate-700">{step}</p>
+                <p className="text-sm font-medium text-surface-200">{step}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-white/10 bg-surface-900 p-5 shadow-sm">
             <div className="flex items-center gap-2">
-              <Gauge className="h-5 w-5 text-slate-700" />
-              <h2 className="text-lg font-bold text-slate-900">Escopo da proxima etapa</h2>
+              <Gauge className="h-5 w-5 text-surface-200" />
+              <h2 className="text-lg font-bold text-surface-50">Escopo da proxima etapa</h2>
             </div>
-            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+            <ul className="mt-4 space-y-2 text-sm text-surface-300">
               <li>Cadastro tecnico do motor e origem da entrada</li>
               <li>O.S. com tipo especifico de retifica</li>
               <li>Checklist de metrologia e montagem</li>
@@ -88,20 +88,20 @@ export function RetificaMotoresPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <Wrench className="h-5 w-5 text-amber-600" />
-              <p className="mt-3 text-sm font-bold text-slate-900">Desmontagem</p>
-              <p className="mt-1 text-xs text-slate-500">Abertura tecnica do motor e inventario interno.</p>
+            <div className="rounded-2xl border border-white/10 bg-surface-900 p-4 shadow-sm">
+              <Wrench className="h-5 w-5 text-amber-400" />
+              <p className="mt-3 text-sm font-bold text-surface-50">Desmontagem</p>
+              <p className="mt-1 text-xs text-surface-400">Abertura tecnica do motor e inventario interno.</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <Gauge className="h-5 w-5 text-amber-600" />
-              <p className="mt-3 text-sm font-bold text-slate-900">Metrologia</p>
-              <p className="mt-1 text-xs text-slate-500">Medicoes, tolerancias e decisao tecnica do reparo.</p>
+            <div className="rounded-2xl border border-white/10 bg-surface-900 p-4 shadow-sm">
+              <Gauge className="h-5 w-5 text-amber-400" />
+              <p className="mt-3 text-sm font-bold text-surface-50">Metrologia</p>
+              <p className="mt-1 text-xs text-surface-400">Medicoes, tolerancias e decisao tecnica do reparo.</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <Car className="h-5 w-5 text-amber-600" />
-              <p className="mt-3 text-sm font-bold text-slate-900">Entrega</p>
-              <p className="mt-1 text-xs text-slate-500">Retorno do motor ou do veiculo com rastreabilidade.</p>
+            <div className="rounded-2xl border border-white/10 bg-surface-900 p-4 shadow-sm">
+              <Car className="h-5 w-5 text-amber-400" />
+              <p className="mt-3 text-sm font-bold text-surface-50">Entrega</p>
+              <p className="mt-1 text-xs text-surface-400">Retorno do motor ou do veiculo com rastreabilidade.</p>
             </div>
           </div>
         </div>

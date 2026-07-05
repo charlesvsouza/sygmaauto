@@ -14,7 +14,7 @@ import { PHASE_SLA_HOURS } from '../lib/retificaConstants';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
 const KANBAN_COLUMNS = [
-  { status: 'ABERTA',                        label: 'Recebido',             color: 'border-slate-500',   bg: 'bg-slate-500/10',   dot: 'bg-slate-400' },
+  { status: 'ABERTA',                        label: 'Recebido',             color: 'border-surface-600',   bg: 'bg-slate-500/10',   dot: 'bg-surface-500' },
   { status: 'DESMONTAGEM',                   label: 'Desmontagem',          color: 'border-orange-500',  bg: 'bg-orange-500/10',  dot: 'bg-orange-400' },
   { status: 'METROLOGIA',                    label: 'Metrologia',           color: 'border-blue-500',    bg: 'bg-blue-500/10',    dot: 'bg-blue-400' },
   { status: 'ORCAMENTO_RETIFICA',            label: 'Orç. Técnico',         color: 'border-indigo-500',  bg: 'bg-indigo-500/10',  dot: 'bg-indigo-400' },
@@ -77,7 +77,7 @@ function urgencyColor(os: any) {
   const { level } = getAlertLevel(os);
   if (level === 'danger') return 'text-red-400';
   if (level === 'warning') return 'text-amber-400';
-  return 'text-slate-400';
+  return 'text-surface-400';
 }
 
 // ─── Card especializado para retífica ─────────────────────────────────────────
@@ -134,7 +134,7 @@ function RetificaCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-slate-800/60 border-2 ${focused ? 'border-cyan-300 shadow-[0_0_0_3px_rgba(34,211,238,0.25)]' : alertBorder} rounded-xl p-3 space-y-2 hover:border-white/20 transition-all ${tvMode ? 'text-sm' : 'text-xs'} ${level === 'danger' ? 'animate-pulse' : ''}`}
+      className={`bg-surface-800/60 border-2 ${focused ? 'border-cyan-300 shadow-[0_0_0_3px_rgba(34,211,238,0.25)]' : alertBorder} rounded-xl p-3 space-y-2 hover:border-white/20 transition-all ${tvMode ? 'text-sm' : 'text-xs'} ${level === 'danger' ? 'animate-pulse' : ''}`}
     >
       {focused && (
         <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black bg-cyan-500/15 text-cyan-300">
@@ -168,21 +168,21 @@ function RetificaCard({
       <div className="flex items-center gap-1.5 text-white/80">
         {isMotorAvulso
           ? <Package size={tvMode ? 14 : 11} className="shrink-0 text-amber-400" />
-          : <Cog     size={tvMode ? 14 : 11} className="shrink-0 text-slate-400" />
+          : <Cog     size={tvMode ? 14 : 11} className="shrink-0 text-surface-400" />
         }
         <span className="truncate font-semibold">{objectLabel}</span>
-        {subLabel && <span className="text-slate-500 shrink-0">{subLabel}</span>}
+        {subLabel && <span className="text-surface-400 shrink-0">{subLabel}</span>}
       </div>
 
       {/* Cliente */}
-      <div className="flex items-center gap-1.5 text-slate-400">
+      <div className="flex items-center gap-1.5 text-surface-400">
         <User size={tvMode ? 13 : 10} className="shrink-0" />
         <span className="truncate">{os.customer?.name ?? '—'}</span>
       </div>
 
       {/* Queixa / Descrição */}
       {os.complaint && (
-        <p className="text-slate-500 truncate leading-tight">{os.complaint}</p>
+        <p className="text-surface-400 truncate leading-tight">{os.complaint}</p>
       )}
 
       {/* Badges */}
@@ -383,13 +383,13 @@ export function KanbanRetificaPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-surface-950">
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-white/10 ${tvMode ? 'py-3' : 'py-4'}`}>
         <div className="flex items-start gap-3">
           <button
             onClick={() => navigate('/dashboard-retifica')}
-            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all shrink-0"
+            className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all shrink-0"
             aria-label="Voltar para dashboard de retífica"
           >
             <ArrowLeft size={18} />
@@ -399,7 +399,7 @@ export function KanbanRetificaPage() {
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban — Retífica de Motores
             </h1>
-            <p className="text-slate-500 text-xs">
+            <p className="text-surface-400 text-xs">
               {tenant?.name} · {totalActive} motor{totalActive !== 1 ? 'es' : ''} em fluxo · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
@@ -415,14 +415,14 @@ export function KanbanRetificaPage() {
             <>
               <button
                 onClick={() => scrollColumns('left', columnWidth)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
               >
                 <ChevronLeft size={14} />
                 Colunas
               </button>
               <button
                 onClick={() => scrollColumns('right', columnWidth)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 text-surface-200 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
               >
                 Colunas
                 <ChevronRight size={14} />
@@ -431,13 +431,13 @@ export function KanbanRetificaPage() {
           )}
           <button
             onClick={() => load(false)}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+            className="p-2 text-surface-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
           <button
             onClick={() => setTvMode((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -496,7 +496,7 @@ export function KanbanRetificaPage() {
                   >
                     <AnimatePresence>
                       {colOrders.length === 0 ? (
-                        <div className="flex items-center justify-center h-16 text-slate-600 text-xs">
+                        <div className="flex items-center justify-center h-16 text-surface-500 text-xs">
                           vazio
                         </div>
                       ) : (
@@ -525,7 +525,7 @@ export function KanbanRetificaPage() {
 
       {/* Empty state global */}
       {!loading && orders.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-600">
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-surface-500">
           <Cog size={40} className="opacity-30" />
           <p className="text-sm">Nenhum motor em fluxo de retífica no momento.</p>
         </div>

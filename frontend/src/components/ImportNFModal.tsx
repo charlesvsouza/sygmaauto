@@ -131,42 +131,42 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white rounded-[2rem] shadow-2xl w-full max-w-6xl max-h-[92vh] overflow-hidden flex flex-col"
+        className="bg-surface-900 rounded-[2rem] shadow-2xl w-full max-w-6xl max-h-[92vh] overflow-hidden flex flex-col"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-surface-950/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
               <FileSpreadsheet size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Importar Nota Fiscal de Entrada</h2>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">XML/PDF com revisão antes da carga</p>
+              <h2 className="text-lg font-black text-surface-50 uppercase tracking-tight">Importar Nota Fiscal de Entrada</h2>
+              <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">XML/PDF com revisão antes da carga</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
             <X size={18} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
           {error && (
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm font-semibold">
+            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-300 text-sm font-semibold">
               {error}
             </div>
           )}
 
           {step === 'upload' && (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <div className="w-24 h-24 rounded-[2rem] border-2 border-dashed border-slate-300 bg-slate-100 text-slate-400 flex items-center justify-center mb-5">
+              <div className="w-24 h-24 rounded-[2rem] border-2 border-dashed border-white/15 bg-surface-800 text-surface-500 flex items-center justify-center mb-5">
                 <FileUp size={40} />
               </div>
 
-              <h3 className="text-xl font-black text-slate-900">Selecione o arquivo da nota fiscal</h3>
-              <p className="text-sm text-slate-500 mt-2 max-w-md">
+              <h3 className="text-xl font-black text-surface-50">Selecione o arquivo da nota fiscal</h3>
+              <p className="text-sm text-surface-400 mt-2 max-w-md">
                 Aceita XML de NF-e e PDF. O sistema irá mapear código, fornecedor/origem, quantidade e valor unitário.
               </p>
 
@@ -180,13 +180,13 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <label
                 htmlFor="nf-upload"
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 text-white font-black text-sm cursor-pointer hover:bg-slate-800 transition-colors"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gold-500 text-surface-950 font-black text-sm cursor-pointer hover:bg-gold-400 transition-colors"
               >
                 <FileUp size={16} /> Selecionar Arquivo
               </label>
 
               {file && (
-                <p className="mt-3 text-sm font-bold text-slate-700">{file.name}</p>
+                <p className="mt-3 text-sm font-bold text-surface-200">{file.name}</p>
               )}
 
               <button
@@ -203,7 +203,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
           {step === 'review' && data && (
             <div className="space-y-6">
               {Array.isArray(data.warnings) && data.warnings.length > 0 && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800 text-sm font-semibold space-y-1">
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-300 text-sm font-semibold space-y-1">
                   <div className="flex items-center gap-2"><AlertTriangle size={14} /> Atenção</div>
                   {data.warnings.map((w, idx) => (
                     <div key={idx}>{w}</div>
@@ -213,94 +213,94 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Fornecedor</label>
+                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Fornecedor</label>
                   <input
                     value={data.supplier?.name || ''}
                     onChange={(e) => updateSupplierField('name', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-bold"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 text-sm font-bold"
                     placeholder="Nome fornecedor"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Documento</label>
+                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Documento</label>
                   <input
                     value={data.supplier?.document || ''}
                     onChange={(e) => updateSupplierField('document', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 text-sm"
                     placeholder="CNPJ/CPF"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Numero NF</label>
+                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Numero NF</label>
                   <input
                     value={data.invoice?.number || ''}
                     onChange={(e) => updateInvoiceField('number', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 text-sm"
                     placeholder="Numero"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Data Emissao</label>
+                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Data Emissao</label>
                   <input
                     value={data.invoice?.issueDate || ''}
                     onChange={(e) => updateInvoiceField('issueDate', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 text-sm"
                     placeholder="AAAA-MM-DD"
                   />
                 </div>
               </div>
 
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+              <div className="overflow-x-auto border border-white/10 rounded-2xl">
                 <table className="w-full min-w-[980px]">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-surface-950/40 border-b border-white/10">
                     <tr>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Codigo Original</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Descricao</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Origem</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipo</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">NCM</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Qtd</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Vlr Unit.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Un.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Acao</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Codigo Original</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Descricao</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Origem</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Tipo</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">NCM</th>
+                      <th className="px-3 py-3 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Qtd</th>
+                      <th className="px-3 py-3 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Vlr Unit.</th>
+                      <th className="px-3 py-3 text-center text-[10px] font-black text-surface-500 uppercase tracking-widest">Un.</th>
+                      <th className="px-3 py-3 text-center text-[10px] font-black text-surface-500 uppercase tracking-widest">Acao</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/5">
                     {data.items.map((item, idx) => (
                       <tr key={idx}>
                         <td className="px-3 py-2">
                           <input
                             value={item.originalCode || ''}
                             onChange={(e) => updateItemField(idx, 'originalCode', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             value={item.description}
                             onChange={(e) => updateItemField(idx, 'description', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             value={item.origin || ''}
                             onChange={(e) => updateItemField(idx, 'origin', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             value={item.type || ''}
                             onChange={(e) => updateItemField(idx, 'type', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             value={item.ncm || ''}
                             onChange={(e) => updateItemField(idx, 'ncm', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -310,7 +310,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                             step="0.001"
                             value={item.quantity}
                             onChange={(e) => updateItemField(idx, 'quantity', Number(e.target.value))}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs text-right"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs text-right"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -320,21 +320,21 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                             step="0.01"
                             value={item.unitPrice}
                             onChange={(e) => updateItemField(idx, 'unitPrice', Number(e.target.value))}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs text-right"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs text-right"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             value={item.unit || 'un'}
                             onChange={(e) => updateItemField(idx, 'unit', e.target.value)}
-                            className="w-full px-2 py-2 rounded-lg border border-slate-200 text-xs text-center"
+                            className="w-full px-2 py-2 rounded-lg border border-white/10 text-xs text-center"
                           />
                         </td>
                         <td className="px-3 py-2 text-center">
                           <button
                             type="button"
                             onClick={() => removeItem(idx)}
-                            className="px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg"
+                            className="px-2 py-1 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-lg"
                           >
                             Remover
                           </button>
@@ -345,14 +345,14 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 </table>
               </div>
 
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                <div className="text-sm text-slate-700 font-semibold">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-surface-950/40 border border-white/10 rounded-2xl p-4">
+                <div className="text-sm text-surface-200 font-semibold">
                   Itens: <strong>{data.items.length}</strong> | Valor total: <strong>R$ {totalAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setStep('upload')}
-                    className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm"
+                    className="px-5 py-2.5 rounded-xl border border-white/15 text-surface-200 font-bold text-sm"
                   >
                     Voltar
                   </button>
