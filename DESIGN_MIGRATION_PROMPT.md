@@ -47,7 +47,8 @@ Foi aprovada uma nova identidade visual: **tema dark premium com acento dourado*
 - `C:\sygmaauto\design-system-board.html`: artefato de referência visual com 3 variantes (Conservadora, Forte, Divergente)
 - `C:\sygmaauto\OPERACIONAL_INTERFACE.md`: documentação atualizada com nova diretriz
 - `C:\sygmaauto\README.md`, `C:\sygmaauto\ROADMAP.md`, `C:\sygmaauto\INDEX.md`: atualizados
-- **Próximo alvo:** Camada 3 — Atendimento/OS/agenda (AgendaPage, CustomersPage, VehiclesPage).
+- **Camada 3 (Atendimento):** CustomersPage e VehiclesPage migradas de zinc/slate + `bg-white` → `surface` + `gold` (cards `surface-900`, tabelas/linhas com hover `white/5`, inputs foco dourado, botão primário `gold-500`, overlay de modal `black/60`). AgendaPage: neutros → surface, acento "hoje" azul → dourado, e chips de status agora usam o mesmo sistema de "tone" do ServiceOrdersPage (neutral/golden/positive/negative). Nenhuma das 3 usava `alert()` (erro já é inline).
+- **Próximo alvo:** Camada 4 — Oficina/Kanban (ServicesPage, InventoryPage, KanbanPage, KanbanRecepcaoPage, KanbanRetificaPage, RetificaMotoresPage + modais).
 
 ### Referências
 - Análise completa: `C:\sygmaauto\DESIGN_REVIEW_SISTEMA.md`
