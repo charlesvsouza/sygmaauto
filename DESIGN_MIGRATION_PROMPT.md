@@ -39,11 +39,14 @@ Foi aprovada uma nova identidade visual: **tema dark premium com acento dourado*
 ## Estado Atual
 
 ### Já implementado
+- **Variante escolhida:** Conservadora (ouro fosco, superfícies sólidas, sem blur/glow).
 - `frontend/src/pages/ServiceOrdersPage.tsx`: migrada para tokens `surface` + `gold`
+- **Camada 0 (fundação):** tokens `base`/`success`/`warning`/`danger`/`info` no Tailwind; fonte Inter carregada; componentes-base em `frontend/src/components/ui/` (Button, Card, Chip, Modal, EmptyState, ToastProvider/useToast); `ToastProvider` montado na raiz.
+- **Camada 1 (Layout + index.css):** shell migrado para dark premium — sidebar `surface-950` + estado ativo dourado; headers desktop/mobile em `surface-900`; busca/avatar/dropdown/modal de upgrade em `surface` + `gold`; `index.css` limpo dos tokens "LexGen Blue" (teal/azul) e do body claro → base `#08090a`.
 - `C:\sygmaauto\design-system-board.html`: artefato de referência visual com 3 variantes (Conservadora, Forte, Divergente)
 - `C:\sygmaauto\OPERACIONAL_INTERFACE.md`: documentação atualizada com nova diretriz
 - `C:\sygmaauto\README.md`, `C:\sygmaauto\ROADMAP.md`, `C:\sygmaauto\INDEX.md`: atualizados
-- **Próximo arquivo-alvo:** `frontend/src/components/Layout.tsx` e sidebar/mobile menu
+- **Próximo alvo:** Camada 2 — telas públicas/auth (Login, Register, Landing, ForgotPassword, Splash, Welcome).
 
 ### Referências
 - Análise completa: `C:\sygmaauto\DESIGN_REVIEW_SISTEMA.md`
