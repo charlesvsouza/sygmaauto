@@ -7,10 +7,12 @@ Como o projeto agora concentra a documentação em poucos arquivos, este índice
 | Contexto | Arquivo |
 |---|---|
 | Visão geral do produto, setup, deploy | README.md |
-| O que fazer primeiro, roadmap de negócio e Releases | ROADMAP.md |
-| Ações operacionais, variáveis, infra, incidentes | OPERACIONAL_SISTEMA.md |
-| Padrões de UI, interface e checklists visuais | OPERACIONAL_INTERFACE.md |
-| LGPD, compliance, retenção, canais | COMPLIANCE.md |
+| O que fazer primeiro, roadmap | ROADMAP.md |
+| Ações operacionais, variáveis, infra | OPERACIONAL_SISTEMA.md |
+| UI e identidade visual atual | OPERACIONAL_INTERFACE.md |
+| Análise de design consolidada | DESIGN_REVIEW_SISTEMA.md |
+| Referência visual 3 variantes | design-system-board.html |
+| LGPD, compliance, retenção | COMPLIANCE.md |
 | Manual do usuário final | MANUAL_USUARIO.md |
 
 ## Arquivos arquivados

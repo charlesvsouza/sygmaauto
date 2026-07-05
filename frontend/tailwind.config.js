@@ -40,6 +40,13 @@ export default {
           900: '#28282f',
           950: '#18181d',
         },
+        // Fundo raiz do app (DESIGN.md base)
+        base: '#08090a',
+        // Cores semânticas — permitidas apenas como estados de feedback
+        success: '#22c55e',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        info: '#3b82f6',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

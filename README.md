@@ -115,17 +115,24 @@ Push para master dispara o pipeline de CI/CD automaticamente.
 
 - **ROADMAP.md** — roadmap, sprints, planos e funcionalidades entregues/pendentes
 - **OPERACIONAL_SISTEMA.md** — variáveis, deploy, incidentes, operação
-- **OPERACIONAL_INTERFACE.md** — identidade visual, padrões de UI, boards fullscreen
+- **OPERACIONAL_INTERFACE.md** — identidade visual, padrões de UI, boards fullscreen, tema dark premium/dourado
+- **DESIGN_REVIEW_SISTEMA.md** — análise de design consolidada do sistema
+- **design-system-board.html** — artefato de referência visual com 3 variantes de identidade
 - **COMPLIANCE.md** — políticas LGPD, privacidade, retenção, incidentes
 - **MANUAL_USUARIO.md** — guia do usuário final
 
 ## Diretrizes de UI
 
+- Identidade atual: tema dark premium + acento dourado.
+- Referência visual: `design-system-board.html`.
+- Migração incremental por camada para evitar regressão.
 - Boards full-screen devem seguir o padrão de saída explícita, ajuste por viewport e navegação lateral assistida.
 - Landing e páginas públicas devem usar linguagem acessível, sem promessas fantasiosas, com foco em qualidade de produto e adoção gradual para oficinas.
 - Componentes e páginas devem priorizar uso confortável em smartphone e tablet, não apenas desktop.
 
 Diretriz interna de referência: [OPERACIONAL_INTERFACE.md](OPERACIONAL_INTERFACE.md)
+
+Referência visual: [DESIGN_REVIEW_SISTEMA.md](DESIGN_REVIEW_SISTEMA.md), [design-system-board.html](design-system-board.html)
 
 ## Compliance e Segurança
 

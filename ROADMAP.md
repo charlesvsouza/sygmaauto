@@ -241,5 +241,10 @@
 | Oficina Integrada | R\$ 99 | R\$ 299 |
 | Oficina Inteligente | R\$ 399 | R\$ 599 |
 | GestaoAuto | R\$ 250 | — |
-
+ 
 > **Posicionamento:** melhor custo-benefício no segmento mid-market.
+ 
+### Nova identidade visual
+Direção de UI atualizada para tema dark premium com acento dourado.
+- Referência de design consolidada: `design-system-board.html`
+- Migração incremental por camada para evitar regressão: layout/navegação, auth, atendimento, oficina, financeiro/admin.

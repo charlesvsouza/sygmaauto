@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SygmaAuto — Design System Board</title>
+<style>
+  :root{
+    --bg-base:#08090a;
+    --bg-surface:#0f1011;
+    --bg-raised:#191a1b;
+    --border-subtle:rgba(255,255,255,0.06);
+    --border-mid:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.12);
+    --text-1:#e8e8e8;
+    --text-2:#a8a8a8;
+    --text-3:#6b6b6b;
+    --gold:#d6a24a;
+    --gold-2:#e5c175;
+    --gold-3:#a7782c;
+    --shadow-1:rgba(0,0,0,0.35);
+    --shadow-2:rgba(0,0,0,0.55);
+    --chip-ok:#23321f;
+    --chip-ok-text:#b6e2a6;
+    --chip-warn:#3a2e1e;
+    --chip-warn-text:#f0c87a;
+    --chip-err:#3a1f1f;
+    --chip-err-text:#f0a6a6;
+    --radius-sm:6px;
+    --radius-md:10px;
+    --radius-lg:14px;
+    --pad-tight:6px;
+    --pad-sm:10px;
+    --pad-md:16px;
+    --pad-lg:24px;
+    --density:1;
+    --card-ratio:1;
+    --blur-elev:0px;
+    --glow-opacity:0;
+    --variant-name:'conservadora';
+  }
+  html[data-density="compact"]{ --density:.9; --card-ratio:.96; --pad-tight:4px; --pad-sm:8px; --pad-md:12px; --pad-lg:16px; }
+  html[data-density="comfortable"]{ --density:1.05; --card-ratio:1.04; --pad-tight:8px; --pad-sm:14px; --pad-md:20px; --pad-lg:28px; }
+  html[data-mode="light"]{
+    --bg-base:#f5f5f4; --bg-surface:#ecedee; --bg-raised:#ffffff;
+    --text-1:#141414; --text-2:#4a4a4a; --text-3:#8a8a8a;
+    --border-subtle:rgba(0,0,0,0.06); --border-mid:rgba(0,0,0,0.1); --border-strong:rgba(0,0,0,0.16);
+    --shadow-1:rgba(0,0,0,0.08); --shadow-2:rgba(0,0,0,0.18);
+  }
+
+  /* Variant: Conservadora */
+  html[data-variant="conservativa"]{
+    --gold:#d6a24a; --gold-2:#e5c175; --gold-3:#a7782c;
+    --chip-ok:#23321f; --chip-ok-text:#b6e2a6;
+    --chip-warn:#3a2e1e; --chip-warn-text:#f0c87a;
+    --chip-err:#3a1f1f; --chip-err-text:#f0a6a6;
+    --blur-elev:0px; --glow-opacity:0;
+    --card-ratio:1;
+  }
+  /* Variant: Forte */
+  html[data-variant="forte"]{
+    --bg-base:#060609; --bg-surface:#0e0e14; --bg-raised:#171720;
+    --gold:#ffd278; --gold-2:#ffe4a8; --gold-3:#b37d1e;
+    --chip-ok:#1c3026; --chip-ok-text:#c4f2b0;
+    --chip-warn:#3a2c16; --chip-warn-text:#f6d478;
+    --chip-err:#3b1616; --chip-err-text:#f6b0b0;
+    --border-mid:rgba(255,255,255,0.14); --border-strong:rgba(255,255,255,0.22);
+    --text-1:#f5f5f5; --text-2:#d0d0d0; --text-3:#8b8b8b;
+    --blur-elev:0px; --glow-opacity:0;
+    --card-ratio:1;
+  }
+  /* Variant: Divergente */
+  html[data-variant="divergente"]{
+    --bg-base:#07080a; --bg-surface:rgba(14,15,18,0.62); --bg-raised:rgba(20,21,25,0.62);
+    --gold:#e1b96a; --gold-2:#feda8a; --gold-3:#6b5230;
+    --chip-ok:#1a2e22; --chip-ok-text:#bde2a8;
+    --chip-warn:#3b2c18; --chip-warn-text:#f3d48a;
+    --chip-err:#3c1818; --chip-err-text:#f4aaaa;
+    --border-subtle:rgba(255,255,255,0.08); --border-mid:rgba(255,255,255,0.12); --border-strong:rgba(255,255,255,0.2);
+    --blur-elev:18px; --glow-opacity:1;
+    --card-ratio:1.01;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%,rgba(214,162,74,0.08),transparent),
+      linear-gradient(180deg,var(--bg-base),var(--bg-base));
+    color:var(--text-1);
+    font:14px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Ubuntu,"Helvetica Neue",Arial;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Layout */
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:var(--pad-md) var(--pad-lg);
+    background:color-mix(in srgb, var(--bg-base) 85%, transparent);
+    backdrop-filter:saturate(140%) blur(10px);
+    border-bottom:1px solid var(--border-mid);
+  }
+  .brand{display:inline-flex;align-items:center;gap:12px}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 8px;border-radius:999px;font-size:10px;text-transform:uppercase;letter-spacing:.12em;
+    background:rgba(214,162,74,0.12);color:var(--gold);border:1px solid rgba(214,162,74,0.22)
+  }
+  .badge::before{
+    content:"";width:6px;height:6px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),var(--gold-2));
+    box-shadow:0 0 10px var(--gold)
+  }
+  h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.06em}
+  h2{font-size:14px;margin:0 0 10px;font-weight:600;letter-spacing:.04em;color:var(--text-1)}
+  p.sub{color:var(--text-2);margin:6px 0 0;font-size:12px}
+
+  /* Tweaks */
+  .tweaks{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    padding:10px 14px;border-radius:var(--radius-md);
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border-mid)
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 10px;border-radius:999px;font-size:12px;
+    background:transparent;color:var(--text-2);
+    border:1px solid var(--border-mid);cursor:pointer;
+    transition:transform .08s ease, background .2s ease, color .2s ease
+  }
+  .pill:hover{color:var(--text-1);background:rgba(255,255,255,0.04)}
+  .pill[aria-pressed="true"]{
+    background:linear-gradient(180deg,rgba(214,162,74,0.18),rgba(214,162,74,0.06));
+    color:var(--gold);border-color:rgba(214,162,74,0.35);
+    box-shadow:0 0 0 1px rgba(214,162,74,0.15) inset
+  }
+  .pill.variant{min-width:110px;justify-content:center}
+
+  /* Board */
+  main{padding:24px;max-width:1440px;margin:0 auto}
+  .grid{display:grid;gap:20px}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .grid.cols-2{grid-template-columns:repeat(2,1fr)}
+  .grid.span-2{grid-column:1/-1}
+
+  @media (max-width:980px){ .grid.cols-3{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:680px){ .grid.cols-3,.grid.cols-2{grid-template-columns:1fr} header{flex-direction:column;align-items:flex-start} }
+
+  /* Surfaces */
+  .surface{
+    background:var(--bg-surface);
+    border:1px solid var(--border-mid);
+    border-radius:var(--radius-lg);
+    padding:var(--pad-md);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.03) inset,
+      0 20px 50px -20px var(--shadow-2);
+    transition:box-shadow .3s ease, border-color .3s ease, background .3s ease;
+  }
+
+  /* Cards */
+  .card-grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+  @media (max-width:980px){ .card-grid{grid-template-columns:1fr} }
+  .card{
+    background:var(--bg-raised);
+    border:1px solid var(--border-mid);
+    border-radius:var(--radius-md);
+    padding:var(--pad-md);
+    display:flex;flex-direction:column;gap:10px;
+    box-shadow:0 10px 30px var(--shadow-1);
+    backdrop-filter:blur(var(--blur-elev));
+  }
+  .card-title{font-weight:600;font-size:13px;letter-spacing:.02em}
+  .card-body{color:var(--text-2);font-size:12px;line-height:1.55}
+
+  /* Chips */
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:4px 10px;border-radius:999px;
+    font-size:11px;font-weight:600;letter-spacing:.03em;
+    border:1px solid transparent;
+  }
+  .chip::before{
+    content:"";width:7px;height:7px;border-radius:50%;
+  }
+  .chip.ok{background:var(--chip-ok);color:var(--chip-ok-text)}
+  .chip.ok::before{background:var(--chip-ok-text)}
+  .chip.warn{background:var(--chip-warn);color:var(--chip-warn-text)}
+  .chip.warn::before{background:var(--chip-warn-text)}
+  .chip.err{background:var(--chip-err);color:var(--chip-err-text)}
+  .chip.err::before{background:var(--chip-err-text)}
+
+  html[data-variant="divergente"] .chip{
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08) inset,
+      var(--glow-opacity) 0 12px 18px -8px rgba(214,162,74,0.25);
+  }
+
+  /* Buttons */
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:8px 14px;border-radius:var(--radius-sm);
+    font:inherit;font-weight:600;font-size:12px;letter-spacing:.02em;
+    cursor:pointer;border:1px solid transparent;
+    transition:transform .08s ease, background .2s ease, border-color .2s ease
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{
+    background:linear-gradient(180deg,var(--gold-2),var(--gold));
+    color:#1a1208;border-color:rgba(255,255,255,0.1)
+  }
+  .btn-primary:hover{filter:brightness(1.06)}
+  .btn-secondary{
+    background:transparent;color:var(--gold-2);
+    border-color:rgba(214,162,74,0.35)
+  }
+  .btn-secondary:hover{background:rgba(214,162,74,0.08)}
+
+  /* Modal */
+  .backdrop{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);
+    z-index:100;padding:24px;
+  }
+  .modal{
+    background:var(--bg-raised);
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius-lg);
+    padding:var(--pad-lg);max-width:520px;width:100%;
+    box-shadow:0 30px 80px -20px var(--shadow-2);
+    animation:pop .18s ease-out
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+  .icon-btn{
+    width:36px;height:36px;display:grid;place-items:center;
+    border-radius:var(--radius-sm);border:1px solid var(--border-mid);color:var(--text-2);
+    background:transparent;cursor:pointer
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.04)}
+
+  /* Toast */
+  .toast{
+    position:relative;overflow:hidden;
+    background:var(--bg-raised);border:1px solid var(--border-mid);
+    border-radius:var(--radius-md);padding:var(--pad-sm) var(--pad-md);
+    display:flex;align-items:center;gap:10px;
+    box-shadow:0 20px 40px -20px var(--shadow-2)
+  }
+  .toast::after{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:linear-gradient(180deg,var(--gold),var(--gold-3))
+  }
+  html[data-variant="divergente"] .toast{
+    box-shadow:
+      0 20px 40px -20px var(--shadow-2),
+      var(--glow-opacity) 0 18px 24px -14px rgba(225,185,106,0.35)
+  }
+
+  /* Table */
+  .table{
+    width:100%;border-collapse:collapse;font-size:12px;
+    color:var(--text-2)
+  }
+  .table th, .table td{padding:var(--pad-sm) var(--pad-md);text-align:left;border-bottom:1px solid var(--border-subtle)}
+  .table th{color:var(--text-1);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+  .table tbody tr{transition:background .15s ease}
+  .table tbody tr:hover td{background:rgba(255,255,255,0.03)}
+  .table td:last-child{font-variant-numeric:tabular-nums}
+
+  /* Empty */
+  .empty{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;gap:8px;padding:var(--pad-lg);
+    border:1px dashed var(--border-mid);border-radius:var(--radius-lg);
+    color:var(--text-3);
+    background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)
+  }
+
+  /* Footer */
+  footer{
+    padding:24px;max-width:1440px;margin:0 auto;
+    color:var(--text-3);font-size:12px;display:flex;justify-content:space-between
+  }
+
+  /* Utilities */
+  .gap-sm{gap:8px}
+  .gap-md{gap:14px}
+  .flex{display:flex} .items-center{align-items:center} .justify-between{justify-content:space-between} .flex-col{flex-direction:column} .flex-wrap{flex-wrap:wrap}
+  .w-full{width:100%}
+  .mt-sm{margin-top:10px} .mt-md{margin-top:16px}
+
+  .off-overlay{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .off-overlay.active{opacity:1;pointer-events:auto}
+
+  /* HUD panels */
+  .meta{color:var(--text-3);font-size:11px}
+  .rule{height:1px;background:linear-gradient(90deg,var(--border-mid),transparent);margin:6px 0 14px}
+</style>
+</head>
+<body data-variant="conservativa" data-density="default" data-mode="dark">
+
+<header>
+  <div class="brand">
+    <span class="badge">SygmaAuto</span>
+    <h1>Design System Board</h1>
+  </div>
+  <div class="tweaks" role="group" aria-label="Tweaks">
+    <span style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:.1em">Variante</span>
+    <button class="pill variant" data-control="variant" data-value="conservativa" aria-pressed="true">Conservadora</button>
+    <button class="pill variant" data-control="variant" data-value="forte" aria-pressed="false">Forte</button>
+    <button class="pill variant" data-control="variant" data-value="divergente" aria-pressed="false">Divergente</button>
+
+    <span style="width:1px;height:18px;background:var(--border-mid);display:inline-block"></span>
+
+    <span style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:.1em">Densidade</span>
+    <button class="pill" data-control="density" data-value="compact" aria-pressed="false">Compacta</button>
+    <button class="pill" data-control="density" data-value="default" aria-pressed="true">Padrão</button>
+    <button class="pill" data-control="density" data-value="comfortable" aria-pressed="false">Confortável</button>
+
+    <span style="width:1px;height:18px;background:var(--border-mid);display:inline-block"></span>
+
+    <span style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:.1em">Modo</span>
+    <button class="pill" data-control="mode" data-value="dark" aria-pressed="true">Dark</button>
+    <button class="pill" data-control="mode" data-value="light" aria-pressed="false">Light</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="grid cols-3" style="margin-bottom:22px">
+    <article class="surface">
+      <div class="flex items-center justify-between">
+        <h2>Conservadora</h2>
+        <span class="chip ok">Estável</span>
+      </div>
+      <div class="rule"></div>
+      <p class="sub">Mantém a estrutura atual, troca tokens para surface/gold. Uso imediato com baixo risco e herança visual preservada.</p>
+    </article>
+    <article class="surface">
+      <div class="flex items-center justify-between">
+        <h2>Forte</h2>
+        <span class="chip warn">Recomendada</span>
+      </div>
+      <div class="rule"></div>
+      <p class="sub">Melhor leitura do brief: mais contraste, hierarquia forte e componentes densos mas enxutos. Equilíbrio entre presença e performance.</p>
+    </article>
+    <article class="surface">
+      <div class="flex items-center justify-between">
+        <h2>Divergente</h2>
+        <span class="chip err">Experimental</span>
+      </div>
+      <div class="rule"></div>
+      <p class="sub">Tratamento visual diferente para descobrir limites: superfícies translúcidas, elevação por blur e chips com glow sutil para estados premium.</p>
+    </article>
+  </section>
+
+  <!-- Tokens preview -->
+  <section class="surface grid cols-3" style="margin-bottom:22px">
+    <div>
+      <div class="meta">Surfaces</div>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:flex-end">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--bg-base);border:1px solid var(--border-mid)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--bg-surface);border:1px solid var(--border-mid)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--bg-raised);border:1px solid var(--border-mid)"></div>
+      </div>
+    </div>
+    <div>
+      <div class="meta">Gold scale</div>
+      <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--gold-3)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--gold)"></div>
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--gold-2)"></div>
+      </div>
+    </div>
+    <div>
+      <div class="meta">Border ratio</div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+        <div style="height:6px;border-radius:4px;background:var(--border-subtle)"></div>
+        <div style="height:6px;border-radius:4px;background:var(--border-mid)"></div>
+        <div style="height:6px;border-radius:4px;background:var(--border-strong)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Components -->
+  <section class="grid cols-2">
+    <article class="surface">
+      <h2>Cards</h2>
+      <p class="sub">Comunicação em grupo com densidade ajustável.</p>
+      <div class="card-grid mt-md">
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div class="card-title">Transmissão principal</div>
+            <span class="chip ok">OK</span>
+          </div>
+          <div class="card-body">Rotação de 1.200 rpm, temperatura nominal e torque dentro da faixa esperada. Nenhuma ação requerida.</div>
+          <div class="flex justify-between">
+            <span class="meta">Atualizado há 2 min</span>
+            <button class="pill" style="padding:4px 8px" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'Detalhes':'Sem detalhes'">Sem detalhes</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div class="card-title">Braço hidráulico</div>
+            <span class="chip warn">Atenção</span>
+          </div>
+          <div class="card-body">Pressão a 6% do limite de operação. Checar vedação e nível de fluido.</div>
+          <div class="flex items-center justify-between">
+            <span class="meta">Atualizado 8 min atrás</span>
+            <button class="pill" style="padding:4px 8px">Abrir checagem</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="surface">
+      <h2>Status chips</h2>
+      <p class="sub">Indicadores curtos com semântica visual consistente.</p>
+      <div class="flex flex-wrap gap-sm mt-md">
+        <span class="chip ok">Operando</span>
+        <span class="chip warn">Alerta</span>
+        <span class="chip err">Falha</span>
+        <span class="chip ok" style="background:rgba(255,255,255,0.04);color:var(--text-2)">Stand-by</span>
+        <span class="chip warn" style="background:rgba(255,255,255,0.04);color:var(--text-2)">Manutenção</span>
+        <span class="chip err" style="background:rgba(255,255,255,0.04);color:var(--text-2)">Desligado</span>
+      </div>
+
+      <div class="mt-md">
+        <h2>Botões</h2>
+        <p class="sub">Ações primárias com destaque em ouro e ações secundárias com foco na borda.</p>
+        <div class="btn-row mt-sm">
+          <button class="btn btn-primary">Iniciar rota</button>
+          <button class="btn btn-secondary">Configurar</button>
+          <button class="btn btn-primary" style="opacity:.8" disabled>Processando...</button>
+          <button class="btn btn-secondary" style="opacity:.85">S模态</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="surface">
+      <h2>Modal</h2>
+      <p class="sub">Diálogo central para confirmação ou fluxo focado.</p>
+      <div class="mt-sm">
+        <button class="btn btn-primary" id="openModal">Abrir resumo</button>
+      </div>
+
+      <h2 class="mt-md">Toast</h2>
+      <p class="sub">Feedback rápido com prioridade e ação opcional.</p>
+      <div class="flex flex-col gap-sm mt-sm">
+        <div class="toast">
+          <div class="flex flex-col">
+            <div style="font-weight:600;font-size:12px">Rota planejada</div>
+            <div style="color:var(--text-3);font-size:11px">Distância: 143 km · Previsão: 2 h 18 min</div>
+          </div>
+        </div>
+        <div class="toast" style="border-color:rgba(240,166,166,0.25)">
+          <div class="flex flex-col">
+            <div style="font-weight:600;font-size:12px;color:#f0a6a6">Alerta de temperatura</div>
+            <div style="color:var(--text-3);font-size:11px">4 °C acima do alvo na sala de máquinas.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="surface">
+      <h2>Tabela compacta</h2>
+      <p class="sub">Dados tabulares com legibilidade em alta densidade.</p>
+      <div style="overflow:auto;border:1px solid var(--border-subtle);border-radius:var(--radius-md);margin-top:12px">
+        <table class="table">
+          <thead>
+            <tr><th>Componente</th><th>Status</th><th>Valor</th><th>Último</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Motor A</td>
+              <td><span class="chip ok">OK</span></td>
+              <td>1.240 rpm</td>
+              <td>2 s</td>
+            </tr>
+            <tr>
+              <td>Sistema B</td>
+              <td><span class="chip warn">ATT</span></td>
+              <td>58 %</td>
+              <td>10 s</td>
+            </tr>
+            <tr>
+              <td>Sensor C</td>
+              <td><span class="chip ok">OK</span></td>
+              <td>23 °C</td>
+              <td>3 s</td>
+            </tr>
+            <tr>
+              <td>Controle D</td>
+              <td><span class="chip err">ERR</span></td>
+              <td>—</td>
+              <td>32 s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-md">Empty state</h2>
+      <p class="sub">Ausência de dados com orientação clara.</p>
+      <div class="empty mt-sm">
+        <div style="font-size:20px;opacity:.8">📭</div>
+        <div style="font-weight:600;color:var(--text-2)">Nenhum alerta aberto</div>
+        <div style="color:var(--text-3);font-size:11px">Todos os sistemas estão dentro da faixa. Novos alertas aparecem aqui.</div>
+        <button class="btn btn-secondary" style="margin-top:6px">Ler logs</button>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    <span>SygmaAuto Design System — Protótipo single-file</span>
+    <span class="meta">Variante: <strong id="footVariant">Conservadora</strong> • Densidade: <strong id="footDensity">Padrão</strong></span>
+  </footer>
+</main>
+
+<!-- Modal -->
+<div class="off-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Resumo da rota">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Resumo da rota</h2>
+      <button class="icon-btn" id="closeModal" aria-label="Fechar">✕</button>
+    </div>
+    <p class="sub">Confirmar início da operação? O sistema ajustará ganhos e verificará limites dinamicamente.</p>
+    <div class="surface" style="margin-top:12px;padding:12px">
+      <div class="flex justify-between"><span class="meta">Distância</span><span>143 km</span></div>
+      <div class="flex justify-between mt-sm"><span class="meta">Duração</span><span>2 h 18 min</span></div>
+      <div class="flex justify-between mt-sm"><span class="meta">Combustível est.</span><span>22 ± 3 L</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="cancelModal">Cancelar</button>
+      <button class="btn btn-primary" id="confirmModal">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const body=document.body;
+    const overlay=document.getElementById('modalOverlay');
+    const openBtn=document.getElementById('openModal');
+    const closeBtn=document.getElementById('closeModal');
+    const cancel=document.getElementById('cancelModal');
+    const confirmBtn=document.getElementById('confirmModal');
+    const footVariant=document.getElementById('footVariant');
+    const footDensity=document.getElementById('footDensity');
+
+    function setData(ctrl,value){
+      if(ctrl==='mode') body.dataset.mode=value;
+      if(ctrl==='density') body.dataset.density=value;
+      if(ctrl==='variant'){
+        body.dataset.variant=value;
+        footVariant.textContent={'conservativa':'Conservadora','forte':'Forte','divergente':'Divergente'}[value]||value;
+      }
+      document.querySelectorAll(`[data-control="${ctrl}"]`).forEach(b=>{
+        const selected=b.dataset.value===value;
+        b.setAttribute('aria-pressed',selected?'true':'false');
+      });
+      if(ctrl==='density'){
+        footDensity.textContent={'compact':'Compacta','default':'Padrão','comfortable':'Confortável'}[value]||value;
+      }
+    }
+    document.querySelectorAll('.pill[data-control]').forEach(btn=>{
+      btn.addEventListener('click',()=> setData(btn.dataset.control, btn.dataset.value));
+    });
+
+    function openModal(){
+      overlay.classList.add('active');
+    }
+    function closeModal(){
+      overlay.classList.remove('active');
+    }
+    openBtn.addEventListener('click',openModal);
+    closeBtn.addEventListener('click',closeModal);
+    cancel.addEventListener('click',closeModal);
+    confirmBtn.addEventListener('click',closeModal);
+    overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeModal(); });
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
+  })();
+</script>
+</body>
+</html>
