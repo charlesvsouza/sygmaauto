@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { servicesApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
@@ -10,13 +10,11 @@ import {
   Trash2,
   Loader2,
   Clock,
-  Tag,
   X,
   Zap,
   DollarSign
 } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { useToast } from '../components/ui';
+import { useToast, CollapsiblePanel } from '../components/ui';
 
 export function ServicesPage() {
   const { user } = useAuthStore();
@@ -142,6 +140,23 @@ export function ServicesPage() {
       return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR');
     });
 
+  // Agrupa por categoria para os painéis colapsáveis
+  const grouped = useMemo(() => {
+    const map = new Map<string, any[]>();
+    for (const s of filteredServices) {
+      const cat = (s.category || '').trim() || 'Geral';
+      if (!map.has(cat)) map.set(cat, []);
+      map.get(cat)!.push(s);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
+  }, [filteredServices]);
+
+  const priceOf = (service: any) => {
+    const vh = Number(service.hourlyRate || 0);
+    const tmo = Number(service.tmo || 0);
+    return tmo > 0 && vh > 0 ? tmo * vh : Number(service.basePrice || 0);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -171,118 +186,114 @@ export function ServicesPage() {
         </div>
       )}
 
-      <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-line flex flex-col md:flex-row items-center gap-4 bg-surface-950/40">
+      {/* Busca fixa */}
+      <div className="sticky top-0 z-20 -my-2 py-2 bg-app/95 backdrop-blur-sm">
+        <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
             <input
               type="text"
               placeholder="Buscar por nome ou categoria..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-line focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm bg-surface-900"
+              className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
             />
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto">
-            <span className="text-[10px] font-black uppercase tracking-widest text-surface-400">Ordenar</span>
+            <span className="text-xs font-medium text-muted">Ordenar</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-              className="px-3 py-2.5 rounded-xl border border-line bg-surface-900 text-xs font-bold text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25"
             >
               <option value="name">Nome (A-Z)</option>
               <option value="price">Preço (maior)</option>
             </select>
           </div>
         </div>
-
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-surface-50" />
-            <p className="text-surface-400 font-medium animate-pulse">Carregando catálogo de serviços...</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px]">
-              <thead>
-                <tr className="border-b border-line bg-surface-950/40">
-                  <th className="px-6 py-3 text-left text-[10px] font-black text-surface-400 uppercase tracking-widest">Serviço</th>
-                  <th className="px-6 py-3 text-left text-[10px] font-black text-surface-400 uppercase tracking-widest">Categoria</th>
-                  <th className="px-6 py-3 text-center text-[10px] font-black text-surface-400 uppercase tracking-widest">Duração</th>
-                  <th className="px-6 py-3 text-right text-[10px] font-black text-surface-400 uppercase tracking-widest">VH</th>
-                  <th className="px-6 py-3 text-center text-[10px] font-black text-surface-400 uppercase tracking-widest">TMO</th>
-                  <th className="px-6 py-3 text-right text-[10px] font-black text-surface-400 uppercase tracking-widest">Preço Final</th>
-                  <th className="px-6 py-3 text-right text-[10px] font-black text-surface-400 uppercase tracking-widest">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {filteredServices.map((service) => {
-                  const vh = Number(service.hourlyRate || 0);
-                  const tmo = Number(service.tmo || 0);
-                  const finalPrice = tmo > 0 && vh > 0 ? tmo * vh : Number(service.basePrice || 0);
-
-                  return (
-                    <motion.tr key={service.id} layout className="group hover:bg-ink/5 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-surface-800 text-surface-100 flex items-center justify-center shrink-0">
-                            <Zap size={16} />
-                          </div>
-                          <div>
-                            <p className="font-black text-surface-50 text-sm leading-tight uppercase">{service.name}</p>
-                            <p className="text-xs text-surface-400 mt-1 max-w-[380px] truncate">{service.description || 'Sem descrição detalhada'}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-800 text-surface-200 text-[10px] font-black uppercase tracking-wider">
-                          <Tag size={11} /> {service.category || 'Geral'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center text-sm font-bold text-surface-200">{service.duration || 0} min</td>
-                      <td className="px-6 py-4 text-right text-sm font-bold text-surface-200">R$ {Number(service.hourlyRate || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-6 py-4 text-center text-sm font-bold text-surface-200">{tmo > 0 ? `${tmo}h` : '—'}</td>
-                      <td className="px-6 py-4 text-right text-base font-black text-surface-50">R$ {finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => handleEdit(service)}
-                            disabled={!canManageServices}
-                            className={cn(
-                              'p-2 rounded-xl transition-all',
-                              canManageServices ? 'bg-surface-800 hover:bg-surface-800 hover:text-white' : 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                            )}
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(service.id)}
-                            disabled={!canManageServices}
-                            className={cn(
-                              'p-2 rounded-xl transition-all',
-                              canManageServices ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                            )}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {filteredServices.length === 0 && (
-              <div className="py-20 text-center">
-                <Wrench className="w-16 h-16 mx-auto mb-4 text-surface-700" />
-                <h3 className="text-lg font-bold text-surface-50">Nenhum serviço encontrado</h3>
-                <p className="text-surface-400">Comece cadastrando seus serviços no catálogo.</p>
-              </div>
-            )}
-          </div>
-        )}
       </div>
+
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-lg border border-line bg-panel">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <p className="text-muted text-sm">Carregando catálogo de serviços...</p>
+        </div>
+      ) : filteredServices.length === 0 ? (
+        <div className="py-20 text-center rounded-lg border border-line bg-panel">
+          <Wrench className="w-14 h-14 mx-auto mb-4 text-faint" />
+          <h3 className="text-base font-semibold text-ink">Nenhum serviço encontrado</h3>
+          <p className="text-muted text-sm mt-1">
+            {search ? 'Ajuste a busca ou cadastre' : 'Comece cadastrando'} serviços no catálogo.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {grouped.map(([category, items]) => (
+            <CollapsiblePanel
+              key={category}
+              title={category}
+              count={items.length}
+              defaultOpen={grouped.length <= 4 || Boolean(search)}
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[820px] text-sm">
+                  <thead>
+                    <tr className="border-b border-line bg-panel-2 text-xs text-muted">
+                      <th className="px-4 py-2.5 text-left font-medium">Serviço</th>
+                      <th className="px-4 py-2.5 text-center font-medium">Duração</th>
+                      <th className="px-4 py-2.5 text-right font-medium">VH</th>
+                      <th className="px-4 py-2.5 text-center font-medium">TMO</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Preço Final</th>
+                      <th className="px-4 py-2.5 text-right font-medium">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-line">
+                    {items.map((service) => (
+                      <tr key={service.id} className="group hover:bg-panel-2 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-md bg-accent-soft text-accent flex items-center justify-center shrink-0">
+                              <Zap size={15} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-ink leading-tight">{service.name}</p>
+                              <p className="text-xs text-muted mt-0.5 max-w-[420px] truncate">{service.description || 'Sem descrição'}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-center text-muted">{service.duration || 0} min</td>
+                        <td className="px-4 py-3 text-right text-muted">R$ {Number(service.hourlyRate || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-4 py-3 text-center text-muted">{Number(service.tmo || 0) > 0 ? `${service.tmo}h` : '—'}</td>
+                        <td className="px-4 py-3 text-right font-semibold text-ink">R$ {priceOf(service).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-1.5 md:opacity-0 md:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => handleEdit(service)}
+                              disabled={!canManageServices}
+                              className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                              aria-label="Editar serviço"
+                            >
+                              <Edit size={15} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(service.id)}
+                              disabled={!canManageServices}
+                              className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                              aria-label="Excluir serviço"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CollapsiblePanel>
+          ))}
+        </div>
+      )}
 
       <AnimatePresence>
         {showModal && (

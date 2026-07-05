@@ -238,7 +238,7 @@ export function KanbanPage() {
   });
 
   return (
-    <div className={`min-h-screen flex flex-col ${tvMode ? 'bg-surface-950' : 'bg-surface-950'}`}>
+    <div data-theme="dark" className={`min-h-screen flex flex-col `}>
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-line ${tvMode ? 'py-3' : 'py-4'}`}>
         <div className="flex items-start gap-3">

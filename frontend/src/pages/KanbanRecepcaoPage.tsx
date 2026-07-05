@@ -279,7 +279,7 @@ export function KanbanRecepcaoPage() {
   const prontos = orders.filter(o => o.status === 'PRONTO_ENTREGA').length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-950">
+    <div data-theme="dark" className="min-h-screen flex flex-col bg-surface-950">
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-line ${tvMode ? 'py-4' : 'py-3'}`}>
         <div className="flex items-start gap-3">
