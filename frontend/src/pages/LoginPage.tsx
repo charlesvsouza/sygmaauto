@@ -97,28 +97,28 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Glow (dourado, sutil) */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gold-500/[0.06] rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold-600/[0.05] rounded-full blur-[120px]" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-[440px] z-10"
       >
-        <div className="glass-card bg-slate-900/40 p-8 md:p-10 rounded-[2.5rem] border border-white/10 relative overflow-hidden backdrop-blur-2xl">
+        <div className="bg-surface-900 p-8 md:p-10 rounded-[2.5rem] border border-white/5 relative overflow-hidden shadow-card-hover">
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-10">
             <SigmaAutoLogo variant="full" className="mb-2" />
-            <p className="text-slate-300 text-sm mt-1">Bem-vindo de volta!</p>
+            <p className="text-surface-300 text-sm mt-1">Bem-vindo de volta!</p>
           </div>
 
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-500/20 border border-red-500/30 text-red-300 p-4 rounded-xl text-sm mb-6 flex items-center gap-3"
+              className="bg-danger/20 border border-danger/30 text-red-300 p-4 rounded-xl text-sm mb-6 flex items-center gap-3"
             >
               <div className="w-1 h-1 bg-red-400 rounded-full" />
               {error}
@@ -129,11 +129,11 @@ export function LoginPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-orange-500/20 border border-orange-500/30 text-orange-200 p-4 rounded-xl text-sm mb-6"
+              className="bg-warning/15 border border-warning/30 text-amber-200 p-4 rounded-xl text-sm mb-6"
             >
               <p className="font-semibold mb-1">Falha ao iniciar checkout</p>
-              <p className="text-orange-300/80">{checkoutError}</p>
-              <p className="mt-2 text-orange-400/70 text-xs">Tente acessar o checkout pelo menu <strong>Configurações → Assinatura</strong>.</p>
+              <p className="text-amber-300/80">{checkoutError}</p>
+              <p className="mt-2 text-amber-400/70 text-xs">Tente acessar o checkout pelo menu <strong>Configurações → Assinatura</strong>.</p>
             </motion.div>
           )}
 
@@ -141,10 +141,10 @@ export function LoginPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-blue-500/20 border border-blue-500/30 text-blue-100 p-4 rounded-xl text-sm mb-6"
+              className="bg-gold-500/10 border border-gold-500/25 text-gold-200 p-4 rounded-xl text-sm mb-6"
             >
               <p className="font-semibold mb-1">Checkout pendente</p>
-              <p className="text-blue-200/90">
+              <p className="text-gold-100/90">
                 Faça login para continuar a assinatura do plano <strong>{pendingCheckoutPlan}</strong>.
               </p>
             </motion.div>
@@ -154,7 +154,7 @@ export function LoginPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-amber-500/20 border border-amber-500/30 text-amber-100 p-4 rounded-xl text-sm mb-6"
+              className="bg-warning/15 border border-warning/30 text-amber-100 p-4 rounded-xl text-sm mb-6"
             >
               <p className="font-semibold mb-1">Sessão encerrada por segurança</p>
               <p className="text-amber-200/90">
@@ -165,14 +165,14 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-widest ml-1">Email</label>
+              <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
+                  className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/40 transition-all"
                   placeholder="seu@email.com"
                   required
                 />
@@ -181,20 +181,20 @@ export function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-widest">Senha</label>
-                <Link to="/forgot-password" className="text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-tighter">Esqueceu a senha?</Link>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest">Senha</label>
+                <Link to="/forgot-password" className="text-[10px] font-bold text-gold-400 hover:text-gold-300 uppercase tracking-tighter">Esqueceu a senha?</Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-12 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
+                  className="w-full bg-surface-950/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-12 text-sm text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/40 transition-all"
                   placeholder="••••••••"
                   required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
@@ -203,7 +203,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-8 shadow-xl shadow-blue-600/20"
+              className="w-full bg-gold-500 hover:bg-gold-400 text-surface-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-8 shadow-lg shadow-gold-500/20"
             >
               {loading ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -219,9 +219,9 @@ export function LoginPage() {
           </form>
 
           <div className="mt-10 pt-8 border-t border-white/5 text-center">
-            <p className="text-slate-400 text-sm">
+            <p className="text-surface-400 text-sm">
               Conheça os planos?{' '}
-              <Link to="/" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+              <Link to="/" className="text-gold-400 hover:text-gold-300 font-bold transition-colors">
                 Ver planos e preços
               </Link>
             </p>

@@ -62,18 +62,18 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Glow (dourado, sutil) */}
+      <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-gold-500/[0.06] rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold-600/[0.05] rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl bg-white/5 backdrop-blur-xl z-10"
+        className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 rounded-[2.5rem] overflow-hidden border border-white/5 shadow-card-hover bg-surface-900 z-10"
       >
         {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-blue-600/20 to-transparent border-r border-white/10">
+        <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-gold-500/10 to-transparent border-r border-white/5">
           <div>
             <div className="flex items-center gap-3 mb-8">
               <SigmaAutoLogo variant="full" />
@@ -81,21 +81,21 @@ export function RegisterPage() {
 
             <h1 className="text-4xl font-bold leading-tight mb-6">
               Transforme sua <br />
-              <span className="text-blue-400">Oficina hoje.</span>
+              <span className="text-gold-400">Oficina hoje.</span>
             </h1>
-            <p className="text-slate-400 text-lg leading-relaxed">
+            <p className="text-surface-400 text-lg leading-relaxed">
               Gestão completa, do financeiro ao estoque, em uma única plataforma premium.
               O primeiro acesso cria sua conta <span className="text-white font-bold">MASTER</span>.
             </p>
           </div>
 
           <div className="space-y-6">
-            <div className="flex items-center gap-4 text-sm text-slate-300">
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+            <div className="flex items-center gap-4 text-sm text-surface-300">
+              <div className="w-1.5 h-1.5 bg-gold-400 rounded-full" />
               Suporte a CNPJ, MEI e CPF
             </div>
-            <div className="flex items-center gap-4 text-sm text-slate-300">
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+            <div className="flex items-center gap-4 text-sm text-surface-300">
+              <div className="w-1.5 h-1.5 bg-gold-400 rounded-full" />
               Gestão Multi-tenant Segura
             </div>
           </div>
@@ -105,7 +105,7 @@ export function RegisterPage() {
         <div className="p-8 md:p-12 overflow-y-auto max-h-[90vh]">
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-2">Criar Conta MASTER</h2>
-            <p className="text-slate-400 text-sm">Registre sua oficina para começar.</p>
+            <p className="text-surface-400 text-sm">Registre sua oficina para começar.</p>
           </div>
 
           {error && (
@@ -121,9 +121,9 @@ export function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Nome MASTER</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Nome MASTER</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                   <input
                     type="text"
                     value={name}
@@ -135,9 +135,9 @@ export function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Oficina</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Oficina</label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                   <input
                     type="text"
                     value={tenantName}
@@ -152,7 +152,7 @@ export function RegisterPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Natureza</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Natureza</label>
                 <select 
                   value={(companyType === 'CPF' ? 'PF' : 'PJ')} 
                   onChange={(e) => {
@@ -167,7 +167,7 @@ export function RegisterPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Tipo Doc.</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Tipo Doc.</label>
                 <select 
                   value={companyType} 
                   onChange={(e) => setCompanyType(e.target.value)}
@@ -184,7 +184,7 @@ export function RegisterPage() {
                 </select>
               </div>
               <div className="space-y-1.5 col-span-1 md:col-span-1">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Documento</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Documento</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -201,9 +201,9 @@ export function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Email MASTER</label>
+              <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Email MASTER</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                 <input
                   type="email"
                   value={email}
@@ -216,9 +216,9 @@ export function RegisterPage() {
             </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Email de Recuperação</label>
+                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Email de Recuperação</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                   <input
                     type="email"
                     value={recoveryEmail}
@@ -230,9 +230,9 @@ export function RegisterPage() {
               </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider ml-1">Senha</label>
+              <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -242,7 +242,7 @@ export function RegisterPage() {
                   minLength={6}
                   required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -251,7 +251,7 @@ export function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-6 shadow-lg shadow-blue-600/20"
+              className="w-full bg-gold-500 hover:bg-gold-400 text-surface-950 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-6 shadow-lg shadow-gold-500/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -264,9 +264,9 @@ export function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-center text-slate-500 text-sm mt-8">
+          <p className="text-center text-surface-500 text-sm mt-8">
             Já possui uma conta?{' '}
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+            <Link to="/login" className="text-gold-400 hover:text-gold-300 font-semibold transition-colors">
               Fazer Login
             </Link>
           </p>
