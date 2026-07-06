@@ -75,8 +75,8 @@ function getAlertLevel(os: any): { level: AlertLevel; reason: string } {
 
 function urgencyColor(os: any) {
   const { level } = getAlertLevel(os);
-  if (level === 'danger') return 'text-red-600';
-  if (level === 'warning') return 'text-amber-600';
+  if (level === 'danger') return 'text-red-400';
+  if (level === 'warning') return 'text-amber-400';
   return 'text-surface-400';
 }
 
@@ -137,7 +137,7 @@ function RetificaCard({
       className={`bg-surface-800/60 border-2 ${focused ? 'border-cyan-300 shadow-[0_0_0_3px_rgba(34,211,238,0.25)]' : alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'} ${level === 'danger' ? 'animate-pulse' : ''}`}
     >
       {focused && (
-        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black bg-cyan-500/15 text-cyan-700">
+        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black bg-cyan-500/15 text-cyan-300">
           <Timer size={11} className="shrink-0" />
           Foco vindo do Dashboard
         </div>
@@ -146,7 +146,7 @@ function RetificaCard({
       {/* Alerta */}
       {level !== 'none' && (
         <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black ${
-          level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
+          level === 'danger' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
           <span className="truncate">{reason}</span>
@@ -167,7 +167,7 @@ function RetificaCard({
       {/* Motor / Veículo */}
       <div className="flex items-center gap-1.5 text-white/80">
         {isMotorAvulso
-          ? <Package size={tvMode ? 14 : 11} className="shrink-0 text-amber-600" />
+          ? <Package size={tvMode ? 14 : 11} className="shrink-0 text-amber-400" />
           : <Cog     size={tvMode ? 14 : 11} className="shrink-0 text-surface-400" />
         }
         <span className="truncate font-semibold">{objectLabel}</span>
@@ -188,12 +188,12 @@ function RetificaCard({
       {/* Badges */}
       <div className="flex flex-wrap gap-1">
         {isMotorAvulso && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600">
+          <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-400">
             <Package size={9} /> Motor avulso
           </span>
         )}
         {hasMetrologia && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+          <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400">
             <Ruler size={9} /> Metrologia OK
           </span>
         )}
@@ -209,7 +209,7 @@ function RetificaCard({
             }}
             disabled={isAdv}
             title="Retroceder fase"
-            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-black transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
+            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 font-black transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
           >
             ←
           </button>
@@ -229,7 +229,7 @@ function RetificaCard({
       {hasMetrologia && (
         <button
           onClick={() => onLaudo(os)}
-          className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-semibold transition-all flex items-center justify-center gap-1.5 text-[10px]"
+          className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 font-semibold transition-all flex items-center justify-center gap-1.5 text-[10px]"
         >
           <FileText size={10} /> Laudo PDF
         </button>
@@ -394,7 +394,7 @@ export function KanbanRetificaPage() {
           >
             <ArrowLeft size={18} />
           </button>
-          <Cog className="text-amber-600 w-5 h-5 mt-2 shrink-0" />
+          <Cog className="text-amber-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban — Retífica de Motores
@@ -403,7 +403,7 @@ export function KanbanRetificaPage() {
               {tenant?.name} · {totalActive} motor{totalActive !== 1 ? 'es' : ''} em fluxo · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
-              <p className="text-red-700 text-[11px] font-bold mt-0.5 animate-pulse">
+              <p className="text-red-300 text-[11px] font-bold mt-0.5 animate-pulse">
                 {activeAlerts} alerta{activeAlerts !== 1 ? 's' : ''} de SLA ativo{activeAlerts !== 1 ? 's' : ''}
               </p>
             )}
@@ -437,7 +437,7 @@ export function KanbanRetificaPage() {
           </button>
           <button
             onClick={() => setTvMode((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-amber-500/20 text-amber-600' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-amber-500/20 text-amber-400' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -449,7 +449,7 @@ export function KanbanRetificaPage() {
       <AnimatePresence>
         {error && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-3 text-sm">
+            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
             <AlertCircle size={15} /> {error}
           </motion.div>
         )}
@@ -458,7 +458,7 @@ export function KanbanRetificaPage() {
       {/* Board */}
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-amber-600" size={40} />
+          <Loader2 className="animate-spin text-amber-400" size={40} />
         </div>
       ) : (
         <div

@@ -93,7 +93,7 @@ export default function WelcomePage() {
             </div>
             <div>
               <span className="text-xl font-black tracking-tight text-white">
-                Sigma<span className="bg-gradient-to-r from-accent to-accent bg-clip-text text-transparent">Auto</span>
+                Sigma<span className="text-accent">Auto</span>
               </span>
               <p className="text-[11px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
             </div>
@@ -108,7 +108,7 @@ export default function WelcomePage() {
                 className="text-4xl md:text-5xl font-black leading-tight mb-6"
               >
                 Bem-vindo ao seu <br />
-                <span className="bg-gradient-to-r from-accent to-accent bg-clip-text text-transparent">
+                <span className="text-accent">
                   Novo Escritório.
                 </span>
               </motion.h1>

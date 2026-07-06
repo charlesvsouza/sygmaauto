@@ -20,13 +20,13 @@ const PROGRESS_STEPS = [
 
 const STATUS_META: Record<string, { label: string; dot: string; badge: string; text: string }> = {
   ABERTA:               { label: 'Aberta',           dot: 'bg-surface-500',   badge: 'bg-surface-800',      text: 'text-surface-200' },
-  EM_DIAGNOSTICO:       { label: 'Diagnóstico',      dot: 'bg-indigo-400',  badge: 'bg-indigo-500/20',  text: 'text-indigo-700' },
-  ORCAMENTO_PRONTO:     { label: 'Orçamento Pronto', dot: 'bg-blue-400',    badge: 'bg-blue-500/20',    text: 'text-blue-700' },
-  AGUARDANDO_APROVACAO: { label: 'Ag. Aprovação',    dot: 'bg-orange-400',  badge: 'bg-orange-500/20',  text: 'text-orange-700' },
-  APROVADO:             { label: 'Aprovado',          dot: 'bg-emerald-400', badge: 'bg-emerald-500/20', text: 'text-emerald-700' },
-  AGUARDANDO_PECAS:     { label: 'Ag. Peças',        dot: 'bg-amber-400',   badge: 'bg-amber-500/20',   text: 'text-amber-700' },
-  EM_EXECUCAO:          { label: 'Em Execução',       dot: 'bg-cyan-400',    badge: 'bg-cyan-500/20',    text: 'text-cyan-700' },
-  PRONTO_ENTREGA:       { label: 'Pronto p/ Entrega',dot: 'bg-violet-400',  badge: 'bg-violet-500/20',  text: 'text-violet-700' },
+  EM_DIAGNOSTICO:       { label: 'Diagnóstico',      dot: 'bg-indigo-400',  badge: 'bg-indigo-500/20',  text: 'text-indigo-300' },
+  ORCAMENTO_PRONTO:     { label: 'Orçamento Pronto', dot: 'bg-blue-400',    badge: 'bg-blue-500/20',    text: 'text-blue-300' },
+  AGUARDANDO_APROVACAO: { label: 'Ag. Aprovação',    dot: 'bg-orange-400',  badge: 'bg-orange-500/20',  text: 'text-orange-300' },
+  APROVADO:             { label: 'Aprovado',          dot: 'bg-emerald-400', badge: 'bg-emerald-500/20', text: 'text-emerald-300' },
+  AGUARDANDO_PECAS:     { label: 'Ag. Peças',        dot: 'bg-amber-400',   badge: 'bg-amber-500/20',   text: 'text-amber-300' },
+  EM_EXECUCAO:          { label: 'Em Execução',       dot: 'bg-cyan-400',    badge: 'bg-cyan-500/20',    text: 'text-cyan-300' },
+  PRONTO_ENTREGA:       { label: 'Pronto p/ Entrega',dot: 'bg-violet-400',  badge: 'bg-violet-500/20',  text: 'text-violet-300' },
 };
 
 const ACTIVE_STATUSES = [
@@ -35,10 +35,10 @@ const ACTIVE_STATUSES = [
 ];
 
 const SUMMARY_GROUPS = [
-  { key: 'entrada',   label: 'Entrada / Diag.', statuses: ['ABERTA', 'EM_DIAGNOSTICO'],                       color: 'text-indigo-600', activeBg: 'bg-indigo-500/20' },
-  { key: 'orcamento', label: 'Orçamento',        statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'],       color: 'text-orange-600', activeBg: 'bg-orange-500/20' },
-  { key: 'execucao',  label: 'Em Execução',       statuses: ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO'],   color: 'text-cyan-600',   activeBg: 'bg-cyan-500/20' },
-  { key: 'pronto',    label: 'Pronto',            statuses: ['PRONTO_ENTREGA'],                                 color: 'text-violet-600', activeBg: 'bg-violet-500/20' },
+  { key: 'entrada',   label: 'Entrada / Diag.', statuses: ['ABERTA', 'EM_DIAGNOSTICO'],                       color: 'text-indigo-400', activeBg: 'bg-indigo-500/20' },
+  { key: 'orcamento', label: 'Orçamento',        statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'],       color: 'text-orange-400', activeBg: 'bg-orange-500/20' },
+  { key: 'execucao',  label: 'Em Execução',       statuses: ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO'],   color: 'text-cyan-400',   activeBg: 'bg-cyan-500/20' },
+  { key: 'pronto',    label: 'Pronto',            statuses: ['PRONTO_ENTREGA'],                                 color: 'text-violet-400', activeBg: 'bg-violet-500/20' },
 ];
 
 // ─── Lógica de alertas ────────────────────────────────────────────────────────
@@ -94,8 +94,8 @@ function elapsed(date: string) {
 
 function urgencyClass(date: string) {
   const h = (Date.now() - new Date(date).getTime()) / 3_600_000;
-  if (h > 48) return 'text-red-600';
-  if (h > 24) return 'text-amber-600';
+  if (h > 48) return 'text-red-400';
+  if (h > 24) return 'text-amber-400';
   return 'text-surface-400';
 }
 
@@ -125,7 +125,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
       {/* Alerta */}
       {level !== 'none' && (
         <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-black ${
-          level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
+          level === 'danger' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
           {reason}
@@ -191,7 +191,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
             <div key={step.status} className="flex-1 last:flex-none min-w-0 text-center">
               <span className={`text-[8px] leading-none block truncate ${
                 i === idx ? `font-bold ${meta.text}` :
-                i < idx ? 'text-emerald-600' :
+                i < idx ? 'text-emerald-400' :
                 'text-surface-500'
               }`}>
                 {step.short}
@@ -290,7 +290,7 @@ export function KanbanRecepcaoPage() {
           >
             <ArrowLeft size={18} />
           </button>
-          <Monitor className="text-purple-600 w-5 h-5 mt-2 shrink-0" />
+          <Monitor className="text-purple-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Painel de Recepção
@@ -310,7 +310,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setAutoView((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-700' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-300' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
             title="Alterna automaticamente entre as 4 perspectivas a cada 2 minutos"
           >
             <RefreshCw size={14} className={autoView ? 'animate-spin' : ''} />
@@ -318,7 +318,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setTvMode(v => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-purple-500/20 text-purple-600' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-purple-500/20 text-purple-400' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -356,7 +356,7 @@ export function KanbanRecepcaoPage() {
         {prontos > 0 && (
           <div className="ml-auto flex items-center gap-1.5 bg-violet-500/10 border border-violet-500/20 px-3 py-1.5 rounded-lg shrink-0">
             <span className="w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
-            <span className="text-violet-700 text-xs font-bold">
+            <span className="text-violet-300 text-xs font-bold">
               {prontos} pronto{prontos !== 1 ? 's' : ''} p/ retirada
             </span>
           </div>
@@ -367,8 +367,8 @@ export function KanbanRecepcaoPage() {
           const alertCount = orders.filter(o => getAlertLevel(o).level !== 'none').length;
           return alertCount > 0 ? (
             <div className={`${prontos > 0 ? '' : 'ml-auto'} flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg shrink-0 animate-pulse`}>
-              <AlertTriangle size={13} className="text-red-600" />
-              <span className="text-red-700 text-xs font-bold">
+              <AlertTriangle size={13} className="text-red-400" />
+              <span className="text-red-300 text-xs font-bold">
                 {alertCount} alerta{alertCount !== 1 ? 's' : ''} ativo{alertCount !== 1 ? 's' : ''}
               </span>
             </div>
@@ -380,7 +380,7 @@ export function KanbanRecepcaoPage() {
       <AnimatePresence>
         {error && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-3 text-sm">
+            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
             <AlertCircle size={15} /> {error}
           </motion.div>
         )}
@@ -389,7 +389,7 @@ export function KanbanRecepcaoPage() {
       {/* Grade de cards */}
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-purple-600" size={40} />
+          <Loader2 className="animate-spin text-purple-400" size={40} />
         </div>
       ) : displayed.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-3 text-surface-500">

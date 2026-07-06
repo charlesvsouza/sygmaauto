@@ -77,8 +77,8 @@ function getAlertLevel(os: any): { level: AlertLevel; reason: string } {
 
 function urgencyColor(date: string) {
   const h = (Date.now() - new Date(date).getTime()) / 3_600_000;
-  if (h > 48) return 'text-red-600';
-  if (h > 24) return 'text-amber-600';
+  if (h > 48) return 'text-red-400';
+  if (h > 24) return 'text-amber-400';
   return 'text-surface-400';
 }
 
@@ -116,7 +116,7 @@ function KanbanCard({
     >
       {level !== 'none' && (
         <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black ${
-          level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
+          level === 'danger' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
           <span className="truncate">{reason}</span>
@@ -249,7 +249,7 @@ export function KanbanPage() {
           >
             <ArrowLeft size={18} />
           </button>
-          <Tv2 className="text-cyan-600 w-5 h-5 mt-2 shrink-0" />
+          <Tv2 className="text-cyan-400 w-5 h-5 mt-2 shrink-0" />
           <div>
             <h1 className={`font-black text-white ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban de Pátio
@@ -258,7 +258,7 @@ export function KanbanPage() {
               {tenant?.name} · {totalActive} OS ativas · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
-              <p className="text-red-700 text-[11px] font-bold mt-0.5 animate-pulse">
+              <p className="text-red-300 text-[11px] font-bold mt-0.5 animate-pulse">
                 {activeAlerts} alerta{activeAlerts !== 1 ? 's' : ''} de prazo ativo{activeAlerts !== 1 ? 's' : ''}
               </p>
             )}
@@ -292,7 +292,7 @@ export function KanbanPage() {
           </button>
           <button
             onClick={() => setTvMode((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-cyan-500/20 text-cyan-600' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-cyan-500/20 text-cyan-400' : 'bg-ink/5 text-surface-400 hover:text-white'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -304,7 +304,7 @@ export function KanbanPage() {
       <AnimatePresence>
         {error && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-3 text-sm">
+            className="mx-6 mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3 text-sm">
             <AlertCircle size={15} /> {error}
           </motion.div>
         )}
@@ -313,7 +313,7 @@ export function KanbanPage() {
       {/* Board */}
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-cyan-600" size={40} />
+          <Loader2 className="animate-spin text-cyan-400" size={40} />
         </div>
       ) : (
         <div

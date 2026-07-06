@@ -527,7 +527,7 @@ function MetricCard({
     blue: 'from-blue-500/20 to-blue-700/5 border-blue-500/30 text-blue-700',
     amber: 'from-amber-500/20 to-amber-700/5 border-amber-500/30 text-amber-700',
     emerald: 'from-emerald-500/20 to-emerald-700/5 border-emerald-500/30 text-emerald-700',
-    violet: 'from-violet-500/20 to-violet-700/5 border-violet-500/30 text-violet-700',
+    violet: 'from-teal-500/20 to-teal-700/5 border-teal-500/30 text-teal-700',
   };
 
   return (
