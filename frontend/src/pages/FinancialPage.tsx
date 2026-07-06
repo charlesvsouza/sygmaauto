@@ -301,7 +301,7 @@ export function FinancialPage() {
             <Activity size={14} /> Inteligência Financeira
           </div>
           <h1 className="text-4xl font-black text-surface-50 tracking-tight leading-none">
-            Gestão <span className="text-primary-600">Financeira</span>
+            Gestão <span className="text-accent">Financeira</span>
           </h1>
           <p className="text-surface-400 font-medium mt-2">Relatórios detalhados e controle de fluxo de caixa</p>
         </motion.div>
@@ -330,7 +330,7 @@ export function FinancialPage() {
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary-50 text-accent rounded-xl flex items-center justify-center">
                   <BarChart4 size={20} />
                 </div>
                 <h3 className="font-black text-surface-50 uppercase text-xs tracking-widest">Evolução do Faturamento</h3>
@@ -494,18 +494,18 @@ export function FinancialPage() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
+            <Loader2 className="w-12 h-12 animate-spin text-accent" />
             <p className="text-surface-400 font-semibold uppercase tracking-wide text-[10px]">Sincronizando Banco de Dados...</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-auto" style={{ maxHeight: '55vh' }}>
             <table className="w-full text-left">
-              <thead>
-                <tr className="bg-surface-950/40 text-surface-400 border-b border-line font-black uppercase tracking-[0.2em] text-[9px]">
-                  <th className="px-8 py-5">Movimentação / Data</th>
-                  <th className="px-8 py-5">Histórico do Lançamento</th>
-                  <th className="px-8 py-5 text-center">Classificação</th>
-                  <th className="px-8 py-5 text-right">Valor Final</th>
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-panel-2 text-muted border-b border-line font-semibold uppercase tracking-wide text-[10px]">
+                  <th className="px-4 py-3">Movimentação / Data</th>
+                  <th className="px-4 py-3">Histórico do Lançamento</th>
+                  <th className="px-4 py-3 text-center">Classificação</th>
+                  <th className="px-4 py-3 text-right">Valor Final</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -535,7 +535,7 @@ export function FinancialPage() {
                       <td className="px-8 py-6">
                         <p className="text-sm font-bold text-surface-200">{t.description}</p>
                         {t.referenceId && (
-                          <span className="mt-1 inline-block px-2 py-0.5 bg-primary-50 text-primary-600 rounded-md text-[9px] font-black uppercase tracking-tighter">
+                          <span className="mt-1 inline-block px-2 py-0.5 bg-primary-50 text-accent rounded-md text-[9px] font-black uppercase tracking-tighter">
                             Vínculo OS: {t.referenceId.slice(0, 8)}
                           </span>
                         )}
