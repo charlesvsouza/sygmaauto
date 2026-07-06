@@ -201,7 +201,7 @@ export function FinancialPage() {
                 <tr>
                   <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
                     <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
-                      {tenantData.tradeName || tenantData.name || tenantData.legalName || 'Oficina'}
+                      {tenantData.name || tenantData.tradeName || tenantData.legalName || 'Oficina'}
                     </div>
                     {tenantData.document && <div style={{ fontSize: '9pt', marginTop: '3px' }}>{tenantData.companyType || 'CNPJ'}: {tenantData.document}</div>}
                     {tenantData.address && <div style={{ fontSize: '9pt' }}>{tenantData.address}</div>}

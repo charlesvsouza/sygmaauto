@@ -148,7 +148,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
     : '';
 
   const total = Number(os.totalCost ?? 0);
-  const workshopDisplayName = fmt(tenant?.tradeName || tenant?.name || tenant?.legalName, 'Oficina');
+  const workshopDisplayName = fmt(tenant?.name || tenant?.tradeName || tenant?.legalName, 'Oficina');
 
   return `
 <div class="laudo">

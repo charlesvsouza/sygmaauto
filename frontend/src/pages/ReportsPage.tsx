@@ -203,7 +203,7 @@ const ICON_BG: Record<string, string> = {
         <tr>
           <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
             <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
-              {tenant?.tradeName || tenant?.name || tenant?.legalName || 'Oficina'}
+              {tenant?.name || tenant?.tradeName || tenant?.legalName || 'Oficina'}
             </div>
             {tenant?.document && <div style={{ fontSize: '9pt', marginTop: '3px' }}>CNPJ: {tenant.document}</div>}
             {tenant?.address && <div style={{ fontSize: '9pt' }}>{tenant.address}</div>}
