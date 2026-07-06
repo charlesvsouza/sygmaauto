@@ -737,18 +737,18 @@ export function SettingsPage() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-surface-900 rounded-lg p-6 text-white shadow-xl relative overflow-hidden"
+            className="bg-panel rounded-lg p-6 text-ink shadow-sm border border-line relative overflow-hidden"
           >
             <div className="relative z-10">
               <h2 className="text-base font-bold flex items-center gap-2 uppercase tracking-wide mb-5">
-                <Shield className="w-5 h-5 text-primary-400" /> Assinatura
+                <Shield className="w-5 h-5 text-accent" /> Assinatura
               </h2>
 
               <div className="mb-6 p-4 bg-ink/5 rounded-lg border border-line backdrop-blur-md">
                 <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-2xl font-black text-white">{getPlanLabel(currentPlan)}</h3>
-                  <div className="px-2 py-0.5 bg-primary-500 rounded text-[8px] font-black uppercase">Ativo</div>
+                  <h3 className="text-2xl font-black text-ink">{getPlanLabel(currentPlan)}</h3>
+                  <div className="px-2 py-0.5 bg-accent text-white rounded text-[8px] font-black uppercase">Ativo</div>
                 </div>
                 <p className="text-xs text-surface-500 mt-1 font-medium">Renovação automática em breve.</p>
               </div>
@@ -761,7 +761,7 @@ export function SettingsPage() {
                     className={cn(
                       'w-full p-3.5 rounded-lg border-2 transition-all text-left relative',
                       currentPlan === plan.name
-                        ? 'border-primary-500 bg-primary-500/10'
+                        ? 'border-accent bg-accent-soft'
                         : 'border-line bg-ink/5'
                     )}
                   >
@@ -769,7 +769,7 @@ export function SettingsPage() {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <p className="font-bold text-sm uppercase tracking-tight">{getPlanLabel(plan.name)}</p>
-                          {(plan.name === 'PRO' || plan.name === 'RETIFICA_PRO') && <Zap size={12} className="text-primary-400 fill-primary-400" />}
+                          {(plan.name === 'PRO' || plan.name === 'RETIFICA_PRO') && <Zap size={12} className="text-accent fill-accent" />}
                         </div>
                         <p className="text-lg font-black mt-0.5">
                           R$ {Number(plan.price).toLocaleString('pt-BR')}
@@ -777,7 +777,7 @@ export function SettingsPage() {
                         </p>
                       </div>
                       {currentPlan === plan.name
-                        ? <CheckCircle className="text-primary-400" size={20} />
+                        ? <CheckCircle className="text-accent" size={20} />
                         : <ArrowRight className="text-surface-300" size={20} />
                       }
                     </div>
@@ -792,7 +792,7 @@ export function SettingsPage() {
                         <button
                           onClick={() => currentPlan !== plan.name && handleCheckoutPlan(plan.name)}
                           disabled={currentPlan === plan.name || checkoutLoadingPlan === plan.name}
-                          className="h-8 rounded-lg bg-primary-600 hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-1.5"
+                          className="h-8 rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-1.5"
                         >
                           {checkoutLoadingPlan === plan.name ? <Loader2 size={12} className="animate-spin" /> : null}
                           {isUpgrade(plan.name) ? 'Upgrade' : 'Atual'}
@@ -803,7 +803,7 @@ export function SettingsPage() {
                 ))}
               </div>
             </div>
-            <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary-500/20 rounded-full blur-[100px]" />
+            <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
           </motion.div>
         </div>
       </div>
