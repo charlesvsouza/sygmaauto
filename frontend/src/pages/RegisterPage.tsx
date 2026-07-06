@@ -76,7 +76,7 @@ export function RegisterPage() {
         <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-accent/10 to-transparent border-r border-line">
           <div>
             <div className="flex items-center gap-3 mb-8">
-              <SigmaAutoLogo variant="full" />
+              <SigmaAutoLogo variant="full" tone="brand" />
             </div>
 
             <h1 className="text-4xl font-bold leading-tight mb-6">

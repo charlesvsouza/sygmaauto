@@ -110,7 +110,7 @@ export function LoginPage() {
         <div className="bg-surface-900 p-8 md:p-10 rounded-xl border border-line relative overflow-hidden shadow-card-hover">
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-10">
-            <SigmaAutoLogo variant="full" className="mb-2" />
+            <SigmaAutoLogo variant="full" tone="brand" className="mb-2" />
             <p className="text-surface-300 text-sm mt-1">Bem-vindo de volta!</p>
           </div>
 
