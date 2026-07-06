@@ -191,7 +191,7 @@ export function PlansCheckoutPage() {
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">{cycle.label}</p>
                       {cycle.badge && (
-                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 rounded-full px-2 py-1">
+                        <span className="text-[10px] font-semibold uppercase tracking-wide bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 rounded-full px-2 py-1">
                           {cycle.badge}
                         </span>
                       )}

@@ -215,7 +215,7 @@ function Section({ title, color = 'blue', open, onToggle, children }: {
   return (
     <div className={`rounded-xl border ${ring}`}>
       <button type="button" onClick={onToggle}
-        className={`w-full flex items-center justify-between px-4 py-2.5 ${bg} text-xs font-black uppercase tracking-widest rounded-xl`}>
+        className={`w-full flex items-center justify-between px-4 py-2.5 ${bg} text-xs font-semibold uppercase tracking-wide rounded-xl`}>
         {title}
         {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
       </button>
@@ -556,7 +556,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {services.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-700 flex items-center gap-1.5">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-blue-700 flex items-center gap-1.5">
                       <Wrench size={12} /> Serviços
                     </h3>
                     <button type="button" onClick={() => addCustomItem('service')}
@@ -585,7 +585,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               {parts.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-amber-700 flex items-center gap-1.5">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-700 flex items-center gap-1.5">
                       <Package size={12} /> Peças
                     </h3>
                     <button type="button" onClick={() => addCustomItem('part')}

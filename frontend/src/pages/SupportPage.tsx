@@ -92,7 +92,7 @@ export function SupportPage() {
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="inline-block text-xs font-black uppercase tracking-widest text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wide text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
                 Suporte
               </span>
               <h1 className="text-4xl lg:text-5xl font-black tracking-tight mb-4">

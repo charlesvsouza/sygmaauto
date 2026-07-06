@@ -94,7 +94,7 @@ export default function BlogPage() {
             <ArrowLeft size={14} />
             Voltar ao site
           </Link>
-          <span className="inline-block text-xs font-black uppercase tracking-widest text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+          <span className="inline-block text-xs font-semibold uppercase tracking-wide text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
             Blog
           </span>
           <h1 className="text-4xl lg:text-6xl font-black tracking-tight mt-2 mb-4">
@@ -124,7 +124,7 @@ export default function BlogPage() {
               </div>
               <div className="order-1 lg:order-2">
                 <span
-                  className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4"
+                  className="inline-block text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full mb-4"
                   style={{ background: posts[0].tagColor + '20', color: posts[0].tagColor, border: `1px solid ${posts[0].tagColor}40` }}
                 >
                   {posts[0].tag}
@@ -158,7 +158,7 @@ export default function BlogPage() {
               </div>
 
               <span
-                className="inline-block self-start text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
+                className="inline-block self-start text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
                 style={{ background: post.tagColor + '18', color: post.tagColor, border: `1px solid ${post.tagColor}35` }}
               >
                 {post.tag}

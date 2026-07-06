@@ -32,7 +32,7 @@ export function NewsPage() {
             className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6 flex flex-col"
           >
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-black uppercase tracking-widest bg-[#ff7b2f]/15 text-[#ff7b2f] px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-semibold uppercase tracking-wide bg-[#ff7b2f]/15 text-[#ff7b2f] px-2 py-0.5 rounded-full">
                 {item.tag}
               </span>
               <span className="text-[11px] text-white/30">{item.date}</span>

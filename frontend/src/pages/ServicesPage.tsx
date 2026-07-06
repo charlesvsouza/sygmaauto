@@ -147,7 +147,7 @@ export function ServicesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-full min-h-0 gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Serviços</h1>
@@ -214,8 +214,8 @@ export function ServicesPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border border-line bg-panel overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+        <div className="rounded-lg border border-line bg-panel overflow-hidden flex-1 min-h-0 flex flex-col">
+          <div className="overflow-auto flex-1 min-h-0">
             <table className="w-full min-w-[900px] text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-panel-2 border-b border-line text-xs text-muted">

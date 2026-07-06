@@ -153,7 +153,7 @@ export function AgendaPage() {
             >
               {/* Cabeçalho do dia */}
               <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-accent/40 bg-accent/10' : 'border-line bg-surface-950/40'}`}>
-                <p className={`text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-accent' : 'text-surface-500'}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? 'text-accent' : 'text-surface-500'}`}>
                   {WEEKDAYS[day.getDay()]}
                 </p>
                 <p className={`text-xl font-black leading-tight ${isToday ? 'text-accent' : 'text-surface-100'}`}>

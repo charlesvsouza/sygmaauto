@@ -597,7 +597,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Abertura</th>
                   <th className="px-6 py-4 text-left">Cliente</th>
                   <th className="px-6 py-4 text-left">Veículo</th>
@@ -733,7 +733,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Mês</th>
                   <th className="px-6 py-4 text-right">Receita</th>
                   <th className="px-6 py-4 text-right">Despesa</th>
@@ -858,7 +858,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-black uppercase tracking-widest border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Prioridade</th>
                   <th className="px-6 py-4 text-left">Peça</th>
                   <th className="px-6 py-4 text-center">Atual</th>
@@ -1096,7 +1096,7 @@ const ICON_BG: Record<string, string> = {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-4 bg-surface-900 rounded-xl border border-line shadow-sm">
             <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-            <p className="text-surface-400 font-black uppercase tracking-widest text-[10px]">Processando Dados...</p>
+            <p className="text-surface-400 font-semibold uppercase tracking-wide text-[10px]">Processando Dados...</p>
           </motion.div>
         )}
         {!loading && reportData && (

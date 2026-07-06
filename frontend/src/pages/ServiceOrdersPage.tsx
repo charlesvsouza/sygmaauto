@@ -1175,7 +1175,7 @@ export function ServiceOrdersPage() {
                   {getOrderAssetLabel(order)}
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className={cn('text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md', statusChip(statusConfig[order.status]?.tone))}>
+                  <span className={cn('text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md', statusChip(statusConfig[order.status]?.tone))}>
                     {st.label}
                   </span>
                   <span className="text-xs font-black text-surface-100">
@@ -1559,7 +1559,7 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
-                    className="text-[9px] font-black uppercase tracking-widest bg-surface-100 text-white px-3 py-1.5 rounded-lg hover:bg-surface-200 transition-colors flex items-center gap-1"
+                    className="text-[9px] font-semibold uppercase tracking-wide bg-surface-100 text-white px-3 py-1.5 rounded-lg hover:bg-surface-200 transition-colors flex items-center gap-1"
                     title={!canManageItems ? 'Sem permissao para adicionar itens' : undefined}
                   >
                     <Plus size={12} /> Adicionar Servico
@@ -1640,7 +1640,7 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={() => openCatalog('part')}
                     className={cn(
-                      'text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
+                      'text-[9px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
                       canManageStock ? 'bg-accent text-white hover:bg-accent' : 'bg-surface-700 text-surface-500'
                     )}
                     title={canManageStock ? 'Lancar peca' : 'Sem permissao para alterar estoque'}
@@ -1972,7 +1972,7 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={() => { setShowAiPanel((v) => !v); setAiSuggestions([]); setAiDescription(''); }}
                     className={cn(
-                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all',
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-all',
                       showAiPanel
                         ? 'bg-surface-100 text-white shadow-md'
                         : 'bg-surface-900 text-surface-300 hover:bg-surface-800'
@@ -2014,7 +2014,7 @@ export function ServiceOrdersPage() {
                         <button
                           onClick={handleAiSuggest}
                           disabled={aiLoading || !aiDescription.trim()}
-                          className="h-9 px-4 bg-surface-100 hover:bg-surface-200 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow flex items-center gap-1 disabled:opacity-50"
+                          className="h-9 px-4 bg-surface-100 hover:bg-surface-200 text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                           Sugerir
@@ -2104,7 +2104,7 @@ export function ServiceOrdersPage() {
                   </div>
                   <button
                     onClick={quickAddItem}
-                    className="h-9 px-4 bg-accent hover:bg-accent text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow flex items-center gap-1 whitespace-nowrap"
+                    className="h-9 px-4 bg-accent hover:bg-accent text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 whitespace-nowrap"
                   >
                     <Plus size={13} /> Lancar
                   </button>
@@ -2335,7 +2335,7 @@ export function ServiceOrdersPage() {
 
                   {newOrder.customerId && showQuickVehicleForm && (
                     <div className="rounded-lg border border-surface-800 bg-surface-950 p-3 space-y-3">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-surface-500">Cadastro rapido de veiculo</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <input
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"

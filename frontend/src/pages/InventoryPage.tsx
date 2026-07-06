@@ -371,7 +371,7 @@ export function InventoryPage() {
 
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-10">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-full min-h-0 gap-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -454,8 +454,8 @@ export function InventoryPage() {
           <p className="text-sm text-muted mt-1">Cadastre peças ou ajuste os filtros</p>
         </div>
       ) : (
-        <div className="rounded-lg border border-line bg-panel overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 360px)' }}>
+        <div className="rounded-lg border border-line bg-panel overflow-hidden flex-1 min-h-0 flex flex-col">
+          <div className="overflow-auto flex-1 min-h-0">
             <table className="w-full min-w-[860px] text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-panel-2 border-b border-line text-xs text-muted">

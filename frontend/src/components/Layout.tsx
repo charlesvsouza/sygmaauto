@@ -120,7 +120,7 @@ export function Layout() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-app text-surface-100">
+    <div className="h-screen overflow-hidden flex bg-app text-surface-100">
       {/* Sidebar - Desktop */}
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
@@ -291,7 +291,7 @@ export function Layout() {
       </div>
 
       {/* Main content */}
-      <main className="app-main-frame flex-1 lg:ml-64 min-w-0">
+      <main className="app-main-frame flex-1 lg:ml-64 min-w-0 flex flex-col min-h-0">
         {/* Header mobile */}
         <header className="lg:hidden bg-surface-900 border-b border-line px-4 py-3 flex items-center justify-between sticky top-0 z-20">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-surface-300 hover:text-surface-100">
@@ -370,7 +370,7 @@ export function Layout() {
         </header>
 
         {/* Page content */}
-        <div className="p-3 sm:p-4 lg:p-8">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 lg:p-8">
           <Outlet />
         </div>
       </main>

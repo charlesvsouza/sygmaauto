@@ -261,7 +261,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 <div className="p-6 bg-surface-950/40 rounded-xl border border-line">
                   <div className="flex items-center gap-2 mb-6 text-indigo-600 border-b border-line pb-3">
                     <User size={18} />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Dados do Cliente</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide">Dados do Cliente</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
@@ -295,7 +295,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 <div className="p-6 bg-surface-950/40 rounded-xl border border-line">
                   <div className="flex items-center gap-2 mb-6 text-emerald-600 border-b border-line pb-3">
                     <Car size={18} />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Dados do Veículo</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide">Dados do Veículo</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
@@ -363,11 +363,11 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 <table className="w-full text-left">
                   <thead className="bg-accent text-white">
                     <tr>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Tipo</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Código / Descrição</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-center w-24">Qtd</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-right w-32">Unitário</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500 text-right w-16"></th>
+                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500">Tipo</th>
+                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500">Código / Descrição</th>
+                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-center w-24">Qtd</th>
+                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-right w-32">Unitário</th>
+                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-right w-16"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line">
@@ -433,7 +433,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                   </tbody>
                   <tfoot className="bg-surface-950/40 border-t border-line">
                     <tr>
-                      <td colSpan={3} className="px-6 py-6 font-black uppercase tracking-widest text-xs text-surface-400 text-right">Valor Total da O.S.</td>
+                      <td colSpan={3} className="px-6 py-6 font-semibold uppercase tracking-wide text-xs text-surface-400 text-right">Valor Total da O.S.</td>
                       <td className="px-6 py-6 text-right font-black text-2xl text-surface-50">
                         R$ {totalCalculated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </td>

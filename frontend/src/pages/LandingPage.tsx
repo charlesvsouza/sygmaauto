@@ -356,7 +356,7 @@ export function LandingPage() {
               }`}
             >
               {plan.featured ? (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest bg-[#ff7b2f] text-white px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wide bg-[#ff7b2f] text-white px-3 py-1 rounded-full">
                   Mais popular
                 </span>
               ) : null}

@@ -537,7 +537,7 @@ function MetricCard({
       className={`rounded-xl border bg-gradient-to-br p-4 ${toneClass[tone]}`}
     >
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-black uppercase tracking-widest opacity-80">{title}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{title}</p>
         <span>{icon}</span>
       </div>
       <p className="text-2xl font-black leading-none text-white">{value}</p>
