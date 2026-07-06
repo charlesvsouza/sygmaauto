@@ -21,7 +21,6 @@ import {
   FileText,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { CollapsiblePanel } from '../components/ui';
 import { formatCpfCnpj, formatCep, formatPhone, onlyDigits } from '../lib/masks';
 
 export function CustomersPage() {
@@ -172,18 +171,6 @@ export function CustomersPage() {
     );
   }, [customers, search]);
 
-  // Agrupa por letra inicial para painéis colapsáveis
-  const groupedCustomers = useMemo(() => {
-    const map = new Map<string, any[]>();
-    for (const c of filteredCustomers) {
-      const first = (c.name?.trim()?.[0] || '#').toUpperCase();
-      const key = /[A-Z]/.test(first) ? first : '#';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(c);
-    }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
-  }, [filteredCustomers]);
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -204,23 +191,21 @@ export function CustomersPage() {
         </button>
       </div>
 
-      {/* Busca fixa */}
-      <div className="sticky top-0 z-20 -my-2 py-2 bg-app/95 backdrop-blur-sm">
-        <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-            <input
-              type="text"
-              placeholder="Buscar por nome, documento ou email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
-            />
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted whitespace-nowrap px-1">
-            <Users size={16} />
-            <span className="font-semibold text-ink">{filteredCustomers.length}</span> clientes
-          </div>
+      {/* Toolbar de busca — sempre visível (a lista rola por baixo) */}
+      <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
+          <input
+            type="text"
+            placeholder="Buscar por nome ou CPF/CNPJ..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
+          />
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted whitespace-nowrap px-1">
+          <Users size={16} />
+          <span className="font-semibold text-ink">{filteredCustomers.length}</span> clientes
         </div>
       </div>
 
@@ -236,87 +221,78 @@ export function CustomersPage() {
           <p className="text-muted text-sm mt-1">Tente buscar por outro nome ou documento.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {groupedCustomers.map(([letter, items]) => (
-            <CollapsiblePanel
-              key={letter}
-              title={letter}
-              count={items.length}
-              defaultOpen={groupedCustomers.length <= 6 || Boolean(search)}
-            >
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[820px] text-sm text-left">
-                  <thead>
-                    <tr className="border-b border-line bg-panel-2 text-xs text-muted">
-                      <th className="px-4 py-2.5 font-medium">Cliente</th>
-                      <th className="px-4 py-2.5 font-medium">Documento</th>
-                      <th className="px-4 py-2.5 font-medium">Contato</th>
-                      <th className="px-4 py-2.5 font-medium">Veículos</th>
-                      <th className="px-4 py-2.5 font-medium text-right">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line">
-                    {items.map((customer) => (
-                      <tr key={customer.id} className="group hover:bg-panel-2 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-accent-soft text-accent rounded-full flex items-center justify-center font-semibold shrink-0">
-                              {customer.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-semibold text-ink truncate">{customer.name}</p>
-                              {customer.profissao && <p className="text-xs text-muted truncate">{customer.profissao}</p>}
-                            </div>
+        <div className="rounded-lg border border-line bg-panel overflow-hidden">
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+            <table className="w-full min-w-[820px] text-sm text-left">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-panel-2 border-b border-line text-xs text-muted">
+                  <th className="px-4 py-2.5 font-medium">Cliente</th>
+                  <th className="px-4 py-2.5 font-medium">Documento</th>
+                  <th className="px-4 py-2.5 font-medium">Contato</th>
+                  <th className="px-4 py-2.5 font-medium">Veículos</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {filteredCustomers.map((customer) => (
+                  <tr key={customer.id} className="group hover:bg-panel-2 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-accent-soft text-accent rounded-full flex items-center justify-center font-semibold shrink-0">
+                          {customer.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-ink truncate">{customer.name}</p>
+                          {customer.profissao && <p className="text-xs text-muted truncate">{customer.profissao}</p>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm text-ink">{customer.document || '—'}</div>
+                      {customer.rg && <div className="text-xs text-muted">RG: {customer.rg}</div>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="space-y-0.5">
+                        {customer.phone && (
+                          <div className="flex items-center gap-2 text-sm text-muted">
+                            <Phone className="w-3.5 h-3.5 text-faint" />{customer.phone}
                           </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm text-ink">{customer.document || '—'}</div>
-                          {customer.rg && <div className="text-xs text-muted">RG: {customer.rg}</div>}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="space-y-0.5">
-                            {customer.phone && (
-                              <div className="flex items-center gap-2 text-sm text-muted">
-                                <Phone className="w-3.5 h-3.5 text-faint" />{customer.phone}
-                              </div>
-                            )}
-                            {customer.email && (
-                              <div className="flex items-center gap-2 text-sm text-muted">
-                                <Mail className="w-3.5 h-3.5 text-faint" />{customer.email}
-                              </div>
-                            )}
+                        )}
+                        {customer.email && (
+                          <div className="flex items-center gap-2 text-sm text-muted">
+                            <Mail className="w-3.5 h-3.5 text-faint" />{customer.email}
                           </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-panel-2 text-muted border border-line">
-                            {customer._count?.vehicles || 0} veículo(s)
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="inline-flex items-center gap-1">
-                            <button
-                              onClick={() => handleEdit(customer)}
-                              className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
-                              aria-label="Editar cliente"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(customer.id)}
-                              className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
-                              aria-label="Excluir cliente"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CollapsiblePanel>
-          ))}
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-panel-2 text-muted border border-line">
+                        {customer._count?.vehicles || 0} veículo(s)
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          onClick={() => handleEdit(customer)}
+                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
+                          aria-label="Editar cliente"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(customer.id)}
+                          className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
+                          aria-label="Excluir cliente"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

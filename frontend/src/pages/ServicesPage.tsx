@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { servicesApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
@@ -14,7 +14,7 @@ import {
   Zap,
   DollarSign
 } from 'lucide-react';
-import { useToast, CollapsiblePanel } from '../components/ui';
+import { useToast } from '../components/ui';
 
 export function ServicesPage() {
   const { user } = useAuthStore();
@@ -140,17 +140,6 @@ export function ServicesPage() {
       return String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR');
     });
 
-  // Agrupa por categoria para os painéis colapsáveis
-  const grouped = useMemo(() => {
-    const map = new Map<string, any[]>();
-    for (const s of filteredServices) {
-      const cat = (s.category || '').trim() || 'Geral';
-      if (!map.has(cat)) map.set(cat, []);
-      map.get(cat)!.push(s);
-    }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
-  }, [filteredServices]);
-
   const priceOf = (service: any) => {
     const vh = Number(service.hourlyRate || 0);
     const tmo = Number(service.tmo || 0);
@@ -186,30 +175,28 @@ export function ServicesPage() {
         </div>
       )}
 
-      {/* Busca fixa */}
-      <div className="sticky top-0 z-20 -my-2 py-2 bg-app/95 backdrop-blur-sm">
-        <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-            <input
-              type="text"
-              placeholder="Buscar por nome ou categoria..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
-            />
-          </div>
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <span className="text-xs font-medium text-muted">Ordenar</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-              className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25"
-            >
-              <option value="name">Nome (A-Z)</option>
-              <option value="price">Preço (maior)</option>
-            </select>
-          </div>
+      {/* Toolbar de busca — sempre visível (a lista rola por baixo) */}
+      <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
+          <input
+            type="text"
+            placeholder="Buscar por nome ou seção/categoria..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <span className="text-xs font-medium text-muted">Ordenar</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
+            className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25"
+          >
+            <option value="name">Nome (A-Z)</option>
+            <option value="price">Preço (maior)</option>
+          </select>
         </div>
       </div>
 
@@ -227,71 +214,68 @@ export function ServicesPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {grouped.map(([category, items]) => (
-            <CollapsiblePanel
-              key={category}
-              title={category}
-              count={items.length}
-              defaultOpen={grouped.length <= 4 || Boolean(search)}
-            >
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[820px] text-sm">
-                  <thead>
-                    <tr className="border-b border-line bg-panel-2 text-xs text-muted">
-                      <th className="px-4 py-2.5 text-left font-medium">Serviço</th>
-                      <th className="px-4 py-2.5 text-center font-medium">Duração</th>
-                      <th className="px-4 py-2.5 text-right font-medium">VH</th>
-                      <th className="px-4 py-2.5 text-center font-medium">TMO</th>
-                      <th className="px-4 py-2.5 text-right font-medium">Preço Final</th>
-                      <th className="px-4 py-2.5 text-right font-medium">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line">
-                    {items.map((service) => (
-                      <tr key={service.id} className="group hover:bg-panel-2 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-md bg-accent-soft text-accent flex items-center justify-center shrink-0">
-                              <Zap size={15} />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-semibold text-ink leading-tight">{service.name}</p>
-                              <p className="text-xs text-muted mt-0.5 max-w-[420px] truncate">{service.description || 'Sem descrição'}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-center text-muted">{service.duration || 0} min</td>
-                        <td className="px-4 py-3 text-right text-muted">R$ {Number(service.hourlyRate || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-4 py-3 text-center text-muted">{Number(service.tmo || 0) > 0 ? `${service.tmo}h` : '—'}</td>
-                        <td className="px-4 py-3 text-right font-semibold text-ink">R$ {priceOf(service).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1.5 md:opacity-0 md:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => handleEdit(service)}
-                              disabled={!canManageServices}
-                              className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                              aria-label="Editar serviço"
-                            >
-                              <Edit size={15} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(service.id)}
-                              disabled={!canManageServices}
-                              className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                              aria-label="Excluir serviço"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CollapsiblePanel>
-          ))}
+        <div className="rounded-lg border border-line bg-panel overflow-hidden">
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+            <table className="w-full min-w-[900px] text-sm">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-panel-2 border-b border-line text-xs text-muted">
+                  <th className="px-4 py-2.5 text-left font-medium">Serviço</th>
+                  <th className="px-4 py-2.5 text-left font-medium">Seção</th>
+                  <th className="px-4 py-2.5 text-center font-medium">Duração</th>
+                  <th className="px-4 py-2.5 text-right font-medium">VH</th>
+                  <th className="px-4 py-2.5 text-center font-medium">TMO</th>
+                  <th className="px-4 py-2.5 text-right font-medium">Preço Final</th>
+                  <th className="px-4 py-2.5 text-right font-medium">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {filteredServices.map((service) => (
+                  <tr key={service.id} className="group hover:bg-panel-2 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-md bg-accent-soft text-accent flex items-center justify-center shrink-0">
+                          <Zap size={15} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-ink leading-tight">{service.name}</p>
+                          <p className="text-xs text-muted mt-0.5 max-w-[420px] truncate">{service.description || 'Sem descrição'}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-panel-2 text-muted border border-line">
+                        {service.category || 'Geral'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-muted">{service.duration || 0} min</td>
+                    <td className="px-4 py-3 text-right text-muted">R$ {Number(service.hourlyRate || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-3 text-center text-muted">{Number(service.tmo || 0) > 0 ? `${service.tmo}h` : '—'}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-ink">R$ {priceOf(service).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-3">
+                      <div className="inline-flex items-center justify-end gap-1.5 w-full">
+                        <button
+                          onClick={() => handleEdit(service)}
+                          disabled={!canManageServices}
+                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Editar serviço"
+                        >
+                          <Edit size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(service.id)}
+                          disabled={!canManageServices}
+                          className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Excluir serviço"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

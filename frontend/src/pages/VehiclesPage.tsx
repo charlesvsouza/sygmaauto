@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { vehiclesApi, customersApi } from '../api/client';
 import { formatPlate } from '../lib/masks';
-import { CollapsiblePanel } from '../components/ui';
 import {
   Car,
   Plus,
@@ -167,17 +166,6 @@ export function VehiclesPage() {
       v.model.toLowerCase().includes(search.toLowerCase())
   ), [vehicles, search]);
 
-  // Agrupa por marca para painéis colapsáveis
-  const groupedVehicles = useMemo(() => {
-    const map = new Map<string, any[]>();
-    for (const v of filteredVehicles) {
-      const key = (v.brand || '').trim() || 'Sem marca';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(v);
-    }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
-  }, [filteredVehicles]);
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -203,23 +191,21 @@ export function VehiclesPage() {
         </button>
       </div>
 
-      {/* Busca fixa */}
-      <div className="sticky top-0 z-20 -my-2 py-2 bg-app/95 backdrop-blur-sm">
-        <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-            <input
-              type="text"
-              placeholder="Buscar por placa, marca ou modelo..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
-            />
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted whitespace-nowrap px-1">
-            <Car size={16} />
-            <span className="font-semibold text-ink">{filteredVehicles.length}</span> veículos
-          </div>
+      {/* Toolbar de busca — sempre visível (a lista rola por baixo) */}
+      <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
+          <input
+            type="text"
+            placeholder="Buscar por placa, marca ou modelo..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
+          />
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted whitespace-nowrap px-1">
+          <Car size={16} />
+          <span className="font-semibold text-ink">{filteredVehicles.length}</span> veículos
         </div>
       </div>
 
@@ -235,83 +221,74 @@ export function VehiclesPage() {
           <p className="text-muted text-sm mt-1">Tente buscar por outra placa ou modelo.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {groupedVehicles.map(([brand, items]) => (
-            <CollapsiblePanel
-              key={brand}
-              title={brand}
-              count={items.length}
-              defaultOpen={groupedVehicles.length <= 6 || Boolean(search)}
-            >
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] text-sm text-left">
-                  <thead>
-                    <tr className="border-b border-line bg-panel-2 text-xs text-muted">
-                      <th className="px-4 py-2.5 font-medium">Placa</th>
-                      <th className="px-4 py-2.5 font-medium">Veículo</th>
-                      <th className="px-4 py-2.5 font-medium">Proprietário</th>
-                      <th className="px-4 py-2.5 font-medium">Ano / KM</th>
-                      <th className="px-4 py-2.5 font-medium text-right">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line">
-                    {items.map((vehicle) => (
-                      <tr key={vehicle.id} className="group hover:bg-panel-2 transition-colors">
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-accent text-accent-fg font-mono font-semibold text-sm">
-                            {vehicle.plate}
+        <div className="rounded-lg border border-line bg-panel overflow-hidden">
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+            <table className="w-full min-w-[860px] text-sm text-left">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-panel-2 border-b border-line text-xs text-muted">
+                  <th className="px-4 py-2.5 font-medium">Placa</th>
+                  <th className="px-4 py-2.5 font-medium">Veículo</th>
+                  <th className="px-4 py-2.5 font-medium">Proprietário</th>
+                  <th className="px-4 py-2.5 font-medium">Ano / KM</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {filteredVehicles.map((vehicle) => (
+                  <tr key={vehicle.id} className="group hover:bg-panel-2 transition-colors">
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-accent text-accent-fg font-mono font-semibold text-sm">
+                        {vehicle.plate}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-ink">{vehicle.brand} {vehicle.model}</p>
+                      <p className="text-xs text-muted">{vehicle.color || 'Cor não informada'}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-accent-soft rounded-full flex items-center justify-center text-accent text-xs font-semibold shrink-0">
+                          {vehicle.customer?.name?.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-sm text-ink">{vehicle.customer?.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="text-sm text-ink">{vehicle.year || '—'}</div>
+                          <div className="text-xs text-muted">{vehicle.km?.toLocaleString('pt-BR')} km</div>
+                        </div>
+                        {isMaintenanceDue(vehicle) && (
+                          <span title="Manutenção vencida" className="flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-700 rounded-md text-xs font-medium">
+                            <Wrench className="w-3 h-3" /> Vencida
                           </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="font-semibold text-ink">{vehicle.brand} {vehicle.model}</p>
-                          <p className="text-xs text-muted">{vehicle.color || 'Cor não informada'}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-accent-soft rounded-full flex items-center justify-center text-accent text-xs font-semibold shrink-0">
-                              {vehicle.customer?.name?.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="text-sm text-ink">{vehicle.customer?.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div>
-                              <div className="text-sm text-ink">{vehicle.year || '—'}</div>
-                              <div className="text-xs text-muted">{vehicle.km?.toLocaleString('pt-BR')} km</div>
-                            </div>
-                            {isMaintenanceDue(vehicle) && (
-                              <span title="Manutenção vencida" className="flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-700 rounded-md text-xs font-medium">
-                                <Wrench className="w-3 h-3" /> Vencida
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="inline-flex items-center gap-1">
-                            <button
-                              onClick={() => handleEdit(vehicle)}
-                              className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
-                              aria-label="Editar veículo"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(vehicle.id)}
-                              className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
-                              aria-label="Excluir veículo"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CollapsiblePanel>
-          ))}
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          onClick={() => handleEdit(vehicle)}
+                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
+                          aria-label="Editar veículo"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(vehicle.id)}
+                          className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
+                          aria-label="Excluir veículo"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
