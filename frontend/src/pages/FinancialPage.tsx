@@ -315,7 +315,7 @@ export function FinancialPage() {
           <button
             onClick={() => setShowAddModal(true)}
             disabled={!canManageFinancial}
-            className="h-12 px-6 rounded-lg bg-accent text-surface-950 font-bold text-sm shadow-xl shadow-black/40 hover:bg-accent-hover transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-12 px-6 rounded-lg bg-accent text-white font-bold text-sm shadow-xl shadow-black/40 hover:bg-accent-hover transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             title={!canManageFinancial ? 'Sem permissao para lancamentos financeiros' : undefined}
           >
             <Plus size={18} /> Lançar Movimentação
@@ -435,7 +435,7 @@ export function FinancialPage() {
             <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Projeção Próx. Mês</p>
             <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.income * 1.1, 0)}</h4>
           </div>
-          <div className="w-12 h-12 bg-accent text-surface-950 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-accent text-white rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
             <TrendingUp size={24} />
           </div>
         </motion.div>
@@ -577,7 +577,7 @@ export function FinancialPage() {
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative bg-surface-900 rounded-[3rem] shadow-2xl w-full max-w-lg overflow-hidden">
               <div className="px-10 py-8 border-b border-line bg-surface-950/40 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-accent text-surface-950 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-accent text-white rounded-lg flex items-center justify-center">
                     <Banknote size={24} />
                   </div>
                   <div>
@@ -634,7 +634,7 @@ export function FinancialPage() {
                   <button
                     type="submit"
                     disabled={!canManageFinancial}
-                    className="w-full py-5 bg-accent text-surface-950 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-5 bg-accent text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Confirmar Lançamento
                   </button>

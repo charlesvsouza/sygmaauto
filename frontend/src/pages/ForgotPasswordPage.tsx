@@ -145,7 +145,7 @@ export function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !email || !recoveryEmail}
-                className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                className="w-full bg-accent hover:bg-accent-hover text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><KeyRound size={18} /> Validar e Gerar Token</>}
               </button>
@@ -210,7 +210,7 @@ export function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading || !token || !newPassword || !confirmPassword}
-                className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                className="w-full bg-accent hover:bg-accent-hover text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Redefinir Senha'}
               </button>

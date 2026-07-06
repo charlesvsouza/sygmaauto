@@ -330,7 +330,7 @@ export function DashboardPage() {
           </p>
         </div>
         <button onClick={() => navigate('/service-orders?new=true')}
-          className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-950 font-black rounded-lg shadow-lg hover:bg-accent-hover transition-all active:scale-95 self-start md:self-auto">
+          className="flex items-center gap-2 px-6 py-3 bg-accent text-white font-black rounded-lg shadow-lg hover:bg-accent-hover transition-all active:scale-95 self-start md:self-auto">
           <Plus size={18} /> Nova OS
         </button>
       </div>
@@ -365,7 +365,7 @@ export function DashboardPage() {
               className={cn(
                 'px-3 py-1.5 rounded-lg text-xs font-black transition-all',
                 productivityWindowDays === days
-                  ? 'bg-accent text-surface-950'
+                  ? 'bg-accent text-white'
                   : 'bg-surface-800 text-surface-300 hover:bg-ink/5'
               )}
             >
@@ -422,7 +422,7 @@ export function DashboardPage() {
           },
         ].map((kpi) => (
           <div key={kpi.title} className="bg-surface-900 rounded-xl border border-line p-5 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-accent text-surface-950 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
             <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{kpi.title}</p>

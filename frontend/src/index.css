@@ -22,11 +22,11 @@
   --muted: 90 107 104;         /* #5a6b68 texto secundário (AA) */
   --faint: 122 138 135;        /* #7a8a87 texto fraco */
 
-  /* Acento verde-água */
-  --accent: 31 157 143;        /* #1f9d8f */
-  --accent-hover: 20 134 122;  /* #14867a */
+  /* Acento verde-água (mais profundo p/ passar AA com texto branco) */
+  --accent: 13 125 110;        /* #0d7d6e */
+  --accent-hover: 10 100 88;   /* #0a6458 */
   --accent-fg: 255 255 255;    /* texto sobre acento */
-  --accent-soft: 224 244 241;  /* #e0f4f1 fundo suave */
+  --accent-soft: 220 242 238;  /* #dcf2ee fundo suave */
 
   /* Sidebar (teal profundo) */
   --sidebar: 18 63 59;         /* #123f3b */

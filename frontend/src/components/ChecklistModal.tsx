@@ -235,7 +235,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                     className={cn(
                       'flex-1 h-8 rounded-lg text-xs font-bold border transition',
                       fuelLevel === i
-                        ? 'bg-accent text-surface-950 border-surface-600'
+                        ? 'bg-accent text-white border-surface-600'
                         : 'bg-surface-950/40 text-surface-400 border-line hover:bg-ink/5',
                     )}
                     title={FUEL_LABELS[i]}
@@ -376,7 +376,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                 'flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition',
                 saved
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-accent text-surface-950 hover:bg-accent-hover disabled:opacity-60',
+                  : 'bg-accent text-white hover:bg-accent-hover disabled:opacity-60',
               )}
             >
               {saved ? (

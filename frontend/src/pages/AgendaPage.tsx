@@ -7,7 +7,7 @@ import { Calendar, ChevronLeft, ChevronRight, Plus, RefreshCw, Loader2 } from 'l
 // Chips de status consistentes com ServiceOrdersPage (sistema de "tone")
 const STATUS_CHIPS: Record<string, string> = {
   neutral: 'bg-surface-100 text-surface-700 border border-surface-200',
-  golden: 'bg-surface-900 text-white border border-transparent',
+  golden: 'bg-accent text-white border border-transparent',
   positive: 'bg-accent/10 text-accent border border-accent/40',
   negative: 'bg-danger/10 text-red-700 border border-red-200',
 };
@@ -129,7 +129,7 @@ export function AgendaPage() {
           </button>
           <button
             onClick={() => navigate('/service-orders')}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-surface-950 rounded-xl text-xs font-bold hover:bg-accent-hover transition-all shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent-hover transition-all shadow-lg"
           >
             <Plus size={14} />
             Nova OS

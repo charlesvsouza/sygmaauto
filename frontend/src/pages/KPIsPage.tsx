@@ -378,7 +378,7 @@ export function KPIsPage() {
                 className={cn(
                   'px-3 py-2 rounded-xl text-xs font-black transition-all border',
                   active
-                    ? 'bg-accent text-surface-950 border-surface-600'
+                    ? 'bg-accent text-white border-surface-600'
                     : 'bg-surface-900 text-surface-300 border-line hover:bg-ink/5',
                 )}
               >
@@ -415,7 +415,7 @@ export function KPIsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent text-surface-950 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
             <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{kpi.title}</p>
@@ -699,7 +699,7 @@ export function KPIsPage() {
           <div className="space-y-2">
             {(commissions.leadership || []).slice(0, 6).map((p: any, idx: number) => (
               <div key={p.userId} className="flex items-center gap-3 rounded-xl border border-line p-3">
-                <span className="w-8 h-8 rounded-lg bg-accent text-surface-950 text-xs font-black flex items-center justify-center">{idx + 1}</span>
+                <span className="w-8 h-8 rounded-lg bg-accent text-white text-xs font-black flex items-center justify-center">{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-surface-100 truncate">{p.name}</p>
                   <p className="text-xs text-surface-500">{p.count} OS executadas</p>

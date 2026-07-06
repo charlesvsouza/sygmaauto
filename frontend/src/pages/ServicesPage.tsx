@@ -162,7 +162,7 @@ export function ServicesPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Serviço
@@ -405,7 +405,7 @@ export function ServicesPage() {
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
+                  <button type="submit" className="px-8 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
                     {editingService ? 'Salvar Alterações' : 'Cadastrar Serviço'}
                   </button>
                 </div>

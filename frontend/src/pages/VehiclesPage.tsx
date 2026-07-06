@@ -184,7 +184,7 @@ export function VehiclesPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Veículo
@@ -483,7 +483,7 @@ export function VehiclesPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-8 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     {editingVehicle ? 'Salvar Alterações' : 'Cadastrar Veículo'}

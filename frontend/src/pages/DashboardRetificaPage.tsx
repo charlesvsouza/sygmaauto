@@ -289,7 +289,7 @@ export function DashboardRetificaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-950 text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-accent text-white p-6 flex items-center justify-center">
         <div className="flex items-center gap-3 text-surface-600">
           <Loader2 className="animate-spin" size={20} />
           Carregando dashboard de retifica...
@@ -300,7 +300,7 @@ export function DashboardRetificaPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-surface-950 text-white p-6">
+      <div className="min-h-screen bg-accent text-white p-6">
         <div className="max-w-6xl mx-auto">
           <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-700">
             {error}
@@ -311,7 +311,7 @@ export function DashboardRetificaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-950 text-white p-4 md:p-6">
+    <div className="min-h-screen bg-accent text-white p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-5">
         <motion.div
           initial={{ opacity: 0, y: 8 }}

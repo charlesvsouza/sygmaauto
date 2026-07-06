@@ -1065,7 +1065,7 @@ const ICON_BG: Record<string, string> = {
           <button
             onClick={generate}
             disabled={loading}
-            className="h-11 px-8 bg-accent text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
+            className="h-11 px-8 bg-accent text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
             {loading ? 'Gerando...' : 'Gerar Relatório'}
@@ -1138,7 +1138,7 @@ const ICON_BG: Record<string, string> = {
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={handlePrint}
-                    className="h-9 px-5 bg-accent text-surface-950 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-2">
+                    className="h-9 px-5 bg-accent text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-2">
                     <Printer size={14} /> Imprimir / Salvar PDF
                   </button>
                   <button onClick={() => setShowPreview(false)}

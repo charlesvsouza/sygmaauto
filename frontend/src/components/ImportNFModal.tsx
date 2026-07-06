@@ -180,7 +180,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <label
                 htmlFor="nf-upload"
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-surface-950 font-black text-sm cursor-pointer hover:bg-accent-hover transition-colors"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-black text-sm cursor-pointer hover:bg-accent-hover transition-colors"
               >
                 <FileUp size={16} /> Selecionar Arquivo
               </label>

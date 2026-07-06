@@ -230,7 +230,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 htmlFor="pdf-upload"
                 className={cn(
                   "cursor-pointer px-8 py-4 rounded-lg font-black text-sm uppercase tracking-widest transition-all shadow-xl flex items-center gap-3",
-                  file ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" : "bg-accent text-surface-950 hover:bg-accent-hover shadow-black/40"
+                  file ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" : "bg-accent text-white hover:bg-accent-hover shadow-black/40"
                 )}
               >
                 {file ? <CheckCircle2 size={20} /> : <FileUp size={20} />}
@@ -361,7 +361,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               {/* Itens */}
               <div className="border border-line rounded-xl overflow-hidden bg-surface-900 shadow-sm">
                 <table className="w-full text-left">
-                  <thead className="bg-accent text-surface-950">
+                  <thead className="bg-accent text-white">
                     <tr>
                       <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Tipo</th>
                       <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-surface-500">Código / Descrição</th>
@@ -465,7 +465,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
             <button
               disabled={loading}
               onClick={handleConfirm}
-              className="px-8 py-3 bg-accent text-surface-950 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all shadow-xl shadow-black/40 flex items-center gap-2"
+              className="px-8 py-3 bg-accent text-white rounded-lg font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all shadow-xl shadow-black/40 flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {isAppendMode ? 'Importar na O.S. Aberta' : 'Confirmar e Abrir O.S.'}

@@ -287,7 +287,7 @@ export function DREPage() {
           </div>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-surface-950 text-sm font-bold rounded-xl hover:bg-accent-hover transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-bold rounded-xl hover:bg-accent-hover transition-all shadow-sm"
           >
             <Printer className="w-4 h-4" /> Imprimir
           </button>
@@ -349,7 +349,7 @@ export function DREPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <tbody>
-                    <tr className="bg-accent text-surface-950">
+                    <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Receita</td>
                     </tr>
                     <DRERow label="(+) Receita Bruta" value={dre.receitaBruta} />
@@ -357,12 +357,12 @@ export function DREPage() {
                     <DRERow label="Receita Manual (lançamentos)" value={detalhes.receitaManual} indent={1} />
                     <DRERow label="(-) Deduções (impostos estimados ~8%)" value={-dre.deducoes} note="Estimativa simplificada." />
                     <DRERow label="(=) Receita Líquida" value={dre.receitaLiquida} highlight />
-                    <tr className="bg-accent text-surface-950">
+                    <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Custo dos Produtos</td>
                     </tr>
                     <DRERow label="(-) CMV — Custo das Peças Utilizadas" value={-dre.cmv} note="Custo de compra das peças usadas nas OS entregues." />
                     <DRERow label="(=) Margem Bruta" value={dre.margemBruta} highlight />
-                    <tr className="bg-accent text-surface-950">
+                    <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Despesas Operacionais</td>
                     </tr>
                     <DRERow label="(-) Total de Despesas" value={-dre.despesasOperacionais} />
@@ -370,7 +370,7 @@ export function DREPage() {
                       <DRERow key={cat} label={cat} value={-(val as number)} indent={1} />
                     ))}
                     <DRERow label="(=) EBITDA" value={dre.ebitda} highlight />
-                    <tr className="bg-accent text-surface-950">
+                    <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Resultado</td>
                     </tr>
                     <DRERow label="(=) Resultado Líquido do Período" value={dre.resultadoLiquido} highlight />

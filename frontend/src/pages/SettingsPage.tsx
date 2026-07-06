@@ -89,7 +89,7 @@ export function SettingsPage() {
   const isTradeNameMissing = !tenantData.name.trim();
 
   const ROLE_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
-    MASTER:     { label: 'Master',     color: 'bg-accent text-surface-950',          desc: 'Proprietário — acesso total' },
+    MASTER:     { label: 'Master',     color: 'bg-accent text-white',          desc: 'Proprietário — acesso total' },
     ADMIN:      { label: 'Admin',      color: 'bg-violet-500/15 text-violet-700',    desc: 'Gerência administrativa' },
     GERENTE:    { label: 'Gerente',    color: 'bg-blue-500/15 text-blue-700',        desc: 'Gerência operacional' },
     CHEFE_OFICINA: { label: 'Chefe Oficina', color: 'bg-rose-500/15 text-rose-700',  desc: 'Liderança técnica por área' },
@@ -683,7 +683,7 @@ export function SettingsPage() {
               {canManageUsers && (
                 <button
                   onClick={() => navigate('/users')}
-                  className="flex items-center gap-1 px-4 py-2 bg-accent text-surface-950 rounded-lg text-xs font-bold hover:bg-accent-hover transition-all uppercase tracking-wide"
+                  className="flex items-center gap-1 px-4 py-2 bg-accent text-white rounded-lg text-xs font-bold hover:bg-accent-hover transition-all uppercase tracking-wide"
                 >
                   Gerenciar <ArrowRight size={12} />
                 </button>

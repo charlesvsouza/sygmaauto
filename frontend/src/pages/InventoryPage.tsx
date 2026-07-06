@@ -235,7 +235,7 @@ function SupplierModal({ onClose, onSaved }: { onClose: () => void; onSaved: () 
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-line">
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-ink/5 rounded-xl transition-all">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all active:scale-95">
+            <button type="submit" disabled={saving} className="px-8 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover transition-all active:scale-95">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Cadastrar'}
             </button>
           </div>
@@ -390,7 +390,7 @@ export function InventoryPage() {
           </button>
           <button onClick={openNew}
             disabled={!canManageParts}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-surface-950 font-black shadow-lg hover:bg-accent-hover transition-all active:scale-95">
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-black shadow-lg hover:bg-accent-hover transition-all active:scale-95">
             <Plus className="w-5 h-5" /> Nova Peça
           </button>
         </div>
@@ -666,7 +666,7 @@ export function InventoryPage() {
                   <button type="button" onClick={() => { setShowModal(false); setPartError(''); }}
                     className="px-6 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:bg-ink/5 transition-all">Cancelar</button>
                   <button type="submit"
-                    className="px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
+                    className="px-8 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm active:scale-95">
                     {editingPart ? 'Salvar Alterações' : 'Cadastrar Peça'}
                   </button>
                 </div>

@@ -184,7 +184,7 @@ export function CustomersPage() {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-surface-950 rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm hover:shadow-md active:scale-95"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl font-semibold hover:bg-accent-hover transition-all shadow-sm hover:shadow-md active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Novo Cliente
@@ -524,7 +524,7 @@ export function CustomersPage() {
                   type="submit"
                   form="customer-form"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-8 py-2.5 bg-accent text-surface-950 rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm hover:shadow-lg disabled:opacity-50 active:scale-95"
+                  className="inline-flex items-center gap-2 px-8 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover transition-all shadow-sm hover:shadow-lg disabled:opacity-50 active:scale-95"
                 >
                   {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save size={18} />}
                   {editingCustomer ? 'Salvar Alterações' : 'Cadastrar Cliente'}

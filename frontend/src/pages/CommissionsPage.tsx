@@ -242,7 +242,7 @@ export function CommissionsPage() {
         </div>
         <button
           onClick={exportCsv}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-surface-950 text-sm font-bold hover:bg-accent-hover"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-white text-sm font-bold hover:bg-accent-hover"
         >
           <Download size={16} /> Exportar CSV
         </button>
@@ -428,7 +428,7 @@ export function CommissionsPage() {
                       <button
                         onClick={() => markAsPaid(row.id)}
                         disabled={payingId === row.id}
-                        className="px-3 py-1.5 rounded-lg bg-accent text-surface-950 text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
+                        className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
                       >
                         {payingId === row.id ? 'Salvando...' : 'Marcar pago'}
                       </button>
