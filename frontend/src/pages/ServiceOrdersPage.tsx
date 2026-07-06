@@ -42,7 +42,7 @@ const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' |
 
 const STATUS_CHIPS: Record<string, string> = {
   neutral: 'bg-surface-900 text-surface-300 border border-surface-800',
-  golden: 'bg-surface-100 text-white border border-transparent',
+  golden: 'bg-accent text-white border border-transparent',
   positive: 'bg-accent/10 text-accent border border-accent/40',
   negative: 'bg-red-50 text-red-700 border border-red-200',
 };
@@ -1123,7 +1123,7 @@ export function ServiceOrdersPage() {
                   setImportTargetOrderId(null);
                   setShowImportModal(true);
                 }}
-                className="p-1.5 bg-surface-100 text-white rounded-lg hover:bg-surface-200 transition-colors"
+                className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
                 title="Importar de Orcamento PDF"
               >
                 <FileUp size={18} />
@@ -1205,7 +1205,7 @@ export function ServiceOrdersPage() {
             {/* Top bar */}
             <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-surface-100 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-white shadow-lg">
                   <FileText size={24} />
                 </div>
                 <div>
@@ -1280,7 +1280,7 @@ export function ServiceOrdersPage() {
                 <button
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
-                  className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-surface-100 text-white hover:bg-surface-200 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
                   title={isClosed ? 'OS finalizada nao pode ser editada' : !canEditOrderDetails ? 'Sem permissao para editar O.S.' : undefined}
                 >
                   <Save size={15} /> Salvar alterações
@@ -1408,7 +1408,7 @@ export function ServiceOrdersPage() {
                   </div>
                 </div>
 
-                <div className="bg-surface-100 rounded-lg p-5 text-white shadow-xl">
+                <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h3 className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
@@ -1525,7 +1525,7 @@ export function ServiceOrdersPage() {
                         e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                       readOnly={isReprovado}
-                      className={`w-full min-h-24 bg-surface-950 border border-surface-800 rounded-xl p-3 text-xs font-black text-surface-100 placeholder:text-surface-600 focus:bg-white focus:ring-4 focus:ring-surface-100/5 focus:border-surface-100 transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-900' : ''}`}
+                      className={`w-full min-h-24 bg-surface-950 border border-surface-800 rounded-xl p-3 text-xs font-black text-surface-100 placeholder:text-surface-600 focus:bg-white focus:ring-4 focus:ring-surface-100/5 focus:border-accent transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-900' : ''}`}
                     />
                   </div>
                 ))}
@@ -1559,7 +1559,7 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
-                    className="text-[9px] font-semibold uppercase tracking-wide bg-surface-100 text-white px-3 py-1.5 rounded-lg hover:bg-surface-200 transition-colors flex items-center gap-1"
+                    className="text-[9px] font-semibold uppercase tracking-wide bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-1"
                     title={!canManageItems ? 'Sem permissao para adicionar itens' : undefined}
                   >
                     <Plus size={12} /> Adicionar Servico
@@ -1725,7 +1725,7 @@ export function ServiceOrdersPage() {
                             'w-full px-3 py-2 rounded-xl text-[10px] font-black tracking-wide transition-all text-left',
                             isNegative
                               ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
-                              : 'bg-surface-100 text-white hover:bg-surface-200 shadow-sm'
+                              : 'bg-accent text-white hover:bg-accent-hover shadow-sm'
                           )}
                         >
                           {STATUS_ACTION_LABEL[status] || statusConfig[status]?.label || status}
@@ -1753,7 +1753,7 @@ export function ServiceOrdersPage() {
                     type="datetime-local"
                     value={edit.scheduledDate}
                     onChange={(e) => setEdit({ ...edit, scheduledDate: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-surface-300 focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
+                    className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-surface-300 focus:ring-2 focus:ring-surface-100/10 focus:border-accent transition-all"
                   />
                 </div>
 
@@ -1769,7 +1769,7 @@ export function ServiceOrdersPage() {
                         className={cn(
                           'px-2.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wide transition-all border text-left leading-tight',
                           edit.paymentMethod === pm
-                            ? 'bg-surface-100 text-white border-surface-100 shadow-lg'
+                            ? 'bg-accent text-white border-accent shadow-lg'
                             : 'bg-white border-surface-800 text-surface-400 hover:border-surface-600'
                         )}
                       >
@@ -1780,11 +1780,11 @@ export function ServiceOrdersPage() {
                 </div>
 
                 {/* Totais */}
-                <div className="bg-surface-100 rounded-xl p-6 text-white shadow-xl flex flex-col gap-3">
+                <div className="bg-accent rounded-xl p-6 text-white shadow-xl flex flex-col gap-3">
                   <button
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
-                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-surface-300 bg-surface-200 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-surface-300 disabled:opacity-60"
+                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-accent-hover disabled:opacity-60"
                     title={!canSyncOrder ? 'Sem permissao para atualizar O.S.' : undefined}
                   >
                     {syncingTotals ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
@@ -1800,7 +1800,7 @@ export function ServiceOrdersPage() {
                       <span>R$ {fmtBR(val)}</span>
                     </div>
                   ))}
-                  <div className="pt-3 border-t border-surface-300">
+                  <div className="pt-3 border-t border-accent">
                     <p className="text-[10px] font-black text-accent uppercase tracking-widest mb-1">Total da Ordem</p>
                     <p className="text-3xl font-black tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
@@ -1815,7 +1815,7 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {showReserveParts && selectedOrder && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="absolute inset-0 bg-surface-100/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[88vh] overflow-hidden">
 
               {/* Header */}
@@ -1908,7 +1908,7 @@ export function ServiceOrdersPage() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Pedido de Compra</p>
-                          <span className="bg-surface-100 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
+                          <span className="bg-accent text-white text-[10px] font-black px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
                         </div>
                         {reserveResult.missingItems.map((item: any, i: number) => (
                           <div key={i} className="flex items-start justify-between rounded-xl px-3 py-2 bg-red-50 border border-red-200 text-xs">
@@ -1925,7 +1925,7 @@ export function ServiceOrdersPage() {
 
                         <button
                           onClick={downloadPurchaseOrderPdf}
-                          className="w-full py-2.5 rounded-xl bg-surface-100 text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-surface-200 transition-all"
+                          className="w-full py-2.5 rounded-xl bg-accent text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
                         >
                           <Printer size={14} /> Imprimir Pedido de Compra
                         </button>
@@ -1950,13 +1950,13 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {catalogMode && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCatalogMode(null)} className="absolute inset-0 bg-surface-100/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCatalogMode(null)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-xl flex flex-col max-h-[88vh]">
 
               {/* Header */}
               <div className="p-5 border-b border-surface-800/70 bg-surface-950 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white', catalogMode === 'service' ? 'bg-surface-100' : 'bg-accent')}>
+                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white', catalogMode === 'service' ? 'bg-accent' : 'bg-accent')}>
                     {catalogMode === 'service' ? <Wrench size={20} /> : <Package size={20} />}
                   </div>
                   <div>
@@ -1974,7 +1974,7 @@ export function ServiceOrdersPage() {
                     className={cn(
                       'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-all',
                       showAiPanel
-                        ? 'bg-surface-100 text-white shadow-md'
+                        ? 'bg-accent text-white shadow-md'
                         : 'bg-surface-900 text-surface-300 hover:bg-surface-800'
                     )}
                     title="IA Assistiva - sugestoes por sintoma"
@@ -2009,12 +2009,12 @@ export function ServiceOrdersPage() {
                           value={aiDescription}
                           onChange={(e) => setAiDescription(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAiSuggest()}
-                          className="flex-1 px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
+                          className="flex-1 px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-accent transition-all"
                         />
                         <button
                           onClick={handleAiSuggest}
                           disabled={aiLoading || !aiDescription.trim()}
-                          className="h-9 px-4 bg-surface-100 hover:bg-surface-200 text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 disabled:opacity-50"
+                          className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                           Sugerir
@@ -2026,7 +2026,7 @@ export function ServiceOrdersPage() {
                             <div key={i} className="flex items-center justify-between bg-white border border-surface-800 rounded-lg px-3 py-2.5 gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                  <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-surface-100/10 text-surface-300')}>
+                                  <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-black/50 text-surface-300')}>
                                     {s.type === 'service' ? 'Servico' : 'Peca'}
                                   </span>
                                   <span className="text-[10px] font-black text-surface-200 truncate">{s.description}</span>
@@ -2077,7 +2077,7 @@ export function ServiceOrdersPage() {
                       placeholder={catalogMode === 'service' ? 'Ex: Limpeza de bicos injetores' : 'Ex: Correia auxiliar Fiat Uno'}
                       value={quickAdd.description}
                       onChange={(e) => setQuickAdd({ ...quickAdd, description: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
+                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-accent transition-all"
                     />
                   </div>
                   <div className="w-28 space-y-1">
@@ -2158,7 +2158,7 @@ export function ServiceOrdersPage() {
                             ...(quickAssignedUserId ? { assignedUserId: quickAssignedUserId } : {}),
                           })}
                           disabled={isClosed}
-                          className="w-full p-4 bg-white border border-surface-800 rounded-lg hover:border-surface-100 hover:shadow-md text-left transition-all group flex items-center justify-between disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-full p-4 bg-white border border-surface-800 rounded-lg hover:border-accent hover:shadow-md text-left transition-all group flex items-center justify-between disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <div>
                             <p className="font-bold text-surface-100 text-sm">{s.name}</p>
@@ -2167,7 +2167,7 @@ export function ServiceOrdersPage() {
                               {s.category && ` - ${s.category}`}
                             </p>
                           </div>
-                          <div className="w-8 h-8 rounded-xl bg-surface-900 group-hover:bg-surface-100 group-hover:text-white flex items-center justify-center transition-all">
+                          <div className="w-8 h-8 rounded-xl bg-surface-900 group-hover:bg-accent group-hover:text-white flex items-center justify-center transition-all">
                             <Plus size={16} />
                           </div>
                         </button>
@@ -2250,7 +2250,7 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-surface-100/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-surface-100 uppercase tracking-tight">Nova OS</h2>
@@ -2289,7 +2289,7 @@ export function ServiceOrdersPage() {
                       className={cn(
                         'flex flex-col items-start p-3 rounded-lg border-2 text-left transition-all',
                         newOrder.orderType === value
-                          ? 'border-surface-100 bg-surface-100 text-white'
+                          ? 'border-accent bg-accent text-white'
                           : 'border-surface-800 bg-white text-surface-300 hover:border-surface-600'
                       )}
                     >
@@ -2378,7 +2378,7 @@ export function ServiceOrdersPage() {
                             'px-4 py-2 rounded-xl text-xs font-black transition-all',
                             creatingQuickVehicle
                               ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                              : 'bg-surface-100 text-white hover:bg-surface-200'
+                              : 'bg-accent text-white hover:bg-accent-hover'
                           )}
                         >
                           {creatingQuickVehicle ? 'Salvando...' : 'Salvar veiculo'}
@@ -2446,7 +2446,7 @@ export function ServiceOrdersPage() {
                 </label>
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-6 py-3 rounded-lg text-sm font-bold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
-                  <button type="submit" className="flex-1 px-6 py-3 bg-surface-100 text-white rounded-lg font-bold hover:bg-surface-200 shadow-lg active:scale-95 transition-all">Criar Ordem</button>
+                  <button type="submit" className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold hover:bg-accent-hover shadow-lg active:scale-95 transition-all">Criar Ordem</button>
                 </div>
               </form>
             </motion.div>
@@ -2512,7 +2512,7 @@ export function ServiceOrdersPage() {
       {/* Modal de confirmação de exclusão */}
       {showDeleteModal && selectedOrder && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-surface-100/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-8 flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
