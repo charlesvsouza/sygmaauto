@@ -97,7 +97,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
+    <div data-theme="dark" className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background Glow (dourado, sutil) */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
@@ -110,7 +110,7 @@ export function LoginPage() {
         <div className="bg-surface-900 p-8 md:p-10 rounded-xl border border-line relative overflow-hidden shadow-card-hover">
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-10">
-            <SigmaAutoLogo variant="full" tone="brand" className="mb-2" />
+            <SigmaAutoLogo variant="full" className="mb-2" />
             <p className="text-surface-300 text-sm mt-1">Bem-vindo de volta!</p>
           </div>
 

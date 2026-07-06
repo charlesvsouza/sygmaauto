@@ -455,7 +455,7 @@ export function InventoryPage() {
         </div>
       ) : (
         <div className="rounded-lg border border-line bg-panel overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 430px)' }}>
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 360px)' }}>
             <table className="w-full min-w-[860px] text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-panel-2 border-b border-line text-xs text-muted">

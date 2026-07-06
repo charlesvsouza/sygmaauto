@@ -251,148 +251,141 @@ export function UsersPage() {
         </button>
       </div>
 
-      <div className="card border-line overflow-hidden">
-        <div className="p-6 border-b border-line bg-surface-950/40">
-          <div className="relative max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-            <input
-              type="text"
-              placeholder="Buscar por nome ou email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-900 border border-line rounded-lg py-3 pl-12 pr-4 text-surface-50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
-            />
-          </div>
+      {/* Toolbar de busca — sempre visível (a lista rola por baixo) */}
+      <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
+          <input
+            type="text"
+            placeholder="Buscar por nome ou email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors"
+          />
         </div>
+        <div className="flex items-center gap-2 text-sm text-muted whitespace-nowrap px-1">
+          <Users size={16} />
+          <span className="font-semibold text-ink">{filteredUsers.length}</span> usuários
+        </div>
+      </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-surface-950/40 border-b border-line">
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Colaborador</th>
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Nível de Acesso</th>
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Área/Função</th>
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Comissão</th>
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest">Status</th>
-                  <th className="py-5 px-8 text-[10px] font-black text-surface-500 uppercase tracking-widest text-right">Ações</th>
+      {loading ? (
+        <div className="flex items-center justify-center h-64 rounded-lg border border-line bg-panel">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-center py-20 rounded-lg border border-line bg-panel">
+          <Users className="w-14 h-14 mx-auto mb-4 text-faint" />
+          <p className="text-muted text-sm">Nenhum usuário encontrado.</p>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-line bg-panel overflow-hidden">
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+            <table className="w-full min-w-[980px] text-sm text-left">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-panel-2 border-b border-line text-xs text-muted">
+                  <th className="px-4 py-2.5 font-medium">Colaborador</th>
+                  <th className="px-4 py-2.5 font-medium">Nível de Acesso</th>
+                  <th className="px-4 py-2.5 font-medium">Área/Função</th>
+                  <th className="px-4 py-2.5 font-medium">Comissão</th>
+                  <th className="px-4 py-2.5 font-medium">Status</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                <AnimatePresence>
-                  {filteredUsers.map((user, idx) => (
-                    <motion.tr
-                      key={user.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="group hover:bg-ink/5 transition-colors"
-                    >
-                      <td className="py-6 px-8">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${
-                            user.role === 'MASTER'     ? 'bg-amber-500/15 text-amber-600' :
-                            user.role === 'ADMIN'      ? 'bg-purple-500/15 text-purple-600' :
-                            user.role === 'GERENTE'    ? 'bg-blue-500/15 text-blue-600' :
-                            user.role === 'CHEFE_OFICINA' ? 'bg-rose-500/15 text-rose-600' :
-                            user.role === 'FINANCEIRO' ? 'bg-emerald-500/15 text-emerald-600' :
-                            user.role === 'SECRETARIA' ? 'bg-cyan-500/15 text-cyan-600' :
-                            user.role === 'MECANICO'   ? 'bg-orange-500/15 text-orange-600' :
-                            'bg-accent text-surface-950'
-                          }`}>
-                            {user.name[0]}
-                          </div>
-                          <div>
-                            <div className="font-bold text-surface-50 text-lg leading-none mb-1">{user.name}</div>
-                            <div className="text-sm text-surface-400 flex items-center gap-1.5 font-medium">
-                              <Mail size={14} className="text-surface-600" />
-                              {user.email}
-                            </div>
-                            {user.recoveryEmail && (
-                              <div className="text-xs text-surface-500 mt-1">
-                                Recuperacao: {user.recoveryEmail}
-                              </div>
-                            )}
-                          </div>
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="group hover:bg-panel-2 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-semibold shrink-0 ${
+                          user.role === 'MASTER'     ? 'bg-amber-500/15 text-amber-600' :
+                          user.role === 'ADMIN'      ? 'bg-purple-500/15 text-purple-600' :
+                          user.role === 'GERENTE'    ? 'bg-blue-500/15 text-blue-600' :
+                          user.role === 'CHEFE_OFICINA' ? 'bg-rose-500/15 text-rose-600' :
+                          user.role === 'FINANCEIRO' ? 'bg-emerald-500/15 text-emerald-600' :
+                          user.role === 'SECRETARIA' ? 'bg-cyan-500/15 text-cyan-600' :
+                          user.role === 'MECANICO'   ? 'bg-orange-500/15 text-orange-600' :
+                          'bg-accent text-accent-fg'
+                        }`}>
+                          {user.name[0]}
                         </div>
-                      </td>
-                      <td className="py-6 px-8">
-                        {getRoleBadge(user.role)}
-                      </td>
-                      <td className="py-6 px-8">
-                        <div className="text-xs font-bold text-surface-200">
-                          {workshopAreas.find((a) => a.value === user.workshopArea)?.label || '—'}
-                        </div>
-                        <div className="text-[10px] text-surface-400 mt-1">
-                          {jobFunctions.find((f) => f.value === user.jobFunction)?.label || '—'}
-                        </div>
-                      </td>
-                      <td className="py-6 px-8">
-                        <span className="text-xs font-black text-surface-200">
-                          {user.commissionPercent != null ? `${Number(user.commissionPercent).toFixed(1)}%` : 'Padrão Global'}
-                        </span>
-                        {user.chief?.name && (
-                          <div className="text-[10px] text-surface-400 mt-1">Chefe: {user.chief.name}</div>
-                        )}
-                      </td>
-                      <td className="py-6 px-8">
-                        {user.isActive ? (
-                          <div className="flex items-center gap-2 text-emerald-600 text-xs font-black uppercase tracking-widest">
-                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                            Ativo
+                        <div className="min-w-0">
+                          <div className="font-semibold text-ink truncate">{user.name}</div>
+                          <div className="text-xs text-muted flex items-center gap-1.5">
+                            <Mail size={12} className="text-faint" />
+                            {user.email}
                           </div>
-                        ) : (
-                          <div className="flex items-center gap-2 text-surface-500 text-xs font-black uppercase tracking-widest">
-                            <div className="w-1.5 h-1.5 bg-surface-600 rounded-full" />
-                            Inativo
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-6 px-8 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleEdit(user)}
-                            className="p-3 hover:bg-blue-500/10 text-surface-600 hover:text-blue-600 rounded-lg transition-all"
-                            title="Editar"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => openResetPasswordModal(user)}
-                            className="p-3 hover:bg-amber-500/10 text-surface-600 hover:text-amber-600 rounded-lg transition-all"
-                            title="Redefinir senha"
-                          >
-                            <KeyRound size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(user.id)}
-                            className="p-3 hover:bg-red-500/10 text-surface-600 hover:text-red-600 rounded-lg transition-all"
-                            title="Excluir"
-                            disabled={user.role === 'MASTER'}
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          {user.recoveryEmail && (
+                            <div className="text-[10px] text-faint mt-0.5">Recuperação: {user.recoveryEmail}</div>
+                          )}
                         </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {getRoleBadge(user.role)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-xs font-medium text-ink">
+                        {workshopAreas.find((a) => a.value === user.workshopArea)?.label || '—'}
+                      </div>
+                      <div className="text-[10px] text-muted mt-0.5">
+                        {jobFunctions.find((f) => f.value === user.jobFunction)?.label || '—'}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs font-semibold text-ink">
+                        {user.commissionPercent != null ? `${Number(user.commissionPercent).toFixed(1)}%` : 'Padrão Global'}
+                      </span>
+                      {user.chief?.name && (
+                        <div className="text-[10px] text-muted mt-0.5">Chefe: {user.chief.name}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {user.isActive ? (
+                        <div className="flex items-center gap-2 text-emerald-600 text-xs font-semibold">
+                          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                          Ativo
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-muted text-xs font-semibold">
+                          <div className="w-1.5 h-1.5 bg-faint rounded-full" />
+                          Inativo
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="inline-flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="p-1.5 rounded-md text-muted hover:bg-blue-500/10 hover:text-blue-600 transition-colors"
+                          title="Editar"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => openResetPasswordModal(user)}
+                          className="p-1.5 rounded-md text-muted hover:bg-amber-500/10 hover:text-amber-600 transition-colors"
+                          title="Redefinir senha"
+                        >
+                          <KeyRound size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="p-1.5 rounded-md text-muted hover:bg-red-500/10 hover:text-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          title="Excluir"
+                          disabled={user.role === 'MASTER'}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            
-            {filteredUsers.length === 0 && (
-              <div className="text-center py-20">
-                <Users className="w-16 h-16 mx-auto mb-4 text-surface-700" />
-                <p className="text-surface-400 font-bold">Nenhum usuário encontrado.</p>
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Modal Redesigned */}
       {showModal && (

@@ -89,6 +89,11 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Reduz a escala geral da interface (~15% menor) — tudo em rem acompanha */
+  font-size: 85%;
+}
+
 html, body, #root {
   height: 100%;
 }
@@ -110,7 +115,7 @@ a[role='button'],
 input,
 select,
 textarea {
-  min-height: 44px;
+  min-height: 38px;
 }
 
 /* Scrollbar discreta */

@@ -62,7 +62,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
+    <div data-theme="dark" className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background Glow (dourado, sutil) */}
       <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
@@ -76,7 +76,7 @@ export function RegisterPage() {
         <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-accent/10 to-transparent border-r border-line">
           <div>
             <div className="flex items-center gap-3 mb-8">
-              <SigmaAutoLogo variant="full" tone="brand" />
+              <SigmaAutoLogo variant="full" />
             </div>
 
             <h1 className="text-4xl font-bold leading-tight mb-6">

@@ -41,8 +41,8 @@ const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' |
 };
 
 const STATUS_CHIPS: Record<string, string> = {
-  neutral: 'bg-surface-100 text-surface-700 border border-surface-200',
-  golden: 'bg-surface-900 text-white border border-transparent',
+  neutral: 'bg-surface-900 text-surface-300 border border-surface-800',
+  golden: 'bg-surface-100 text-white border border-transparent',
   positive: 'bg-accent/10 text-accent border border-accent/40',
   negative: 'bg-red-50 text-red-700 border border-red-200',
 };
@@ -50,7 +50,7 @@ const STATUS_CHIPS: Record<string, string> = {
 const statusChip = (tone?: keyof typeof STATUS_CHIPS) => STATUS_CHIPS[tone ?? 'neutral'];
 const statusIndicator = (tone?: keyof typeof STATUS_CHIPS) => {
   const map: Record<string, string> = {
-    neutral: 'bg-surface-400',
+    neutral: 'bg-surface-600',
     golden: 'bg-accent',
     positive: 'bg-accent',
     negative: 'bg-red-500',
@@ -1111,10 +1111,10 @@ export function ServiceOrdersPage() {
       </div>
 
       {/* LISTA DE OS */}
-      <div className="w-80 flex flex-col bg-surface-50 border border-surface-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-surface-200/60 bg-surface-100/50">
+      <div className="w-80 flex flex-col bg-surface-950 border border-surface-800 rounded-xl overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-surface-800/60 bg-surface-900/50">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-black text-surface-900 flex items-center gap-2 uppercase text-xs tracking-tight">
+            <h2 className="font-black text-surface-100 flex items-center gap-2 uppercase text-xs tracking-tight">
               <ClipboardList size={16} /> Ordens de Servico
             </h2>
             <div className="flex gap-2">
@@ -1123,7 +1123,7 @@ export function ServiceOrdersPage() {
                   setImportTargetOrderId(null);
                   setShowImportModal(true);
                 }}
-                className="p-1.5 bg-surface-900 text-white rounded-lg hover:bg-surface-800 transition-colors"
+                className="p-1.5 bg-surface-100 text-white rounded-lg hover:bg-surface-200 transition-colors"
                 title="Importar de Orcamento PDF"
               >
                 <FileUp size={18} />
@@ -1137,21 +1137,21 @@ export function ServiceOrdersPage() {
             </div>
           </div>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" size={14} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-600" size={14} />
             <input
               type="text"
               placeholder="Buscar por placa ou cliente..."
-              className="w-full bg-white border border-surface-200 rounded-xl py-2 pl-9 pr-4 text-xs font-bold focus:ring-4 focus:ring-surface-900/5 transition-all"
+              className="w-full bg-white border border-surface-800 rounded-xl py-2 pl-9 pr-4 text-xs font-bold focus:ring-4 focus:ring-surface-100/5 transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto divide-y divide-surface-100/70">
+        <div className="flex-1 overflow-y-auto divide-y divide-surface-900/70">
           {loading && (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-surface-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-surface-600" />
             </div>
           )}
           {filteredOrders.map((order) => {
@@ -1162,15 +1162,15 @@ export function ServiceOrdersPage() {
                 key={order.id}
                 onClick={() => selectOrder(order)}
                 className={cn(
-                  'p-4 cursor-pointer transition-all hover:bg-surface-100/80',
-                  active && 'bg-surface-100 border-l-[3px] border-l-accent'
+                  'p-4 cursor-pointer transition-all hover:bg-surface-900/80',
+                  active && 'bg-surface-900 border-l-[3px] border-l-accent'
                 )}
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-[10px] font-mono font-black text-surface-500">{'#' + order.id.slice(0, 8)}</span>
                   <span className={cn('mt-1 h-2 w-2 rounded-full', statusIndicator(statusConfig[order.status]?.tone))} />
                 </div>
-                <p className="font-black text-surface-900 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
+                <p className="font-black text-surface-100 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
                 <p className="text-[10px] text-surface-500 font-black uppercase tracking-wider mb-2">
                   {getOrderAssetLabel(order)}
                 </p>
@@ -1178,7 +1178,7 @@ export function ServiceOrdersPage() {
                   <span className={cn('text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md', statusChip(statusConfig[order.status]?.tone))}>
                     {st.label}
                   </span>
-                  <span className="text-xs font-black text-surface-900">
+                  <span className="text-xs font-black text-surface-100">
                     R$ {fmtBR(order.totalCost)}
                   </span>
                 </div>
@@ -1186,7 +1186,7 @@ export function ServiceOrdersPage() {
             );
           })}
           {filteredOrders.length === 0 && !loading && (
-            <p className="p-10 text-center text-xs font-bold uppercase tracking-widest text-surface-400">
+            <p className="p-10 text-center text-xs font-bold uppercase tracking-widest text-surface-600">
               Nenhuma OS encontrada
             </p>
           )}
@@ -1194,25 +1194,25 @@ export function ServiceOrdersPage() {
       </div>
 
       {/*  DETALHE DA OS  */}
-      <div className="flex-1 flex flex-col bg-white border border-surface-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="flex-1 flex flex-col bg-white border border-surface-800 rounded-xl overflow-hidden shadow-sm">
         {!selectedOrder ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-surface-300 opacity-50">
+          <div className="flex-1 flex flex-col items-center justify-center text-surface-700 opacity-50">
             <Layout size={64} className="mb-4 stroke-[1px]" />
             <p className="font-bold uppercase tracking-widest text-xs">Selecione uma Ordem de Servico</p>
           </div>
         ) : (
           <>
             {/* Top bar */}
-            <div className="p-6 border-b border-surface-200/60 bg-surface-50/50 flex items-center justify-between">
+            <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-surface-900 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 bg-surface-100 rounded-lg flex items-center justify-center text-white shadow-lg">
                   <FileText size={24} />
                 </div>
                 <div>
                   <div className="mb-0.5">
-                    <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">OS</span>
+                    <span className="text-[10px] font-black text-surface-600 uppercase tracking-widest">OS</span>
                   </div>
-                  <h1 className="text-xl font-black text-surface-900 tracking-tight uppercase">
+                  <h1 className="text-xl font-black text-surface-100 tracking-tight uppercase">
                     #{selectedOrder.id.slice(0, 8).toUpperCase()}
                   </h1>
                 </div>
@@ -1220,7 +1220,7 @@ export function ServiceOrdersPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={viewOrderPdf}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-200 bg-white text-surface-900 hover:bg-surface-50 transition-all shadow-sm"
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all shadow-sm"
                   title="Visualizar O.S. em PDF"
                 >
                   <FileText size={15} /> Visualizar O.S.
@@ -1232,10 +1232,10 @@ export function ServiceOrdersPage() {
                   className={cn(
                     'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
                     !canUseChecklist
-                      ? 'border-surface-200 bg-surface-100 text-surface-400 cursor-not-allowed'
+                      ? 'border-surface-800 bg-surface-900 text-surface-600 cursor-not-allowed'
                       : checklistFlags.ENTRADA
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : 'border-surface-200 bg-surface-50 text-surface-900 hover:bg-surface-100',
+                      : 'border-surface-800 bg-surface-950 text-surface-100 hover:bg-surface-900',
                   )}
                   title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido - clique para editar' : 'Preencher checklist de entrada'}
                 >
@@ -1249,10 +1249,10 @@ export function ServiceOrdersPage() {
                   className={cn(
                     'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
                     !canUseChecklist
-                      ? 'border-surface-200 bg-surface-100 text-surface-400 cursor-not-allowed'
+                      ? 'border-surface-800 bg-surface-900 text-surface-600 cursor-not-allowed'
                       : checklistFlags.SAIDA
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : 'border-surface-200 bg-surface-50 text-surface-900 hover:bg-surface-100',
+                      : 'border-surface-800 bg-surface-950 text-surface-100 hover:bg-surface-900',
                   )}
                   title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saida preenchido - clique para editar' : 'Preencher checklist de saida'}
                 >
@@ -1266,21 +1266,21 @@ export function ServiceOrdersPage() {
                     setShowImportModal(true);
                   }}
                   disabled={isClosed || !canManageItems}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-200 bg-white text-surface-900 hover:bg-surface-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   title={isClosed ? 'OS finalizada nao pode receber importacao de orçamento' : !canManageItems ? 'Sem permissao para importar itens na O.S.' : 'Importar orçamento externo nesta O.S.'}
                 >
                   <FileUp size={15} /> Importar Orcamento Externo
                 </button>
                 <button
                   onClick={() => navigate('/service-orders')}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-200 bg-white hover:bg-surface-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white hover:bg-surface-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <X size={15} /> Fechar
                 </button>
                 <button
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
-                  className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-surface-900 text-white hover:bg-surface-800 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-surface-100 text-white hover:bg-surface-200 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
                   title={isClosed ? 'OS finalizada nao pode ser editada' : !canEditOrderDetails ? 'Sem permissao para editar O.S.' : undefined}
                 >
                   <Save size={15} /> Salvar alterações
@@ -1303,8 +1303,8 @@ export function ServiceOrdersPage() {
                 <div className="flex items-start gap-3">
                   <span className="text-2xl text-accent">!</span>
                   <div>
-                    <p className="text-sm font-black text-surface-900">Orcamento reprovado pelo cliente</p>
-                    <p className="text-xs text-surface-600 mt-0.5">
+                    <p className="text-sm font-black text-surface-100">Orcamento reprovado pelo cliente</p>
+                    <p className="text-xs text-surface-400 mt-0.5">
                       Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnostico</strong>?
                       O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
                     </p>
@@ -1320,7 +1320,7 @@ export function ServiceOrdersPage() {
                   </button>
                   <button
                     onClick={() => setShowDiagBanner(false)}
-                    className="px-4 py-2 bg-white border border-surface-200 text-surface-700 rounded-xl text-xs font-black hover:bg-surface-50 transition-all whitespace-nowrap"
+                    className="px-4 py-2 bg-white border border-surface-800 text-surface-300 rounded-xl text-xs font-black hover:bg-surface-950 transition-all whitespace-nowrap"
                   >
                     Nao, obrigado
                   </button>
@@ -1332,10 +1332,10 @@ export function ServiceOrdersPage() {
             <div className="flex-1 overflow-y-auto p-8 space-y-8">
 
               {/* Andamento da O.S. */}
-              <div className="rounded-lg border border-surface-200 bg-surface-50/70 p-5">
+              <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Andamento da O.S.</h3>
-                  <span className="text-[10px] font-black text-surface-700 uppercase tracking-widest">
+                  <span className="text-[10px] font-black text-surface-300 uppercase tracking-widest">
                     Fase atual: {activeFlowPhases[getCurrentPhaseIndex(selectedOrder.status)]?.label || 'Abertura'}
                   </span>
                 </div>
@@ -1367,7 +1367,7 @@ export function ServiceOrdersPage() {
                           'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-accent/40',
                           isCurrent && 'border-accent/40 bg-accent/10 text-accent',
                           isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
-                          !isCurrent && !isDone && 'border-surface-200 bg-white text-surface-400'
+                          !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
                         )}
                       >
                         {inner}
@@ -1377,7 +1377,7 @@ export function ServiceOrdersPage() {
                         'rounded-xl border px-3 py-2 text-center transition-all',
                         isCurrent && 'border-accent/40 bg-accent/10 text-accent',
                         isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
-                        !isCurrent && !isDone && 'border-surface-200 bg-white text-surface-400'
+                        !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
                       )}>
                         {inner}
                       </div>
@@ -1388,27 +1388,27 @@ export function ServiceOrdersPage() {
 
               {/* Cliente + Veiculo */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-surface-50 rounded-lg p-5 border border-surface-200">
+                <div className="bg-surface-950 rounded-lg p-5 border border-surface-800">
                   <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <User size={13} className="text-surface-900" /> Dados do Cliente
+                    <User size={13} className="text-surface-100" /> Dados do Cliente
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Nome do Cliente</p>
-                      <p className="font-black text-surface-900">{selectedOrder.customer?.name}</p>
+                      <p className="font-black text-surface-100">{selectedOrder.customer?.name}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Telefone</p>
-                      <p className="font-bold text-surface-700 text-sm">{selectedOrder.customer?.phone || '-'}</p>
+                      <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.phone || '-'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Documento</p>
-                      <p className="font-bold text-surface-700 text-sm">{selectedOrder.customer?.document || '-'}</p>
+                      <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.document || '-'}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-surface-900 rounded-lg p-5 text-white shadow-xl">
+                <div className="bg-surface-100 rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h3 className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
@@ -1440,7 +1440,7 @@ export function ServiceOrdersPage() {
                           onClick={() => setShowStatusDropdown((v) => !v)}
                           title="Clique para alterar o status"
                           className={cn(
-                            'text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-300 cursor-pointer',
+                            'text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-700 cursor-pointer',
                             statusChip(statusConfig[selectedOrder.status]?.tone)
                           )}
                         >
@@ -1454,8 +1454,8 @@ export function ServiceOrdersPage() {
                       )}
 
                       {showStatusDropdown && (
-                        <div className="absolute top-full right-0 mt-1.5 z-50 bg-white border border-surface-200 rounded-lg shadow-2xl p-1.5 min-w-[210px]">
-                          <p className="text-[9px] font-black text-surface-400 uppercase tracking-widest px-3 py-1.5 border-b border-surface-100 mb-1">
+                        <div className="absolute top-full right-0 mt-1.5 z-50 bg-white border border-surface-800 rounded-lg shadow-2xl p-1.5 min-w-[210px]">
+                          <p className="text-[9px] font-black text-surface-600 uppercase tracking-widest px-3 py-1.5 border-b border-surface-900 mb-1">
                             Alterar Status
                           </p>
                           {Object.entries(statusConfig)
@@ -1471,8 +1471,8 @@ export function ServiceOrdersPage() {
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
-                                    'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:bg-surface-50 text-left',
-                                    isNegative ? 'text-red-600 hover:bg-red-50' : 'text-surface-700'
+                                    'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:bg-surface-950 text-left',
+                                    isNegative ? 'text-red-600 hover:bg-red-50' : 'text-surface-300'
                                   )}
                                 >
                                   <span className={cn('w-2 h-2 rounded-full flex-shrink-0', statusIndicator(cfg.tone))} />
@@ -1525,16 +1525,16 @@ export function ServiceOrdersPage() {
                         e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                       readOnly={isReprovado}
-                      className={`w-full min-h-24 bg-surface-50 border border-surface-200 rounded-xl p-3 text-xs font-black text-surface-900 placeholder:text-surface-400 focus:bg-white focus:ring-4 focus:ring-surface-900/5 focus:border-surface-900 transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-100' : ''}`}
+                      className={`w-full min-h-24 bg-surface-950 border border-surface-800 rounded-xl p-3 text-xs font-black text-surface-100 placeholder:text-surface-600 focus:bg-white focus:ring-4 focus:ring-surface-100/5 focus:border-surface-100 transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-900' : ''}`}
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-lg border border-surface-200 bg-surface-50/70 p-4 flex items-start justify-between gap-4">
+              <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-4 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Reserva de Pecas no Orcamento</p>
-                  <p className="text-xs text-surface-600 mt-1">
+                  <p className="text-xs text-surface-400 mt-1">
                     Quando marcado, sinaliza a reserva das pecas para esta O.S. Na aprovacao do orcamento, todas as pecas pendentes serão debitadas do estoque automaticamente.
                   </p>
                 </div>
@@ -1543,43 +1543,43 @@ export function ServiceOrdersPage() {
                     type="checkbox"
                     checked={Boolean(edit.reserveStock)}
                     onChange={(e) => setEdit({ ...edit, reserveStock: e.target.checked })}
-                    className="h-4 w-4 rounded border-surface-300 text-surface-900 focus:ring-surface-400"
+                    className="h-4 w-4 rounded border-surface-700 text-surface-100 focus:ring-surface-600"
                   />
-                  <span className="text-xs font-black text-surface-700">Reservar</span>
+                  <span className="text-xs font-black text-surface-300">Reservar</span>
                 </label>
               </div>
 
               {/* Servicos */}
-              <div className="bg-white border border-surface-200 rounded-lg overflow-hidden">
-                <div className="px-5 py-3 bg-surface-50 border-b border-surface-200/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-black text-surface-900 uppercase tracking-widest flex items-center gap-2">
+              <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
+                <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
+                  <h3 className="text-[10px] font-black text-surface-100 uppercase tracking-widest flex items-center gap-2">
                     <Wrench size={14} /> Servicos Realizados
-                    <span className="bg-surface-200 text-surface-700 rounded-md px-1.5 py-0.5 text-[9px] font-black">{serviceItems.length}</span>
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-black">{serviceItems.length}</span>
                   </h3>
                   <button
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
-                    className="text-[9px] font-black uppercase tracking-widest bg-surface-900 text-white px-3 py-1.5 rounded-lg hover:bg-surface-800 transition-colors flex items-center gap-1"
+                    className="text-[9px] font-black uppercase tracking-widest bg-surface-100 text-white px-3 py-1.5 rounded-lg hover:bg-surface-200 transition-colors flex items-center gap-1"
                     title={!canManageItems ? 'Sem permissao para adicionar itens' : undefined}
                   >
                     <Plus size={12} /> Adicionar Servico
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-50/60 text-surface-500 font-bold uppercase text-[10px]">
+                  <thead className="bg-surface-950/60 text-surface-500 font-bold uppercase text-[10px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-surface-200/70">Descricao</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-56">Executor</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-20 text-center">Qtd/Hrs</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-28">Unitário</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-28 text-right">Subtotal</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-12" />
+                      <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-56">Executor</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd/Hrs</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-surface-100/70">
+                  <tbody className="divide-y divide-surface-900/70">
                     {serviceItems.map((item: any) => (
-                      <tr key={item.id} className="hover:bg-surface-50/60">
-                        <td className="px-5 py-3 font-black text-surface-900">{item.description}</td>
+                      <tr key={item.id} className="hover:bg-surface-950/60">
+                        <td className="px-5 py-3 font-black text-surface-100">{item.description}</td>
                         <td className="px-5 py-3">
                           <select
                             value={item.assignedUserId || ''}
@@ -1592,8 +1592,8 @@ export function ServiceOrdersPage() {
                             className={cn(
                               'w-full rounded-lg border px-2 py-1.5 text-[11px] font-black',
                               isClosed || !canAssignExecutor
-                                ? 'bg-surface-100 border-surface-100 text-surface-400 cursor-not-allowed'
-                                : 'bg-white border-surface-200'
+                                ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
+                                : 'bg-white border-surface-800'
                             )}
                           >
                             <option value="">Selecionar executor...</option>
@@ -1605,18 +1605,18 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3">
                           <input
                             type="number" step="0.5" min="0.5"
-                            className="w-16 bg-surface-50 border border-transparent hover:border-surface-200 rounded-md px-2 py-1 text-center font-black text-xs"
+                            className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-black text-xs"
                             value={pendingQtyByItem[item.id] ?? item.quantity}
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
-                        <td className="px-5 py-3 text-surface-600">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-black text-surface-900 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
+                        <td className="px-5 py-3 font-black text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
                           <button
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageItems}
-                            className={cn('p-1 rounded transition-colors', isClosed || !canManageItems ? 'text-surface-200 cursor-not-allowed' : 'text-surface-300 hover:text-red-500')}
+                            className={cn('p-1 rounded transition-colors', isClosed || !canManageItems ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -1624,24 +1624,24 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {serviceItems.length === 0 && (
-                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-400 text-xs">Nenhum servico lançado</td></tr>
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhum servico lançado</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
               {/* Pecas */}
-              <div className="bg-white border border-surface-200 rounded-lg overflow-hidden">
-                <div className="px-5 py-3 bg-surface-50 border-b border-surface-200/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-black text-surface-900 uppercase tracking-widest flex items-center gap-2">
+              <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
+                <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
+                  <h3 className="text-[10px] font-black text-surface-100 uppercase tracking-widest flex items-center gap-2">
                     <Package size={14} /> Pecas e Materiais
-                    <span className="bg-surface-200 text-surface-700 rounded-md px-1.5 py-0.5 text-[9px] font-black">{partItems.length}</span>
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-black">{partItems.length}</span>
                   </h3>
                   <button
                     onClick={() => openCatalog('part')}
                     className={cn(
                       'text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
-                      canManageStock ? 'bg-accent text-white hover:bg-accent' : 'bg-surface-300 text-surface-500'
+                      canManageStock ? 'bg-accent text-white hover:bg-accent' : 'bg-surface-700 text-surface-500'
                     )}
                     title={canManageStock ? 'Lancar peca' : 'Sem permissao para alterar estoque'}
                   >
@@ -1649,19 +1649,19 @@ export function ServiceOrdersPage() {
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-50/60 text-surface-500 font-bold uppercase text-[10px]">
+                  <thead className="bg-surface-950/60 text-surface-500 font-bold uppercase text-[10px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-surface-200/70">Descricao</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-20 text-center">Qtd</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-28">Unitário</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-28 text-right">Subtotal</th>
-                      <th className="px-5 py-3 border-b border-surface-200/70 w-12" />
+                      <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-surface-100/70">
+                  <tbody className="divide-y divide-surface-900/70">
                     {partItems.map((item: any) => (
-                      <tr key={item.id} className="hover:bg-surface-50/60">
-                        <td className="px-5 py-3 font-black text-surface-900">
+                      <tr key={item.id} className="hover:bg-surface-950/60">
+                        <td className="px-5 py-3 font-black text-surface-100">
                           <div>{item.description}</div>
                           <div className="mt-1 text-[10px] text-surface-500 font-black">
                             Estoque atual: <span className={cn('font-black', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
@@ -1674,19 +1674,19 @@ export function ServiceOrdersPage() {
                             disabled={isClosed || !canManageStock}
                             className={cn(
                               'w-16 border border-transparent rounded-md px-2 py-1 text-center font-black text-xs',
-                              isClosed || !canManageStock ? 'bg-surface-100 text-surface-400 cursor-not-allowed' : 'bg-surface-50 hover:border-surface-200'
+                              isClosed || !canManageStock ? 'bg-surface-900 text-surface-600 cursor-not-allowed' : 'bg-surface-950 hover:border-surface-800'
                             )}
                             value={pendingQtyByItem[item.id] ?? item.quantity}
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
-                        <td className="px-5 py-3 text-surface-600">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-black text-surface-900 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
+                        <td className="px-5 py-3 font-black text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
                           <button
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageStock}
-                            className={cn('p-1 rounded transition-colors', isClosed || !canManageStock ? 'text-surface-200 cursor-not-allowed' : 'text-surface-300 hover:text-red-500')}
+                            className={cn('p-1 rounded transition-colors', isClosed || !canManageStock ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -1694,21 +1694,21 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {partItems.length === 0 && (
-                      <tr><td colSpan={5} className="px-5 py-6 text-center text-surface-400 text-xs">Nenhuma peca lançada</td></tr>
+                      <tr><td colSpan={5} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhuma peca lançada</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
               {/* Ações + Pagamento + Totais */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-surface-200/70">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-surface-800/70">
 
                 {/* Avançar status */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Avançar Status</h4>
                   <div className="flex flex-col gap-1.5">
                     {nextStatuses.length === 0 && (
-                      <p className="text-[10px] font-black text-surface-400">Fluxo encerrado para este status.</p>
+                      <p className="text-[10px] font-black text-surface-600">Fluxo encerrado para este status.</p>
                     )}
                     {nextStatuses.map((status) => {
                       const isCancel = status === 'CANCELADO';
@@ -1725,7 +1725,7 @@ export function ServiceOrdersPage() {
                             'w-full px-3 py-2 rounded-xl text-[10px] font-black tracking-wide transition-all text-left',
                             isNegative
                               ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
-                              : 'bg-surface-900 text-white hover:bg-surface-800 shadow-sm'
+                              : 'bg-surface-100 text-white hover:bg-surface-200 shadow-sm'
                           )}
                         >
                           {STATUS_ACTION_LABEL[status] || statusConfig[status]?.label || status}
@@ -1753,7 +1753,7 @@ export function ServiceOrdersPage() {
                     type="datetime-local"
                     value={edit.scheduledDate}
                     onChange={(e) => setEdit({ ...edit, scheduledDate: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold text-surface-700 focus:ring-2 focus:ring-surface-900/10 focus:border-surface-900 transition-all"
+                    className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-surface-300 focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
                   />
                 </div>
 
@@ -1769,8 +1769,8 @@ export function ServiceOrdersPage() {
                         className={cn(
                           'px-2.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wide transition-all border text-left leading-tight',
                           edit.paymentMethod === pm
-                            ? 'bg-surface-900 text-white border-surface-900 shadow-lg'
-                            : 'bg-white border-surface-200 text-surface-600 hover:border-surface-400'
+                            ? 'bg-surface-100 text-white border-surface-100 shadow-lg'
+                            : 'bg-white border-surface-800 text-surface-400 hover:border-surface-600'
                         )}
                       >
                         {pm}
@@ -1780,11 +1780,11 @@ export function ServiceOrdersPage() {
                 </div>
 
                 {/* Totais */}
-                <div className="bg-surface-900 rounded-xl p-6 text-white shadow-xl flex flex-col gap-3">
+                <div className="bg-surface-100 rounded-xl p-6 text-white shadow-xl flex flex-col gap-3">
                   <button
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
-                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-surface-700 bg-surface-800 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-surface-700 disabled:opacity-60"
+                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-surface-300 bg-surface-200 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-surface-300 disabled:opacity-60"
                     title={!canSyncOrder ? 'Sem permissao para atualizar O.S.' : undefined}
                   >
                     {syncingTotals ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
@@ -1795,12 +1795,12 @@ export function ServiceOrdersPage() {
                     { label: 'Pecas', val: selectedOrder.totalParts },
                     ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'Mao de Obra', val: selectedOrder.totalLabor }] : []),
                   ].map(({ label, val }) => (
-                    <div key={label} className="flex justify-between text-[10px] font-bold text-surface-400 uppercase tracking-wider">
+                    <div key={label} className="flex justify-between text-[10px] font-bold text-surface-600 uppercase tracking-wider">
                       <span>{label}</span>
                       <span>R$ {fmtBR(val)}</span>
                     </div>
                   ))}
-                  <div className="pt-3 border-t border-surface-700">
+                  <div className="pt-3 border-t border-surface-300">
                     <p className="text-[10px] font-black text-accent uppercase tracking-widest mb-1">Total da Ordem</p>
                     <p className="text-3xl font-black tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
@@ -1815,21 +1815,21 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {showReserveParts && selectedOrder && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="absolute inset-0 bg-surface-900/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="absolute inset-0 bg-surface-100/60 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[88vh] overflow-hidden">
 
               {/* Header */}
-              <div className="px-6 py-4 border-b border-surface-200 flex items-center justify-between bg-accent">
+              <div className="px-6 py-4 border-b border-surface-800 flex items-center justify-between bg-accent">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center">
                     <ShoppingCart size={18} className="text-white" />
                   </div>
                   <div>
                     <h3 className="font-black text-white text-sm uppercase tracking-widest">Reserva de Pecas</h3>
-                    <p className="text-[10px] text-surface-800 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
+                    <p className="text-[10px] text-surface-200 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
-                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-surface-900/60 hover:text-surface-900 transition-colors">
+                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-surface-100/60 hover:text-surface-100 transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -1849,12 +1849,12 @@ export function ServiceOrdersPage() {
                             <div className="flex items-center gap-2">
                               {ok ? <CheckCircle2 size={14} className="text-accent shrink-0" /> : <AlertTriangle size={14} className="text-red-500 shrink-0" />}
                               <div>
-                                <p className="font-bold text-surface-900 leading-tight">{item.description}</p>
+                                <p className="font-bold text-surface-100 leading-tight">{item.description}</p>
                                 {item.part?.internalCode && <p className="text-surface-500 text-[10px]">Cod: {item.part.internalCode}</p>}
                               </div>
                             </div>
                             <div className="text-right shrink-0">
-                              <p className="font-black text-surface-700">Nec: {needed}</p>
+                              <p className="font-black text-surface-300">Nec: {needed}</p>
                               <p className={cn('text-[10px] font-bold', ok ? 'text-accent' : 'text-red-600')}>Estoque: {stock}</p>
                             </div>
                           </div>
@@ -1872,7 +1872,7 @@ export function ServiceOrdersPage() {
                         value={expectedPartsDate}
                         min={new Date().toISOString().slice(0,10)}
                         onChange={(e) => setExpectedPartsDate(e.target.value)}
-                        className="w-full border border-surface-200 rounded-xl px-3 py-2 text-sm text-surface-700 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+                        className="w-full border border-surface-800 rounded-xl px-3 py-2 text-sm text-surface-300 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                       />
                       <p className="text-[10px] text-surface-500">Opcional. Pecas disponíveis serão reservadas imediatamente. Pecas faltantes gerarão um Pedido de Compra.</p>
                     </div>
@@ -1896,8 +1896,8 @@ export function ServiceOrdersPage() {
                         <p className="text-[10px] font-bold text-accent uppercase tracking-wide">Reservadas</p>
                         <p className="text-[9px] text-accent/80 mt-0.5">Baixadas do estoque</p>
                       </div>
-                      <div className={cn('border rounded-lg p-4 text-center', reserveResult.missing > 0 ? 'bg-red-50 border-red-200' : 'bg-surface-50 border-surface-200 text-surface-500')}>
-                        <p className={cn('text-2xl font-black', reserveResult.missing > 0 ? 'text-red-600' : 'text-surface-700')}>{reserveResult.missing}</p>
+                      <div className={cn('border rounded-lg p-4 text-center', reserveResult.missing > 0 ? 'bg-red-50 border-red-200' : 'bg-surface-950 border-surface-800 text-surface-500')}>
+                        <p className={cn('text-2xl font-black', reserveResult.missing > 0 ? 'text-red-600' : 'text-surface-300')}>{reserveResult.missing}</p>
                         <p className={cn('text-[10px] font-bold uppercase tracking-wide', reserveResult.missing > 0 ? 'text-red-700' : 'text-surface-500')}>Faltantes</p>
                         <p className="text-[9px] text-surface-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo disponivel'}</p>
                       </div>
@@ -1908,12 +1908,12 @@ export function ServiceOrdersPage() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Pedido de Compra</p>
-                          <span className="bg-surface-900 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
+                          <span className="bg-surface-100 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
                         </div>
                         {reserveResult.missingItems.map((item: any, i: number) => (
                           <div key={i} className="flex items-start justify-between rounded-xl px-3 py-2 bg-red-50 border border-red-200 text-xs">
                             <div>
-                              <p className="font-bold text-surface-900">{item.description}</p>
+                              <p className="font-bold text-surface-100">{item.description}</p>
                               <p className="text-surface-500 text-[10px]">Cod: {item.internalCode || '-'} - Orig: {item.sku || '-'} - Fornec: {item.supplierName || '-'}</p>
                             </div>
                             <div className="text-right shrink-0 ml-2">
@@ -1925,7 +1925,7 @@ export function ServiceOrdersPage() {
 
                         <button
                           onClick={downloadPurchaseOrderPdf}
-                          className="w-full py-2.5 rounded-xl bg-surface-900 text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-surface-800 transition-all"
+                          className="w-full py-2.5 rounded-xl bg-surface-100 text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-surface-200 transition-all"
                         >
                           <Printer size={14} /> Imprimir Pedido de Compra
                         </button>
@@ -1934,7 +1934,7 @@ export function ServiceOrdersPage() {
 
                     <button
                       onClick={() => setShowReserveParts(false)}
-                      className="w-full py-2.5 rounded-xl bg-surface-100 text-surface-700 font-black text-xs tracking-wide hover:bg-surface-200 transition-all"
+                      className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-black text-xs tracking-wide hover:bg-surface-800 transition-all"
                     >
                       Fechar
                     </button>
@@ -1950,17 +1950,17 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {catalogMode && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCatalogMode(null)} className="absolute inset-0 bg-surface-900/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCatalogMode(null)} className="absolute inset-0 bg-surface-100/40 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-xl flex flex-col max-h-[88vh]">
 
               {/* Header */}
-              <div className="p-5 border-b border-surface-200/70 bg-surface-50 flex items-center justify-between">
+              <div className="p-5 border-b border-surface-800/70 bg-surface-950 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white', catalogMode === 'service' ? 'bg-surface-900' : 'bg-accent')}>
+                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white', catalogMode === 'service' ? 'bg-surface-100' : 'bg-accent')}>
                     {catalogMode === 'service' ? <Wrench size={20} /> : <Package size={20} />}
                   </div>
                   <div>
-                    <h3 className="font-black text-surface-900 uppercase text-sm tracking-widest">
+                    <h3 className="font-black text-surface-100 uppercase text-sm tracking-widest">
                       {catalogMode === 'service' ? 'Adicionar Servico' : 'Lancar Peca'}
                     </h3>
                     <p className="text-[10px] text-surface-500 font-bold uppercase">
@@ -1974,15 +1974,15 @@ export function ServiceOrdersPage() {
                     className={cn(
                       'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all',
                       showAiPanel
-                        ? 'bg-surface-900 text-white shadow-md'
-                        : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
+                        ? 'bg-surface-100 text-white shadow-md'
+                        : 'bg-surface-900 text-surface-300 hover:bg-surface-800'
                     )}
                     title="IA Assistiva - sugestoes por sintoma"
                   >
                     <Sparkles size={13} />
                     IA
                   </button>
-                  <button onClick={() => setCatalogMode(null)} className="text-surface-400 hover:text-red-500 transition-colors">
+                  <button onClick={() => setCatalogMode(null)} className="text-surface-600 hover:text-red-500 transition-colors">
                     <XCircle size={24} />
                   </button>
                 </div>
@@ -1995,10 +1995,10 @@ export function ServiceOrdersPage() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden border-b border-surface-200 bg-surface-50/70"
+                    className="overflow-hidden border-b border-surface-800 bg-surface-950/70"
                   >
                     <div className="p-4 space-y-3">
-                      <p className="text-[9px] font-black text-surface-700 uppercase tracking-widest flex items-center gap-1">
+                      <p className="text-[9px] font-black text-surface-300 uppercase tracking-widest flex items-center gap-1">
                         <Sparkles size={11} />
                         IA Assistiva - descreva o problema e receba sugestoes
                       </p>
@@ -2009,12 +2009,12 @@ export function ServiceOrdersPage() {
                           value={aiDescription}
                           onChange={(e) => setAiDescription(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAiSuggest()}
-                          className="flex-1 px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-900/10 focus:border-surface-900 transition-all"
+                          className="flex-1 px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
                         />
                         <button
                           onClick={handleAiSuggest}
                           disabled={aiLoading || !aiDescription.trim()}
-                          className="h-9 px-4 bg-surface-900 hover:bg-surface-800 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow flex items-center gap-1 disabled:opacity-50"
+                          className="h-9 px-4 bg-surface-100 hover:bg-surface-200 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow flex items-center gap-1 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                           Sugerir
@@ -2023,19 +2023,19 @@ export function ServiceOrdersPage() {
                       {aiSuggestions.length > 0 && (
                         <div className="space-y-2">
                           {aiSuggestions.map((s, i) => (
-                            <div key={i} className="flex items-center justify-between bg-white border border-surface-200 rounded-lg px-3 py-2.5 gap-2">
+                            <div key={i} className="flex items-center justify-between bg-white border border-surface-800 rounded-lg px-3 py-2.5 gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                  <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-100 text-surface-700' : 'bg-surface-900/10 text-surface-700')}>
+                                  <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-surface-100/10 text-surface-300')}>
                                     {s.type === 'service' ? 'Servico' : 'Peca'}
                                   </span>
-                                  <span className="text-[10px] font-black text-surface-800 truncate">{s.description}</span>
+                                  <span className="text-[10px] font-black text-surface-200 truncate">{s.description}</span>
                                 </div>
                                 <p className="text-[9px] text-surface-500 truncate">{s.reason}</p>
                               </div>
                               <div className="text-right shrink-0">
                                 {s.estimatedPrice > 0 && (
-                                  <p className="text-[10px] font-black text-surface-700">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
+                                  <p className="text-[10px] font-black text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
                                 )}
                                 <button
                                   onClick={() => addItem({
@@ -2056,7 +2056,7 @@ export function ServiceOrdersPage() {
                         </div>
                       )}
                       {!aiLoading && aiSuggestions.length === 0 && aiDescription.trim() && (
-                        <p className="text-[10px] text-surface-400 text-center py-1">Nenhuma sugestao encontrada. Tente descrever com mais detalhes.</p>
+                        <p className="text-[10px] text-surface-600 text-center py-1">Nenhuma sugestao encontrada. Tente descrever com mais detalhes.</p>
                       )}
                     </div>
                   </motion.div>
@@ -2064,8 +2064,8 @@ export function ServiceOrdersPage() {
               </AnimatePresence>
 
               {/* Quick Add */}
-              <div className="p-4 border-b border-surface-200/70 bg-surface-50">
-                <p className="text-[9px] font-black text-surface-700 uppercase tracking-widest mb-2 flex items-center gap-1">
+              <div className="p-4 border-b border-surface-800/70 bg-surface-950">
+                <p className="text-[9px] font-black text-surface-300 uppercase tracking-widest mb-2 flex items-center gap-1">
                   <Zap size={11} />
                   {catalogMode === 'service' ? 'Servico avulso (nao cadastrado)' : 'Peca avulsa (nao cadastrada)'}
                 </p>
@@ -2077,7 +2077,7 @@ export function ServiceOrdersPage() {
                       placeholder={catalogMode === 'service' ? 'Ex: Limpeza de bicos injetores' : 'Ex: Correia auxiliar Fiat Uno'}
                       value={quickAdd.description}
                       onChange={(e) => setQuickAdd({ ...quickAdd, description: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-900/10 focus:border-surface-900 transition-all"
+                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-surface-100 transition-all"
                     />
                   </div>
                   <div className="w-28 space-y-1">
@@ -2088,7 +2088,7 @@ export function ServiceOrdersPage() {
                       placeholder="0,00"
                       value={quickAdd.unitPrice}
                       onChange={(e) => setQuickAdd({ ...quickAdd, unitPrice: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold text-right focus:ring-2 focus:ring-surface-900/10 transition-all"
+                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-right focus:ring-2 focus:ring-surface-100/10 transition-all"
                     />
                   </div>
                   <div className="w-20 space-y-1">
@@ -2099,7 +2099,7 @@ export function ServiceOrdersPage() {
                       step={catalogMode === 'service' ? '0.5' : '1'}
                       value={quickAdd.quantity}
                       onChange={(e) => setQuickAdd({ ...quickAdd, quantity: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold text-center focus:ring-2 focus:ring-surface-900/10 transition-all"
+                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-center focus:ring-2 focus:ring-surface-100/10 transition-all"
                     />
                   </div>
                   <button
@@ -2115,7 +2115,7 @@ export function ServiceOrdersPage() {
                     <select
                       value={quickAssignedUserId}
                       onChange={(e) => setQuickAssignedUserId(e.target.value)}
-                      className="mt-1 w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                      className="mt-1 w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                     >
                       <option value="">Selecionar executor...</option>
                       {executorOptions.map((u: any) => (
@@ -2127,13 +2127,13 @@ export function ServiceOrdersPage() {
               </div>
 
               {/* Search */}
-              <div className="px-4 py-3 border-b border-surface-200">
+              <div className="px-4 py-3 border-b border-surface-800">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" size={14} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-600" size={14} />
                   <input
                     type="text"
                     placeholder={`Pesquisar no catalogo de ${catalogMode === 'service' ? 'servicos' : 'pecas'}...`}
-                    className="w-full bg-surface-50 border border-surface-200 rounded-xl py-2.5 pl-9 text-sm font-bold focus:bg-white transition-all"
+                    className="w-full bg-surface-950 border border-surface-800 rounded-xl py-2.5 pl-9 text-sm font-bold focus:bg-white transition-all"
                     value={catalogSearch}
                     onChange={(e) => setCatalogSearch(e.target.value)}
                   />
@@ -2158,23 +2158,23 @@ export function ServiceOrdersPage() {
                             ...(quickAssignedUserId ? { assignedUserId: quickAssignedUserId } : {}),
                           })}
                           disabled={isClosed}
-                          className="w-full p-4 bg-white border border-surface-200 rounded-lg hover:border-surface-900 hover:shadow-md text-left transition-all group flex items-center justify-between disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-full p-4 bg-white border border-surface-800 rounded-lg hover:border-surface-100 hover:shadow-md text-left transition-all group flex items-center justify-between disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <div>
-                            <p className="font-bold text-surface-900 text-sm">{s.name}</p>
+                            <p className="font-bold text-surface-100 text-sm">{s.name}</p>
                             <p className="text-[10px] text-surface-500 font-bold mt-0.5">
                               {s.tmo ? `TMO: ${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
                               {s.category && ` - ${s.category}`}
                             </p>
                           </div>
-                          <div className="w-8 h-8 rounded-xl bg-surface-100 group-hover:bg-surface-900 group-hover:text-white flex items-center justify-center transition-all">
+                          <div className="w-8 h-8 rounded-xl bg-surface-900 group-hover:bg-surface-100 group-hover:text-white flex items-center justify-center transition-all">
                             <Plus size={16} />
                           </div>
                         </button>
                       ))
                     }
                     {catalogItems.services.filter((s) => s.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-surface-400 text-xs py-8">Nenhum servico encontrado no catalogo</p>
+                      <p className="text-center text-surface-600 text-xs py-8">Nenhum servico encontrado no catalogo</p>
                     )}
                   </>
                 )}
@@ -2191,10 +2191,10 @@ export function ServiceOrdersPage() {
                         const available = Number(p.currentStock || 0);
                         const notEnoughStock = qty > available;
                         return (
-                          <div key={p.id} className="p-4 bg-white border border-surface-200 rounded-lg hover:border-surface-300 transition-all flex items-center justify-between gap-3">
+                          <div key={p.id} className="p-4 bg-white border border-surface-800 rounded-lg hover:border-surface-700 transition-all flex items-center justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="font-bold text-surface-900 text-sm truncate">{p.name}</p>
+                                <p className="font-bold text-surface-100 text-sm truncate">{p.name}</p>
                                 {p.currentStock <= (p.minStock || 0) && (
                                   <span className="text-[8px] font-black uppercase px-1.5 py-0.5 bg-red-100 text-red-600 rounded shrink-0">Estoque Baixo</span>
                                 )}
@@ -2202,15 +2202,15 @@ export function ServiceOrdersPage() {
                               <p className="text-[10px] text-surface-500 font-bold mt-0.5">
                                 {p.internalCode && `${p.internalCode} - `}
                                 Estoque: <span className={cn('font-black', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
-                                {' - Minimo: '}<span className="font-black text-surface-700">{p.minStock || 0}</span>
+                                {' - Minimo: '}<span className="font-black text-surface-300">{p.minStock || 0}</span>
                                 {' - '}R$ {fmtBR(p.unitPrice)}
                               </p>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <div className="flex items-center border border-surface-200 rounded-xl overflow-hidden">
-                                <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-surface-600 hover:bg-surface-50 text-xs font-bold">-</button>
+                              <div className="flex items-center border border-surface-800 rounded-xl overflow-hidden">
+                                <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">-</button>
                                 <span className="w-8 text-center text-sm font-black">{qty}</span>
-                                <button onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-surface-600 hover:bg-surface-50 text-xs font-bold">+</button>
+                                <button onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">+</button>
                               </div>
                               <button
                                 onClick={() => addItem({ type: 'part', partId: p.id, description: p.name, quantity: qty, unitPrice: p.unitPrice })}
@@ -2219,7 +2219,7 @@ export function ServiceOrdersPage() {
                                 className={cn(
                                   'w-10 h-10 rounded-xl flex items-center justify-center shadow transition-all',
                                   !canManageStock || notEnoughStock
-                                    ? 'bg-surface-200 text-surface-400 cursor-not-allowed'
+                                    ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
                                     : 'bg-accent text-white hover:bg-accent'
                                 )}
                               >
@@ -2231,12 +2231,12 @@ export function ServiceOrdersPage() {
                       })
                     }
                     {!canManageStock && (
-                      <p className="text-center text-surface-700 bg-surface-50 border border-surface-200 rounded-xl p-2 text-[11px] font-bold">
+                      <p className="text-center text-surface-300 bg-surface-950 border border-surface-800 rounded-xl p-2 text-[11px] font-bold">
                         Apenas MASTER e ADMIN podem adicionar/remover pecas (altera estoque).
                       </p>
                     )}
                     {catalogItems.parts.filter((p) => p.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-surface-400 text-xs py-8">Nenhuma peca encontrada no catalogo</p>
+                      <p className="text-center text-surface-600 text-xs py-8">Nenhuma peca encontrada no catalogo</p>
                     )}
                   </>
                 )}
@@ -2250,11 +2250,11 @@ export function ServiceOrdersPage() {
       <AnimatePresence>
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-surface-900/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-surface-100/40 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-surface-900 uppercase tracking-tight">Nova OS</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-surface-400 hover:text-surface-900"><X size={24} /></button>
+                <h2 className="text-2xl font-black text-surface-100 uppercase tracking-tight">Nova OS</h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
               <form className="space-y-5" onSubmit={async (e) => {
                 e.preventDefault();
@@ -2289,18 +2289,18 @@ export function ServiceOrdersPage() {
                       className={cn(
                         'flex flex-col items-start p-3 rounded-lg border-2 text-left transition-all',
                         newOrder.orderType === value
-                          ? 'border-surface-900 bg-surface-900 text-white'
-                          : 'border-surface-200 bg-white text-surface-700 hover:border-surface-400'
+                          ? 'border-surface-100 bg-surface-100 text-white'
+                          : 'border-surface-800 bg-white text-surface-300 hover:border-surface-600'
                       )}
                     >
                       <span className="text-xs font-black">{label}</span>
-                      <span className={cn('text-[10px] mt-0.5', newOrder.orderType === value ? 'text-surface-300' : 'text-surface-500')}>{desc}</span>
+                      <span className={cn('text-[10px] mt-0.5', newOrder.orderType === value ? 'text-surface-700' : 'text-surface-500')}>{desc}</span>
                     </button>
                   ))}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
-                  <select className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" value={newOrder.customerId} onChange={(e) => {
+                  <select className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
                     setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
                     setShowQuickVehicleForm(false);
                     setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
@@ -2322,7 +2322,7 @@ export function ServiceOrdersPage() {
                       </button>
                     )}
                   </div>
-                  <select className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
+                  <select className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
                     <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veiculo' : 'Selecione um veiculo...'}</option>
                     {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
                   </select>
@@ -2334,36 +2334,36 @@ export function ServiceOrdersPage() {
                   )}
 
                   {newOrder.customerId && showQuickVehicleForm && (
-                    <div className="rounded-lg border border-surface-200 bg-surface-50 p-3 space-y-3">
+                    <div className="rounded-lg border border-surface-800 bg-surface-950 p-3 space-y-3">
                       <p className="text-[10px] font-black uppercase tracking-widest text-surface-500">Cadastro rapido de veiculo</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <input
-                          className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Placa *"
                           value={quickVehicle.plate}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
                         />
                         <input
-                          className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Marca *"
                           value={quickVehicle.brand}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, brand: e.target.value }))}
                         />
                         <input
-                          className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Modelo *"
                           value={quickVehicle.model}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
                         />
                         <input
-                          className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Cor (opcional)"
                           value={quickVehicle.color}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
                         />
                         <input
                           type="number"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-200 bg-white text-xs font-bold"
+                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Ano (opcional)"
                           value={quickVehicle.year}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, year: e.target.value }))}
@@ -2377,8 +2377,8 @@ export function ServiceOrdersPage() {
                           className={cn(
                             'px-4 py-2 rounded-xl text-xs font-black transition-all',
                             creatingQuickVehicle
-                              ? 'bg-surface-200 text-surface-400 cursor-not-allowed'
-                              : 'bg-surface-900 text-white hover:bg-surface-800'
+                              ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
+                              : 'bg-surface-100 text-white hover:bg-surface-200'
                           )}
                         >
                           {creatingQuickVehicle ? 'Salvando...' : 'Salvar veiculo'}
@@ -2411,42 +2411,42 @@ export function ServiceOrdersPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Marca do motor</label>
-                      <input value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" placeholder="Ex: VW" />
+                      <input value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Modelo / família</label>
-                      <input value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" placeholder="Ex: AP 1.8" />
+                      <input value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">N. de serie</label>
-                      <input value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" placeholder="Opcional" />
+                      <input value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
                     </div>
                   </div>
                 )}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">KM Entrada</label>
-                  <input type="number" className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
+                  <input type="number" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Data / Hora do Agendamento</label>
-                  <input type="datetime-local" className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
+                  <input type="datetime-local" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Reclamacao Principal</label>
-                  <textarea className="w-full px-4 py-3 rounded-lg border border-surface-200 bg-white text-sm font-bold text-surface-700 focus:ring-4 focus:ring-surface-900/5 transition-all h-24 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
+                  <textarea className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-24 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
-                <label className="flex items-center gap-2 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2 text-xs font-bold text-surface-700">
+                <label className="flex items-center gap-2 rounded-xl border border-surface-800 bg-surface-950 px-3 py-2 text-xs font-bold text-surface-300">
                   <input
                     type="checkbox"
                     checked={Boolean(newOrder.reserveStock)}
                     onChange={(e) => setNewOrder({ ...newOrder, reserveStock: e.target.checked })}
-                    className="h-4 w-4 rounded border-surface-300 text-surface-900 focus:ring-surface-400"
+                    className="h-4 w-4 rounded border-surface-700 text-surface-100 focus:ring-surface-600"
                   />
                   Reservar pecas para debitar automaticamente na aprovacao
                 </label>
                 <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-6 py-3 rounded-lg text-sm font-bold text-surface-500 hover:bg-surface-50 transition-all">Cancelar</button>
-                  <button type="submit" className="flex-1 px-6 py-3 bg-surface-900 text-white rounded-lg font-bold hover:bg-surface-800 shadow-lg active:scale-95 transition-all">Criar Ordem</button>
+                  <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-6 py-3 rounded-lg text-sm font-bold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
+                  <button type="submit" className="flex-1 px-6 py-3 bg-surface-100 text-white rounded-lg font-bold hover:bg-surface-200 shadow-lg active:scale-95 transition-all">Criar Ordem</button>
                 </div>
               </form>
             </motion.div>
@@ -2512,14 +2512,14 @@ export function ServiceOrdersPage() {
       {/* Modal de confirmação de exclusão */}
       {showDeleteModal && selectedOrder && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-surface-900/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
+          <div className="absolute inset-0 bg-surface-100/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-8 flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
                 <Trash2 size={22} className="text-red-600" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-surface-900 uppercase tracking-tight">Excluir O.S.</h2>
+                <h2 className="text-lg font-black text-surface-100 uppercase tracking-tight">Excluir O.S.</h2>
                 <p className="text-xs text-surface-500 font-medium">Esta ação e irreversível</p>
               </div>
             </div>
@@ -2531,27 +2531,27 @@ export function ServiceOrdersPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-surface-600 uppercase tracking-wider">
+              <label className="text-xs font-black text-surface-400 uppercase tracking-wider">
                 Motivo da exclusão (opcional)
               </label>
               <textarea
                 value={deleteReason}
                 onChange={(e) => setDeleteReason(e.target.value)}
                 placeholder="Ex: Orcamento duplicado, erro de cadastro..."
-                className="w-full px-4 py-3 rounded-xl border border-surface-200 text-sm text-surface-700 resize-none h-16 focus:outline-none focus:ring-2 focus:ring-red-300"
+                className="w-full px-4 py-3 rounded-xl border border-surface-800 text-sm text-surface-300 resize-none h-16 focus:outline-none focus:ring-2 focus:ring-red-300"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-surface-600 uppercase tracking-wider">
+              <label className="text-xs font-black text-surface-400 uppercase tracking-wider">
                 Digite o numero da O.S. para confirmar:
-                <span className="ml-2 font-mono text-surface-900">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
+                <span className="ml-2 font-mono text-surface-100">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
               </label>
               <input
                 type="text"
                 value={deleteConfirmInput}
                 onChange={(e) => setDeleteConfirmInput(e.target.value.toUpperCase())}
                 placeholder={`Digite ${selectedOrder.id.slice(0, 8).toUpperCase()}`}
-                className="w-full px-4 py-3 rounded-xl border border-surface-200 font-mono font-bold text-sm text-surface-700 focus:outline-none focus:ring-2 focus:ring-red-300"
+                className="w-full px-4 py-3 rounded-xl border border-surface-800 font-mono font-bold text-sm text-surface-300 focus:outline-none focus:ring-2 focus:ring-red-300"
                 autoFocus
               />
             </div>
@@ -2559,7 +2559,7 @@ export function ServiceOrdersPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 h-11 rounded-xl border border-surface-200 text-sm font-bold text-surface-600 hover:bg-surface-50 transition-all"
+                className="flex-1 h-11 rounded-xl border border-surface-800 text-sm font-bold text-surface-400 hover:bg-surface-950 transition-all"
               >
                 Cancelar
               </button>
