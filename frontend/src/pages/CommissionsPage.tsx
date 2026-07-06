@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { commissionsApi, usersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import { useToast } from '../components/ui';
-import { Loader2, DollarSign, CheckCircle2, Download, FileSpreadsheet, Trophy } from 'lucide-react';
+import { Loader2, DollarSign, CheckCircle2, Download, FileSpreadsheet, Trophy, Printer } from 'lucide-react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -17,7 +17,7 @@ const money = (value: number) =>
   Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export function CommissionsPage() {
-  const { user } = useAuthStore();
+  const { user, tenant } = useAuthStore();
   const toast = useToast();
   const canMarkAsPaid = ['MASTER', 'ADMIN', 'FINANCEIRO'].includes(user?.role ?? '');
 
@@ -37,16 +37,16 @@ export function CommissionsPage() {
 
   const canFilterByUser = ['MASTER', 'ADMIN', 'FINANCEIRO', 'CHEFE_OFICINA'].includes(user?.role ?? '');
 
-  const load = async () => {
+  const load = async (f = filters) => {
     setLoading(true);
     try {
       const [commRes, usersRes] = await Promise.all([
         commissionsApi.getAll({
-          status: filters.status || undefined,
-          userId: filters.userId || undefined,
-          workshopArea: filters.workshopArea || undefined,
-          startDate: filters.startDate || undefined,
-          endDate: filters.endDate || undefined,
+          status: f.status || undefined,
+          userId: f.userId || undefined,
+          workshopArea: f.workshopArea || undefined,
+          startDate: f.startDate || undefined,
+          endDate: f.endDate || undefined,
         }),
         usersApi.getAll(),
       ]);
@@ -64,6 +64,70 @@ export function CommissionsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const clearFilters = () => {
+    const cleared = { status: '', userId: '', workshopArea: '', startDate: '', endDate: '' };
+    setFilters(cleared);
+    load(cleared);
+  };
+
+  const hasActiveFilters = Boolean(
+    filters.status || filters.userId || filters.workshopArea || filters.startDate || filters.endDate
+  );
+
+  const statusLabel = (s: string) => (s === 'PAGO' ? 'Pago' : s === 'PENDENTE' ? 'Pendente' : s || '—');
+
+  const printReport = () => {
+    const empresa = tenant?.name || 'Oficina';
+    const periodo =
+      filters.startDate || filters.endDate
+        ? `${filters.startDate ? new Date(filters.startDate + 'T00:00:00').toLocaleDateString('pt-BR') : '...'} a ${filters.endDate ? new Date(filters.endDate + 'T00:00:00').toLocaleDateString('pt-BR') : '...'}`
+        : 'Todos os períodos';
+    const statusTxt = filters.status ? statusLabel(filters.status) : 'Todos';
+    const rows = data
+      .map(
+        (r: any) => `<tr>
+          <td>${r.user?.name || r.userName || '—'}</td>
+          <td>${r.serviceOrder?.id ? '#' + String(r.serviceOrder.id).slice(-6).toUpperCase() : (r.osNumber || '—')}</td>
+          <td>${r.description || r.serviceName || '—'}</td>
+          <td style="text-align:center">${statusLabel(r.status)}</td>
+          <td style="text-align:right">${money(r.amount || r.value || 0)}</td>
+        </tr>`
+      )
+      .join('');
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) {
+      toast.error('Não foi possível abrir o relatório. Verifique o bloqueador de pop-ups.');
+      return;
+    }
+    win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+      <title>Relatório de Comissões — ${empresa}</title>
+      <style>
+        * { font-family: Arial, Helvetica, sans-serif; }
+        body { margin: 24px; color: #1a2430; }
+        h1 { font-size: 18px; margin: 0; }
+        .meta { color: #5b6470; font-size: 12px; margin: 4px 0 16px; }
+        .meta strong { color: #1a2430; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border-bottom: 1px solid #e2e5ea; padding: 8px 10px; text-align: left; }
+        th { background: #f4f5f7; text-transform: uppercase; font-size: 10px; letter-spacing: .04em; color: #5b6470; }
+        tfoot td { font-weight: bold; border-top: 2px solid #1a2430; }
+      </style></head><body>
+      <h1>${empresa}</h1>
+      <div class="meta">Relatório de Comissionamento &middot; <strong>Status:</strong> ${statusTxt} &middot; <strong>Período:</strong> ${periodo} &middot; Emitido em ${new Date().toLocaleString('pt-BR')}</div>
+      <table>
+        <thead><tr><th>Executor</th><th>OS</th><th>Descrição</th><th style="text-align:center">Status</th><th style="text-align:right">Valor</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="5" style="text-align:center;color:#8a9aa7">Nenhum lançamento no filtro selecionado</td></tr>'}</tbody>
+        <tfoot>
+          <tr><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">${money(totals.total)}</td></tr>
+          <tr><td colspan="4" style="text-align:right">Pendente</td><td style="text-align:right">${money(totals.pending)}</td></tr>
+          <tr><td colspan="4" style="text-align:right">Pago</td><td style="text-align:right">${money(totals.paid)}</td></tr>
+        </tfoot>
+      </table>
+      <script>window.onload = function(){ window.print(); };</script>
+      </body></html>`);
+    win.document.close();
+  };
 
   const filteredUsers = useMemo(
     () => users.filter((u) => u.isActive),
@@ -184,9 +248,15 @@ export function CommissionsPage() {
         </button>
         <button
           onClick={exportXlsx}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-500"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-500"
         >
           <FileSpreadsheet size={16} /> Exportar XLSX
+        </button>
+        <button
+          onClick={printReport}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-panel border border-line text-ink text-sm font-bold hover:bg-panel-2"
+        >
+          <Printer size={16} /> Gerar Relatório
         </button>
       </div>
 
@@ -255,7 +325,17 @@ export function CommissionsPage() {
           className="input bg-surface-950/40 border-line"
         />
 
-        <button onClick={load} className="btn btn-primary">Filtrar</button>
+        <div className="flex gap-2">
+          <button onClick={() => load()} className="btn btn-primary flex-1">Filtrar</button>
+          <button
+            onClick={clearFilters}
+            disabled={!hasActiveFilters}
+            className="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Limpar filtros"
+          >
+            Limpar
+          </button>
+        </div>
       </div>
 
       {leadership.length > 0 && (

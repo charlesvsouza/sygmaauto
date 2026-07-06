@@ -49,13 +49,40 @@ const EMPTY_FORM = {
 };
 
 // ─── Helper: gera código interno ──────────────────────────────────────────────
-function generateInternalCode(category: string, existingCodes: string[]): string {
-  const catCode = category || 'OUT';
-  const prefix = catCode;
-  const existing = existingCodes.filter((c) => c?.startsWith(prefix + '-'));
-  const nums = existing.map((c) => parseInt(c.split('-')[1] || '0', 10)).filter(Boolean);
-  const next = nums.length ? Math.max(...nums) + 1 : 1;
-  return `${prefix}-${String(next).padStart(3, '0')}`;
+// Formato: {SIGLA_NOME}-{SIGLA_AREA}{ALEATORIO4}  (ex.: CCOM-MOT0A22)
+const NAME_STOPWORDS = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'com', 'para', 'a', 'o', 'em']);
+
+function abbreviateName(name: string): string {
+  const words = (name || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // remove acentos
+    .toUpperCase()
+    .replace(/[^A-Z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w && !NAME_STOPWORDS.has(w.toLowerCase()));
+  if (words.length === 0) return 'ITEM';
+  if (words.length === 1) return words[0].slice(0, 4).padEnd(4, 'X');
+  const first = words[0][0]; // inicial da 1ª palavra
+  const last = words[words.length - 1].slice(0, 3); // 3 primeiras da última
+  return (first + last).slice(0, 4).padEnd(4, 'X');
+}
+
+function randomSuffix(len = 4): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let out = '';
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+
+function generateInternalCode(name: string, category: string, existingCodes: string[]): string {
+  const nameSig = abbreviateName(name);
+  const areaSig = (category || 'OUT').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3) || 'OUT';
+  const exist = new Set(existingCodes.filter(Boolean));
+  let code = '';
+  do {
+    code = `${nameSig}-${areaSig}${randomSuffix(4)}`;
+  } while (exist.has(code));
+  return code;
 }
 
 // ─── Combobox de Fornecedor ───────────────────────────────────────────────────
@@ -274,9 +301,9 @@ export function InventoryPage() {
   };
 
   const handleAutoCode = () => {
-    if (!formData.category) return;
+    if (!formData.category || !formData.name.trim()) return;
     const existing = parts.map((p) => p.internalCode).filter(Boolean);
-    setFormData({ ...formData, internalCode: generateInternalCode(formData.category, existing) });
+    setFormData({ ...formData, internalCode: generateInternalCode(formData.name, formData.category, existing) });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -568,13 +595,14 @@ export function InventoryPage() {
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Código Interno</label>
                       <button type="button" onClick={handleAutoCode}
-                        disabled={!formData.category}
-                        className="flex items-center gap-1 text-[10px] font-bold text-primary-600 hover:text-primary-800 disabled:text-surface-600 disabled:cursor-not-allowed transition-colors">
+                        disabled={!formData.category || !formData.name.trim()}
+                        title={!formData.name.trim() ? 'Informe o nome da peça' : !formData.category ? 'Selecione a área/categoria' : 'Gerar código'}
+                        className="flex items-center gap-1 text-[10px] font-bold text-accent hover:text-accent-hover disabled:text-faint disabled:cursor-not-allowed transition-colors">
                         <RefreshCw className="w-3 h-3" /> Gerar
                       </button>
                     </div>
                     <input value={formData.internalCode} onChange={e => setFormData({...formData, internalCode: e.target.value})}
-                      placeholder="Ex: FRE-001"
+                      placeholder="Ex: CCOM-MOT0A22"
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-mono font-bold" />
                   </div>
                   <div className="space-y-1.5">

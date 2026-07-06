@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   FileText,
-  Filter,
   Download,
   Activity,
   BarChart4,
@@ -73,6 +72,7 @@ export function FinancialPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [transactionError, setTransactionError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
   const [tenantData, setTenantData] = useState<any>(null);
   const [summary, setSummary] = useState({ income: 0, expense: 0, balance: 0 });
   const printRef = useRef<HTMLDivElement>(null);
@@ -129,10 +129,11 @@ export function FinancialPage() {
   const filteredTransactions = useMemo(
     () => transactions.filter(
       (t) =>
-        t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.category?.toLowerCase().includes(searchTerm.toLowerCase())
+        (typeFilter === 'ALL' || t.type === typeFilter) &&
+        (t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          t.category?.toLowerCase().includes(searchTerm.toLowerCase()))
     ),
-    [transactions, searchTerm]
+    [transactions, searchTerm, typeFilter]
   );
 
   const metrics = useMemo(() => {
@@ -458,9 +459,36 @@ export function FinancialPage() {
                 className="w-full pl-12 pr-6 py-3.5 rounded-lg border border-line bg-surface-900 text-sm font-bold focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all"
               />
             </div>
-            <button className="p-3.5 border border-line rounded-lg hover:bg-ink/5 transition-all text-surface-500">
-              <Filter size={20} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setTypeFilter((f) => (f === 'INCOME' ? 'ALL' : 'INCOME'))}
+                title="Filtrar somente entradas"
+                aria-pressed={typeFilter === 'INCOME'}
+                className={cn(
+                  'p-3.5 rounded-lg border transition-colors',
+                  typeFilter === 'INCOME'
+                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600'
+                    : 'border-line text-muted hover:bg-ink/5'
+                )}
+              >
+                <ArrowDownLeft size={20} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setTypeFilter((f) => (f === 'EXPENSE' ? 'ALL' : 'EXPENSE'))}
+                title="Filtrar somente saídas"
+                aria-pressed={typeFilter === 'EXPENSE'}
+                className={cn(
+                  'p-3.5 rounded-lg border transition-colors',
+                  typeFilter === 'EXPENSE'
+                    ? 'border-red-500 bg-red-500/10 text-red-600'
+                    : 'border-line text-muted hover:bg-ink/5'
+                )}
+              >
+                <ArrowUpRight size={20} />
+              </button>
+            </div>
           </div>
         </div>
 
