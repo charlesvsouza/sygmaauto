@@ -55,7 +55,7 @@ export function LandingPage() {
           />
         </div>
 
-        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
           <div className="rounded-[30px] border border-line bg-ink/5 backdrop-blur-sm px-4 sm:px-7 py-6 sm:py-8 shadow-[0_20px_64px_rgba(0,0,0,0.35)]">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -71,7 +71,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mt-6 text-[clamp(2.15rem,9vw,5.2rem)] font-black leading-[0.95] tracking-tight"
+              className="mt-6 text-[clamp(1.8rem,5.2vw,3.4rem)] font-black leading-[0.95] tracking-tight"
             >
               <span className="text-[#f8fafc]">Sigma</span>{' '}
               <span className="text-[#58c3cb]">Auto</span>
@@ -243,7 +243,7 @@ export function LandingPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-line">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-14 mt-8 rounded-[34px] bg-[#0f1f2b] border border-line">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map(({ icon: Icon, title, desc }, index) => (
             <motion.article
@@ -268,10 +268,10 @@ export function LandingPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b] border border-line">
-        <div className="text-center mb-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-14 mt-8 rounded-[34px] bg-[#0f1f2b] border border-line">
+        <div className="text-center mb-8">
           <p className="text-xs uppercase tracking-[0.25em] text-[#58c3cb]/80 font-bold mb-3">Transparência de produto</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">O que já entregamos e o que vem a seguir</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-3xl font-black text-white">O que já entregamos e o que vem a seguir</h2>
           <p className="mt-3 text-white/65 text-sm max-w-3xl mx-auto">
             Sem promessa vazia: aqui mostramos as inovações já disponíveis e as integrações planejadas para a evolução da sua operação.
           </p>
@@ -333,10 +333,10 @@ export function LandingPage() {
         <div className="h-px bg-gradient-to-r from-transparent via-[#0b7f86]/35 to-transparent" />
       </div>
 
-      <section id="planos" className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 mt-8 rounded-[34px] bg-[#0f1f2b]">
-        <div className="text-center mb-12">
+      <section id="planos" className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-14 mt-8 rounded-[34px] bg-[#0f1f2b]">
+        <div className="text-center mb-8">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-3xl font-black">Escolha e inicie sua assinatura</h2>
           <p className="mt-3 text-white/45 text-sm">Sem conta? voce conclui o pagamento e recebe convite de ativacao no e-mail.</p>
         </div>
 
@@ -362,7 +362,7 @@ export function LandingPage() {
               ) : null}
               <p className="text-xs uppercase tracking-widest text-white/40">{plan.label}</p>
               <div className="mt-2 flex items-end gap-1">
-                <p className="text-4xl font-black text-white">{plan.price}</p>
+                <p className="text-3xl font-black text-white">{plan.price}</p>
                 <p className="text-sm text-white/40 mb-1">{plan.period}</p>
               </div>
               <p className="mt-3 text-sm text-white/60 leading-relaxed">{plan.description}</p>
@@ -412,7 +412,7 @@ export function LandingPage() {
               >
                 <p className="text-xs uppercase tracking-widest text-[#ffb182]">{plan.label}</p>
                 <div className="mt-2 flex items-end gap-1">
-                  <p className="text-4xl font-black text-white">{plan.price}</p>
+                  <p className="text-3xl font-black text-white">{plan.price}</p>
                   <p className="text-sm text-white/40 mb-1">{plan.period}</p>
                 </div>
                 <p className="mt-3 text-sm text-white/60 leading-relaxed">{plan.description}</p>
