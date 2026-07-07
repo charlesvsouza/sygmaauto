@@ -306,11 +306,13 @@ export function DashboardPage() {
     );
   }
 
+  // 5 KPIs essenciais: 3 snapshot (all-time) + 2 de desempenho (no período selecionado).
   const kpiCards = [
     { title: 'Faturamento', value: `R$ ${stats.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'bg-emerald-500', trend: `${stats.completedOrders} OS concluídas`, to: '/financial' },
     { title: 'OS em Aberto', value: stats.pendingOrders, icon: ClipboardList, color: 'bg-orange-500', trend: `${stats.activeServices} em execução`, to: '/service-orders' },
-    { title: 'Clientes', value: stats.totalCustomers, icon: Users, color: 'bg-blue-500', trend: `${stats.totalVehicles} veículos`, to: '/customers' },
     { title: 'Alerta Estoque', value: stats.lowStockCount, icon: Package, color: stats.lowStockCount > 0 ? 'bg-red-500' : 'bg-surface-500', trend: stats.lowStockCount > 0 ? 'Reposição necessária' : 'Estoque em dia', to: '/inventory' },
+    { title: 'Ticket Médio', value: `R$ ${productivityData.ticketMedio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: Target, color: 'bg-accent', trend: `Média por OS · ${productivityWindowDays}d`, to: '/kpis' },
+    { title: 'Ciclo Médio', value: `${productivityData.cicloDias.toFixed(1)} dias`, icon: Clock, color: 'bg-sky-500', trend: `Abertura→entrega · ${productivityWindowDays}d`, to: '/kpis' },
   ];
 
   return (
@@ -336,20 +338,17 @@ export function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {kpiCards.map((kpi, i) => (
           <motion.div key={kpi.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
             onClick={() => navigate(kpi.to)}
-            className="bg-surface-900 p-6 rounded-xl border border-line shadow-sm hover:shadow-xl transition-all cursor-pointer group relative overflow-hidden">
-            <div className="relative z-10">
-              <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 transition-transform', kpi.color)}>
-                <kpi.icon size={22} />
-              </div>
-              <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">{kpi.title}</p>
-              <h3 className="text-2xl font-bold text-surface-50 mt-1">{kpi.value}</h3>
-              <p className="mt-3 text-xs font-bold text-surface-500 bg-surface-950/40 px-2 py-0.5 rounded-full inline-block">{kpi.trend}</p>
+            className="bg-surface-900 p-5 rounded-xl border border-line shadow-sm hover:shadow-card-hover transition-all cursor-pointer group">
+            <div className={cn('w-11 h-11 rounded-lg flex items-center justify-center text-white mb-3 group-hover:scale-105 transition-transform', kpi.color)}>
+              <kpi.icon size={20} />
             </div>
-            <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-surface-950/40 rounded-full opacity-60 group-hover:scale-[3] transition-transform duration-700" />
+            <p className="text-xs font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
+            <h3 className="text-2xl font-bold text-surface-50 mt-1">{kpi.value}</h3>
+            <p className="mt-2 text-[11px] font-medium text-surface-500">{kpi.trend}</p>
           </motion.div>
         ))}
       </div>
@@ -386,50 +385,6 @@ export function DashboardPage() {
             ))}
           </select>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {[
-          {
-            title: 'Eficiência',
-            value: `${productivityData.eficiencia.toFixed(1)}%`,
-            hint: 'Itens de serviço com executor definido',
-            icon: Target,
-          },
-          {
-            title: 'Eficácia',
-            value: `${productivityData.eficacia.toFixed(1)}%`,
-            hint: 'OS concluídas sobre concluídas+canceladas',
-            icon: CheckCircle,
-          },
-          {
-            title: 'Produtividade',
-            value: `${productivityData.produtividade.toFixed(1)} h/técnico`,
-            hint: 'Horas lançadas por executor ativo',
-            icon: Activity,
-          },
-          {
-            title: 'Ticket Médio',
-            value: `R$ ${productivityData.ticketMedio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-            hint: 'Média por OS concluída',
-            icon: DollarSign,
-          },
-          {
-            title: 'Ciclo Médio',
-            value: `${productivityData.cicloDias.toFixed(1)} dias`,
-            hint: 'Tempo médio de abertura até entrega',
-            icon: Clock,
-          },
-        ].map((kpi) => (
-          <div key={kpi.title} className="bg-surface-900 rounded-xl border border-line p-5 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-3">
-              <kpi.icon size={18} />
-            </div>
-            <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
-            <p className="text-xl font-bold text-surface-50 mt-1">{kpi.value}</p>
-            <p className="text-[11px] text-surface-500 font-medium mt-1">{kpi.hint}</p>
-          </div>
-        ))}
       </div>
 
       {/* Produtividade por função */}
