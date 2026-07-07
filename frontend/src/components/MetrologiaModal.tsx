@@ -200,7 +200,7 @@ function NumStepper({ value, onChange }: { value: number; onChange: (n: number) 
     <div className="flex items-center gap-2">
       <button type="button" onClick={() => onChange(Math.max(1, value - 1))}
         className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Minus size={12} /></button>
-      <span className="w-6 text-center text-white font-black text-sm">{value}</span>
+      <span className="w-6 text-center text-white font-bold text-sm">{value}</span>
       <button type="button" onClick={() => onChange(Math.min(16, value + 1))}
         className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Plus size={12} /></button>
     </div>
@@ -250,7 +250,7 @@ function JournalTable({ rows, update, dotColor = 'blue' }: {
         <tbody className="divide-y divide-line">
           {rows.map((r, i) => (
             <tr key={i}>
-              <td className="py-1.5 pr-3"><span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-black text-xs ${dot}`}>{i + 1}</span></td>
+              <td className="py-1.5 pr-3"><span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-bold text-xs ${dot}`}>{i + 1}</span></td>
               <td className="py-1.5 pr-2"><NInput value={r.diametroNominal} onChange={(v) => update(i, 'diametroNominal', v)} /></td>
               <td className="py-1.5 pr-2"><NInput value={r.diametroMedido}  onChange={(v) => update(i, 'diametroMedido', v)} /></td>
               <td className="py-1.5 pr-2"><NInput value={r.ovalização}      onChange={(v) => update(i, 'ovalização', v)} /></td>
@@ -278,7 +278,7 @@ function BoreTable({ rows, update }: {
         <tbody className="divide-y divide-line">
           {rows.map((r, i) => (
             <tr key={i}>
-              <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-black text-xs">{i + 1}</span></td>
+              <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-bold text-xs">{i + 1}</span></td>
               <td className="py-1.5 pr-2"><NInput value={r.diametroNominal} onChange={(v) => update(i, 'diametroNominal', v)} /></td>
               <td className="py-1.5">    <NInput value={r.diametroMedido}  onChange={(v) => update(i, 'diametroMedido', v)} /></td>
             </tr>
@@ -405,7 +405,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 ? <Ruler className="text-blue-600 w-5 h-5" />
                 : <FlaskConical className="text-emerald-600 w-5 h-5" />}
               <div>
-                <h2 className="text-white font-black text-lg">
+                <h2 className="text-white font-bold text-lg">
                   {step === 1 ? 'Ficha de Metrologia' : 'Diagnóstico Técnico'}
                 </h2>
                 <p className="text-surface-400 text-xs">
@@ -468,7 +468,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                     <tbody className="divide-y divide-line">
                       {cils.map((c, i) => (
                         <tr key={i}>
-                          <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-black text-xs">{i + 1}</span></td>
+                          <td className="py-1.5 pr-3"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 font-bold text-xs">{i + 1}</span></td>
                           <td className="py-1.5 pr-2"><NInput value={c.diametroNominal} onChange={(v) => updCyl(i, 'diametroNominal', v)} /></td>
                           <td className="py-1.5 pr-2"><NInput value={c.diametroMedido}  onChange={(v) => updCyl(i, 'diametroMedido', v)} /></td>
                           <td className="py-1.5 pr-2"><NInput value={c.ovalização}      onChange={(v) => updCyl(i, 'ovalização', v)} /></td>
@@ -605,7 +605,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                         {it.quantity > 1 && (
-                          <span className="text-[10px] text-amber-600 font-black shrink-0 mt-0.5">× {it.quantity}</span>
+                          <span className="text-[10px] text-amber-600 font-bold shrink-0 mt-0.5">× {it.quantity}</span>
                         )}
                       </label>
                     ))}
@@ -628,7 +628,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <div className="rounded-xl border border-line bg-ink/5 px-4 py-2.5 flex items-center gap-2">
                   <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
                   <p className="text-surface-600 text-xs">
-                    <span className="font-black text-white">{selectedCount}</span> ite{selectedCount > 1 ? 'ns' : 'm'} selecionado{selectedCount > 1 ? 's' : ''} para adicionar à OS
+                    <span className="font-bold text-white">{selectedCount}</span> ite{selectedCount > 1 ? 'ns' : 'm'} selecionado{selectedCount > 1 ? 's' : ''} para adicionar à OS
                   </p>
                 </div>
               )}
@@ -644,7 +644,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                   Cancelar
                 </button>
                 <button type="button" onClick={goToStep2}
-                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black rounded-xl transition-all">
+                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all">
                   Próximo: Diagnóstico →
                 </button>
               </>
@@ -654,7 +654,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                   <ChevronLeft size={15} /> Voltar às medidas
                 </button>
                 <button type="button" onClick={handleSave} disabled={saving || saved}
-                  className="flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-black rounded-xl transition-all">
+                  className="flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-all">
                   {saved  ? <><CheckCircle2 size={15} /> Salvo!</> :
                    saving ? <><Loader2 size={15} className="animate-spin" /> Salvando…</> :
                             <>Confirmar Metrologia e imprimir laudo</>}

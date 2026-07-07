@@ -362,7 +362,7 @@ export function KPIsPage() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black text-surface-50 tracking-tight">KPI\'s de Gestão à Vista</h1>
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight">KPI\'s de Gestão à Vista</h1>
           <p className="text-sm text-surface-400 font-medium mt-1">
             Indicadores organizados por tema para decisão rápida em concessionárias e grandes autocenters.
           </p>
@@ -376,7 +376,7 @@ export function KPIsPage() {
                 key={key}
                 onClick={() => setSelectedPeriod(key)}
                 className={cn(
-                  'px-3 py-2 rounded-xl text-xs font-black transition-all border',
+                  'px-3 py-2 rounded-xl text-xs font-bold transition-all border',
                   active
                     ? 'bg-accent text-white border-surface-600'
                     : 'bg-surface-900 text-surface-300 border-line hover:bg-ink/5',
@@ -388,7 +388,7 @@ export function KPIsPage() {
           })}
           <button
             onClick={load}
-            className="px-3 py-2 rounded-xl text-xs font-black border border-line text-surface-300 hover:bg-ink/5"
+            className="px-3 py-2 rounded-xl text-xs font-bold border border-line text-surface-300 hover:bg-ink/5"
           >
             Atualizar
           </button>
@@ -418,14 +418,14 @@ export function KPIsPage() {
             <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
-            <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{kpi.title}</p>
-            <p className={cn('text-lg font-black mt-1', kpi.tone)}>{kpi.value}</p>
+            <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
+            <p className={cn('text-lg font-bold mt-1', kpi.tone)}>{kpi.value}</p>
           </motion.div>
         ))}
       </div>
 
       <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-        <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Fase 1 · Indicadores de Performance Operacional</h3>
+        <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Fase 1 · Indicadores de Performance Operacional</h3>
         <p className="text-xs text-surface-400 mb-4">Métricas mais usadas em gestão de concessionárias e autocenters para acompanhamento diário.</p>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
@@ -468,7 +468,7 @@ export function KPIsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <p className="text-[11px] font-black text-surface-400 uppercase tracking-widest mb-2">Aging de OS em aberto</p>
+            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Aging de OS em aberto</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase1.agingBuckets}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -485,7 +485,7 @@ export function KPIsPage() {
           </div>
 
           <div>
-            <p className="text-[11px] font-black text-surface-400 uppercase tracking-widest mb-2">Composição financeira da hora vendida</p>
+            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Composição financeira da hora vendida</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InfoCard
                 title="Horas vendidas"
@@ -512,7 +512,7 @@ export function KPIsPage() {
       </section>
 
       <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-        <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Fase 2 · Qualidade e Agenda</h3>
+        <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Fase 2 · Qualidade e Agenda</h3>
         <p className="text-xs text-surface-400 mb-4">Leituras para melhorar previsibilidade operacional e qualidade de execução.</p>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -548,7 +548,7 @@ export function KPIsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <p className="text-[11px] font-black text-surface-400 uppercase tracking-widest mb-2">Distribuição da agenda por turno</p>
+            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Distribuição da agenda por turno</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase2.agendaTurnoData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -566,7 +566,7 @@ export function KPIsPage() {
 
           <div className="space-y-3">
             <div className="rounded-xl border border-line p-3 bg-surface-950/40">
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Leitura de First Time Fix</p>
+              <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de First Time Fix</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.firstTimeFixRate >= 92
                   ? 'Excelente estabilidade de entrega. Mantenha o padrão de diagnóstico e checklist.'
@@ -574,7 +574,7 @@ export function KPIsPage() {
               </p>
             </div>
             <div className="rounded-xl border border-line p-3 bg-surface-950/40">
-              <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Leitura de No-show (estimado)</p>
+              <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de No-show (estimado)</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.noShowRate <= 8
                   ? 'Taxa controlada. Continue confirmação ativa por WhatsApp antes do horário.'
@@ -590,7 +590,7 @@ export function KPIsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 1 · Financeiro</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Tema 1 · Financeiro</h3>
           <p className="text-xs text-surface-400 mb-4">Visão de estrutura do resultado para o período selecionado.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={financeiroEstrutura} layout="vertical" margin={{ left: 18, right: 18 }}>
@@ -608,7 +608,7 @@ export function KPIsPage() {
         </section>
 
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 2 · Comparativo de períodos</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Tema 2 · Comparativo de períodos</h3>
           <p className="text-xs text-surface-400 mb-4">Receita líquida e EBITDA para leitura de tendência.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={periodChart} margin={{ left: 8, right: 8 }}>
@@ -625,7 +625,7 @@ export function KPIsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6 lg:col-span-1 xl:col-span-2">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 3 · Operações de oficina</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Tema 3 · Operações de oficina</h3>
           <p className="text-xs text-surface-400 mb-4">Fluxo de OS por etapa para gestão do gargalo operacional.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={funilData}>
@@ -648,7 +648,7 @@ export function KPIsPage() {
         </section>
 
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Status da fila</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Status da fila</h3>
           <p className="text-xs text-surface-400 mb-4">Distribuição por status atual.</p>
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
@@ -665,7 +665,7 @@ export function KPIsPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 4 · Estoque e suprimentos</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Tema 4 · Estoque e suprimentos</h3>
           <p className="text-xs text-surface-400 mb-4">Itens com risco de ruptura e impacto no caixa.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
@@ -687,7 +687,7 @@ export function KPIsPage() {
         </section>
 
         <section className="bg-surface-900 rounded-lg border border-line shadow-sm p-6">
-          <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest mb-1">Tema 5 · Pessoas e performance</h3>
+          <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide mb-1">Tema 5 · Pessoas e performance</h3>
           <p className="text-xs text-surface-400 mb-4">Comissões como leitura rápida de produtividade técnica.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
@@ -699,12 +699,12 @@ export function KPIsPage() {
           <div className="space-y-2">
             {(commissions.leadership || []).slice(0, 6).map((p: any, idx: number) => (
               <div key={p.userId} className="flex items-center gap-3 rounded-xl border border-line p-3">
-                <span className="w-8 h-8 rounded-lg bg-accent text-white text-xs font-black flex items-center justify-center">{idx + 1}</span>
+                <span className="w-8 h-8 rounded-lg bg-accent text-white text-xs font-bold flex items-center justify-center">{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-surface-100 truncate">{p.name}</p>
                   <p className="text-xs text-surface-500">{p.count} OS executadas</p>
                 </div>
-                <span className="text-sm font-black text-emerald-600">{money(p.total)}</span>
+                <span className="text-sm font-bold text-emerald-600">{money(p.total)}</span>
               </div>
             ))}
             {(commissions.leadership || []).length === 0 && (
@@ -752,9 +752,9 @@ function InfoCard({
             <Icon size={14} />
           </span>
         )}
-        <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">{title}</p>
+        <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">{title}</p>
       </div>
-      <p className="text-base font-black text-surface-50 leading-tight">{value}</p>
+      <p className="text-base font-bold text-surface-50 leading-tight">{value}</p>
       <p className="text-[11px] text-surface-500 mt-1">{hint}</p>
     </div>
   );

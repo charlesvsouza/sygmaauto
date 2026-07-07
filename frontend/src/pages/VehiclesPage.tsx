@@ -211,7 +211,7 @@ export function VehiclesPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-lg border border-line bg-panel">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-ink" />
           <p className="text-muted text-sm">Carregando frota de veículos...</p>
         </div>
       ) : filteredVehicles.length === 0 ? (
@@ -247,7 +247,7 @@ export function VehiclesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-accent-soft rounded-full flex items-center justify-center text-accent text-xs font-semibold shrink-0">
+                        <div className="w-8 h-8 bg-accent-soft rounded-full flex items-center justify-center text-accent-ink text-xs font-semibold shrink-0">
                           {vehicle.customer?.name?.charAt(0).toUpperCase()}
                         </div>
                         <span className="text-sm text-ink">{vehicle.customer?.name}</span>
@@ -270,7 +270,7 @@ export function VehiclesPage() {
                       <div className="inline-flex items-center gap-1">
                         <button
                           onClick={() => handleEdit(vehicle)}
-                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
+                          className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft transition-colors"
                           aria-label="Editar veículo"
                         >
                           <Edit className="w-4 h-4" />

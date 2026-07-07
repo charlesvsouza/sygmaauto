@@ -185,7 +185,7 @@ export default function ManualPage() {
             <div
               ref={contentRef}
               className="prose prose-invert prose-amber max-w-none
-                prose-headings:font-black prose-headings:tracking-tight
+                prose-headings:font-bold prose-headings:tracking-tight
                 prose-h1:text-3xl prose-h1:gradient-text prose-h1:mb-8
                 prose-h2:text-xl prose-h2:text-white prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-line prose-h2:pb-3
                 prose-h3:text-base prose-h3:text-surface-100 prose-h3:mt-6 prose-h3:mb-2

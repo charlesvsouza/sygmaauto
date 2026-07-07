@@ -218,7 +218,7 @@ export function ForgotPasswordPage() {
           )}
 
           <div className="mt-8 pt-6 border-t border-line text-center">
-            <Link to="/login" className="inline-flex items-center gap-2 text-accent hover:text-accent text-sm font-semibold">
+            <Link to="/login" className="inline-flex items-center gap-2 text-accent-ink hover:text-accent-ink text-sm font-semibold">
               <ArrowLeft size={16} /> Voltar ao login
             </Link>
           </div>

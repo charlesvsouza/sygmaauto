@@ -237,7 +237,7 @@ export function CommissionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-black text-surface-50 tracking-tight">Comissões</h1>
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Comissões</h1>
           <p className="text-surface-400 font-medium">Controle por executor e por item de serviço.</p>
         </div>
         <button
@@ -263,15 +263,15 @@ export function CommissionsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-surface-900 rounded-lg border border-line p-5">
           <p className="text-xs text-surface-400 font-bold uppercase tracking-wider">Total</p>
-          <p className="text-2xl font-black text-surface-50 mt-1">{money(totals.total)}</p>
+          <p className="text-2xl font-bold text-surface-50 mt-1">{money(totals.total)}</p>
         </div>
         <div className="bg-surface-900 rounded-lg border border-amber-500/30 p-5">
           <p className="text-xs text-amber-600 font-bold uppercase tracking-wider">Pendente</p>
-          <p className="text-2xl font-black text-amber-700 mt-1">{money(totals.pending)}</p>
+          <p className="text-2xl font-bold text-amber-700 mt-1">{money(totals.pending)}</p>
         </div>
         <div className="bg-surface-900 rounded-lg border border-emerald-500/30 p-5">
           <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider">Pago</p>
-          <p className="text-2xl font-black text-emerald-700 mt-1">{money(totals.paid)}</p>
+          <p className="text-2xl font-bold text-emerald-700 mt-1">{money(totals.paid)}</p>
         </div>
       </div>
 
@@ -342,14 +342,14 @@ export function CommissionsPage() {
         <div className="bg-surface-900 rounded-lg border border-line p-5">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-4 h-4 text-amber-500" />
-            <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider">Visão de Liderança</h2>
+            <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">Visão de Liderança</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {leadership.slice(0, 8).map((p: any) => (
               <div key={p.userId} className="rounded-xl border border-line bg-surface-950/40 p-3">
-                <p className="text-xs font-black text-surface-50">{p.name}</p>
+                <p className="text-xs font-bold text-surface-50">{p.name}</p>
                 <p className="text-[10px] text-surface-400 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
-                <p className="text-sm font-black text-surface-50 mt-2">{money(p.total)}</p>
+                <p className="text-sm font-bold text-surface-50 mt-2">{money(p.total)}</p>
                 <p className="text-[11px] text-surface-400">{p.count} comissões</p>
               </div>
             ))}
@@ -358,7 +358,7 @@ export function CommissionsPage() {
       )}
 
       <div className="bg-surface-900 rounded-lg border border-line p-5">
-        <h2 className="text-sm font-black text-surface-50 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
+        <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider mb-1">Tendência Mensal de Comissões</h2>
         <p className="text-xs text-surface-400 mb-4">Valor total de comissões geradas por mês</p>
         {trendData.length === 0 ? (
           <p className="text-sm text-surface-500 py-8 text-center">Sem dados suficientes para montar a tendência.</p>
@@ -389,7 +389,7 @@ export function CommissionsPage() {
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-surface-950/40 text-surface-400 uppercase text-[10px] tracking-widest">
+            <thead className="bg-surface-950/40 text-surface-400 uppercase text-[10px] tracking-wide">
               <tr>
                 <th className="px-4 py-3 text-left">Executor</th>
                 <th className="px-4 py-3 text-left">Área</th>
@@ -411,14 +411,14 @@ export function CommissionsPage() {
                   <td className="px-4 py-3 font-mono text-xs text-surface-300">#{String(row.serviceOrderId).slice(0, 8).toUpperCase()}</td>
                   <td className="px-4 py-3 text-right">{money(row.baseValue)}</td>
                   <td className="px-4 py-3 text-right font-bold">{Number(row.commissionPercent).toFixed(1)}%</td>
-                  <td className="px-4 py-3 text-right font-black text-surface-50">{money(row.commissionValue)}</td>
+                  <td className="px-4 py-3 text-right font-bold text-surface-50">{money(row.commissionValue)}</td>
                   <td className="px-4 py-3">
                     {row.status === 'PAGO' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
                         <CheckCircle2 size={12} /> Pago
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-700 px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-700 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
                         <DollarSign size={12} /> Pendente
                       </span>
                     )}

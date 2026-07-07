@@ -586,14 +586,14 @@ const ICON_BG: Record<string, string> = {
               { label: 'Ticket Médio', value: `R$ ${fmtBR(summary.ticketMedio, 0)}`, icon: TrendingUp, color: 'blue' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
-                <p className="text-2xl font-black text-surface-50">{k.value}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className="text-2xl font-bold text-surface-50">{k.value}</p>
               </div>
             ))}
           </div>
           <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-              <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Ordens de Serviço ({orders.length})</h4>
+              <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Ordens de Serviço ({orders.length})</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -611,11 +611,11 @@ const ICON_BG: Record<string, string> = {
                       <td className="px-6 py-3 font-bold text-surface-50">{o.customer?.name ?? '—'}</td>
                       <td className="px-6 py-3 text-surface-400">{o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model}` : '—'}</td>
                       <td className="px-6 py-3">
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-surface-800 text-surface-400">
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-surface-800 text-surface-400">
                           {STATUS_LABEL[o.status] ?? o.status}
                         </span>
                       </td>
-                      <td className={cn('px-6 py-3 text-right font-black', ['ENTREGUE','FATURADO'].includes(o.status) ? 'text-emerald-600' : 'text-surface-600')}>
+                      <td className={cn('px-6 py-3 text-right font-bold', ['ENTREGUE','FATURADO'].includes(o.status) ? 'text-emerald-600' : 'text-surface-600')}>
                         {['ENTREGUE','FATURADO'].includes(o.status) ? `R$ ${fmtBR(o.totalCost)}` : '—'}
                       </td>
                     </tr>
@@ -628,17 +628,17 @@ const ICON_BG: Record<string, string> = {
           {topCustomers.length > 0 && (
             <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
               <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-                <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Top Clientes</h4>
+                <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Top Clientes</h4>
               </div>
               <div className="divide-y divide-line">
                 {topCustomers.map((c: any, i: number) => (
                   <div key={i} className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 bg-surface-800 rounded-lg text-xs font-black text-surface-400 flex items-center justify-center">{i + 1}</span>
+                      <span className="w-6 h-6 bg-surface-800 rounded-lg text-xs font-bold text-surface-400 flex items-center justify-center">{i + 1}</span>
                       <span className="font-bold text-surface-50">{c.name}</span>
                       <span className="text-xs text-surface-500">{c.count} OS</span>
                     </div>
-                    <span className="font-black text-emerald-600">R$ {fmtBR(c.total)}</span>
+                    <span className="font-bold text-emerald-600">R$ {fmtBR(c.total)}</span>
                   </div>
                 ))}
               </div>
@@ -664,13 +664,13 @@ const ICON_BG: Record<string, string> = {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-              <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">DRE — {periodo.label}</h4>
+              <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">DRE — {periodo.label}</h4>
             </div>
             <div className="divide-y divide-line">
               {dreRows.map((r, i) => (
                 <div key={i} className={cn('flex items-center justify-between px-6 py-3', r.highlight && 'bg-surface-950/40')}>
                   <span className={cn('text-sm', r.indent ? 'pl-4 text-surface-500' : 'font-bold text-surface-50')}>{r.label}</span>
-                  <span className={cn('font-black text-sm', r.value >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                  <span className={cn('font-bold text-sm', r.value >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                     {r.value >= 0 ? '+' : '−'} R$ {fmtBR(Math.abs(r.value))}
                   </span>
                 </div>
@@ -679,7 +679,7 @@ const ICON_BG: Record<string, string> = {
           </div>
           <div className="space-y-4">
             <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-              <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-3">Detalhes</p>
+              <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-3">Detalhes</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-surface-400">OS entregues</span><span className="font-bold">{detalhes.osEntregues}</span></div>
                 <div className="flex justify-between"><span className="text-surface-400">Receita de OS</span><span className="font-bold text-emerald-600">R$ {fmtBR(detalhes.receitaBrutaOS)}</span></div>
@@ -688,7 +688,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             {historico.length > 0 && (
               <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-3">Histórico 6 meses</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-3">Histórico 6 meses</p>
                 <div className="space-y-2">
                   {historico.map((h: any, i: number) => (
                     <div key={i} className="flex items-center justify-between text-xs">
@@ -722,14 +722,14 @@ const ICON_BG: Record<string, string> = {
               { label: 'Resultado Líquido', value: fmt(dre.resultadoLiquido) },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
-                <p className="text-2xl font-black text-surface-50">{k.value}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className="text-2xl font-bold text-surface-50">{k.value}</p>
               </div>
             ))}
           </div>
           <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-              <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Evolução Mensal — {periodo.label}</h4>
+              <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Evolução Mensal — {periodo.label}</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -747,7 +747,7 @@ const ICON_BG: Record<string, string> = {
                       <td className="px-6 py-3 text-right text-emerald-600 font-bold">{fmt(m.receita)}</td>
                       <td className="px-6 py-3 text-right text-red-500">{fmt(m.despesa)}</td>
                       <td className={cn('px-6 py-3 text-right font-bold', m.ebitda >= 0 ? 'text-emerald-600' : 'text-red-500')}>{fmt(m.ebitda)}</td>
-                      <td className={cn('px-6 py-3 text-right font-black', m.resultado >= 0 ? 'text-emerald-600' : 'text-red-500')}>{fmt(m.resultado)}</td>
+                      <td className={cn('px-6 py-3 text-right font-bold', m.resultado >= 0 ? 'text-emerald-600' : 'text-red-500')}>{fmt(m.resultado)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -768,7 +768,7 @@ const ICON_BG: Record<string, string> = {
             return (
               <div key={key} className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden">
                 <div className="px-6 py-3 bg-surface-900 flex items-center justify-between">
-                  <span className="text-xs font-black text-white uppercase tracking-widest">{p.label}</span>
+                  <span className="text-xs font-bold text-white uppercase tracking-wide">{p.label}</span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-0 divide-x divide-line">
                   {[
@@ -779,8 +779,8 @@ const ICON_BG: Record<string, string> = {
                     { label: 'Ticket Médio', value: fmt(p.ticketMedio) },
                   ].map((k) => (
                     <div key={k.label} className="p-4">
-                      <p className="text-[9px] font-black text-surface-500 uppercase tracking-widest mb-1">{k.label}</p>
-                      <p className="text-sm font-black text-surface-50">{k.value}</p>
+                      <p className="text-[9px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
+                      <p className="text-sm font-bold text-surface-50">{k.value}</p>
                     </div>
                   ))}
                 </div>
@@ -802,24 +802,24 @@ const ICON_BG: Record<string, string> = {
               { label: 'Pago', value: `R$ ${fmtBR(totals.paid)}`, color: 'text-emerald-600' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm text-center">
-                <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-1">{k.label}</p>
-                <p className={cn('text-2xl font-black', k.color)}>{k.value}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
+                <p className={cn('text-2xl font-bold', k.color)}>{k.value}</p>
               </div>
             ))}
           </div>
           <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-              <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Ranking de Comissões</h4>
+              <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Ranking de Comissões</h4>
             </div>
             <div className="divide-y divide-line">
               {(leadership?.leaderboard ?? []).map((l: any, i: number) => (
                 <div key={l.userId} className="flex items-center gap-4 px-6 py-4">
-                  <span className={cn('w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black', i === 0 ? 'bg-amber-500/15 text-amber-600' : 'bg-surface-800 text-surface-400')}>{i + 1}°</span>
+                  <span className={cn('w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold', i === 0 ? 'bg-amber-500/15 text-amber-600' : 'bg-surface-800 text-surface-400')}>{i + 1}°</span>
                   <div className="flex-1">
                     <p className="font-bold text-surface-50">{l.name}</p>
                     <p className="text-xs text-surface-500">{l.count} OS executadas</p>
                   </div>
-                  <span className="font-black text-emerald-600">R$ {fmtBR(l.total)}</span>
+                  <span className="font-bold text-emerald-600">R$ {fmtBR(l.total)}</span>
                 </div>
               ))}
               {(leadership?.leaderboard ?? []).length === 0 && <EmptyState msg="Nenhuma comissão no período." />}
@@ -847,14 +847,14 @@ const ICON_BG: Record<string, string> = {
               { label: 'Custo Estimado', value: `R$ ${fmtBR(summary.totalEstimatedCost, 0)}`, color: 'text-surface-50' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-2">{k.label}</p>
-                <p className={cn('text-2xl font-black', k.color)}>{k.value}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className={cn('text-2xl font-bold', k.color)}>{k.value}</p>
               </div>
             ))}
           </div>
           <div className="bg-surface-900 rounded-lg border border-line overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-line bg-surface-950/40">
-              <h4 className="font-black text-surface-50 uppercase text-xs tracking-widest">Peças para Reposição</h4>
+              <h4 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Peças para Reposição</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -871,7 +871,7 @@ const ICON_BG: Record<string, string> = {
                   {items.map((p: any) => (
                     <tr key={p.id} className="hover:bg-ink/5 transition-colors">
                       <td className="px-6 py-3">
-                        <span className={cn('px-2 py-0.5 rounded-full text-[9px] font-black uppercase border', urgencyBadge[p.urgency] ?? 'bg-surface-800 text-surface-400')}>
+                        <span className={cn('px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border', urgencyBadge[p.urgency] ?? 'bg-surface-800 text-surface-400')}>
                           {urgencyLabel[p.urgency] ?? p.urgency}
                         </span>
                       </td>
@@ -885,8 +885,8 @@ const ICON_BG: Record<string, string> = {
                       </td>
                       <td className="px-6 py-3 text-center text-surface-400">{p.minStock} {p.unit}</td>
                       <td className="px-6 py-3 text-center text-surface-400">{p.avgMonthlyExit > 0 ? `~${p.avgMonthlyExit}` : '—'}</td>
-                      <td className="px-6 py-3 text-center font-black text-surface-50">{p.suggestedQty} {p.unit}</td>
-                      <td className="px-6 py-3 text-right font-black text-surface-50">R$ {fmtBR(p.estimatedCost)}</td>
+                      <td className="px-6 py-3 text-center font-bold text-surface-50">{p.suggestedQty} {p.unit}</td>
+                      <td className="px-6 py-3 text-right font-bold text-surface-50">R$ {fmtBR(p.estimatedCost)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -926,10 +926,10 @@ const ICON_BG: Record<string, string> = {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-primary-500 font-black text-[10px] uppercase tracking-[0.3em] mb-2">
+          <div className="flex items-center gap-2 text-primary-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-2">
             <Activity size={14} /> Inteligência Gerencial
           </div>
-          <h1 className="text-4xl font-black text-surface-50 tracking-tight leading-none">
+          <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">
             Relatórios <span className="text-primary-600">Gerenciais</span>
           </h1>
           <p className="text-surface-400 font-medium mt-2">Selecione o tipo de relatório, configure os filtros e gere o PDF.</p>
@@ -955,7 +955,7 @@ const ICON_BG: Record<string, string> = {
               <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white mb-4 shadow-md', ICON_BG[r.color])}>
                 <Icon size={20} />
               </div>
-              <h3 className="font-black text-surface-50 text-sm leading-tight mb-1">{r.label}</h3>
+              <h3 className="font-bold text-surface-50 text-sm leading-tight mb-1">{r.label}</h3>
               <p className="text-xs text-surface-400 leading-snug">{r.desc}</p>
               {active && <ChevronRight size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-surface-500" />}
             </button>
@@ -965,7 +965,7 @@ const ICON_BG: Record<string, string> = {
 
       {/* Filters */}
       <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm">
-        <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+        <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-5 flex items-center gap-2">
           <Calendar size={14} /> Parâmetros — {selectedReport.label}
         </h3>
 
@@ -973,17 +973,17 @@ const ICON_BG: Record<string, string> = {
           {type === 'os' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Inicial</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Inicial</label>
                 <input type="date" value={osStart} onChange={(e) => setOsStart(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Final</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Final</label>
                 <input type="date" value={osEnd} onChange={(e) => setOsEnd(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Status</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Status</label>
                 <select value={osStatus} onChange={(e) => setOsStatus(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todos</option>
@@ -996,7 +996,7 @@ const ICON_BG: Record<string, string> = {
           {type === 'dre' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Mês</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Mês</label>
                 <select value={dreMonth} onChange={(e) => setDreMonth(Number(e.target.value))}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
@@ -1004,7 +1004,7 @@ const ICON_BG: Record<string, string> = {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Ano</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Ano</label>
                 <select value={dreYear} onChange={(e) => setDreYear(Number(e.target.value))}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
@@ -1015,7 +1015,7 @@ const ICON_BG: Record<string, string> = {
 
           {type === 'dre-anual' && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Ano</label>
+              <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Ano</label>
               <select value={dreAnualYear} onChange={(e) => setDreAnualYear(Number(e.target.value))}
                 className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                 {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
@@ -1032,17 +1032,17 @@ const ICON_BG: Record<string, string> = {
           {type === 'commissions' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Inicial</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Inicial</label>
                 <input type="date" value={commStart} onChange={(e) => setCommStart(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Data Final</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Final</label>
                 <input type="date" value={commEnd} onChange={(e) => setCommEnd(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Área</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Área</label>
                 <select value={commArea} onChange={(e) => setCommArea(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todas</option>
@@ -1065,7 +1065,7 @@ const ICON_BG: Record<string, string> = {
           <button
             onClick={generate}
             disabled={loading}
-            className="h-11 px-8 bg-accent text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
+            className="h-11 px-8 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
             {loading ? 'Gerando...' : 'Gerar Relatório'}
@@ -1075,13 +1075,13 @@ const ICON_BG: Record<string, string> = {
             <>
               <button
                 onClick={() => setShowPreview(true)}
-                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
+                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
                 <FileText size={16} className="text-surface-500" /> Visualizar PDF
               </button>
               <button
                 onClick={handlePrint}
-                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
+                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
                 <Printer size={16} className="text-surface-500" /> Imprimir
               </button>
@@ -1110,7 +1110,7 @@ const ICON_BG: Record<string, string> = {
             <div className="w-16 h-16 bg-surface-950/40 rounded-full flex items-center justify-center mb-4">
               <selectedReport.icon size={32} className="text-surface-600" />
             </div>
-            <p className="font-black text-surface-50 text-lg">Configure e gere o relatório</p>
+            <p className="font-bold text-surface-50 text-lg">Configure e gere o relatório</p>
             <p className="text-surface-400 text-sm mt-1">Defina os parâmetros acima e clique em <strong>Gerar Relatório</strong></p>
           </motion.div>
         )}
@@ -1132,13 +1132,13 @@ const ICON_BG: Record<string, string> = {
                     <selectedReport.icon size={18} />
                   </div>
                   <div>
-                    <h3 className="font-black text-surface-50 uppercase tracking-tight text-sm">Pré-visualização — {selectedReport.label}</h3>
+                    <h3 className="font-bold text-surface-50 uppercase tracking-tight text-sm">Pré-visualização — {selectedReport.label}</h3>
                     <p className="text-xs text-surface-500">Confira o relatório antes de imprimir como PDF</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={handlePrint}
-                    className="h-9 px-5 bg-accent text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-2">
+                    className="h-9 px-5 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-wide hover:bg-accent-hover transition-all flex items-center gap-2">
                     <Printer size={14} /> Imprimir / Salvar PDF
                   </button>
                   <button onClick={() => setShowPreview(false)}

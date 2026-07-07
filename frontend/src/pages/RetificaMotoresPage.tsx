@@ -28,8 +28,8 @@ export function RetificaMotoresPage() {
       <section className="rounded-xl border border-line bg-surface-900 p-6 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Modo especializado</p>
-            <h1 className="mt-2 text-3xl font-black text-surface-50">Retífica de Motores</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Modo especializado</p>
+            <h1 className="mt-2 text-3xl font-bold text-surface-50">Retífica de Motores</h1>
             <p className="mt-3 max-w-3xl text-sm text-surface-300">
               Esta area concentra a operacao hibrida de oficina + retifica. O tenant pode receber um veiculo com diagnostico de motor
               ou receber apenas o motor avulso, mantendo o mesmo trilho tecnico de desmontagem, medicao, aprovacao e entrega.
@@ -64,7 +64,7 @@ export function RetificaMotoresPage() {
           <div className="mt-4 space-y-3">
             {flowSteps.map((step, index) => (
               <div key={step} className="flex items-start gap-3 rounded-xl border border-line bg-surface-950/40 p-3">
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-900 text-xs font-black text-white">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-900 text-xs font-bold text-white">
                   {index + 1}
                 </div>
                 <p className="text-sm font-medium text-surface-200">{step}</p>

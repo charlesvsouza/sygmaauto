@@ -15,7 +15,7 @@ export function CheckoutCancelPage() {
         </div>
 
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700/80">Pagamento não concluído</p>
-        <h1 className="mt-2 text-3xl md:text-4xl font-black">Seu checkout foi cancelado</h1>
+        <h1 className="mt-2 text-3xl md:text-4xl font-bold">Seu checkout foi cancelado</h1>
 
         <p className="mt-4 text-white/75 leading-relaxed">
           Nenhum problema. Quando quiser, você pode iniciar novamente e escolher outra forma de pagamento no Mercado Pago.
@@ -24,7 +24,7 @@ export function CheckoutCancelPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/"
-            className="h-11 px-6 rounded-xl bg-[#ff7b2f] text-white font-black inline-flex items-center gap-2 hover:bg-[#f06820]"
+            className="h-11 px-6 rounded-xl bg-[#ff7b2f] text-white font-bold inline-flex items-center gap-2 hover:bg-[#f06820]"
           >
             <RefreshCcw size={16} />
             Tentar novamente

@@ -95,7 +95,7 @@ export function SupportPage() {
               <span className="inline-block text-xs font-semibold uppercase tracking-wide text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
                 Suporte
               </span>
-              <h1 className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+              <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-4">
                 Central de{' '}
                 <span className="gradient-text">ajuda e documentação</span>
               </h1>
@@ -111,7 +111,7 @@ export function SupportPage() {
               ].map((s) => (
                 <div key={s.label} className="rounded-lg border border-line bg-[#0f0f12] p-5 text-center">
                   <s.icon size={20} className="text-amber-600 mx-auto mb-2" />
-                  <p className="text-2xl font-black text-white">{s.value}</p>
+                  <p className="text-2xl font-bold text-white">{s.value}</p>
                   <p className="text-surface-500 text-xs mt-1">{s.label}</p>
                 </div>
               ))}
@@ -143,7 +143,7 @@ export function SupportPage() {
                 }`}>
                   <Icon size={22} className={ch.accent ? 'text-amber-600' : 'text-surface-400'} />
                 </div>
-                <h2 className="text-lg font-black text-white mb-3">{ch.title}</h2>
+                <h2 className="text-lg font-bold text-white mb-3">{ch.title}</h2>
                 <p className="text-surface-400 text-sm leading-relaxed flex-1">{ch.description}</p>
                 <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-amber-600">
                   {ch.cta} <ChevronRight size={13} />
@@ -165,7 +165,7 @@ export function SupportPage() {
         {/* FAQ */}
         <div className="rounded-xl border border-line bg-[#0f0f12] p-8 lg:p-10">
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
-          <h2 className="text-2xl font-black text-white mb-8">Perguntas frequentes</h2>
+          <h2 className="text-2xl font-bold text-white mb-8">Perguntas frequentes</h2>
           <div className="grid md:grid-cols-2 gap-5">
             {faq.map((item, i) => (
               <motion.div

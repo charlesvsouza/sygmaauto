@@ -202,7 +202,7 @@ export function ServicesPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-lg border border-line bg-panel">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-ink" />
           <p className="text-muted text-sm">Carregando catálogo de serviços...</p>
         </div>
       ) : filteredServices.length === 0 ? (
@@ -233,7 +233,7 @@ export function ServicesPage() {
                   <tr key={service.id} className="group hover:bg-panel-2 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-md bg-accent-soft text-accent flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-md bg-accent-soft text-accent-ink flex items-center justify-center shrink-0">
                           <Zap size={15} />
                         </div>
                         <div className="min-w-0">
@@ -256,7 +256,7 @@ export function ServicesPage() {
                         <button
                           onClick={() => handleEdit(service)}
                           disabled={!canManageServices}
-                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                           aria-label="Editar serviço"
                         >
                           <Edit size={15} />
@@ -296,7 +296,7 @@ export function ServicesPage() {
               className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col"
             >
               <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40">
-                <h2 className="text-xl font-black text-surface-50 uppercase">
+                <h2 className="text-xl font-bold text-surface-50 uppercase">
                   {editingService ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
                 <button
@@ -321,7 +321,7 @@ export function ServicesPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
-                    <label className="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1">
+                    <label className="text-[10px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                       <DollarSign size={10} /> Valor Hora (VH)
                     </label>
                     <input
@@ -329,12 +329,12 @@ export function ServicesPage() {
                       step="0.01"
                       value={formData.hourlyRate}
                       onChange={(e) => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
-                      className="w-full bg-transparent border-none focus:ring-0 p-0 text-lg font-black text-surface-50"
+                      className="w-full bg-transparent border-none focus:ring-0 p-0 text-lg font-bold text-surface-50"
                       placeholder="0.00"
                     />
                   </div>
                   <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
-                    <label className="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1">
+                    <label className="text-[10px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                       <Clock size={10} /> Tempo (TMO)
                     </label>
                     <input
@@ -342,7 +342,7 @@ export function ServicesPage() {
                       step="0.01"
                       value={formData.tmo}
                       onChange={(e) => setFormData({ ...formData, tmo: Number(e.target.value) })}
-                      className="w-full bg-transparent border-none focus:ring-0 p-0 text-lg font-black text-surface-50"
+                      className="w-full bg-transparent border-none focus:ring-0 p-0 text-lg font-bold text-surface-50"
                       placeholder="1.00"
                     />
                   </div>

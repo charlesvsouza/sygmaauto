@@ -211,7 +211,7 @@ export function CustomersPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-lg border border-line bg-panel">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-ink" />
           <p className="text-muted text-sm">Carregando sua base de clientes...</p>
         </div>
       ) : filteredCustomers.length === 0 ? (
@@ -238,7 +238,7 @@ export function CustomersPage() {
                   <tr key={customer.id} className="group hover:bg-panel-2 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-accent-soft text-accent rounded-full flex items-center justify-center font-semibold shrink-0">
+                        <div className="w-9 h-9 bg-accent-soft text-accent-ink rounded-full flex items-center justify-center font-semibold shrink-0">
                           {customer.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -274,7 +274,7 @@ export function CustomersPage() {
                       <div className="inline-flex items-center gap-1">
                         <button
                           onClick={() => handleEdit(customer)}
-                          className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft transition-colors"
+                          className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft transition-colors"
                           aria-label="Editar cliente"
                         >
                           <Edit2 className="w-4 h-4" />

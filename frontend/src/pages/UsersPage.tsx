@@ -205,21 +205,21 @@ export function UsersPage() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'MASTER':
-        return <span className="badge bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 flex items-center gap-1.5 font-black text-[10px] uppercase tracking-widest"><Star size={12} fill="currentColor" /> Master</span>;
+        return <span className="badge bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide"><Star size={12} fill="currentColor" /> Master</span>;
       case 'ADMIN':
-        return <span className="badge bg-purple-500/10 text-purple-600 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-black text-[10px] uppercase tracking-widest"><Shield size={12} /> Admin</span>;
+        return <span className="badge bg-purple-500/10 text-purple-600 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide"><Shield size={12} /> Admin</span>;
       case 'GERENTE':
-        return <span className="badge bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Gerente</span>;
+        return <span className="badge bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Gerente</span>;
       case 'CHEFE_OFICINA':
-        return <span className="badge bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Chefe Oficina</span>;
+        return <span className="badge bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Chefe Oficina</span>;
       case 'FINANCEIRO':
-        return <span className="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Financeiro</span>;
+        return <span className="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Financeiro</span>;
       case 'SECRETARIA':
-        return <span className="badge bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Secretaria</span>;
+        return <span className="badge bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Secretaria</span>;
       case 'MECANICO':
-        return <span className="badge bg-orange-500/10 text-orange-500 border border-orange-500/20 px-3 py-1 font-black text-[10px] uppercase tracking-widest">Mecânico</span>;
+        return <span className="badge bg-orange-500/10 text-orange-500 border border-orange-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Mecânico</span>;
       default:
-        return <span className="badge bg-surface-500/10 text-surface-500 border border-line px-3 py-1 font-black text-[10px] uppercase tracking-widest">{role}</span>;
+        return <span className="badge bg-surface-500/10 text-surface-500 border border-line px-3 py-1 font-bold text-[10px] uppercase tracking-wide">{role}</span>;
     }
   };
 
@@ -237,7 +237,7 @@ export function UsersPage() {
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-surface-50 tracking-tight">Cadastro de Usuários</h1>
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Cadastro de Usuários</h1>
           <p className="text-surface-400 mt-1 font-medium">Gestão de acessos e colaboradores (Produtivos e Escritório).</p>
         </div>
         <button
@@ -271,7 +271,7 @@ export function UsersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-64 rounded-lg border border-line bg-panel">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-ink" />
         </div>
       ) : filteredUsers.length === 0 ? (
         <div className="text-center py-20 rounded-lg border border-line bg-panel">
@@ -400,7 +400,7 @@ export function UsersPage() {
                 <UserCircle size={32} />
               </div>
               <div>
-                <h2 className="text-3xl font-black text-surface-50 tracking-tight">
+                <h2 className="text-3xl font-bold text-surface-50 tracking-tight">
                   {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
                 </h2>
                 <p className="text-surface-400 font-medium">Configure as credenciais e nível de acesso.</p>
@@ -410,7 +410,7 @@ export function UsersPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Nome Completo</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Nome Completo</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -421,7 +421,7 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Email Profissional</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Email Profissional</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -433,7 +433,7 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Email Recuperacao</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Email Recuperacao</label>
                   <input
                     type="email"
                     value={formData.recoveryEmail}
@@ -444,7 +444,7 @@ export function UsersPage() {
                 </div>
                 {!editingUser && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Senha Inicial</label>
+                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Senha Inicial</label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
@@ -466,7 +466,7 @@ export function UsersPage() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Perfil de Acesso</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Perfil de Acesso</label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -481,7 +481,7 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Área da Oficina</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Área da Oficina</label>
                   <select
                     value={formData.workshopArea}
                     onChange={(e) => setFormData({ ...formData, workshopArea: e.target.value })}
@@ -494,7 +494,7 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Função na Oficina</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Função na Oficina</label>
                   <select
                     value={formData.jobFunction}
                     onChange={(e) => setFormData({ ...formData, jobFunction: e.target.value })}
@@ -507,7 +507,7 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Comissão Individual (%)</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Comissão Individual (%)</label>
                   <input
                     type="number"
                     min="0"
@@ -519,7 +519,7 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Chefe da Equipe</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Chefe da Equipe</label>
                   <select
                     value={formData.chiefId}
                     onChange={(e) => setFormData({ ...formData, chiefId: e.target.value })}
@@ -556,13 +556,13 @@ export function UsersPage() {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); setUserError(''); }}
-                  className="px-8 py-3 text-surface-500 font-black text-xs uppercase tracking-widest hover:text-surface-100 transition-colors"
+                  className="px-8 py-3 text-surface-500 font-bold text-xs uppercase tracking-wide hover:text-surface-100 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="btn btn-primary h-14 px-10 rounded-[1.5rem] shadow-xl shadow-primary-100 font-black text-sm"
+                  className="btn btn-primary h-14 px-10 rounded-[1.5rem] shadow-xl shadow-primary-100 font-bold text-sm"
                 >
                   {editingUser ? 'SALVAR ALTERAÇÕES' : 'CONFIRMAR CADASTRO'}
                 </button>
@@ -584,7 +584,7 @@ export function UsersPage() {
                 <KeyRound size={24} />
               </div>
               <div>
-                <h3 className="text-2xl font-black text-surface-50 tracking-tight">Redefinir Senha</h3>
+                <h3 className="text-2xl font-bold text-surface-50 tracking-tight">Redefinir Senha</h3>
                 <p className="text-sm text-surface-400 font-medium">{resetTargetUser.name} ({resetTargetUser.email})</p>
               </div>
             </div>
@@ -595,7 +595,7 @@ export function UsersPage() {
               </p>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Nova Senha</label>
+                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Nova Senha</label>
                 <div className="relative">
                   <input
                     type={showResetPassword ? 'text' : 'password'}
@@ -626,11 +626,11 @@ export function UsersPage() {
                 <button
                   type="button"
                   onClick={() => { setShowResetModal(false); setResetError(''); }}
-                  className="px-6 py-3 text-surface-500 font-black text-xs uppercase tracking-widest hover:text-surface-100 transition-colors"
+                  className="px-6 py-3 text-surface-500 font-bold text-xs uppercase tracking-wide hover:text-surface-100 transition-colors"
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary h-12 px-8 rounded-lg font-black text-xs uppercase tracking-widest">
+                <button type="submit" className="btn btn-primary h-12 px-8 rounded-lg font-bold text-xs uppercase tracking-wide">
                   Salvar Nova Senha
                 </button>
               </div>

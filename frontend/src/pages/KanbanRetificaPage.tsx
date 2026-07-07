@@ -137,7 +137,7 @@ function RetificaCard({
       className={`bg-panel border-2 ${focused ? 'border-cyan-300 shadow-[0_0_0_3px_rgba(34,211,238,0.25)]' : alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'} ${level === 'danger' ? 'animate-pulse' : ''}`}
     >
       {focused && (
-        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black bg-cyan-500/15 text-cyan-700">
+        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold bg-cyan-500/15 text-cyan-700">
           <Timer size={11} className="shrink-0" />
           Foco vindo do Dashboard
         </div>
@@ -145,7 +145,7 @@ function RetificaCard({
 
       {/* Alerta */}
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
@@ -155,7 +155,7 @@ function RetificaCard({
 
       {/* Número + tempo na fase */}
       <div className="flex items-center justify-between">
-        <span className={`font-black text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
+        <span className={`font-bold text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
           #{os.id.slice(-6).toUpperCase()}
         </span>
         <span className={`flex items-center gap-1 font-semibold ${urgencyColor(os)}`}>
@@ -209,7 +209,7 @@ function RetificaCard({
             }}
             disabled={isAdv}
             title="Retroceder fase"
-            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-black transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
+            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-bold transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
           >
             ←
           </button>
@@ -396,7 +396,7 @@ export function KanbanRetificaPage() {
           </button>
           <Cog className="text-amber-600 w-5 h-5 mt-2 shrink-0" />
           <div>
-            <h1 className={`font-black text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
+            <h1 className={`font-bold text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban — Retífica de Motores
             </h1>
             <p className="text-surface-400 text-xs">
@@ -484,7 +484,7 @@ export function KanbanRetificaPage() {
                     <span className={`font-bold text-ink truncate ${tvMode ? 'text-base' : 'text-sm'}`}>
                       {col.label}
                     </span>
-                    <span className={`ml-auto text-xs font-black px-2 py-0.5 rounded-full ${col.bg} text-ink`}>
+                    <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${col.bg} text-ink`}>
                       {colOrders.length}
                     </span>
                   </div>

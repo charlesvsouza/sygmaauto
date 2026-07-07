@@ -70,7 +70,7 @@ export function NpsPage() {
           <p className="text-xs font-semibold text-surface-400 uppercase tracking-wide mb-1">
             Score NPS
           </p>
-          <p className={`text-5xl font-black ${scoreColor}`}>
+          <p className={`text-5xl font-bold ${scoreColor}`}>
             {score !== null ? score : '—'}
           </p>
           <p className="text-xs text-surface-500 mt-1">

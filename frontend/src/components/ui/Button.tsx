@@ -8,7 +8,7 @@ const variants: Record<Variant, string> = {
   primary:
     'bg-accent text-white hover:bg-accent-hover border border-transparent font-semibold',
   secondary:
-    'bg-transparent text-accent border border-accent/40 hover:border-accent/40 hover:text-accent',
+    'bg-transparent text-accent-ink border border-accent/40 hover:border-accent/40 hover:text-accent-ink',
   ghost:
     'bg-transparent text-surface-200 hover:bg-ink/5 border border-transparent',
   danger:

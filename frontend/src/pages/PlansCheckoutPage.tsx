@@ -140,7 +140,7 @@ export function PlansCheckoutPage() {
           className="mt-6"
         >
           <p className="text-xs uppercase tracking-[0.22em] text-[#ff7b2f]/80 font-bold">Assinatura</p>
-          <h1 className="mt-3 text-3xl md:text-4xl font-black">Escolha a modalidade do seu plano</h1>
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold">Escolha a modalidade do seu plano</h1>
           <p className="mt-3 text-white/60 text-sm md:text-base max-w-2xl">
             Selecione o plano e o ciclo de cobranca. No anual, voce recebe 15% de desconto automaticamente.
           </p>
@@ -148,7 +148,7 @@ export function PlansCheckoutPage() {
 
         <div className="mt-9 grid lg:grid-cols-2 gap-6">
           <div className="rounded-xl border border-line bg-ink/5 p-6">
-            <p className="text-xs uppercase tracking-widest text-white/50">1. Plano</p>
+            <p className="text-xs uppercase tracking-wide text-white/50">1. Plano</p>
             <div className="mt-4 grid sm:grid-cols-3 gap-3">
               {plans.map((plan) => {
                 const active = selectedPlan === plan.name;
@@ -163,15 +163,15 @@ export function PlansCheckoutPage() {
                         : 'border-line bg-ink/5 hover:border-line'
                     }`}
                   >
-                    <p className="text-[11px] uppercase tracking-widest text-white/45">{plan.name}</p>
-                    <p className="mt-1 text-lg font-black">{plan.label}</p>
+                    <p className="text-[11px] uppercase tracking-wide text-white/45">{plan.name}</p>
+                    <p className="mt-1 text-lg font-bold">{plan.label}</p>
                     <p className="mt-1 text-sm text-white/70">{formatBrl(plan.monthlyPrice)}/mes</p>
                   </button>
                 );
               })}
             </div>
 
-            <p className="mt-7 text-xs uppercase tracking-widest text-white/50">2. Modalidade</p>
+            <p className="mt-7 text-xs uppercase tracking-wide text-white/50">2. Modalidade</p>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
               {cycleOptions.map((cycle) => {
                 const active = billingCycle === cycle.value;
@@ -196,7 +196,7 @@ export function PlansCheckoutPage() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-2 text-base font-black">{formatBrl(finalValue)}</p>
+                    <p className="mt-2 text-base font-bold">{formatBrl(finalValue)}</p>
                     <p className="text-xs text-white/55">{cycle.months}x de {formatBrl(finalValue / cycle.months)}</p>
                   </button>
                 );
@@ -205,7 +205,7 @@ export function PlansCheckoutPage() {
 
             {!isAuthenticated && (
               <div className="mt-7 grid gap-4">
-                <p className="text-xs uppercase tracking-widest text-white/50">3. Dados para ativacao</p>
+                <p className="text-xs uppercase tracking-wide text-white/50">3. Dados para ativacao</p>
                 <label className="text-sm text-white/80">
                   Nome da oficina
                   <input
@@ -242,7 +242,7 @@ export function PlansCheckoutPage() {
 
           <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 p-6 h-fit">
             <p className="text-xs uppercase tracking-[0.2em] text-[#ffccaa] font-bold">Resumo</p>
-            <h2 className="mt-2 text-2xl font-black">Plano {selectedPlanDef.label}</h2>
+            <h2 className="mt-2 text-2xl font-bold">Plano {selectedPlanDef.label}</h2>
             <p className="mt-2 text-sm text-white/75 leading-relaxed">{selectedPlanDef.description}</p>
 
             <div className="mt-6 space-y-3 text-sm">
@@ -263,7 +263,7 @@ export function PlansCheckoutPage() {
               <div className="h-px bg-ink/5" />
               <div className="flex items-center justify-between">
                 <span className="text-white/80">Total</span>
-                <span className="text-2xl font-black">{formatBrl(discountedTotal)}</span>
+                <span className="text-2xl font-bold">{formatBrl(discountedTotal)}</span>
               </div>
               <div className="flex items-center justify-between text-white/70">
                 <span>Equivalente mensal</span>
@@ -281,7 +281,7 @@ export function PlansCheckoutPage() {
               type="button"
               onClick={startCheckout}
               disabled={loading || (!isAuthenticated && !isPublicFormValid)}
-              className="mt-6 h-12 w-full rounded-xl bg-[#ff7b2f] text-white font-black hover:bg-[#f06820] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+              className="mt-6 h-12 w-full rounded-xl bg-[#ff7b2f] text-white font-bold hover:bg-[#f06820] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

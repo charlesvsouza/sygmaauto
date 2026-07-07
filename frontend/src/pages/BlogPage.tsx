@@ -97,7 +97,7 @@ export default function BlogPage() {
           <span className="inline-block text-xs font-semibold uppercase tracking-wide text-amber-500 mb-4 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
             Blog
           </span>
-          <h1 className="text-4xl lg:text-6xl font-black tracking-tight mt-2 mb-4">
+          <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mt-2 mb-4">
             Conteúdo para{' '}
             <span className="gradient-text">crescer</span>
           </h1>
@@ -129,7 +129,7 @@ export default function BlogPage() {
                 >
                   {posts[0].tag}
                 </span>
-                <h2 className="text-2xl lg:text-3xl font-black text-white mb-3 leading-tight group-hover:text-amber-600 transition-colors">
+                <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-amber-600 transition-colors">
                   {posts[0].title}
                 </h2>
                 <p className="text-surface-400 text-sm leading-relaxed mb-5">{posts[0].excerpt}</p>
@@ -163,7 +163,7 @@ export default function BlogPage() {
               >
                 {post.tag}
               </span>
-              <h3 className="font-black text-white text-base leading-snug mb-3 group-hover:text-amber-600 transition-colors flex-1">
+              <h3 className="font-bold text-white text-base leading-snug mb-3 group-hover:text-amber-600 transition-colors flex-1">
                 {post.title}
               </h3>
               <p className="text-surface-400 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
@@ -178,7 +178,7 @@ export default function BlogPage() {
 
         {/* Newsletter CTA */}
         <div className="mt-16 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 to-orange-600/4 p-10 text-center">
-          <h3 className="text-2xl font-black text-white mb-2">Receba novos artigos no seu e-mail</h3>
+          <h3 className="text-2xl font-bold text-white mb-2">Receba novos artigos no seu e-mail</h3>
           <p className="text-surface-400 text-sm mb-6">Conteúdo semanal sobre gestão de oficinas. Sem spam.</p>
           <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
             <input

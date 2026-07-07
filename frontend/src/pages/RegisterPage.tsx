@@ -81,7 +81,7 @@ export function RegisterPage() {
 
             <h1 className="text-4xl font-bold leading-tight mb-6">
               Transforme sua <br />
-              <span className="text-accent">Oficina hoje.</span>
+              <span className="text-accent-ink">Oficina hoje.</span>
             </h1>
             <p className="text-surface-400 text-lg leading-relaxed">
               Gestão completa, do financeiro ao estoque, em uma única plataforma premium.
@@ -266,7 +266,7 @@ export function RegisterPage() {
 
           <p className="text-center text-surface-500 text-sm mt-8">
             Já possui uma conta?{' '}
-            <Link to="/login" className="text-accent hover:text-accent font-semibold transition-colors">
+            <Link to="/login" className="text-accent-ink hover:text-accent-ink font-semibold transition-colors">
               Fazer Login
             </Link>
           </p>

@@ -320,7 +320,7 @@ export function DashboardRetificaPage() {
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-xl md:text-2xl font-black tracking-tight">Dashboard Retifica</h1>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight">Dashboard Retifica</h1>
               <p className="text-surface-500 text-sm mt-1">
                 Monitoramento operacional completo: fluxo, tempo por fase, aprovacao tecnica e entregas.
               </p>
@@ -440,12 +440,12 @@ export function DashboardRetificaPage() {
         <div className="rounded-xl border border-line bg-black/60 p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <div>
-              <h3 className="text-sm font-black text-white">Acoes Prioritarias</h3>
+              <h3 className="text-sm font-bold text-white">Acoes Prioritarias</h3>
               <p className="text-xs text-surface-500">Motores com tempo acima do SLA da fase atual.</p>
             </div>
             <button
               onClick={() => navigate('/kanban-retifica')}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/90 hover:bg-blue-500 text-xs font-black text-white"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/90 hover:bg-blue-500 text-xs font-bold text-white"
             >
               Ir para Kanban Retifica
             </button>
@@ -467,7 +467,7 @@ export function DashboardRetificaPage() {
                   }`}
                 >
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-sm font-black text-white">
+                    <div className="flex items-center gap-2 text-sm font-bold text-white">
                       <span>#{item.shortId}</span>
                       <span className="text-surface-600">{item.statusLabel}</span>
                       <span className="text-surface-500">{item.elapsedText}</span>
@@ -540,7 +540,7 @@ function MetricCard({
         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{title}</p>
         <span>{icon}</span>
       </div>
-      <p className="text-2xl font-black leading-none text-white">{value}</p>
+      <p className="text-2xl font-bold leading-none text-white">{value}</p>
       <p className="text-xs mt-2 opacity-80">{subtitle}</p>
     </motion.div>
   );
@@ -549,7 +549,7 @@ function MetricCard({
 function ChartShell({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-line bg-black/60 p-4">
-      <h3 className="text-sm font-black text-white">{title}</h3>
+      <h3 className="text-sm font-bold text-white">{title}</h3>
       <p className="text-xs text-surface-500 mb-3">{hint}</p>
       {children}
     </div>

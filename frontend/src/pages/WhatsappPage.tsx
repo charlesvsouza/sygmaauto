@@ -77,7 +77,7 @@ export function WhatsappPage() {
             <MessageCircle size={22} className="text-green-600" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-surface-50">WhatsApp Automático</h1>
+            <h1 className="text-xl font-bold text-surface-50">WhatsApp Automático</h1>
             <p className="text-xs text-surface-400">Notificações automáticas por WhatsApp</p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export function WhatsappPage() {
           <MessageCircle size={22} className="text-green-600" />
         </div>
         <div>
-          <h1 className="text-xl font-black text-surface-50">WhatsApp Automático</h1>
+          <h1 className="text-xl font-bold text-surface-50">WhatsApp Automático</h1>
           <p className="text-xs text-surface-400">Notificações automáticas por WhatsApp</p>
         </div>
         <button

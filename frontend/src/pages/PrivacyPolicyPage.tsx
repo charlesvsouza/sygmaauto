@@ -34,7 +34,7 @@ export function PrivacyPolicyPage() {
       <main className="relative z-10 max-w-4xl mx-auto px-6 py-16 pb-24">
         <div className="mb-12">
           <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Documento Legal</p>
-          <h1 className="text-4xl md:text-5xl font-black mb-4">Política de Privacidade</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Política de Privacidade</h1>
           <p className="text-white/40 text-sm">
             Última atualização: 1 de maio de 2026 &nbsp;·&nbsp; Versão 1.0
           </p>
@@ -63,7 +63,7 @@ export function PrivacyPolicyPage() {
 
           {/* 1 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">1. Quem somos (Controlador de Dados)</h2>
+            <h2 className="text-xl font-bold text-white mb-4">1. Quem somos (Controlador de Dados)</h2>
             <p>
               O controlador dos seus dados pessoais é a <strong className="text-white">SigmaAuto</strong>, plataforma de ERP automotivo brasileira. Para exercer seus direitos ou tirar dúvidas sobre esta política, entre em contato:
             </p>
@@ -78,7 +78,7 @@ export function PrivacyPolicyPage() {
 
           {/* 2 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">2. Dados que coletamos</h2>
+            <h2 className="text-xl font-bold text-white mb-4">2. Dados que coletamos</h2>
             <p className="mb-4">Coletamos somente os dados necessários para a prestação dos nossos serviços:</p>
 
             <div className="space-y-4">
@@ -109,7 +109,7 @@ export function PrivacyPolicyPage() {
 
           {/* 3 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">3. Como usamos seus dados</h2>
+            <h2 className="text-xl font-bold text-white mb-4">3. Como usamos seus dados</h2>
             <p className="mb-4">Utilizamos seus dados pessoais para as seguintes finalidades, com base nas bases legais da LGPD:</p>
             <ul className="space-y-3">
               {[
@@ -130,7 +130,7 @@ export function PrivacyPolicyPage() {
 
           {/* 4 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">4. Compartilhamento de dados</h2>
+            <h2 className="text-xl font-bold text-white mb-4">4. Compartilhamento de dados</h2>
             <p className="mb-4">
               <strong className="text-white">Não vendemos seus dados a terceiros.</strong> O compartilhamento ocorre apenas nas situações abaixo:
             </p>
@@ -153,7 +153,7 @@ export function PrivacyPolicyPage() {
 
           {/* 5 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">5. Segurança dos dados</h2>
+            <h2 className="text-xl font-bold text-white mb-4">5. Segurança dos dados</h2>
             <p className="mb-4">Adotamos medidas técnicas e organizacionais para proteger seus dados:</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {[
@@ -174,7 +174,7 @@ export function PrivacyPolicyPage() {
 
           {/* 6 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">6. Retenção de dados</h2>
+            <h2 className="text-xl font-bold text-white mb-4">6. Retenção de dados</h2>
             <p>
               Mantemos seus dados pelo tempo necessário para cumprir as finalidades descritas nesta política ou conforme exigido por lei. Após o encerramento da conta:
             </p>
@@ -189,7 +189,7 @@ export function PrivacyPolicyPage() {
 
           {/* 7 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">7. Seus direitos (LGPD)</h2>
+            <h2 className="text-xl font-bold text-white mb-4">7. Seus direitos (LGPD)</h2>
             <p className="mb-4">Você tem os seguintes direitos sobre seus dados pessoais, que podem ser exercidos a qualquer momento pelo e-mail <a href="mailto:privacidade@sigmaauto.com.br" className="text-[#ff7b2f] hover:underline">privacidade@sigmaauto.com.br</a>:</p>
             <div className="grid sm:grid-cols-2 gap-3">
               {[
@@ -213,7 +213,7 @@ export function PrivacyPolicyPage() {
 
           {/* 8 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">8. Cookies e tecnologias similares</h2>
+            <h2 className="text-xl font-bold text-white mb-4">8. Cookies e tecnologias similares</h2>
             <p className="mb-4">Utilizamos cookies e armazenamento local (localStorage) para:</p>
             <ul className="space-y-2 text-sm">
               <li className="flex gap-3"><span className="mt-1 w-2 h-2 rounded-full bg-[#ff7b2f] flex-shrink-0" /><span><strong className="text-white">Autenticação:</strong> manter a sessão do usuário logado de forma segura (token JWT).</span></li>
@@ -229,7 +229,7 @@ export function PrivacyPolicyPage() {
 
           {/* 9 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">9. Transferência internacional de dados</h2>
+            <h2 className="text-xl font-bold text-white mb-4">9. Transferência internacional de dados</h2>
             <p>
               Nossos servidores e parceiros de infraestrutura podem estar localizados fora do Brasil (EUA). Garantimos que qualquer transferência internacional ocorre com salvaguardas adequadas, incluindo cláusulas contratuais padrão, em conformidade com o Art. 33 da LGPD.
             </p>
@@ -239,7 +239,7 @@ export function PrivacyPolicyPage() {
 
           {/* 10 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">10. Menores de idade</h2>
+            <h2 className="text-xl font-bold text-white mb-4">10. Menores de idade</h2>
             <p>
               Nossos serviços são destinados exclusivamente a pessoas jurídicas (empresas) e pessoas físicas maiores de 18 anos. Não coletamos intencionalmente dados de menores de idade. Caso identifiquemos tal situação, os dados serão excluídos imediatamente.
             </p>
@@ -249,7 +249,7 @@ export function PrivacyPolicyPage() {
 
           {/* 11 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">11. Alterações nesta política</h2>
+            <h2 className="text-xl font-bold text-white mb-4">11. Alterações nesta política</h2>
             <p>
               Podemos atualizar esta política periodicamente. Quando houver alterações relevantes, notificaremos os usuários por e-mail ou por aviso na plataforma com pelo menos <strong className="text-white">15 dias de antecedência</strong>. A data de "última atualização" no topo deste documento sempre refletirá a versão mais recente.
             </p>
@@ -259,7 +259,7 @@ export function PrivacyPolicyPage() {
 
           {/* 12 */}
           <section>
-            <h2 className="text-xl font-black text-white mb-4">12. Contato e Encarregado (DPO)</h2>
+            <h2 className="text-xl font-bold text-white mb-4">12. Contato e Encarregado (DPO)</h2>
             <p>
               Para questões relacionadas a privacidade, exercício de direitos ou reclamações sobre o tratamento dos seus dados, entre em contato com nosso Encarregado de Proteção de Dados (DPO):
             </p>

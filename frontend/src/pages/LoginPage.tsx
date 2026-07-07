@@ -141,10 +141,10 @@ export function LoginPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-accent/10 border border-accent/40 text-accent p-4 rounded-xl text-sm mb-6"
+              className="bg-accent/10 border border-accent/40 text-accent-ink p-4 rounded-xl text-sm mb-6"
             >
               <p className="font-semibold mb-1">Checkout pendente</p>
-              <p className="text-accent/90">
+              <p className="text-accent-ink/90">
                 Faça login para continuar a assinatura do plano <strong>{pendingCheckoutPlan}</strong>.
               </p>
             </motion.div>
@@ -182,7 +182,7 @@ export function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                 <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest">Senha</label>
-                <Link to="/forgot-password" className="text-[10px] font-bold text-accent hover:text-accent uppercase tracking-tighter">Esqueceu a senha?</Link>
+                <Link to="/forgot-password" className="text-[10px] font-bold text-accent-ink hover:text-accent-ink uppercase tracking-tighter">Esqueceu a senha?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
@@ -221,7 +221,7 @@ export function LoginPage() {
           <div className="mt-10 pt-8 border-t border-line text-center">
             <p className="text-surface-400 text-sm">
               Conheça os planos?{' '}
-              <Link to="/" className="text-accent hover:text-accent font-bold transition-colors">
+              <Link to="/" className="text-accent-ink hover:text-accent-ink font-bold transition-colors">
                 Ver planos e preços
               </Link>
             </p>

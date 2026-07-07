@@ -320,7 +320,7 @@ export function DREPage() {
                   <card.icon className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wider">{card.label}</span>
                 </div>
-                <p className={`text-2xl font-black ${card.value >= 0 ? 'text-surface-50' : 'text-red-600'}`}>
+                <p className={`text-2xl font-bold ${card.value >= 0 ? 'text-surface-50' : 'text-red-600'}`}>
                   {fmt(card.value)}
                 </p>
                 {card.label === 'Margem Bruta' && (

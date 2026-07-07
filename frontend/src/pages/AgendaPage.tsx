@@ -8,7 +8,7 @@ import { Calendar, ChevronLeft, ChevronRight, Plus, RefreshCw, Loader2 } from 'l
 const STATUS_CHIPS: Record<string, string> = {
   neutral: 'bg-surface-100 text-surface-700 border border-surface-200',
   golden: 'bg-accent text-white border border-transparent',
-  positive: 'bg-accent/10 text-accent border border-accent/40',
+  positive: 'bg-accent/10 text-accent-ink border border-accent/40',
   negative: 'bg-danger/10 text-red-700 border border-red-200',
 };
 
@@ -108,8 +108,8 @@ export function AgendaPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-black text-surface-50 tracking-tight flex items-center gap-2">
-            <Calendar className="text-accent" size={22} />
+          <h1 className="text-2xl font-bold text-surface-50 tracking-tight flex items-center gap-2">
+            <Calendar className="text-accent-ink" size={22} />
             Agenda da Semana
           </h1>
           <p className="text-sm text-surface-500 mt-0.5">{weekLabel} · {totalSemana} OS agendada{totalSemana !== 1 ? 's' : ''}</p>
@@ -153,14 +153,14 @@ export function AgendaPage() {
             >
               {/* Cabeçalho do dia */}
               <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-accent/40 bg-accent/10' : 'border-line bg-surface-950/40'}`}>
-                <p className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? 'text-accent' : 'text-surface-500'}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? 'text-accent-ink' : 'text-surface-500'}`}>
                   {WEEKDAYS[day.getDay()]}
                 </p>
-                <p className={`text-xl font-black leading-tight ${isToday ? 'text-accent' : 'text-surface-100'}`}>
+                <p className={`text-xl font-bold leading-tight ${isToday ? 'text-accent-ink' : 'text-surface-100'}`}>
                   {day.getDate()}
                 </p>
                 {dayOrders.length > 0 && (
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${isToday ? 'bg-accent/20 text-accent' : 'bg-surface-800 text-surface-300'}`}>
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isToday ? 'bg-accent/20 text-accent-ink' : 'bg-surface-800 text-surface-300'}`}>
                     {dayOrders.length}
                   </span>
                 )}
@@ -177,12 +177,12 @@ export function AgendaPage() {
                     onClick={() => navigate('/service-orders')}
                     className="w-full text-left rounded-xl p-2 bg-surface-900 border border-line hover:border-line hover:shadow-sm transition-all"
                   >
-                    <p className="text-[10px] font-black text-surface-400 mb-0.5">{fmtTime(o.scheduledDate)}</p>
+                    <p className="text-[10px] font-bold text-surface-400 mb-0.5">{fmtTime(o.scheduledDate)}</p>
                     <p className="text-[11px] font-bold text-surface-100 leading-tight truncate">{o.customer?.name || 'Cliente'}</p>
                     <p className="text-[10px] text-surface-500 truncate">
                       {o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model}` : (o.equipmentBrand || 'Sem veículo')}
                     </p>
-                    <span className={`mt-1 inline-block text-[8px] font-black px-1.5 py-0.5 rounded-full ${statusChip(o.status)}`}>
+                    <span className={`mt-1 inline-block text-[8px] font-bold px-1.5 py-0.5 rounded-full ${statusChip(o.status)}`}>
                       {STATUS_LABEL[o.status] || o.status}
                     </span>
                   </button>
@@ -197,7 +197,7 @@ export function AgendaPage() {
       {totalSemana > 0 && (
         <div className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-line">
-            <h3 className="text-sm font-black text-surface-50 uppercase tracking-widest">Lista da Semana</h3>
+            <h3 className="text-sm font-bold text-surface-50 uppercase tracking-wide">Lista da Semana</h3>
           </div>
           <div className="divide-y divide-line">
             {weekDays.flatMap((day) =>
@@ -208,10 +208,10 @@ export function AgendaPage() {
                   className="flex items-center gap-4 px-6 py-3 hover:bg-ink/5 cursor-pointer transition-colors"
                 >
                   <div className="w-20 shrink-0 text-right">
-                    <p className="text-xs font-black text-surface-200">
+                    <p className="text-xs font-bold text-surface-200">
                       {WEEKDAYS[day.getDay()]}, {day.getDate()}/{day.getMonth() + 1}
                     </p>
-                    <p className="text-[11px] text-accent font-bold">{fmtTime(o.scheduledDate)}</p>
+                    <p className="text-[11px] text-accent-ink font-bold">{fmtTime(o.scheduledDate)}</p>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-surface-100 truncate">{o.customer?.name || 'Cliente'}</p>
@@ -220,10 +220,10 @@ export function AgendaPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${statusChip(o.status)}`}>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${statusChip(o.status)}`}>
                       {STATUS_LABEL[o.status] || o.status}
                     </span>
-                    <span className="text-[10px] font-mono font-black text-surface-500">#{o.id.slice(-5).toUpperCase()}</span>
+                    <span className="text-[10px] font-mono font-bold text-surface-500">#{o.id.slice(-5).toUpperCase()}</span>
                   </div>
                 </div>
               ))

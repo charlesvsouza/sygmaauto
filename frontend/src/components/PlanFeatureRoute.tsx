@@ -15,7 +15,7 @@ export function PlanFeatureRoute({ feature, children }: PlanFeatureRouteProps) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center px-4">
         <div className="max-w-xl w-full bg-surface-900 border border-line rounded-lg p-6 shadow-sm">
-          <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Recurso bloqueado</p>
+          <p className="text-xs font-bold text-surface-500 uppercase tracking-wide">Recurso bloqueado</p>
           <h2 className="text-xl font-bold text-surface-50 mt-2">{featureLabel(feature)}</h2>
           <p className="text-sm text-surface-300 mt-3">
             {getFeatureUpgradeMessage(feature)}

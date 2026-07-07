@@ -411,7 +411,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
             <div className="flex items-center gap-3">
               <FileText className="text-amber-600 w-5 h-5" />
               <div>
-                <h2 className="text-white font-black text-lg">Laudo Técnico de Retífica</h2>
+                <h2 className="text-white font-bold text-lg">Laudo Técnico de Retífica</h2>
                 <p className="text-surface-400 text-xs">
                   OS #{os.id.slice(-6).toUpperCase()} · {os.customer?.name ?? '—'}
                   {metrologia ? ` · ${metrologia.numeroCilindros} cilindros` : ''}
@@ -421,7 +421,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-black rounded-xl transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition-all"
               >
                 <Printer size={15} /> Imprimir / Salvar PDF
               </button>

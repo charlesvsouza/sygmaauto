@@ -297,11 +297,11 @@ export function FinancialPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div variants={itemVariants}>
-          <div className="flex items-center gap-2 text-primary-500 font-black text-[10px] uppercase tracking-[0.3em] mb-2">
+          <div className="flex items-center gap-2 text-primary-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-2">
             <Activity size={14} /> Inteligência Financeira
           </div>
-          <h1 className="text-4xl font-black text-surface-50 tracking-tight leading-none">
-            Gestão <span className="text-accent">Financeira</span>
+          <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">
+            Gestão <span className="text-accent-ink">Financeira</span>
           </h1>
           <p className="text-surface-400 font-medium mt-2">Relatórios detalhados e controle de fluxo de caixa</p>
         </motion.div>
@@ -330,10 +330,10 @@ export function FinancialPage() {
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-50 text-accent rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary-50 text-accent-ink rounded-xl flex items-center justify-center">
                   <BarChart4 size={20} />
                 </div>
-                <h3 className="font-black text-surface-50 uppercase text-xs tracking-widest">Evolução do Faturamento</h3>
+                <h3 className="font-bold text-surface-50 uppercase text-xs tracking-wide">Evolução do Faturamento</h3>
               </div>
               <span className="text-[10px] font-bold text-surface-500">
                 {monthlyData[0]?.month}/{monthlyData[0]?.year} — {monthlyData[4]?.month}/{monthlyData[4]?.year}
@@ -353,7 +353,7 @@ export function FinancialPage() {
                       )}
                     />
                   </div>
-                  <span className="text-[10px] font-black text-surface-500 uppercase">{d.month}</span>
+                  <span className="text-[10px] font-bold text-surface-500 uppercase">{d.month}</span>
                 </div>
               ))}
             </div>
@@ -363,8 +363,8 @@ export function FinancialPage() {
 
         <div className="grid grid-cols-1 gap-6">
           <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 text-white shadow-xl relative overflow-hidden group">
-            <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-4">Ticket Médio</p>
-            <h3 className="text-3xl font-black tracking-tight">R$ {fmtBR(metrics.ticketMedio, 0)}</h3>
+            <p className="text-[10px] font-bold text-primary-400 uppercase tracking-wide mb-4">Ticket Médio</p>
+            <h3 className="text-3xl font-bold tracking-tight">R$ {fmtBR(metrics.ticketMedio, 0)}</h3>
             <div className="flex items-center gap-2 mt-4 text-[10px] text-surface-500 font-bold uppercase">
               <Receipt size={12} /> {metrics.incomeCount} Entradas
             </div>
@@ -374,9 +374,9 @@ export function FinancialPage() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 border border-line shadow-sm relative overflow-hidden group">
-            <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-4">Lucratividade</p>
+            <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-4">Lucratividade</p>
             <div className="flex items-end gap-2">
-              <h3 className="text-3xl font-black text-surface-50 tracking-tight">{metrics.lucratividade.toFixed(1)}%</h3>
+              <h3 className="text-3xl font-bold text-surface-50 tracking-tight">{metrics.lucratividade.toFixed(1)}%</h3>
             </div>
             <div className="mt-4 h-1.5 w-full bg-surface-800 rounded-full overflow-hidden">
               <motion.div
@@ -393,15 +393,15 @@ export function FinancialPage() {
 
         <motion.div variants={itemVariants} className="bg-primary-600 rounded-xl p-8 text-white shadow-xl shadow-primary-500/20 flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-[10px] font-black text-primary-200 uppercase tracking-widest mb-2">Fluxo Disponível</p>
-            <h3 className={cn('text-4xl font-black tracking-tighter', summary.balance < 0 && 'text-red-700')}>
+            <p className="text-[10px] font-bold text-primary-200 uppercase tracking-wide mb-2">Fluxo Disponível</p>
+            <h3 className={cn('text-4xl font-bold tracking-tighter', summary.balance < 0 && 'text-red-700')}>
               R$ {fmtBR(summary.balance)}
             </h3>
             <div className="mt-6 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-ink/5 flex items-center justify-center">
                 <CheckCircle2 size={16} />
               </div>
-              <p className="text-[10px] font-bold text-primary-100 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-primary-100 uppercase tracking-wide">
                 {summary.balance >= 0 ? 'Saúde Financeira: ÓTIMA' : 'Atenção: saldo negativo'}
               </p>
             </div>
@@ -414,8 +414,8 @@ export function FinancialPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <motion.div variants={itemVariants} className="bg-emerald-500/10 border border-emerald-500/25 p-6 rounded-xl flex items-center justify-between group">
           <div>
-            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Entradas Acumuladas</p>
-            <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.income)}</h4>
+            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wide mb-1">Entradas Acumuladas</p>
+            <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.income)}</h4>
           </div>
           <div className="w-12 h-12 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-12 transition-transform">
             <ArrowDownLeft size={24} />
@@ -423,8 +423,8 @@ export function FinancialPage() {
         </motion.div>
         <motion.div variants={itemVariants} className="bg-red-500/10 border border-red-500/25 p-6 rounded-xl flex items-center justify-between group">
           <div>
-            <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-1">Saídas Totais</p>
-            <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.expense)}</h4>
+            <p className="text-[10px] font-bold text-red-600 uppercase tracking-wide mb-1">Saídas Totais</p>
+            <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.expense)}</h4>
           </div>
           <div className="w-12 h-12 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:-rotate-12 transition-transform">
             <ArrowUpRight size={24} />
@@ -432,8 +432,8 @@ export function FinancialPage() {
         </motion.div>
         <motion.div variants={itemVariants} className="bg-surface-950/40 border border-line p-6 rounded-xl flex items-center justify-between group">
           <div>
-            <p className="text-[10px] font-black text-surface-400 uppercase tracking-widest mb-1">Projeção Próx. Mês</p>
-            <h4 className="text-2xl font-black text-surface-50">R$ {fmtBR(summary.income * 1.1, 0)}</h4>
+            <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-1">Projeção Próx. Mês</p>
+            <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.income * 1.1, 0)}</h4>
           </div>
           <div className="w-12 h-12 bg-accent text-white rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
             <TrendingUp size={24} />
@@ -445,7 +445,7 @@ export function FinancialPage() {
       <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl border border-line shadow-sm overflow-hidden">
         <div className="p-8 border-b border-line flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-950/40">
           <div>
-            <h3 className="text-xl font-black text-surface-50 tracking-tight uppercase">Livro Caixa</h3>
+            <h3 className="text-xl font-bold text-surface-50 tracking-tight uppercase">Livro Caixa</h3>
             <p className="text-sm text-surface-400 font-medium">Registro cronológico de todas as operações</p>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
@@ -494,7 +494,7 @@ export function FinancialPage() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <Loader2 className="w-12 h-12 animate-spin text-accent" />
+            <Loader2 className="w-12 h-12 animate-spin text-accent-ink" />
             <p className="text-surface-400 font-semibold uppercase tracking-wide text-[10px]">Sincronizando Banco de Dados...</p>
           </div>
         ) : (
@@ -527,7 +527,7 @@ export function FinancialPage() {
                             {t.type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-surface-50">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
+                            <p className="text-sm font-bold text-surface-50">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
                             <p className="text-[10px] font-mono font-bold text-surface-500 uppercase">Ref: {t.id.slice(0, 8)}</p>
                           </div>
                         </div>
@@ -535,18 +535,18 @@ export function FinancialPage() {
                       <td className="px-8 py-6">
                         <p className="text-sm font-bold text-surface-200">{t.description}</p>
                         {t.referenceId && (
-                          <span className="mt-1 inline-block px-2 py-0.5 bg-primary-50 text-accent rounded-md text-[9px] font-black uppercase tracking-tighter">
+                          <span className="mt-1 inline-block px-2 py-0.5 bg-primary-50 text-accent-ink rounded-md text-[9px] font-bold uppercase tracking-tighter">
                             Vínculo OS: {t.referenceId.slice(0, 8)}
                           </span>
                         )}
                       </td>
                       <td className="px-8 py-6 text-center">
-                        <span className="px-3 py-1 bg-surface-800 rounded-full text-[10px] font-black text-surface-400 uppercase tracking-widest border border-line">
+                        <span className="px-3 py-1 bg-surface-800 rounded-full text-[10px] font-bold text-surface-400 uppercase tracking-wide border border-line">
                           {t.category || 'Geral'}
                         </span>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <p className={cn('text-lg font-black tracking-tighter', t.type === 'INCOME' ? 'text-emerald-600' : 'text-red-600')}>
+                        <p className={cn('text-lg font-bold tracking-tighter', t.type === 'INCOME' ? 'text-emerald-600' : 'text-red-600')}>
                           {t.type === 'INCOME' ? '+' : '−'} R$ {fmtBR(t.amount)}
                         </p>
                       </td>
@@ -561,7 +561,7 @@ export function FinancialPage() {
                 <div className="w-20 h-20 bg-surface-950/40 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FileText className="text-surface-700" size={40} />
                 </div>
-                <h3 className="text-xl font-black text-surface-50 uppercase">Nenhum registro</h3>
+                <h3 className="text-xl font-bold text-surface-50 uppercase">Nenhum registro</h3>
                 <p className="text-surface-400 font-medium max-w-sm mx-auto mt-2">Ajuste os filtros ou realize um novo lançamento manual.</p>
               </div>
             )}
@@ -581,8 +581,8 @@ export function FinancialPage() {
                     <Banknote size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-surface-50 uppercase tracking-tight">Novo Lançamento</h2>
-                    <p className="text-xs text-surface-400 font-bold uppercase tracking-widest">Movimentação Manual</p>
+                    <h2 className="text-2xl font-bold text-surface-50 uppercase tracking-tight">Novo Lançamento</h2>
+                    <p className="text-xs text-surface-400 font-bold uppercase tracking-wide">Movimentação Manual</p>
                   </div>
                 </div>
                 <button onClick={() => setShowAddModal(false)} className="p-3 hover:bg-ink/5 rounded-lg text-surface-500 hover:text-surface-50 transition-colors">
@@ -597,23 +597,23 @@ export function FinancialPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Descrição do Lançamento</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Descrição do Lançamento</label>
                   <input type="text" required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm" placeholder="Ex: Aluguel do Galpão" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Valor (R$)</label>
-                    <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-black text-lg" />
+                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Valor (R$)</label>
+                    <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-lg" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Data</label>
+                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Data</label>
                     <input type="date" required value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">Categoria / Classificação</label>
+                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Categoria / Classificação</label>
                   <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-sm">
                     <option value="Geral">Geral</option>
                     <option value="Aluguel">Aluguel</option>
@@ -634,7 +634,7 @@ export function FinancialPage() {
                   <button
                     type="submit"
                     disabled={!canManageFinancial}
-                    className="w-full py-5 bg-accent text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-5 bg-accent text-white rounded-[1.5rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Confirmar Lançamento
                   </button>

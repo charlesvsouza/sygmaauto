@@ -93,7 +93,7 @@ export default function WelcomePage() {
             </div>
             <div>
               <span className="text-xl font-black tracking-tight text-white">
-                Sigma<span className="text-accent">Auto</span>
+                Sigma<span className="text-accent-ink">Auto</span>
               </span>
               <p className="text-[11px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
             </div>
@@ -108,7 +108,7 @@ export default function WelcomePage() {
                 className="text-4xl md:text-5xl font-black leading-tight mb-6"
               >
                 Bem-vindo ao seu <br />
-                <span className="text-accent">
+                <span className="text-accent-ink">
                   Novo Escritório.
                 </span>
               </motion.h1>
@@ -146,7 +146,7 @@ export default function WelcomePage() {
                   transition={{ delay: 0.6 + idx * 0.1 }}
                   className="p-5 rounded-xl bg-ink/5 border border-line flex items-start gap-4 hover:bg-ink/5 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/40 flex items-center justify-center text-accent shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/40 flex items-center justify-center text-accent-ink shrink-0">
                     <item.icon size={20} />
                   </div>
                   <div>
