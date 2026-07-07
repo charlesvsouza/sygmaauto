@@ -172,7 +172,7 @@ export function KPIsPage() {
         .map(([status, value], i) => ({
           name: STATUS_LABEL[status] || status,
           value,
-          color: ['#6366f1', '#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#8b5cf6', '#64748b'][i % 7],
+          color: ['#6366f1', '#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#8b5cf6', 'rgb(var(--muted))'][i % 7],
         })),
     [statusCount],
   );
@@ -318,7 +318,7 @@ export function KPIsPage() {
       { name: 'Manhã', value: turns.manha, color: '#0ea5e9' },
       { name: 'Tarde', value: turns.tarde, color: '#6366f1' },
       { name: 'Noite', value: turns.noite, color: '#8b5cf6' },
-      { name: 'Sem horário', value: turns.semHora, color: '#94a3b8' },
+      { name: 'Sem horário', value: turns.semHora, color: 'rgb(var(--faint))' },
     ];
 
     const delivered = orders.filter((o: any) => ['ENTREGUE', 'FATURADO'].includes(String(o.status || '')));
@@ -471,7 +471,7 @@ export function KPIsPage() {
             <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Aging de OS em aberto</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase1.agingBuckets}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(v: any) => [Number(v), 'OS']} />
@@ -551,7 +551,7 @@ export function KPIsPage() {
             <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Distribuição da agenda por turno</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase2.agendaTurnoData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(v: any) => [Number(v), 'Agendamentos']} />
@@ -594,7 +594,7 @@ export function KPIsPage() {
           <p className="text-xs text-surface-400 mb-4">Visão de estrutura do resultado para o período selecionado.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={financeiroEstrutura} layout="vertical" margin={{ left: 18, right: 18 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgb(var(--line))" />
               <XAxis type="number" tickFormatter={(v) => `R$ ${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} width={115} />
               <Tooltip formatter={(v: any) => money(Number(v))} />
@@ -612,7 +612,7 @@ export function KPIsPage() {
           <p className="text-xs text-surface-400 mb-4">Receita líquida e EBITDA para leitura de tendência.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={periodChart} margin={{ left: 8, right: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700 }} />
               <YAxis tickFormatter={(v) => `R$ ${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} width={60} />
               <Tooltip formatter={(v: any, n: any) => [money(Number(v)), n === 'receita' ? 'Receita líquida' : 'EBITDA']} />
@@ -629,7 +629,7 @@ export function KPIsPage() {
           <p className="text-xs text-surface-400 mb-4">Fluxo de OS por etapa para gestão do gargalo operacional.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={funilData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700 }} />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
               <Tooltip formatter={(v: any) => [Number(v), 'OS']} />
@@ -676,7 +676,7 @@ export function KPIsPage() {
 
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={riscoEstoque}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-18} textAnchor="end" height={50} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v: any, n: any) => [Number(v), n === 'falta' ? 'Faltante' : 'Estoque atual']} />

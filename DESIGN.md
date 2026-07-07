@@ -21,6 +21,19 @@ colors:
   warning: "#d97706"
   danger: "#dc2626"
   info: "#2563eb"
+  chart-positive: "#10b981"
+  chart-positive-soft: "#34d399"
+  chart-attention: "#fb923c"
+  chart-negative: "#ef4444"
+  chart-negative-soft: "#f87171"
+  chart-info: "#0ea5e9"
+  chart-teal: "#0f766e"
+  chart-orange: "#f97316"
+  chart-cyan: "#06b6d4"
+  chart-green: "#22c55e"
+  chart-indigo: "#6366f1"
+  chart-indigo-soft: "#818cf8"
+  chart-violet: "#8b5cf6"
 typography:
   display:
     fontFamily: "Inter, system-ui, sans-serif"
@@ -150,6 +163,12 @@ Uma paleta de off-whites frios e um único verde-água aprofundado, com hues sem
 
 ### Feedback (semânticos, só como estado)
 - **Success** (`#16a34a`), **Warning** (`#d97706`), **Danger** (`#dc2626`), **Info** (`#2563eb`): reservados a estados de feedback e alertas. Nunca como identidade estrutural.
+
+### Data-viz (paleta categórica de gráficos)
+- **Chart Positive** (`#10b981` / soft `#34d399`), **Chart Attention** (`#fb923c`), **Chart Negative** (`#ef4444` / soft `#f87171`), **Chart Info** (`#0ea5e9`): a paleta categórica de séries em gráficos (recharts). **Os neutros de gráfico** (eixo, grid, tick, linha/ink) usam os tokens semânticos via `rgb(var(--muted/--faint/--line/--ink))` — seguem o tema. Cor de série é literal por natureza do data-viz; neutro segue token.
+
+### Named Rules
+**A Regra da Impressão à Parte.** Templates de PDF/impressão (`.fin-doc`, laudos, relatórios via Puppeteer/jsPDF) são **outro meio** e usam CSS de impressão próprio (`#111`, `#555`, `#1e293b`). Não migrar para os tokens de tela — a impressão não troca de tema.
 
 ### Named Rules
 **A Regra dos Dois Registros.** Gold é marca, teal é produto. Nenhum indigo/violet/roxo estrutural no app — essas cores só existem como **codificação semântica** (estágio de kanban, papel de usuário, categoria), nunca como chrome (botão, foco, link).

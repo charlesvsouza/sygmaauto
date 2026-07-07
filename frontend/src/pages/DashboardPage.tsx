@@ -24,9 +24,9 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  ABERTA: '#94a3b8', EM_DIAGNOSTICO: '#818cf8', ORCAMENTO_PRONTO: '#60a5fa',
+  ABERTA: 'rgb(var(--faint))', EM_DIAGNOSTICO: '#818cf8', ORCAMENTO_PRONTO: '#60a5fa',
   AGUARDANDO_APROVACAO: '#fb923c', APROVADO: '#34d399', AGUARDANDO_PECAS: '#fbbf24',
-  EM_EXECUCAO: '#22d3ee', PRONTO_ENTREGA: '#a78bfa', FATURADO: '#4ade80', ENTREGUE: '#1e293b',
+  EM_EXECUCAO: '#22d3ee', PRONTO_ENTREGA: '#a78bfa', FATURADO: '#4ade80', ENTREGUE: 'rgb(var(--ink))',
 };
 
 const PRODUCTIVITY_FUNCTIONS = [
@@ -448,9 +448,9 @@ export function DashboardPage() {
           </div>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={productivityData.topByFunction} barCategoryGap="25%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="functionLabel" tick={{ fontSize: 11, fontWeight: 700, fill: '#64748b' }} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={(v) => `R$${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 10, fontWeight: 700, fill: '#cbd5e1' }} axisLine={false} tickLine={false} width={56} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
+              <XAxis dataKey="functionLabel" tick={{ fontSize: 11, fontWeight: 700, fill: 'rgb(var(--muted))' }} axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={(v) => `R$${(Number(v) / 1000).toFixed(0)}k`} tick={{ fontSize: 10, fontWeight: 700, fill: 'rgb(var(--faint))' }} axisLine={false} tickLine={false} width={56} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: 12, fontWeight: 700 }}
                 formatter={(v: any) => [`R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 'Valor executado']}
@@ -460,7 +460,7 @@ export function DashboardPage() {
                   return `${item.functionLabel} — ${item.professional}`;
                 }}
               />
-              <Bar dataKey="totalValue" radius={[8, 8, 0, 0]} fill="#0f172a" />
+              <Bar dataKey="totalValue" radius={[8, 8, 0, 0]} fill="rgb(var(--ink))" />
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
@@ -528,14 +528,14 @@ export function DashboardPage() {
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={productivityData.monthlyProductivity}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-            <XAxis dataKey="mes" tick={{ fontSize: 11, fontWeight: 700, fill: '#64748b' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#cbd5e1' }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
+            <XAxis dataKey="mes" tick={{ fontSize: 11, fontWeight: 700, fill: 'rgb(var(--muted))' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: 'rgb(var(--faint))' }} axisLine={false} tickLine={false} />
             <Tooltip
               contentStyle={{ borderRadius: 14, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: 12, fontWeight: 700 }}
               formatter={(v: any) => [Number(v), 'Itens executados']}
             />
-            <Line type="monotone" dataKey="itensExecutados" stroke="#0f172a" strokeWidth={3} dot={{ r: 4, fill: '#0f172a' }} />
+            <Line type="monotone" dataKey="itensExecutados" stroke="rgb(var(--ink))" strokeWidth={3} dot={{ r: 4, fill: 'rgb(var(--ink))' }} />
           </LineChart>
         </ResponsiveContainer>
       </motion.div>
@@ -552,14 +552,14 @@ export function DashboardPage() {
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={revenueChartData} barCategoryGap="30%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={(v) => `R$${(v/1000).toFixed(0)}k`} tick={{ fontSize: 10, fontWeight: 700, fill: '#cbd5e1' }} axisLine={false} tickLine={false} width={50} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 700, fill: 'rgb(var(--faint))' }} axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={(v) => `R$${(v/1000).toFixed(0)}k`} tick={{ fontSize: 10, fontWeight: 700, fill: 'rgb(var(--faint))' }} axisLine={false} tickLine={false} width={50} />
               <Tooltip
                 contentStyle={{ borderRadius: 16, border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', fontSize: 12, fontWeight: 700 }}
                 formatter={(v: any) => [`R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 'Faturamento']}
               />
-              <Bar dataKey="faturamento" radius={[8, 8, 0, 0]} fill="#1e293b" />
+              <Bar dataKey="faturamento" radius={[8, 8, 0, 0]} fill="rgb(var(--ink))" />
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
@@ -613,13 +613,13 @@ export function DashboardPage() {
           ) : (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={statusChartData} layout="vertical" barCategoryGap="20%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 10, fontWeight: 700, fill: '#cbd5e1' }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} axisLine={false} tickLine={false} width={90} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 10, fontWeight: 700, fill: 'rgb(var(--faint))' }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: 'rgb(var(--muted))' }} axisLine={false} tickLine={false} width={90} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: 11, fontWeight: 700 }} />
-                <Bar dataKey="count" radius={[0, 8, 8, 0]} label={{ position: 'right', fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}>
+                <Bar dataKey="count" radius={[0, 8, 8, 0]} label={{ position: 'right', fontSize: 10, fontWeight: 700, fill: 'rgb(var(--faint))' }}>
                   {statusChartData.map((entry, i) => (
-                    <Cell key={i} fill={STATUS_COLORS[entry.status] || '#94a3b8'} />
+                    <Cell key={i} fill={STATUS_COLORS[entry.status] || 'rgb(var(--faint))'} />
                   ))}
                 </Bar>
               </BarChart>

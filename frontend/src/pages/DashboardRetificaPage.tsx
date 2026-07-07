@@ -64,7 +64,7 @@ const PHASE_LABEL: Record<string, string> = {
 };
 
 const PHASE_COLOR: Record<string, string> = {
-  ABERTA: '#64748b',
+  ABERTA: 'rgb(var(--muted))',
   DESMONTAGEM: '#f97316',
   METROLOGIA: '#3b82f6',
   ORCAMENTO_RETIFICA: '#6366f1',
@@ -384,20 +384,20 @@ export function DashboardRetificaPage() {
           <ChartShell title="Motores em fluxo por fase" hint="Volume atual por etapa do Kanban Retifica">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={fluxoPorFaseChart} margin={{ top: 8, right: 10, left: 0, bottom: 26 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink))" />
                 <XAxis
                   dataKey="name"
-                  stroke="#94a3b8"
+                  stroke="rgb(var(--faint))"
                   angle={-20}
                   textAnchor="end"
                   height={58}
                   interval={0}
                   tick={{ fontSize: 11 }}
                 />
-                <YAxis stroke="#94a3b8" allowDecimals={false} />
+                <YAxis stroke="rgb(var(--faint))" allowDecimals={false} />
                 <Tooltip
-                  cursor={{ fill: 'rgba(148, 163, 184, 0.08)' }}
-                  contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
+                  cursor={{ fill: 'rgb(var(--faint) / 0.08)' }}
+                  contentStyle={{ background: 'rgb(var(--ink))', border: '1px solid rgb(var(--ink))', borderRadius: 8 }}
                 />
                 <Bar dataKey="total" radius={[6, 6, 0, 0]}>
                   {fluxoPorFaseChart.map((entry) => (
@@ -411,21 +411,21 @@ export function DashboardRetificaPage() {
           <ChartShell title="Tempo medio atual por fase" hint="Media em horas de permanencia por etapa">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={tempoPorFaseChart} margin={{ top: 8, right: 10, left: 0, bottom: 26 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink))" />
                 <XAxis
                   dataKey="name"
-                  stroke="#94a3b8"
+                  stroke="rgb(var(--faint))"
                   angle={-20}
                   textAnchor="end"
                   height={58}
                   interval={0}
                   tick={{ fontSize: 11 }}
                 />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${Number(v).toFixed(0)}h`} />
+                <YAxis stroke="rgb(var(--faint))" tickFormatter={(v) => `${Number(v).toFixed(0)}h`} />
                 <Tooltip
                   formatter={(value) => `${Number(value ?? 0).toFixed(1)}h`}
-                  cursor={{ fill: 'rgba(148, 163, 184, 0.08)' }}
-                  contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
+                  cursor={{ fill: 'rgb(var(--faint) / 0.08)' }}
+                  contentStyle={{ background: 'rgb(var(--ink))', border: '1px solid rgb(var(--ink))', borderRadius: 8 }}
                 />
                 <Bar dataKey="avgHours" radius={[6, 6, 0, 0]}>
                   {tempoPorFaseChart.map((entry) => (
