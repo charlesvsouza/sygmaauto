@@ -110,6 +110,20 @@ export const usersApi = {
   delete: (id: string) => api.delete(`/users/${id}`),
 };
 
+export const complianceApi = {
+  listRequests: () => api.get('/compliance/lgpd/requests'),
+  getRequest: (id: string) => api.get(`/compliance/lgpd/requests/${id}`),
+  createRequest: (data: any) => api.post('/compliance/lgpd/requests', data),
+  updateRequestStatus: (id: string, data: { status: string; resolutionNotes?: string }) =>
+    api.patch(`/compliance/lgpd/requests/${id}/status`, data),
+  exportCustomer: (customerId: string) => api.get(`/compliance/lgpd/export/customer/${customerId}`),
+  exportUser: (userId: string) => api.get(`/compliance/lgpd/export/user/${userId}`),
+  eraseCustomer: (customerId: string, reason: string) =>
+    api.post(`/compliance/lgpd/erase/customer/${customerId}`, { reason }),
+  eraseUser: (userId: string, reason: string) =>
+    api.post(`/compliance/lgpd/erase/user/${userId}`, { reason }),
+};
+
 export const customersApi = {
   getAll: () => api.get('/customers'),
   getById: (id: string) => api.get(`/customers/${id}`),
@@ -147,6 +161,8 @@ export const serviceOrdersApi = {
     api.post(`/service-orders/${id}/reserve-parts`, { expectedPartsDate }),
   cancelPartsReservation: (id: string) =>
     api.post(`/service-orders/${id}/cancel-parts-reservation`),
+  getMetrology: (id: string) => api.get(`/service-orders/${id}/metrology`),
+  saveMetrology: (id: string, data: any) => api.patch(`/service-orders/${id}/metrology`, data),
   importPdf: (file: File) => {
     const formData = new FormData();
     formData.append('file', file);

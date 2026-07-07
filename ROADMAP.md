@@ -1,6 +1,6 @@
 # SigmaAuto — Roadmap & Estratégia Comercial
 
-**Última atualização:** 04/05/2026 (sessão 2)
+**Última atualização:** 07/07/2026 (auditoria de código real vs. roadmap)
 **Produto:** SigmaAuto — SaaS multi-tenant para gestão de oficinas mecânicas
 **Domínio:** sigmaauto.com.br
 
@@ -60,7 +60,7 @@
 | Frontend | Vercel | https://sigmaauto.com.br |
 | Backend API | Railway | https://sygmaauto-api-production.up.railway.app |
 | Banco de Dados | Railway PostgreSQL | Provisionado automaticamente |
-| Evolution API (WhatsApp) | Railway — sygmaauto-wa-region-b | https://evolution-api-r2-production.up.railway.app |
+| WhatsApp | Meta Cloud API (oficial) | `WHATSAPP_PROVIDER=META_CLOUD` — Evolution API foi removida do sistema por segurança |
 | CI/CD | GitHub Actions | Push master → deploy automático |
 
 ---
@@ -92,19 +92,20 @@
 
 - [x] **Kanban de Pátio** — board visual por status, projetável em TV *(implementado)*
 - [x] **Checklist de Entrada/Saída com Fotos** — proteção jurídica + upsell *(implementado)*
-- [x] **WhatsApp Automático por evento da OS** *(concluído em 03/05/2026)*
-  - [x] Integração com Evolution API v2.3.7 (Baileys 7.0.0-rc.9 + suporte LID)
+- [x] **WhatsApp Automático por evento da OS** *(concluído em 03/05/2026, migrado para Meta Cloud em sessão posterior)*
   - [x] Orçamento pronto → link de aprovação ao cliente
   - [x] OS aprovada → confirmação de início dos trabalhos
   - [x] Pronto para entrega → notificação automática
   - [x] Entregue → mensagem de agradecimento pós-serviço
   - [x] Cancelado → informativo ao cliente
-  - [x] QR Code na interface administrativa para pareamento
   - [x] Status de conexão em tempo real na WhatsappPage
 
-> **Infra WhatsApp:** Evolution API v2.3.7 (`evoapicloud/evolution-api:v2.3.7`) hospedada em
-> projeto Railway separado (`sygmaauto-wa-region-b`, região `us-east4`) com schema PostgreSQL
-> isolado (`evolution_r2`). Ver guia completo em `c:/dev/evolution-api-setup.md`.
+> **Infra WhatsApp (atualizado 07/07/2026):** o provider Evolution API (self-hosted, Baileys) foi
+> **removido do sistema por segurança** — o código hoje recusa `WHATSAPP_PROVIDER=EVOLUTION` com
+> mensagem explícita. Produção usa exclusivamente **Meta Cloud API** (`whatsapp/meta-cloud-whatsapp.provider.ts`),
+> com webhook assinado (HMAC X-Hub-Signature-256) e idempotência durável em banco
+> (`whatsapp/whatsapp-meta-webhook.service.ts`). Configuração via `WHATSAPP_PROVIDER=META_CLOUD`
+> e phone number id por tenant (Settings).
 
 ---
 
@@ -186,6 +187,27 @@
   - Campos `motorBrand/motorModel/motorSerial` → `equipmentBrand/equipmentModel/serialNumber` (alinhamento com schema Prisma)
   - Fix build TS: `Set<unknown>` → `Set<string>` em `metrologiaTarget`
   - Centralizar `SLA_HOURS` em `retificaConstants.ts`, validar metrologia obrigatória no backend antes de avançar para Orçamento Técnico, proteção contra duplicação de itens
+
+---
+
+### ✅ Sprint 3.5 — Retífica de Motores, LGPD e Rebranding *(concluído, não documentado até 07/07/2026)*
+
+> Esta seção documenta retroativamente ~140 commits de trabalho real que não haviam sido
+> incorporados a este roadmap. Ver `sygmaauto-audit-jul2026` para o raio-X completo.
+
+- [x] **Módulo Retífica de Motores** — linha de produto completa, vendida como plano `RETIFICA_PRO`/`RETIFICA_REDE`
+  - Tipo de OS `RETIFICA_MOTOR` com veículo opcional (motor avulso) e dados de equipamento (marca/modelo/nº de série)
+  - Fluxo de status dedicado: Desmontagem → Metrologia → Orçamento Retífica → Aprovação → Em Retífica → Montagem → Teste Final
+  - `KanbanRetificaPage` (kanban especializado), `DashboardRetificaPage` (painel de prioridade com SLA crítico), `RetificaMotoresPage`
+  - Ficha de metrologia por cilindro/munhão/moente/mancal com diagnóstico automático de serviços/peças por tolerância
+  - Laudo técnico em PDF (Puppeteer) gerado automaticamente ao confirmar a metrologia
+  - [x] **Fix (07/07/2026):** ficha de metrologia migrada para model Prisma próprio `EngineMetrology` (1:1 com `ServiceOrder`), com endpoints dedicados `GET/PATCH /service-orders/:id/metrology`. Script único `migrate-metrology.js` (flag `MIGRATE_METROLOGY=true` no release) migra o JSON antigo de `notes` para a tabela e limpa o campo. Verificado ponta a ponta (criação de OS de retífica → metrologia → diagnóstico automático → laudo PDF → reload) sem erros.
+- [x] **LGPD / Compliance (backend)** — protocolo `LGPD-YYYYMMDD-XXXXXX`, SLA técnico de 15 dias, export estruturado de dados de cliente/usuário, eliminação controlada (anonimização quando há dependências históricas), audit trail em `AuditLog`. Ver detalhe completo em `COMPLIANCE.md`.
+  - [x] **Fix (07/07/2026):** UI administrativa criada em `/lgpd` (menu lateral, MASTER/ADMIN) — lista de solicitações com prazo/SLA, criação de solicitação (cliente ou usuário), alteração de status, exportação de dados (download JSON) e execução de eliminação com confirmação. Verificado ponta a ponta.
+- [x] **WhatsApp — migração para Meta Cloud API** — Evolution API (self-hosted) removida por segurança; hoje só Meta Cloud, com webhook assinado e idempotência durável.
+- [x] **IA — segundo provedor (Gemini)** — além do OpenAI GPT-4o-mini no orçamento assistivo, `import-nf.service.ts` usa Google Gemini para interpretar PDF de nota fiscal de fornecedor na importação de estoque.
+- [x] **Rebranding Oficina360 → Sigma Auto** — logo SVG/PNG, wordmark, substituição em todas as telas (login, marketing, splash, PDFs).
+- [x] **Redesenho de tema: dark premium dourado → claro verde-água (padrão)** — ver `DESIGN_STATUS.md` para o histórico completo. Tema escuro selecionável foi removido em 07/07/2026 (fixado apenas em Login/Register); grades estilo ERP aplicadas a Clientes/Veículos/Serviços/Estoque/Usuários/Livro Caixa; dashboard distilado de 9 para 5 KPIs.
 
 ---
 

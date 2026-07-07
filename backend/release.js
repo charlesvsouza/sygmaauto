@@ -201,6 +201,19 @@ async function main() {
     }
   }
 
+  const migrateMetrologyFlag = (process.env.MIGRATE_METROLOGY || '').trim().toLowerCase();
+  console.log(`[release] MIGRATE_METROLOGY="${migrateMetrologyFlag}"`);
+  if (migrateMetrologyFlag === 'true' || migrateMetrologyFlag === '1') {
+    console.log('[release] Iniciando migração de metrologia (notes JSON -> engine_metrology)...');
+    try {
+      const { runMigrateMetrology } = require('./migrate-metrology.js');
+      await runMigrateMetrology();
+      console.log('[release] Migração de metrologia concluída com sucesso.');
+    } catch (err) {
+      console.error('[release] Erro na migração de metrologia (non-fatal):', err.message);
+    }
+  }
+
   const bootstrapFlag = (process.env.RUN_BOOTSTRAP || '').trim().toLowerCase();
   console.log(`[release] RUN_BOOTSTRAP="${bootstrapFlag}"`);
   if (bootstrapFlag === 'true' || bootstrapFlag === '1') {

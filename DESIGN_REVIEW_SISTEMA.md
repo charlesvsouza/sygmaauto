@@ -1,4 +1,13 @@
-# Review de Design — Sistema SygmaAuto
+# Review de Design — Sistema SygmaAuto (histórico — recomendações já executadas)
+
+> **Status em 07/07/2026: resolvido.** Este documento é a análise que motivou a migração de
+> tema (achado #1: "dois sistemas visuais coexistindo", dark premium na ServiceOrdersPage vs.
+> slate/indigo/violet no resto do app). A unificação recomendada na seção 5 foi executada:
+> todo o app migrou para o tema claro verde-água + tokens semânticos (`--accent` etc.), com
+> componentes-base (`Card/Chip/Modal/Toast/EmptyState`), grades estilo ERP e remoção de
+> `alert()`. Ver `DESIGN_STATUS.md` para o estado atual e pendências reais. Mantido aqui só
+> como registro do diagnóstico original.
+
 Arquivo consolidado de análise visual/UX por superfície do sistema, gerado a partir de varredura estática do frontend.
 
 ## Escopo analisado

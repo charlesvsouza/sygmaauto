@@ -25,6 +25,7 @@ import {
   Cog,
   Star,
   CalendarDays,
+  ShieldCheck,
 } from 'lucide-react';
 import { useState } from 'react';
 import { canAccessFeature, canAccessRetificaMode, featureLabel, getFeatureMinPlan, getFeatureUpgradeMessage, getPlanLabel, type PlanFeatureKey } from '../lib/planAccess';
@@ -61,6 +62,7 @@ export function Layout() {
 
   const adminItems: NavItem[] = [
     ...(canViewUsers ? [{ to: '/users', icon: UserCheck, label: 'Usuários', premium: false }] : []),
+    ...(canViewUsers ? [{ to: '/lgpd', icon: ShieldCheck, label: 'LGPD', premium: false }] : []),
     { to: '/settings', icon: Settings, label: 'Configurações', premium: false },
   ];
 

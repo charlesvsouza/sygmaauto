@@ -251,7 +251,7 @@ Legenda:
 
 ### 5.1 Maturidade consolidada (estimativa operacional)
 - Base técnica de segurança: alta para o estágio atual do projeto.
-- Atendimento técnico ao titular: parcial, com fluxo backend implementado.
+- Atendimento técnico ao titular: implementado ponta a ponta (backend + UI administrativa em `/lgpd` desde 07/07/2026).
 - Governança documental: nível intermediário, com conjunto mínimo documental agora formalizado no repositório.
 
 Estimativa executiva atual:
@@ -275,6 +275,12 @@ Publicação externa provisória:
 - POST /compliance/lgpd/erase/user/:userId
 
 Observação: os endpoints são protegidos por JWT + role (MASTER/ADMIN) e operam sempre no tenant autenticado.
+
+**✅ UI administrativa (criada 07/07/2026):** página `/lgpd` (menu lateral, restrita a MASTER/ADMIN)
+permite registrar, listar, detalhar, mudar status, exportar dados e executar eliminação de
+solicitações LGPD diretamente pelo produto — sem depender de API/Swagger/Postman. A
+`CompliancePage.tsx` pública segue sendo apenas institucional/estática (política pública),
+o atendimento operacional agora acontece em `/lgpd`.
 
 ---
 

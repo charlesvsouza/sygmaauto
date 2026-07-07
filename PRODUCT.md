@@ -12,7 +12,7 @@ O trabalho a ser feito: **manter a oficina rodando sem fricção** — abrir/atu
 
 ## Product Purpose
 
-SaaS multi-tenant (assinatura via Mercado Pago) para gestão completa de oficinas mecânicas: ordens de serviço, clientes, veículos, serviços, estoque, financeiro (livro caixa, DRE, contas), usuários/permissões e relatórios em PDF. Sucesso = a oficina opera o dia inteiro dentro do sistema sem cair para papel/planilha, e o dono confia nos números para cobrar e decidir.
+SaaS multi-tenant (assinatura via Mercado Pago) para gestão completa de oficinas mecânicas: ordens de serviço, clientes, veículos, serviços, estoque, financeiro (livro caixa, DRE, contas), usuários/permissões e relatórios em PDF. Inclui também uma linha de produto para retífica de motores (fluxo de status próprio, metrologia por cilindro, laudo técnico), comissão de mecânicos, WhatsApp automático por evento da OS e orçamento assistido por IA. Sucesso = a oficina opera o dia inteiro dentro do sistema sem cair para papel/planilha, e o dono confia nos números para cobrar e decidir.
 
 ## Brand Personality
 

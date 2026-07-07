@@ -3,7 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ServiceOrdersService } from './service-orders.service';
 import { ImportService } from './import.service';
-import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto } from './dto/service-order.dto';
+import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -246,6 +246,26 @@ export class ServiceOrdersController {
     @Body() dto: UpdateServiceOrderItemDto,
   ) {
     return this.serviceOrdersService.updateItem(tenant.tenantId, id, itemId, dto, user.userId);
+  }
+
+  @Get(':id/metrology')
+  @ApiOperation({ summary: 'Buscar ficha de metrologia da Retífica' })
+  async getMetrology(
+    @Tenant() tenant: { tenantId: string },
+    @Param('id') id: string,
+  ) {
+    return this.serviceOrdersService.getMetrology(tenant.tenantId, id);
+  }
+
+  @Patch(':id/metrology')
+  @Roles('MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO')
+  @ApiOperation({ summary: 'Salvar ficha de metrologia da Retífica' })
+  async saveMetrology(
+    @Tenant() tenant: { tenantId: string },
+    @Param('id') id: string,
+    @Body() dto: SaveMetrologyDto,
+  ) {
+    return this.serviceOrdersService.saveMetrology(tenant.tenantId, id, dto);
   }
 
   @Get(':id/pdf')

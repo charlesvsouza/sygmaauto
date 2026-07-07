@@ -280,6 +280,83 @@ export class FinalizeOrderDto {
   createIncomeTransaction?: boolean;
 }
 
+export class SaveMetrologyDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  empenamentoCabecote?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  empenamentoBloco?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  numeroCilindros?: number;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  @IsArray()
+  cilindros?: Record<string, unknown>[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  numeroMunhoes?: number;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  @IsArray()
+  munhoes?: Record<string, unknown>[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  numeroMoentes?: number;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  @IsArray()
+  moentes?: Record<string, unknown>[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  numeroMancais?: number;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  @IsArray()
+  mancaisBloco?: Record<string, unknown>[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  numeroBielas?: number;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  @IsArray()
+  bielas?: Record<string, unknown>[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  observacoes?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  tecnico?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  dataLeitura?: string;
+}
+
 export class CreateDiagnosticOrderDto {
   @ApiProperty({ description: 'ID da OS reprovada — para copiar cliente e veículo' })
   @IsNotEmpty()

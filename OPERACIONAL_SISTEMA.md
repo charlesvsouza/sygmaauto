@@ -1,6 +1,6 @@
 # Operacional do Sistema
 
-Data de referência: 05/05/2026
+Data de referência: 07/07/2026
 Escopo: SigmaAuto — backend NestJS/Prisma + frontend React + deploy Railway/Vercel
 
 ## 1. Visão Geral do Sistema
@@ -29,9 +29,8 @@ Stack:
 - FRONTEND_URL: base do frontend para links de auth
 - NODE_ENV: production
 - PORT: 3000
-- EVOLUTION_API_URL: URL pública da Evolution API ou Meta Cloud
-- EVOLUTION_API_KEY: chave de API
-- EVOLUTION_INSTANCE: sygmaauto
+- WHATSAPP_PROVIDER: META_CLOUD (único provider suportado — Evolution foi removida por segurança)
+- Credenciais Meta Cloud API por tenant (phone number id) configuráveis via Settings
 - BACKEND_PUBLIC_URL: URL pública da API
 - MP_ACCESS_TOKEN, MP_MODE, MP_WEBHOOK_SECRET, MP_WEBHOOK_TOKEN: Mercado Pago
 - SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM_EMAIL, SMTP_FROM_NAME: e-mail transacional
@@ -89,6 +88,12 @@ Nota de segurança:
 - Causa: endpoints com @RequirePlan('REDE') indevidamente.
 - Correção: alterado para @RequirePlan('PRO').
 
+### 4.4 Texto de baixo contraste em cards `bg-accent` (ServiceOrdersPage) — 07/07/2026
+- Sintoma: labels (Veículo/Placa/Ano-Cor/KM Atual/KM Entrada, Total da Ordem) quase invisíveis sobre o card verde-água de "Dados do Veículo" e no bloco "Totais".
+- Causa: uso de `text-white/60-80` (branco com opacidade reduzida) sobre `bg-accent` (`#0d7d6e`, luminância média). Contraste calculado fica entre ~2,8:1 e ~4,1:1 — abaixo do mínimo AA (4,5:1 para texto, 3:1 para ícones/UI).
+- Correção: labels passaram para branco opaco (`text-white`); hierarquia label/valor continua garantida por tamanho e peso de fonte (não por opacidade), alinhado ao princípio de design do produto.
+- Nota: opacidade reduzida de branco só é segura sobre fundos bem escuros (`bg-ink`, quase preto); sobre `bg-accent` (teal médio) não fecha AA em nenhuma fração testada — evitar esse padrão em novas telas.
+
 ## 5. Padrões de Código e Configuração
 
 - Backend: apiResponse pattern e error handling centralizados com status HTTP semânticos.
@@ -107,6 +112,7 @@ Nota de segurança:
 - IA: sugestão de orçamento via OpenAI GPT-4o-mini com fallback por keywords.
 - PDF: Puppeteer headless para geração de OS/relatórios em produção.
 - Google: suporte a OCR/importação de PDF quando GOOGLE_API_KEY configurado.
+- Retífica de Motores: linha de produto própria (planos RETIFICA_PRO/RETIFICA_REDE) com fluxo de status dedicado, metrologia por cilindro e laudo técnico em PDF. Ver `ROADMAP.md` (Sprint 3.5) para detalhes e dívida técnica conhecida (metrologia sem model Prisma próprio).
 
 ## 7. Checklist rápido para incidentes
 

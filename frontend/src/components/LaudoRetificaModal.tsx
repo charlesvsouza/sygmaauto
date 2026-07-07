@@ -362,12 +362,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
   const toast = useToast();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Extrai metrologia do campo notes
-  let metrologia: MetrologiaData | null = null;
-  try {
-    const parsed = os.notes ? JSON.parse(os.notes) : null;
-    metrologia = parsed?.metrologia ?? null;
-  } catch { /* notas não são JSON */ }
+  const metrologia: MetrologiaData | null = os.metrology ?? null;
 
   const html    = buildLaudoHtml(os, metrologia, tenant);
   const fullDoc = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Laudo Retífica OS #${os.id.slice(-6).toUpperCase()}</title><style>${PREVIEW_STYLE}</style></head><body>${html}</body></html>`;

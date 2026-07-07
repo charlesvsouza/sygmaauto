@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto } from './dto/service-order.dto';
+import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
@@ -144,6 +144,7 @@ export class ServiceOrdersService {
             assignedUser: { select: { id: true, name: true, role: true } },
           },
         },
+        metrology: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -163,6 +164,7 @@ export class ServiceOrdersService {
           },
         },
         timeline: { orderBy: { createdAt: 'desc' } },
+        metrology: true,
       },
     });
 
@@ -171,6 +173,39 @@ export class ServiceOrdersService {
     }
 
     return order;
+  }
+
+  async getMetrology(tenantId: string, id: string) {
+    await this.findById(tenantId, id); // valida que a OS pertence ao tenant
+    return this.prisma.engineMetrology.findUnique({ where: { serviceOrderId: id } });
+  }
+
+  async saveMetrology(tenantId: string, id: string, dto: SaveMetrologyDto) {
+    await this.findById(tenantId, id); // valida que a OS pertence ao tenant
+
+    const data: any = {
+      empenamentoCabecote: dto.empenamentoCabecote,
+      empenamentoBloco: dto.empenamentoBloco,
+      numeroCilindros: dto.numeroCilindros ?? 0,
+      cilindros: dto.cilindros ?? [],
+      numeroMunhoes: dto.numeroMunhoes ?? 0,
+      munhoes: dto.munhoes ?? [],
+      numeroMoentes: dto.numeroMoentes ?? 0,
+      moentes: dto.moentes ?? [],
+      numeroMancais: dto.numeroMancais ?? 0,
+      mancaisBloco: dto.mancaisBloco ?? [],
+      numeroBielas: dto.numeroBielas ?? 0,
+      bielas: dto.bielas ?? [],
+      observacoes: dto.observacoes,
+      tecnico: dto.tecnico,
+      dataLeitura: dto.dataLeitura,
+    };
+
+    return this.prisma.engineMetrology.upsert({
+      where: { serviceOrderId: id },
+      update: data,
+      create: { ...data, tenantId, serviceOrderId: id },
+    });
   }
 
   async createOrcamento(tenantId: string, dto: CreateOrcamentoDto, userId: string) {
@@ -474,12 +509,8 @@ export class ServiceOrdersService {
 
     // Valida metrologia obrigatória antes de avançar para orçamento técnico
     if (order.orderType === 'RETIFICA_MOTOR' && currentStatus === 'METROLOGIA' && newStatus === 'ORCAMENTO_RETIFICA') {
-      let hasMetrologia = false;
-      try {
-        const parsed = order.notes ? JSON.parse(order.notes as string) : null;
-        hasMetrologia = !!(parsed?.metrologia);
-      } catch { /* notes não é JSON válido */ }
-      if (!hasMetrologia) {
+      const metrology = await this.prisma.engineMetrology.findUnique({ where: { serviceOrderId: id } });
+      if (!metrology) {
         throw new BadRequestException('Ficha de metrologia obrigatória antes de avançar para Orçamento Técnico');
       }
     }
@@ -532,6 +563,7 @@ export class ServiceOrdersService {
           include: {
           },
         },
+        metrology: true,
       },
     });
 

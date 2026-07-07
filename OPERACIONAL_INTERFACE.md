@@ -1,10 +1,17 @@
 # Operacional de Interface
 
-Data de referência: 06/2026
+Data de referência: 07/07/2026 (seção 1 substituída — ver nota abaixo)
 Escopo: identidade visual, UX, componentes e padrões de interface do SigmaAuto
-Direção vigente: tema dark premium com acento dourado, migração incremental por camada.
 
-## 1. Diretriz de Identidade Visual Atualizada
+> **⚠️ Seção 1 é histórica.** O dark premium dourado descrito abaixo foi a direção usada nas
+> Camadas 0–5 (commits `d5b3fe6`…`d032405`), mas foi **substituído** pelo tema claro
+> verde-água (padrão "Oficina Integrada") a partir do commit `7713253`. O tema escuro
+> selecionável foi removido em 07/07/2026 (commit `36f410d`) — hoje só é usado, de propósito,
+> em Login/Register. **A fonte de verdade atual de tema é `DESIGN_STATUS.md`** (tokens
+> semânticos `--app/--panel/--ink/--muted/--line/--accent/--sidebar`, acento verde-água
+> `#0d7d6e`, grades estilo ERP). Mantido aqui só por rastreabilidade histórica.
+
+## 1. Diretriz de Identidade Visual (histórica — dark premium dourado, substituída)
 
 ### 1.1 Nova direção de tema
 - fundo base: #08090a
@@ -34,9 +41,9 @@ Componentes-base:
 2. Forte: contraste maior e hierarquia mais dura
 3. Divergente: superfície translúcida + blur + glow sutil
 
-Artefato de referência: `design-system-board.html`
+Artefato de referência: `design-system-board.html` (histórico — reflete a proposta dourada, não o tema atual)
 
-### 1.4 Camadas de migração planejadas
+### 1.4 Camadas de migração (concluídas, histórico)
 1. Layout + navegação
 2. Telas públicas/auth
 3. Atendimento / OS / agenda

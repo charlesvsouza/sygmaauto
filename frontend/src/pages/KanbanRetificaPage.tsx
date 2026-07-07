@@ -107,11 +107,7 @@ function RetificaCard({
   const statusRefDate = os.statusChangedAt || os.updatedAt || os.createdAt;
 
   // Verifica se já possui ficha de metrologia salva
-  let hasMetrologia = false;
-  try {
-    const parsed = os.notes ? JSON.parse(os.notes) : null;
-    hasMetrologia = !!parsed?.metrologia;
-  } catch { /* notes não é JSON */ }
+  const hasMetrologia = !!os.metrology;
 
   const alertBorder =
     level === 'danger'  ? 'border-red-500/70' :
@@ -254,7 +250,7 @@ export function KanbanRetificaPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Modal de metrologia
-  const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; notes: string | null; existingDescriptions: Set<string> } | null>(null);
+  const [metrologiaTarget, setMetrologiaTarget] = useState<{ id: string; number: string; metrology: MetrologiaData | null; existingDescriptions: Set<string> } | null>(null);
   // Modal de laudo
   const [laudoTarget, setLaudoTarget] = useState<any | null>(null);
   const { isCompactViewport, boardScrollRef, getColumnWidth, getBoardFit, scrollColumns } = useBoardViewport();
@@ -318,7 +314,7 @@ export function KanbanRetificaPage() {
       const existingDescriptions = new Set<string>(
         (os?.items ?? []).map((i: any) => String(i.description || i.name || '').toLowerCase())
       );
-      setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), notes: os?.notes ?? null, existingDescriptions });
+      setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), metrology: os?.metrology ?? null, existingDescriptions });
       return;
     }
     setAdvancing(id);
@@ -346,12 +342,8 @@ export function KanbanRetificaPage() {
 
   const handleMetrologiaSave = async (data: MetrologiaData, items: SuggestedItem[]) => {
     if (!metrologiaTarget) return;
-    const { id, notes } = metrologiaTarget;
-    // Mescla com notes existente (se já for JSON) ou cria novo
-    let existing: Record<string, unknown> = {};
-    try { if (notes) existing = JSON.parse(notes); } catch { /* ignore */ }
-    const merged = JSON.stringify({ ...existing, metrologia: data });
-    await serviceOrdersApi.update(id, { notes: merged });
+    const { id } = metrologiaTarget;
+    await serviceOrdersApi.saveMetrology(id, data);
     await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
     // Adiciona itens sugeridos selecionados à OS (evita duplicação se modal for reaberto)
     const existingDescriptions = metrologiaTarget.existingDescriptions;
@@ -547,10 +539,7 @@ export function KanbanRetificaPage() {
           osNumber={metrologiaTarget.number}
           onSave={handleMetrologiaSave}
           onCancel={() => setMetrologiaTarget(null)}
-          initialData={(() => {
-            try { return metrologiaTarget.notes ? JSON.parse(metrologiaTarget.notes)?.metrologia ?? null : null; }
-            catch { return null; }
-          })()}
+          initialData={metrologiaTarget.metrology}
         />
       )}
     </div>

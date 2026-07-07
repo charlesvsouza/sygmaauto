@@ -378,8 +378,47 @@ model ServiceOrder {
   checklists  VehicleChecklist[]
   commissions Commission[]
   npsResponse NpsResponse?
+  metrology   EngineMetrology?
 
   @@map("service_orders")
+}
+
+// Ficha de metrologia da Retífica de Motores (cilindros, virabrequim, mancais).
+// Antes vivia como JSON solto dentro de ServiceOrder.notes; agora é um registro
+// próprio, consultável e protegido do campo de observações de texto livre.
+model EngineMetrology {
+  id             String   @id @default(uuid())
+  tenantId       String
+  serviceOrderId String   @unique
+
+  empenamentoCabecote String?
+  empenamentoBloco    String?
+
+  numeroCilindros Int   @default(0)
+  cilindros       Json?
+
+  numeroMunhoes Int   @default(0)
+  munhoes       Json?
+
+  numeroMoentes Int   @default(0)
+  moentes       Json?
+
+  numeroMancais Int   @default(0)
+  mancaisBloco  Json?
+
+  numeroBielas Int   @default(0)
+  bielas       Json?
+
+  observacoes String?
+  tecnico     String?
+  dataLeitura String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+
+  @@map("engine_metrology")
 }
 
 model ServiceOrderItem {

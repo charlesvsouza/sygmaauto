@@ -37,6 +37,7 @@ import { CommissionsPage } from './pages/CommissionsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { UsersPage } from './pages/UsersPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { LgpdPage } from './pages/LgpdPage';
 import { KanbanPage } from './pages/KanbanPage';
 import { KanbanRecepcaoPage } from './pages/KanbanRecepcaoPage';
 import { KanbanRetificaPage } from './pages/KanbanRetificaPage';
@@ -112,6 +113,7 @@ export default function App() {
             <Route path="/commissions" element={<PlanFeatureRoute feature="COMISSOES"><CommissionsPage /></PlanFeatureRoute>} />
             <Route path="/reports" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><ReportsPage /></PlanFeatureRoute>} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/lgpd" element={<LgpdPage />} />
             <Route path="/whatsapp" element={<PlanFeatureRoute feature="WHATSAPP"><WhatsappPage /></PlanFeatureRoute>} />
             <Route path="/maintenance" element={<PlanFeatureRoute feature="WHATSAPP"><MaintenancePage /></PlanFeatureRoute>} />
             <Route path="/nps" element={<PlanFeatureRoute feature="DRE_KPI_RELATORIOS"><NpsPage /></PlanFeatureRoute>} />

@@ -282,16 +282,13 @@ export function ServiceOrdersPage() {
   const [expectedPartsDate, setExpectedPartsDate] = useState('');
 
   // Modal de metrologia (aberto a partir do Andamento da O.S.)
-  const [metrologiaOsTarget, setMetrologiaOsTarget] = useState<{ id: string; number: string; notes: string | null } | null>(null);
+  const [metrologiaOsTarget, setMetrologiaOsTarget] = useState<{ id: string; number: string; metrology: MetrologiaData | null } | null>(null);
   const [laudoRetificaOs, setLaudoRetificaOs] = useState<any | null>(null);
 
   const handleMetrologiaSaveFromDetail = async (data: MetrologiaData, items: SuggestedItem[]) => {
     if (!metrologiaOsTarget) return;
-    const { id, notes } = metrologiaOsTarget;
-    let existing: Record<string, unknown> = {};
-    try { if (notes) existing = JSON.parse(notes); } catch { /* ignore */ }
-    const merged = JSON.stringify({ ...existing, metrologia: data });
-    await serviceOrdersApi.update(id, { notes: merged });
+    const { id } = metrologiaOsTarget;
+    await serviceOrdersApi.saveMetrology(id, data);
     await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
     for (const item of items) {
       try {
@@ -1037,7 +1034,7 @@ export function ServiceOrdersPage() {
                         <tr className="hdr"><td>OBSERVACOES</td></tr>
                         <tr>
                           <td style={{ minHeight: '38px', fontSize: '8.5pt', whiteSpace: 'pre-wrap' }}>
-                            {selectedOrder.observations || selectedOrder.notes || ''}
+                            {selectedOrder.observations || ''}
                           </td>
                         </tr>
                       </tbody>
@@ -1362,7 +1359,7 @@ export function ServiceOrdersPage() {
                       <button
                         key={phase.key}
                         type="button"
-                        onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: selectedOrder.id.slice(-6).toUpperCase(), notes: selectedOrder.notes ?? null })}
+                        onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: selectedOrder.id.slice(-6).toUpperCase(), metrology: selectedOrder.metrology ?? null })}
                         className={cn(
                           'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-accent/40',
                           isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
@@ -1410,7 +1407,7 @@ export function ServiceOrdersPage() {
 
                 <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-wide flex items-center gap-2">
+                    <h3 className="text-[10px] font-bold text-white uppercase tracking-wide flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
@@ -1486,23 +1483,23 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">Veiculo</p>
+                      <p className="text-[10px] text-white font-bold uppercase mb-1">Veiculo</p>
                       <p className="font-bold text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
+                      <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
                       <p className="font-mono font-bold text-white">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
+                      <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">KM Atual</p>
+                      <p className="text-[10px] text-white font-bold uppercase mb-1">KM Atual</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">KM Entrada</p>
+                      <p className="text-[10px] text-white font-bold uppercase mb-1">KM Entrada</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                   </div>
@@ -1795,13 +1792,13 @@ export function ServiceOrdersPage() {
                     { label: 'Pecas', val: selectedOrder.totalParts },
                     ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'Mao de Obra', val: selectedOrder.totalLabor }] : []),
                   ].map(({ label, val }) => (
-                    <div key={label} className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
+                    <div key={label} className="flex justify-between text-[10px] font-bold text-white uppercase tracking-wider">
                       <span>{label}</span>
                       <span>R$ {fmtBR(val)}</span>
                     </div>
                   ))}
                   <div className="pt-3 border-t border-accent">
-                    <p className="text-[10px] font-bold text-white/70 uppercase tracking-wide mb-1">Total da Ordem</p>
+                    <p className="text-[10px] font-bold text-white uppercase tracking-wide mb-1">Total da Ordem</p>
                     <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
                 </div>
@@ -1826,10 +1823,10 @@ export function ServiceOrdersPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-sm uppercase tracking-wide">Reserva de Pecas</h3>
-                    <p className="text-[10px] text-white/80 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
+                    <p className="text-[10px] text-white font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
-                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/60 hover:text-white transition-colors">
+                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -2492,9 +2489,7 @@ export function ServiceOrdersPage() {
         <MetrologiaModal
           osId={metrologiaOsTarget.id}
           osNumber={metrologiaOsTarget.number}
-          initialData={(() => {
-            try { const p = JSON.parse(metrologiaOsTarget.notes ?? ''); return p?.metrologia ?? null; } catch { return null; }
-          })()}
+          initialData={metrologiaOsTarget.metrology}
           onSave={handleMetrologiaSaveFromDetail}
           onCancel={() => setMetrologiaOsTarget(null)}
         />
