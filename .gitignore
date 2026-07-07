@@ -33,3 +33,7 @@ backend/dist_test/
 
 .vercel
 .env*.local
+
+# Impeccable — snapshots de critique (artefatos efêmeros)
+.impeccable/critique/
+frontend/src/.impeccable/

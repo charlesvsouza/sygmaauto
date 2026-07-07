@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-07T02:00:00Z",
+  "title": "Design System: Sygma Auto",
+  "extensions": {
+    "colorMeta": {
+      "teal-accent": {
+        "role": "primary",
+        "displayName": "Verde-Água Profundo",
+        "canonical": "#0d7d6e",
+        "tonalRamp": ["#04241f", "#063a32", "#085246", "#0a6458", "#0d7d6e", "#2aa593", "#66c7ba", "#a9e0d7", "#dcf2ee"]
+      },
+      "teal-ink": {
+        "role": "primary",
+        "displayName": "Verde-Água Tinta",
+        "canonical": "#0a6458",
+        "tonalRamp": ["#03211d", "#053029", "#074036", "#0a6458", "#0d8574", "#3aab9a", "#79cabd", "#b6e2da", "#e3f5f1"]
+      },
+      "brand-gold": {
+        "role": "secondary",
+        "displayName": "Gold da Marca",
+        "canonical": "#f59e0b",
+        "tonalRamp": ["#3a2600", "#5c3d00", "#8a5c00", "#b8801a", "#d98e0a", "#f59e0b", "#f9b84a", "#fcd48c", "#fdeecb"]
+      },
+      "sidebar-teal": {
+        "role": "primary",
+        "displayName": "Teal da Sidebar",
+        "canonical": "#123f3b",
+        "tonalRamp": ["#0a2523", "#0e302d", "#123f3b", "#1a5a54", "#1f9d8f", "#43b8ab", "#78d0c6", "#aee3dc", "#dcf2ee"]
+      },
+      "app-bg": {
+        "role": "neutral",
+        "displayName": "Fundo do App (off-white verde-água)",
+        "canonical": "#eef3f2",
+        "tonalRamp": ["#162f2b", "#25423d", "#3a5852", "#5a6b68", "#7a8a87", "#a7b6b2", "#c7d6d3", "#dce6e4", "#eef3f2"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#162f2b",
+        "tonalRamp": ["#0b1816", "#0f211e", "#162f2b", "#25423d", "#3a5852", "#5a6b68", "#7a8a87", "#c7d6d3", "#eef3f2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Só heros de marketing; ausente no app." },
+      "headline": { "displayName": "Headline", "purpose": "Título de página." },
+      "title": { "displayName": "Title", "purpose": "Título de painel / cabeçalho de card." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido, 14px/1.55, 65–75ch." },
+      "label": { "displayName": "Label", "purpose": "Rótulo uppercase-tracked contido (um papel por tela)." }
+    },
+    "shadows": [
+      { "name": "sutil", "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "purpose": "Cards e painéis em repouso." },
+      { "name": "media", "value": "0 12px 18px -6px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.10)", "purpose": "Hover de cards e foco." },
+      { "name": "modal", "value": "0 20px 40px -12px rgba(0,0,0,0.30)", "purpose": "Container de modal sobre backdrop rgba(0,0,0,0.5)." }
+    ],
+    "motion": [
+      { "name": "transicao-padrao", "value": "150ms ease-out", "purpose": "Transições de estado (cor, hover)." },
+      { "name": "entrada", "value": "0.28s ease-out", "purpose": "fade-in / slide-up de conteúdo que chega." }
+    ],
+    "breakpoints": [
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação primária do app — o único CTA preenchido em teal.",
+      "html": "<button class=\"ds-btn-primary\">+ Nova OS</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #0d7d6e; color: #fff; font: 600 14px/1 Inter, system-ui, sans-serif; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out, transform 150ms ease-out; } .ds-btn-primary:hover { background: #0a6458; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(13,125,110,0.30); } .ds-btn-primary:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ação secundária — fundo neutro, borda fina.",
+      "html": "<button class=\"ds-btn-secondary\">Imprimir Relatório</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: #f0f5f4; color: #162f2b; font: 500 14px/1 Inter, system-ui, sans-serif; padding: 10px 16px; border: 1px solid #dce6e4; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-secondary:hover { background: #dce6e4; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de texto — fundo branco, foco em ring teal.",
+      "html": "<input class=\"ds-input\" placeholder=\"Buscar por placa ou cliente…\" />",
+      "css": ".ds-input { width: 100%; background: #fff; color: #162f2b; font: 400 14px/1.55 Inter, system-ui, sans-serif; padding: 10px 14px; border: 1px solid #dce6e4; border-radius: 6px; transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: #5f706c; } .ds-input:focus-visible { outline: none; border-color: #0d7d6e; box-shadow: 0 0 0 2px rgba(13,125,110,0.25); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Painel branco elevado, borda fina, sombra sutil.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-label\">FATURAMENTO</p><p class=\"ds-card-value\">R$ 60.110,42</p></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #dce6e4; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); } .ds-card-label { color: #5a6b68; font: 600 11px/1 Inter, system-ui, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 6px; } .ds-card-value { color: #162f2b; font: 700 22px/1.1 Inter, system-ui, sans-serif; margin: 0; }"
+    },
+    {
+      "name": "Status Chip (positive)",
+      "kind": "chip",
+      "refersTo": "chip-status-positive",
+      "description": "Chip de status positivo — teal-soft com texto teal-ink (AA).",
+      "html": "<span class=\"ds-chip-positive\">Aprovado</span>",
+      "css": ".ds-chip-positive { display: inline-flex; align-items: center; gap: 6px; background: #dcf2ee; color: #0a6458; font: 600 11px/1 Inter, system-ui, sans-serif; padding: 4px 10px; border: 1px solid rgba(13,125,110,0.40); border-radius: 9999px; }"
+    },
+    {
+      "name": "Status Chip (neutral)",
+      "kind": "chip",
+      "refersTo": "chip-status-neutral",
+      "description": "Chip de status neutro — calmo, para listas densas.",
+      "html": "<span class=\"ds-chip-neutral\">Entregue</span>",
+      "css": ".ds-chip-neutral { display: inline-flex; align-items: center; gap: 6px; background: #f0f5f4; color: #5a6b68; font: 600 11px/1 Inter, system-ui, sans-serif; padding: 4px 10px; border-radius: 9999px; }"
+    },
+    {
+      "name": "Sidebar Nav Link (active)",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "Item de navegação ativo na sidebar teal profundo.",
+      "html": "<div class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-active\">Painel</a><a class=\"ds-nav-link\">Ordens de Serviço</a></div>",
+      "css": ".ds-nav { background: #123f3b; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; gap: 2px; width: 220px; } .ds-nav-link { display: block; padding: 6px 10px; border-radius: 8px; color: #c8dcd8; font: 500 13px/1.3 Inter, system-ui, sans-serif; text-decoration: none; cursor: pointer; transition: background 150ms; } .ds-nav-link:hover { background: rgba(255,255,255,0.06); color: #fff; } .ds-nav-active { background: rgba(31,157,143,0.16); color: #fff; box-shadow: inset 2px 0 0 #1f9d8f; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Oficina Integrada",
+    "overview": "O Sygma Auto é o balcão digital calmo e organizado de uma oficina mecânica: superfície off-white fria verde-água, com o verde-água profundo (#0d7d6e) como assinatura do produto. Densidade de ERP sem ruído de planilha — hierarquia clara, um acento só. O sistema opera em dois registros deliberados: produto claro/teal e marca dark/gold, que nunca se misturam.",
+    "keyCharacteristics": [
+      "Superfície clara verde-água fria; um acento teal único carrega a identidade.",
+      "Densidade operacional (grades ERP) com hierarquia firme, não ruído.",
+      "Dois registros separados: produto teal / marca gold.",
+      "Legível com pressa: contraste AA real, alvos de toque adequados, status inequívoco.",
+      "Tema escuro opcional (kanban/login) espelhando os mesmos tokens semânticos."
+    ],
+    "rules": [
+      { "name": "A Regra dos Dois Registros", "body": "Gold é marca, teal é produto. Nenhum indigo/violet/roxo estrutural no app — só como codificação semântica (estágio, papel, categoria), nunca como chrome.", "section": "colors" },
+      { "name": "A Regra da Tinta", "body": "Texto teal usa sempre teal-ink (#0a6458), nunca o teal de preenchimento (#0d7d6e). Preenchimento e texto são tokens distintos por exigência de contraste.", "section": "colors" },
+      { "name": "A Regra do Peso Único", "body": "Peso máximo padrão é 700. font-black (900) nem é carregado e está aposentado — hierarquia por tamanho+cor.", "section": "typography" },
+      { "name": "A Regra do Eyebrow Contido", "body": "Rótulo uppercase-tracked tem um papel por tela. Eyebrow em toda seção é gramática de IA. Tracking máximo tracking-wide.", "section": "typography" },
+      { "name": "A Regra Plana por Padrão", "body": "Superfícies planas em repouso; separação por cor e borda 1px. Sombra é resposta a estado. Nunca borda 1px + sombra ≥16px (ghost-card).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar Verde-Água Profundo (#0d7d6e) como o único acento de ação/identidade do app.",
+      "Do usar teal-ink (#0a6458) para todo texto teal em fundo claro/tint (AA).",
+      "Do deixar tamanho e cor carregarem a hierarquia; peso máximo padrão 700.",
+      "Do manter status sempre com rótulo em texto, não só cor.",
+      "Do destacar itens atrasados/SLA em contraste cheio (borda vermelha sólida), nunca esmaecidos.",
+      "Do manter contraste AA: corpo ≥4.5:1, faint no piso #5f706c."
+    ],
+    "donts": [
+      "Don't deixar gold vazar no produto nem teal vazar na marca.",
+      "Don't usar indigo/violet/roxo como chrome (botão, foco, link) no app.",
+      "Don't cair em SaaS genérico com cara de IA: gradiente roxo, cards idênticos, eyebrow em toda seção, hero-metric template.",
+      "Don't virar planilha/Excel cru nem dashboard corporativo frio nem app consumer fofo.",
+      "Don't usar font-black (900) nem tracking-widest.",
+      "Don't parear borda 1px com sombra ≥16px (ghost-card); nem gradient-text; nem side-stripe >1px."
+    ]
+  }
+}
