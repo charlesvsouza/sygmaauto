@@ -20,13 +20,14 @@
   /* Texto */
   --ink: 22 47 43;             /* #162f2b texto principal */
   --muted: 90 107 104;         /* #5a6b68 texto secundário (AA) */
-  --faint: 122 138 135;        /* #7a8a87 texto fraco */
+  --faint: 95 112 108;         /* #5f706c texto fraco (AA: 4.66 no app) */
 
   /* Acento verde-água (mais profundo p/ passar AA com texto branco) */
-  --accent: 13 125 110;        /* #0d7d6e */
+  --accent: 13 125 110;        /* #0d7d6e (preenchimento/botão) */
   --accent-hover: 10 100 88;   /* #0a6458 */
   --accent-fg: 255 255 255;    /* texto sobre acento */
   --accent-soft: 220 242 238;  /* #dcf2ee fundo suave */
+  --accent-ink: 10 100 88;     /* #0a6458 teal p/ TEXTO em fundo claro/tint (AA: 6.0 no soft) */
 
   /* Sidebar (teal profundo) */
   --sidebar: 18 63 59;         /* #123f3b */
@@ -65,6 +66,7 @@
   --accent-hover: 31 157 143;
   --accent-fg: 8 9 10;
   --accent-soft: 20 45 42;
+  --accent-ink: 45 179 163;    /* teal claro p/ texto no escuro */
 
   --sidebar: 18 24 29;
   --sidebar-ink: 200 205 210;
@@ -207,7 +209,7 @@ textarea {
   .badge-orcamento { @apply bg-amber-100 text-amber-800; }
   .badge-pendente { @apply bg-amber-100 text-amber-800; }
   .badge-execucao { @apply bg-blue-100 text-blue-800; }
-  .badge-pronto { @apply bg-accent-soft text-accent; }
+  .badge-pronto { @apply bg-accent-soft text-accent-ink; }
   .badge-finalizado { @apply bg-emerald-100 text-emerald-800; }
   .badge-pago { @apply bg-teal-100 text-teal-800; }
   .badge-cancelado { @apply bg-red-100 text-red-800; }
@@ -225,7 +227,7 @@ textarea {
   /* Sidebar legacy links */
   .sidebar-link { @apply flex items-center gap-3 px-3.5 py-2.5 rounded-md text-muted font-medium transition-colors; }
   .sidebar-link:hover { @apply bg-ink/5 text-ink; }
-  .sidebar-link.active { @apply bg-accent-soft text-accent; }
+  .sidebar-link.active { @apply bg-accent-soft text-accent-ink; }
 
   /* Cabeçalhos de página */
   .page-header { @apply flex items-center justify-between mb-6; }
@@ -274,4 +276,4 @@ textarea {
   .chip { @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-panel-2 text-muted; }
 }
 
-.gradient-text { color: rgb(var(--accent)); }
+.gradient-text { color: rgb(var(--accent-ink)); }

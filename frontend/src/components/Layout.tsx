@@ -125,7 +125,7 @@ export function Layout() {
       <aside className="app-sidebar hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30 overflow-hidden">
         {/* Logo */}
         <div className="px-4 py-2.5 border-b border-line">
-          <SigmaAutoLogo variant="full" size={34} />
+          <SigmaAutoLogo variant="full" size={34} accent="teal" />
           <div className="mt-1.5 pl-0.5">
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               planName === 'START'
@@ -142,7 +142,7 @@ export function Layout() {
           {navGroups.map((group, gi) => (
             <div key={gi} className={gi > 0 ? 'mt-1.5 pt-1.5 border-t border-line' : ''}>
               {group.label && (
-                <p className="text-[8px] font-black text-white/45 uppercase tracking-widest px-2.5 mb-1">
+                <p className="text-[8px] font-bold text-white/45 uppercase tracking-wide px-2.5 mb-1">
                   {group.label}
                 </p>
               )}
@@ -212,7 +212,7 @@ export function Layout() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-5 border-b border-line flex items-center justify-between">
-          <SigmaAutoLogo variant="full" size={36} />
+          <SigmaAutoLogo variant="full" size={36} accent="teal" />
           <button onClick={() => setSidebarOpen(false)} className="text-sidebar-ink hover:text-white">
             <X className="w-6 h-6" />
           </button>
@@ -222,7 +222,7 @@ export function Layout() {
           {navGroups.map((group, gi) => (
             <div key={gi} className={gi > 0 ? 'mt-3 pt-3 border-t border-line' : ''}>
               {group.label && (
-                <p className="text-[9px] font-black text-white/45 uppercase tracking-widest px-3 mb-1.5">
+                <p className="text-[9px] font-bold text-white/45 uppercase tracking-wide px-3 mb-1.5">
                   {group.label}
                 </p>
               )}
@@ -298,7 +298,7 @@ export function Layout() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <SigmaAutoLogo variant="compact" size={28} />
+            <SigmaAutoLogo variant="compact" size={28} tone="dark" accent="teal" />
           </div>
           <div className="w-8" /> {/* Spacer */}
         </header>
@@ -342,7 +342,7 @@ export function Layout() {
             <div className="relative group">
               <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-ink/5 transition-all">
                 <div className="w-8 h-8 bg-surface-800 border border-line rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-xs font-semibold text-accent">
+                  <span className="text-xs font-semibold text-accent-ink">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -387,10 +387,10 @@ export function Layout() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center">
-                <Award className="w-5 h-5 text-accent" />
+                <Award className="w-5 h-5 text-accent-ink" />
               </div>
               <div>
-                <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">{upgradeModal.kind === 'retifica' ? 'Modo Especializado' : 'Recurso Premium'}</p>
+                <p className="text-xs font-bold text-surface-500 uppercase tracking-wide">{upgradeModal.kind === 'retifica' ? 'Modo Especializado' : 'Recurso Premium'}</p>
                 <h3 className="font-bold text-surface-50">{upgradeModal.kind === 'retifica' ? 'Modo Retífica de Motores' : featureLabel(upgradeModal.feature)}</h3>
               </div>
             </div>

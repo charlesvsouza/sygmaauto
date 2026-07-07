@@ -20,22 +20,22 @@ import { canAccessFeature, canAccessRetificaMode } from '../lib/planAccess';
 const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' | 'positive' | 'negative' }> = {
   ABERTA:               { label: 'Aberta',                tone: 'neutral' },
   ORCAMENTO:            { label: 'Aberta',                tone: 'neutral' }, // legado
-  EM_DIAGNOSTICO:       { label: 'Em Diagnostico',        tone: 'golden' },
-  ORCAMENTO_PRONTO:     { label: 'Orcamento Pronto',      tone: 'neutral' },
-  AGUARDANDO_APROVACAO: { label: 'Aguardando Aprovacao',  tone: 'neutral' },
+  EM_DIAGNOSTICO:       { label: 'Em Diagnóstico',        tone: 'golden' },
+  ORCAMENTO_PRONTO:     { label: 'Orçamento Pronto',      tone: 'neutral' },
+  AGUARDANDO_APROVACAO: { label: 'Aguardando Aprovação',  tone: 'neutral' },
   APROVADO:             { label: 'Aprovado',              tone: 'positive' },
   REPROVADO:            { label: 'Reprovado',             tone: 'negative' },
-  AGUARDANDO_PECAS:     { label: 'Aguardando Pecas',      tone: 'neutral' },
-  EM_EXECUCAO:          { label: 'Em Execucao',           tone: 'neutral' },
+  AGUARDANDO_PECAS:     { label: 'Aguardando Peças',      tone: 'neutral' },
+  EM_EXECUCAO:          { label: 'Em Execução',           tone: 'neutral' },
   PRONTO_ENTREGA:       { label: 'Pronto p/ Entrega',     tone: 'golden' },
   FATURADO:             { label: 'Faturado',              tone: 'neutral' },
   ENTREGUE:             { label: 'Entregue',              tone: 'neutral' },
   CANCELADO:            { label: 'Cancelado',             tone: 'negative' },
   DESMONTAGEM:          { label: 'Desmontagem',          tone: 'neutral' },
   METROLOGIA:           { label: 'Metrologia',           tone: 'golden' },
-  ORCAMENTO_RETIFICA:   { label: 'Orcamento Retifica',   tone: 'neutral' },
-  AGUARDANDO_APROVACAO_RETIFICA: { label: 'Aguardando Aprovacao', tone: 'neutral' },
-  EM_RETIFICA:          { label: 'Em Retifica',          tone: 'neutral' },
+  ORCAMENTO_RETIFICA:   { label: 'Orçamento Retífica',   tone: 'neutral' },
+  AGUARDANDO_APROVACAO_RETIFICA: { label: 'Aguardando Aprovação', tone: 'neutral' },
+  EM_RETIFICA:          { label: 'Em Retífica',          tone: 'neutral' },
   MONTAGEM:             { label: 'Montagem',             tone: 'neutral' },
   TESTE_FINAL:          { label: 'Teste Final',          tone: 'positive' },
 };
@@ -43,7 +43,7 @@ const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' |
 const STATUS_CHIPS: Record<string, string> = {
   neutral: 'bg-surface-900 text-surface-300 border border-surface-800',
   golden: 'bg-accent text-white border border-transparent',
-  positive: 'bg-accent/10 text-accent border border-accent/40',
+  positive: 'bg-accent/10 text-accent-ink border border-accent/40',
   negative: 'bg-red-50 text-red-700 border border-red-200',
 };
 
@@ -102,7 +102,7 @@ const RETIFICA_STATUS_FLOW_UI: Record<string, string[]> = {
 // Labels de acao para cada transicao (mais descritivos do que o nome do status)
 const STATUS_ACTION_LABEL: Record<string, string> = {
   EM_DIAGNOSTICO:       'Iniciar Diagnostico',
-  ORCAMENTO_PRONTO:     'Orcamento Pronto',
+  ORCAMENTO_PRONTO:     'Orçamento Pronto',
   AGUARDANDO_APROVACAO: 'Enviar para Aprovacao',
   APROVADO:             'Marcar como Aprovado',
   REPROVADO:            'Marcar como Reprovado',
@@ -1114,7 +1114,7 @@ export function ServiceOrdersPage() {
       <div className="w-80 flex flex-col bg-surface-950 border border-surface-800 rounded-xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-surface-800/60 bg-surface-900/50">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-black text-surface-100 flex items-center gap-2 uppercase text-xs tracking-tight">
+            <h2 className="font-bold text-surface-100 flex items-center gap-2 uppercase text-xs tracking-tight">
               <ClipboardList size={16} /> Ordens de Servico
             </h2>
             <div className="flex gap-2">
@@ -1167,18 +1167,18 @@ export function ServiceOrdersPage() {
                 )}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-[10px] font-mono font-black text-surface-500">{'#' + order.id.slice(0, 8)}</span>
+                  <span className="text-[10px] font-mono font-bold text-surface-500">{'#' + order.id.slice(0, 8)}</span>
                   <span className={cn('mt-1 h-2 w-2 rounded-full', statusIndicator(statusConfig[order.status]?.tone))} />
                 </div>
-                <p className="font-black text-surface-100 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
-                <p className="text-[10px] text-surface-500 font-black uppercase tracking-wider mb-2">
+                <p className="font-bold text-surface-100 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
+                <p className="text-[10px] text-surface-500 font-bold uppercase tracking-wider mb-2">
                   {getOrderAssetLabel(order)}
                 </p>
                 <div className="flex justify-between items-center">
                   <span className={cn('text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md', statusChip(statusConfig[order.status]?.tone))}>
                     {st.label}
                   </span>
-                  <span className="text-xs font-black text-surface-100">
+                  <span className="text-xs font-bold text-surface-100">
                     R$ {fmtBR(order.totalCost)}
                   </span>
                 </div>
@@ -1186,7 +1186,7 @@ export function ServiceOrdersPage() {
             );
           })}
           {filteredOrders.length === 0 && !loading && (
-            <p className="p-10 text-center text-xs font-bold uppercase tracking-widest text-surface-600">
+            <p className="p-10 text-center text-xs font-bold uppercase tracking-wide text-surface-600">
               Nenhuma OS encontrada
             </p>
           )}
@@ -1198,7 +1198,7 @@ export function ServiceOrdersPage() {
         {!selectedOrder ? (
           <div className="flex-1 flex flex-col items-center justify-center text-surface-700 opacity-50">
             <Layout size={64} className="mb-4 stroke-[1px]" />
-            <p className="font-bold uppercase tracking-widest text-xs">Selecione uma Ordem de Servico</p>
+            <p className="font-bold uppercase tracking-wide text-xs">Selecione uma Ordem de Servico</p>
           </div>
         ) : (
           <>
@@ -1210,9 +1210,9 @@ export function ServiceOrdersPage() {
                 </div>
                 <div>
                   <div className="mb-0.5">
-                    <span className="text-[10px] font-black text-surface-600 uppercase tracking-widest">OS</span>
+                    <span className="text-[10px] font-bold text-surface-600 uppercase tracking-wide">OS</span>
                   </div>
-                  <h1 className="text-xl font-black text-surface-100 tracking-tight uppercase">
+                  <h1 className="text-xl font-bold text-surface-100 tracking-tight uppercase">
                     #{selectedOrder.id.slice(0, 8).toUpperCase()}
                   </h1>
                 </div>
@@ -1301,9 +1301,9 @@ export function ServiceOrdersPage() {
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
               <div className="mx-6 mt-4 p-4 bg-accent border border-accent/40 rounded-lg flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl text-accent">!</span>
+                  <span className="text-2xl text-accent-ink">!</span>
                   <div>
-                    <p className="text-sm font-black text-surface-100">Orcamento reprovado pelo cliente</p>
+                    <p className="text-sm font-bold text-surface-100">Orcamento reprovado pelo cliente</p>
                     <p className="text-xs text-surface-400 mt-0.5">
                       Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnostico</strong>?
                       O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
@@ -1314,13 +1314,13 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={createDiagnosticOrder}
                     disabled={creatingDiagOrder}
-                    className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-black hover:bg-accent transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
+                    className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
                     {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'OK'} Sim, criar nova O.S.
                   </button>
                   <button
                     onClick={() => setShowDiagBanner(false)}
-                    className="px-4 py-2 bg-white border border-surface-800 text-surface-300 rounded-xl text-xs font-black hover:bg-surface-950 transition-all whitespace-nowrap"
+                    className="px-4 py-2 bg-white border border-surface-800 text-surface-300 rounded-xl text-xs font-bold hover:bg-surface-950 transition-all whitespace-nowrap"
                   >
                     Nao, obrigado
                   </button>
@@ -1334,8 +1334,8 @@ export function ServiceOrdersPage() {
               {/* Andamento da O.S. */}
               <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-5">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Andamento da O.S.</h3>
-                  <span className="text-[10px] font-black text-surface-300 uppercase tracking-widest">
+                  <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Andamento da O.S.</h3>
+                  <span className="text-[10px] font-bold text-surface-300 uppercase tracking-wide">
                     Fase atual: {activeFlowPhases[getCurrentPhaseIndex(selectedOrder.status)]?.label || 'Abertura'}
                   </span>
                 </div>
@@ -1349,7 +1349,7 @@ export function ServiceOrdersPage() {
                       selectedOrder.status === 'DESMONTAGEM' || selectedOrder.status === 'METROLOGIA'
                     );
                     const inner = (
-                      <p className="text-[9px] font-black uppercase tracking-wider leading-snug">
+                      <p className="text-[9px] font-bold uppercase tracking-wider leading-snug">
                         {phase.label}
                         {canOpenMetrologia && (
                           <span className="block text-[8px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
@@ -1365,7 +1365,7 @@ export function ServiceOrdersPage() {
                         onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: selectedOrder.id.slice(-6).toUpperCase(), notes: selectedOrder.notes ?? null })}
                         className={cn(
                           'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-accent/40',
-                          isCurrent && 'border-accent/40 bg-accent/10 text-accent',
+                          isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
                           isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
                           !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
                         )}
@@ -1375,7 +1375,7 @@ export function ServiceOrdersPage() {
                     ) : (
                       <div key={phase.key} className={cn(
                         'rounded-xl border px-3 py-2 text-center transition-all',
-                        isCurrent && 'border-accent/40 bg-accent/10 text-accent',
+                        isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
                         isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
                         !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
                       )}>
@@ -1389,20 +1389,20 @@ export function ServiceOrdersPage() {
               {/* Cliente + Veiculo */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-surface-950 rounded-lg p-5 border border-surface-800">
-                  <h3 className="text-[10px] font-black text-surface-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-4 flex items-center gap-2">
                     <User size={13} className="text-surface-100" /> Dados do Cliente
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Nome do Cliente</p>
-                      <p className="font-black text-surface-100">{selectedOrder.customer?.name}</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Nome do Cliente</p>
+                      <p className="font-bold text-surface-100">{selectedOrder.customer?.name}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Telefone</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Telefone</p>
                       <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.phone || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Documento</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Documento</p>
                       <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.document || '-'}</p>
                     </div>
                   </div>
@@ -1410,7 +1410,7 @@ export function ServiceOrdersPage() {
 
                 <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h3 className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                    <h3 className="text-[10px] font-bold text-accent-ink uppercase tracking-wide flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
@@ -1429,7 +1429,7 @@ export function ServiceOrdersPage() {
                               await changeStatus(prevStatus, true);
                             }}
                             title={`Retroceder para: ${prevPhase.label}`}
-                            className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 bg-amber-500/15 text-amber-600 hover:bg-amber-500/25 transition-all"
+                            className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 bg-amber-500/15 text-amber-600 hover:bg-amber-500/25 transition-all"
                           >
                             Voltar
                           </button>
@@ -1440,7 +1440,7 @@ export function ServiceOrdersPage() {
                           onClick={() => setShowStatusDropdown((v) => !v)}
                           title="Clique para alterar o status"
                           className={cn(
-                            'text-[9px] px-2 py-0.5 rounded-md font-black flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-700 cursor-pointer',
+                            'text-[9px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-700 cursor-pointer',
                             statusChip(statusConfig[selectedOrder.status]?.tone)
                           )}
                         >
@@ -1448,14 +1448,14 @@ export function ServiceOrdersPage() {
                           <ChevronDown size={9} className={cn('transition-transform', showStatusDropdown && 'rotate-180')} />
                         </button>
                       ) : (
-                        <span className={cn('text-[9px] px-2 py-0.5 rounded-md font-black', statusChip(statusConfig[selectedOrder.status]?.tone))}>
+                        <span className={cn('text-[9px] px-2 py-0.5 rounded-md font-bold', statusChip(statusConfig[selectedOrder.status]?.tone))}>
                           {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}
                         </span>
                       )}
 
                       {showStatusDropdown && (
                         <div className="absolute top-full right-0 mt-1.5 z-50 bg-white border border-surface-800 rounded-lg shadow-2xl p-1.5 min-w-[210px]">
-                          <p className="text-[9px] font-black text-surface-600 uppercase tracking-widest px-3 py-1.5 border-b border-surface-900 mb-1">
+                          <p className="text-[9px] font-bold text-surface-600 uppercase tracking-wide px-3 py-1.5 border-b border-surface-900 mb-1">
                             Alterar Status
                           </p>
                           {Object.entries(statusConfig)
@@ -1486,23 +1486,23 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">Veiculo</p>
-                      <p className="font-black text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Veiculo</p>
+                      <p className="font-bold text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
-                      <p className="font-mono font-black text-accent">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
+                      <p className="font-mono font-bold text-accent-ink">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">KM Atual</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">KM Atual</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-black uppercase mb-1">KM Entrada</p>
+                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">KM Entrada</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                   </div>
@@ -1513,7 +1513,7 @@ export function ServiceOrdersPage() {
               <div className="grid grid-cols-1 gap-4">
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
-                    <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">
                       {['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
                     </label>
                     <textarea
@@ -1525,7 +1525,7 @@ export function ServiceOrdersPage() {
                         e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                       readOnly={isReprovado}
-                      className={`w-full min-h-24 bg-surface-950 border border-surface-800 rounded-xl p-3 text-xs font-black text-surface-100 placeholder:text-surface-600 focus:bg-white focus:ring-4 focus:ring-surface-100/5 focus:border-accent transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-900' : ''}`}
+                      className={`w-full min-h-24 bg-surface-950 border border-surface-800 rounded-xl p-3 text-xs font-bold text-surface-100 placeholder:text-surface-600 focus:bg-white focus:ring-4 focus:ring-surface-100/5 focus:border-accent transition-colors resize-y overflow-hidden ${isReprovado ? 'opacity-60 cursor-not-allowed bg-surface-900' : ''}`}
                     />
                   </div>
                 ))}
@@ -1533,7 +1533,7 @@ export function ServiceOrdersPage() {
 
               <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-4 flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Reserva de Pecas no Orcamento</p>
+                  <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Reserva de Pecas no Orcamento</p>
                   <p className="text-xs text-surface-400 mt-1">
                     Quando marcado, sinaliza a reserva das pecas para esta O.S. Na aprovacao do orcamento, todas as pecas pendentes serão debitadas do estoque automaticamente.
                   </p>
@@ -1545,16 +1545,16 @@ export function ServiceOrdersPage() {
                     onChange={(e) => setEdit({ ...edit, reserveStock: e.target.checked })}
                     className="h-4 w-4 rounded border-surface-700 text-surface-100 focus:ring-surface-600"
                   />
-                  <span className="text-xs font-black text-surface-300">Reservar</span>
+                  <span className="text-xs font-bold text-surface-300">Reservar</span>
                 </label>
               </div>
 
               {/* Servicos */}
               <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
                 <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-black text-surface-100 uppercase tracking-widest flex items-center gap-2">
+                  <h3 className="text-[10px] font-bold text-surface-100 uppercase tracking-wide flex items-center gap-2">
                     <Wrench size={14} /> Servicos Realizados
-                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-black">{serviceItems.length}</span>
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{serviceItems.length}</span>
                   </h3>
                   <button
                     onClick={() => openCatalog('service')}
@@ -1579,7 +1579,7 @@ export function ServiceOrdersPage() {
                   <tbody className="divide-y divide-surface-900/70">
                     {serviceItems.map((item: any) => (
                       <tr key={item.id} className="hover:bg-surface-950/60">
-                        <td className="px-5 py-3 font-black text-surface-100">{item.description}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100">{item.description}</td>
                         <td className="px-5 py-3">
                           <select
                             value={item.assignedUserId || ''}
@@ -1590,7 +1590,7 @@ export function ServiceOrdersPage() {
                             }}
                             disabled={isClosed || !canAssignExecutor}
                             className={cn(
-                              'w-full rounded-lg border px-2 py-1.5 text-[11px] font-black',
+                              'w-full rounded-lg border px-2 py-1.5 text-[11px] font-bold',
                               isClosed || !canAssignExecutor
                                 ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
                                 : 'bg-white border-surface-800'
@@ -1605,13 +1605,13 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3">
                           <input
                             type="number" step="0.5" min="0.5"
-                            className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-black text-xs"
+                            className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-bold text-xs"
                             value={pendingQtyByItem[item.id] ?? item.quantity}
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-black text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
                           <button
                             onClick={() => removeItem(item.id)}
@@ -1633,9 +1633,9 @@ export function ServiceOrdersPage() {
               {/* Pecas */}
               <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
                 <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-black text-surface-100 uppercase tracking-widest flex items-center gap-2">
+                  <h3 className="text-[10px] font-bold text-surface-100 uppercase tracking-wide flex items-center gap-2">
                     <Package size={14} /> Pecas e Materiais
-                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-black">{partItems.length}</span>
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{partItems.length}</span>
                   </h3>
                   <button
                     onClick={() => openCatalog('part')}
@@ -1661,10 +1661,10 @@ export function ServiceOrdersPage() {
                   <tbody className="divide-y divide-surface-900/70">
                     {partItems.map((item: any) => (
                       <tr key={item.id} className="hover:bg-surface-950/60">
-                        <td className="px-5 py-3 font-black text-surface-100">
+                        <td className="px-5 py-3 font-bold text-surface-100">
                           <div>{item.description}</div>
-                          <div className="mt-1 text-[10px] text-surface-500 font-black">
-                            Estoque atual: <span className={cn('font-black', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
+                          <div className="mt-1 text-[10px] text-surface-500 font-bold">
+                            Estoque atual: <span className={cn('font-bold', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
                             {' - '}Status: {item.applied ? 'Baixada' : 'Pendente'}
                           </div>
                         </td>
@@ -1673,7 +1673,7 @@ export function ServiceOrdersPage() {
                             type="number" min="1"
                             disabled={isClosed || !canManageStock}
                             className={cn(
-                              'w-16 border border-transparent rounded-md px-2 py-1 text-center font-black text-xs',
+                              'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
                               isClosed || !canManageStock ? 'bg-surface-900 text-surface-600 cursor-not-allowed' : 'bg-surface-950 hover:border-surface-800'
                             )}
                             value={pendingQtyByItem[item.id] ?? item.quantity}
@@ -1681,7 +1681,7 @@ export function ServiceOrdersPage() {
                           />
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-black text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
                           <button
                             onClick={() => removeItem(item.id)}
@@ -1705,10 +1705,10 @@ export function ServiceOrdersPage() {
 
                 {/* Avançar status */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Avançar Status</h4>
+                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Avançar Status</h4>
                   <div className="flex flex-col gap-1.5">
                     {nextStatuses.length === 0 && (
-                      <p className="text-[10px] font-black text-surface-600">Fluxo encerrado para este status.</p>
+                      <p className="text-[10px] font-bold text-surface-600">Fluxo encerrado para este status.</p>
                     )}
                     {nextStatuses.map((status) => {
                       const isCancel = status === 'CANCELADO';
@@ -1722,7 +1722,7 @@ export function ServiceOrdersPage() {
                             changeStatus(status);
                           }}
                           className={cn(
-                            'w-full px-3 py-2 rounded-xl text-[10px] font-black tracking-wide transition-all text-left',
+                            'w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left',
                             isNegative
                               ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
                               : 'bg-accent text-white hover:bg-accent-hover shadow-sm'
@@ -1737,7 +1737,7 @@ export function ServiceOrdersPage() {
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (
                       <button
                         onClick={() => { setReserveResult(null); setExpectedPartsDate(''); setShowReserveParts(true); }}
-                        className="w-full px-3 py-2 rounded-xl text-[10px] font-black tracking-wide transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
+                        className="w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
                       >
                         <ShoppingCart size={12} />
                         {selectedOrder?.partsReserved ? 'Rever Pedido de Pecas' : 'Verificar / Reservar Pecas'}
@@ -1748,7 +1748,7 @@ export function ServiceOrdersPage() {
 
                 {/* Agendamento */}
                 <div className="space-y-2">
-                  <h4 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Agendamento</h4>
+                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Agendamento</h4>
                   <input
                     type="datetime-local"
                     value={edit.scheduledDate}
@@ -1759,7 +1759,7 @@ export function ServiceOrdersPage() {
 
                 {/* Forma de pagamento */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Forma de Pagamento</h4>
+                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Forma de Pagamento</h4>
                   <div className="grid grid-cols-2 gap-1.5">
                     {PAYMENT_METHODS.map((pm) => (
                       <button
@@ -1767,7 +1767,7 @@ export function ServiceOrdersPage() {
                         type="button"
                         onClick={() => setEdit({ ...edit, paymentMethod: pm })}
                         className={cn(
-                          'px-2.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wide transition-all border text-left leading-tight',
+                          'px-2.5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-wide transition-all border text-left leading-tight',
                           edit.paymentMethod === pm
                             ? 'bg-accent text-white border-accent shadow-lg'
                             : 'bg-white border-surface-800 text-surface-400 hover:border-surface-600'
@@ -1784,7 +1784,7 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
-                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white transition-all hover:bg-accent-hover disabled:opacity-60"
+                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-accent-hover disabled:opacity-60"
                     title={!canSyncOrder ? 'Sem permissao para atualizar O.S.' : undefined}
                   >
                     {syncingTotals ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
@@ -1801,8 +1801,8 @@ export function ServiceOrdersPage() {
                     </div>
                   ))}
                   <div className="pt-3 border-t border-accent">
-                    <p className="text-[10px] font-black text-accent uppercase tracking-widest mb-1">Total da Ordem</p>
-                    <p className="text-3xl font-black tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
+                    <p className="text-[10px] font-bold text-accent-ink uppercase tracking-wide mb-1">Total da Ordem</p>
+                    <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
                 </div>
               </div>
@@ -1825,7 +1825,7 @@ export function ServiceOrdersPage() {
                     <ShoppingCart size={18} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="font-black text-white text-sm uppercase tracking-widest">Reserva de Pecas</h3>
+                    <h3 className="font-bold text-white text-sm uppercase tracking-wide">Reserva de Pecas</h3>
                     <p className="text-[10px] text-surface-200 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
@@ -1839,23 +1839,23 @@ export function ServiceOrdersPage() {
                   <>
                     {/* Lista de pecas */}
                     <div className="space-y-2">
-                      <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Pecas desta OS</p>
+                      <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Pecas desta OS</p>
                       {partItems.map((item: any) => {
                         const stock = Number(item.part?.currentStock ?? 0);
                         const needed = Math.ceil(Number(item.quantity));
                         const ok = stock >= needed;
                         return (
-                          <div key={item.id} className={cn('flex items-center justify-between rounded-xl px-3 py-2 border text-xs', ok ? 'bg-accent-soft border-accent/40 text-accent' : 'bg-red-50 border-red-200 text-red-800')}>
+                          <div key={item.id} className={cn('flex items-center justify-between rounded-xl px-3 py-2 border text-xs', ok ? 'bg-accent-soft border-accent/40 text-accent-ink' : 'bg-red-50 border-red-200 text-red-800')}>
                             <div className="flex items-center gap-2">
-                              {ok ? <CheckCircle2 size={14} className="text-accent shrink-0" /> : <AlertTriangle size={14} className="text-red-500 shrink-0" />}
+                              {ok ? <CheckCircle2 size={14} className="text-accent-ink shrink-0" /> : <AlertTriangle size={14} className="text-red-500 shrink-0" />}
                               <div>
                                 <p className="font-bold text-surface-100 leading-tight">{item.description}</p>
                                 {item.part?.internalCode && <p className="text-surface-500 text-[10px]">Cod: {item.part.internalCode}</p>}
                               </div>
                             </div>
                             <div className="text-right shrink-0">
-                              <p className="font-black text-surface-300">Nec: {needed}</p>
-                              <p className={cn('text-[10px] font-bold', ok ? 'text-accent' : 'text-red-600')}>Estoque: {stock}</p>
+                              <p className="font-bold text-surface-300">Nec: {needed}</p>
+                              <p className={cn('text-[10px] font-bold', ok ? 'text-accent-ink' : 'text-red-600')}>Estoque: {stock}</p>
                             </div>
                           </div>
                         );
@@ -1864,7 +1864,7 @@ export function ServiceOrdersPage() {
 
                     {/* Data prevista chegada */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-surface-500 uppercase tracking-widest flex items-center gap-1.5">
+                      <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide flex items-center gap-1.5">
                         <Calendar size={11} /> Data prevista de chegada (para pecas faltantes)
                       </label>
                       <input
@@ -1880,7 +1880,7 @@ export function ServiceOrdersPage() {
                     <button
                       onClick={handleReserveParts}
                       disabled={reserveLoading}
-                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent text-white font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                     >
                       {reserveLoading ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
                       {reserveLoading ? 'Processando...' : 'Confirmar Reserva'}
@@ -1892,12 +1892,12 @@ export function ServiceOrdersPage() {
                     {/* Resumo */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-accent-soft border border-accent/40 rounded-lg p-4 text-center">
-                        <p className="text-2xl font-black text-accent">{reserveResult.reserved}</p>
-                        <p className="text-[10px] font-bold text-accent uppercase tracking-wide">Reservadas</p>
-                        <p className="text-[9px] text-accent/80 mt-0.5">Baixadas do estoque</p>
+                        <p className="text-2xl font-bold text-accent-ink">{reserveResult.reserved}</p>
+                        <p className="text-[10px] font-bold text-accent-ink uppercase tracking-wide">Reservadas</p>
+                        <p className="text-[9px] text-accent-ink/80 mt-0.5">Baixadas do estoque</p>
                       </div>
                       <div className={cn('border rounded-lg p-4 text-center', reserveResult.missing > 0 ? 'bg-red-50 border-red-200' : 'bg-surface-950 border-surface-800 text-surface-500')}>
-                        <p className={cn('text-2xl font-black', reserveResult.missing > 0 ? 'text-red-600' : 'text-surface-300')}>{reserveResult.missing}</p>
+                        <p className={cn('text-2xl font-bold', reserveResult.missing > 0 ? 'text-red-600' : 'text-surface-300')}>{reserveResult.missing}</p>
                         <p className={cn('text-[10px] font-bold uppercase tracking-wide', reserveResult.missing > 0 ? 'text-red-700' : 'text-surface-500')}>Faltantes</p>
                         <p className="text-[9px] text-surface-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo disponivel'}</p>
                       </div>
@@ -1907,8 +1907,8 @@ export function ServiceOrdersPage() {
                     {reserveResult.missingItems?.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <p className="text-[10px] font-black text-surface-500 uppercase tracking-widest">Pedido de Compra</p>
-                          <span className="bg-accent text-white text-[10px] font-black px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
+                          <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Pedido de Compra</p>
+                          <span className="bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
                         </div>
                         {reserveResult.missingItems.map((item: any, i: number) => (
                           <div key={i} className="flex items-start justify-between rounded-xl px-3 py-2 bg-red-50 border border-red-200 text-xs">
@@ -1917,7 +1917,7 @@ export function ServiceOrdersPage() {
                               <p className="text-surface-500 text-[10px]">Cod: {item.internalCode || '-'} - Orig: {item.sku || '-'} - Fornec: {item.supplierName || '-'}</p>
                             </div>
                             <div className="text-right shrink-0 ml-2">
-                              <p className="font-black text-red-700">Falta: {item.lacking}</p>
+                              <p className="font-bold text-red-700">Falta: {item.lacking}</p>
                               <p className="text-[10px] text-surface-500">Estoque: {item.inStock}</p>
                             </div>
                           </div>
@@ -1925,7 +1925,7 @@ export function ServiceOrdersPage() {
 
                         <button
                           onClick={downloadPurchaseOrderPdf}
-                          className="w-full py-2.5 rounded-xl bg-accent text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
+                          className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
                         >
                           <Printer size={14} /> Imprimir Pedido de Compra
                         </button>
@@ -1934,7 +1934,7 @@ export function ServiceOrdersPage() {
 
                     <button
                       onClick={() => setShowReserveParts(false)}
-                      className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-black text-xs tracking-wide hover:bg-surface-800 transition-all"
+                      className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-bold text-xs tracking-wide hover:bg-surface-800 transition-all"
                     >
                       Fechar
                     </button>
@@ -1960,7 +1960,7 @@ export function ServiceOrdersPage() {
                     {catalogMode === 'service' ? <Wrench size={20} /> : <Package size={20} />}
                   </div>
                   <div>
-                    <h3 className="font-black text-surface-100 uppercase text-sm tracking-widest">
+                    <h3 className="font-bold text-surface-100 uppercase text-sm tracking-wide">
                       {catalogMode === 'service' ? 'Adicionar Servico' : 'Lancar Peca'}
                     </h3>
                     <p className="text-[10px] text-surface-500 font-bold uppercase">
@@ -1998,7 +1998,7 @@ export function ServiceOrdersPage() {
                     className="overflow-hidden border-b border-surface-800 bg-surface-950/70"
                   >
                     <div className="p-4 space-y-3">
-                      <p className="text-[9px] font-black text-surface-300 uppercase tracking-widest flex items-center gap-1">
+                      <p className="text-[9px] font-bold text-surface-300 uppercase tracking-wide flex items-center gap-1">
                         <Sparkles size={11} />
                         IA Assistiva - descreva o problema e receba sugestoes
                       </p>
@@ -2026,16 +2026,16 @@ export function ServiceOrdersPage() {
                             <div key={i} className="flex items-center justify-between bg-white border border-surface-800 rounded-lg px-3 py-2.5 gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                  <span className={cn('text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-black/50 text-surface-300')}>
+                                  <span className={cn('text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-black/50 text-surface-300')}>
                                     {s.type === 'service' ? 'Servico' : 'Peca'}
                                   </span>
-                                  <span className="text-[10px] font-black text-surface-200 truncate">{s.description}</span>
+                                  <span className="text-[10px] font-bold text-surface-200 truncate">{s.description}</span>
                                 </div>
                                 <p className="text-[9px] text-surface-500 truncate">{s.reason}</p>
                               </div>
                               <div className="text-right shrink-0">
                                 {s.estimatedPrice > 0 && (
-                                  <p className="text-[10px] font-black text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
+                                  <p className="text-[10px] font-bold text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
                                 )}
                                 <button
                                   onClick={() => addItem({
@@ -2046,7 +2046,7 @@ export function ServiceOrdersPage() {
                                     unitPrice: s.estimatedPrice ?? 0,
                                   })}
                                   disabled={isClosed}
-                                  className="mt-0.5 text-[9px] font-black text-accent hover:text-accent uppercase tracking-wider disabled:opacity-40"
+                                  className="mt-0.5 text-[9px] font-bold text-accent-ink hover:text-accent-ink uppercase tracking-wider disabled:opacity-40"
                                 >
                                   + Lancar
                                 </button>
@@ -2065,7 +2065,7 @@ export function ServiceOrdersPage() {
 
               {/* Quick Add */}
               <div className="p-4 border-b border-surface-800/70 bg-surface-950">
-                <p className="text-[9px] font-black text-surface-300 uppercase tracking-widest mb-2 flex items-center gap-1">
+                <p className="text-[9px] font-bold text-surface-300 uppercase tracking-wide mb-2 flex items-center gap-1">
                   <Zap size={11} />
                   {catalogMode === 'service' ? 'Servico avulso (nao cadastrado)' : 'Peca avulsa (nao cadastrada)'}
                 </p>
@@ -2196,20 +2196,20 @@ export function ServiceOrdersPage() {
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-bold text-surface-100 text-sm truncate">{p.name}</p>
                                 {p.currentStock <= (p.minStock || 0) && (
-                                  <span className="text-[8px] font-black uppercase px-1.5 py-0.5 bg-red-100 text-red-600 rounded shrink-0">Estoque Baixo</span>
+                                  <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 bg-red-100 text-red-600 rounded shrink-0">Estoque Baixo</span>
                                 )}
                               </div>
                               <p className="text-[10px] text-surface-500 font-bold mt-0.5">
                                 {p.internalCode && `${p.internalCode} - `}
-                                Estoque: <span className={cn('font-black', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
-                                {' - Minimo: '}<span className="font-black text-surface-300">{p.minStock || 0}</span>
+                                Estoque: <span className={cn('font-bold', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
+                                {' - Minimo: '}<span className="font-bold text-surface-300">{p.minStock || 0}</span>
                                 {' - '}R$ {fmtBR(p.unitPrice)}
                               </p>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               <div className="flex items-center border border-surface-800 rounded-xl overflow-hidden">
                                 <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">-</button>
-                                <span className="w-8 text-center text-sm font-black">{qty}</span>
+                                <span className="w-8 text-center text-sm font-bold">{qty}</span>
                                 <button onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">+</button>
                               </div>
                               <button
@@ -2253,7 +2253,7 @@ export function ServiceOrdersPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-surface-100 uppercase tracking-tight">Nova OS</h2>
+                <h2 className="text-2xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
                 <button onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
               <form className="space-y-5" onSubmit={async (e) => {
@@ -2293,7 +2293,7 @@ export function ServiceOrdersPage() {
                           : 'border-surface-800 bg-white text-surface-300 hover:border-surface-600'
                       )}
                     >
-                      <span className="text-xs font-black">{label}</span>
+                      <span className="text-xs font-bold">{label}</span>
                       <span className={cn('text-[10px] mt-0.5', newOrder.orderType === value ? 'text-surface-700' : 'text-surface-500')}>{desc}</span>
                     </button>
                   ))}
@@ -2316,7 +2316,7 @@ export function ServiceOrdersPage() {
                       <button
                         type="button"
                         onClick={() => setShowQuickVehicleForm((prev) => !prev)}
-                        className="text-[10px] font-black text-accent bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
+                        className="text-[10px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
                       >
                         <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veiculo'}
                       </button>
@@ -2328,7 +2328,7 @@ export function ServiceOrdersPage() {
                   </select>
 
                   {newOrder.customerId && vehiclesOfSelectedCustomer.length === 0 && !showQuickVehicleForm && (
-                    <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent font-medium">
+                    <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium">
                       Este cliente ainda nao possui veiculo cadastrado. Clique em Incluir veiculo para cadastrar agora.
                     </div>
                   )}
@@ -2375,7 +2375,7 @@ export function ServiceOrdersPage() {
                           onClick={createQuickVehicle}
                           disabled={creatingQuickVehicle}
                           className={cn(
-                            'px-4 py-2 rounded-xl text-xs font-black transition-all',
+                            'px-4 py-2 rounded-xl text-xs font-bold transition-all',
                             creatingQuickVehicle
                               ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
                               : 'bg-accent text-white hover:bg-accent-hover'
@@ -2395,14 +2395,14 @@ export function ServiceOrdersPage() {
                     );
                     if (openForVehicle.length === 0) return null;
                     return (
-                      <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent font-medium space-y-1">
+                      <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium space-y-1">
                         <p>
                           Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
                           {openForVehicle.map((o: any) => (
-                            <span key={o.id} className="ml-1 font-mono font-black">#{o.id.slice(0, 8).toUpperCase()}</span>
+                            <span key={o.id} className="ml-1 font-mono font-bold">#{o.id.slice(0, 8).toUpperCase()}</span>
                           ))}
                         </p>
-                        <p className="text-accent/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
+                        <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
                       </div>
                     );
                   })()}
@@ -2519,19 +2519,19 @@ export function ServiceOrdersPage() {
                 <Trash2 size={22} className="text-red-600" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-surface-100 uppercase tracking-tight">Excluir O.S.</h2>
+                <h2 className="text-lg font-bold text-surface-100 uppercase tracking-tight">Excluir O.S.</h2>
                 <p className="text-xs text-surface-500 font-medium">Esta ação e irreversível</p>
               </div>
             </div>
 
             <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-xs text-red-700 font-medium space-y-1">
-              <p><span className="font-black">OS:</span> #{selectedOrder.id.slice(0, 8).toUpperCase()}</p>
-              <p><span className="font-black">Status atual:</span> {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}</p>
-              <p><span className="font-black">Total:</span> R$ {fmtBR(selectedOrder.totalCost)}</p>
+              <p><span className="font-bold">OS:</span> #{selectedOrder.id.slice(0, 8).toUpperCase()}</p>
+              <p><span className="font-bold">Status atual:</span> {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}</p>
+              <p><span className="font-bold">Total:</span> R$ {fmtBR(selectedOrder.totalCost)}</p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-surface-400 uppercase tracking-wider">
+              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">
                 Motivo da exclusão (opcional)
               </label>
               <textarea
@@ -2542,7 +2542,7 @@ export function ServiceOrdersPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-surface-400 uppercase tracking-wider">
+              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">
                 Digite o numero da O.S. para confirmar:
                 <span className="ml-2 font-mono text-surface-100">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
               </label>

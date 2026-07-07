@@ -202,7 +202,7 @@ function SupplierModal({ onClose, onSaved }: { onClose: () => void; onSaved: () 
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
         className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
         <div className="px-8 py-6 border-b border-line flex items-center justify-between">
-          <h2 className="text-lg font-black text-surface-50 uppercase">Novo Fornecedor</h2>
+          <h2 className="text-lg font-bold text-surface-50 uppercase">Novo Fornecedor</h2>
           <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
@@ -375,13 +375,13 @@ export function InventoryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-surface-50 tracking-tight uppercase">Estoque de Peças</h1>
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight uppercase">Estoque de Peças</h1>
           <p className="text-surface-400 font-medium">{parts.length} itens • {suppliers.length} fornecedores</p>
         </div>
         <div className="flex gap-3">
           <button onClick={() => setShowImportNFModal(true)}
             disabled={!canManageParts}
-            className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-indigo-500/30 text-indigo-700 font-bold hover:border-indigo-500/40 hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-50">
+            className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-accent/30 text-accent-ink font-bold hover:border-accent/50 hover:bg-accent/10 transition-all text-sm disabled:opacity-50">
             <FileSpreadsheet className="w-4 h-4" /> Importar NF
           </button>
           <button onClick={() => setShowSupplierModal(true)}
@@ -390,7 +390,7 @@ export function InventoryPage() {
           </button>
           <button onClick={openNew}
             disabled={!canManageParts}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-black shadow-lg hover:bg-accent-hover transition-all active:scale-95">
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-bold shadow-lg hover:bg-accent-hover transition-all active:scale-95">
             <Plus className="w-5 h-5" /> Nova Peça
           </button>
         </div>
@@ -422,7 +422,7 @@ export function InventoryPage() {
             </div>
             <div>
               <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">{kpi.label}</p>
-              <p className="text-xl font-black text-surface-50">{kpi.value}</p>
+              <p className="text-xl font-bold text-surface-50">{kpi.value}</p>
             </div>
           </motion.div>
         ))}
@@ -445,7 +445,7 @@ export function InventoryPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-48 rounded-lg border border-line bg-panel">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-ink" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center rounded-lg border border-line bg-panel">
@@ -511,7 +511,7 @@ export function InventoryPage() {
                             <ArrowUpRight className="w-4 h-4" />
                           </button>
                           <button onClick={() => openEdit(part)} disabled={!canManageParts}
-                            className="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                            className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <Edit className="w-4 h-4" />
                           </button>
                         </div>
@@ -535,7 +535,7 @@ export function InventoryPage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
               <div className="px-8 py-6 border-b border-line flex items-center justify-between bg-surface-950/40 shrink-0">
-                <h2 className="text-xl font-black text-surface-50 uppercase">
+                <h2 className="text-xl font-bold text-surface-50 uppercase">
                   {editingPart ? 'Editar Peça' : 'Cadastrar Peça'}
                 </h2>
                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors">
@@ -581,7 +581,7 @@ export function InventoryPage() {
                       <button type="button" onClick={handleAutoCode}
                         disabled={!formData.category || !formData.name.trim()}
                         title={!formData.name.trim() ? 'Informe o nome da peça' : !formData.category ? 'Selecione a área/categoria' : 'Gerar código'}
-                        className="flex items-center gap-1 text-[10px] font-bold text-accent hover:text-accent-hover disabled:text-faint disabled:cursor-not-allowed transition-colors">
+                        className="flex items-center gap-1 text-[10px] font-bold text-accent-ink hover:text-accent-hover disabled:text-faint disabled:cursor-not-allowed transition-colors">
                         <RefreshCw className="w-3 h-3" /> Gerar
                       </button>
                     </div>
@@ -686,7 +686,7 @@ export function InventoryPage() {
               className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
               <div className="px-8 py-6 border-b border-line flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-black text-surface-50 uppercase">Movimentação</h2>
+                  <h2 className="text-lg font-bold text-surface-50 uppercase">Movimentação</h2>
                   <p className="text-sm text-surface-400 font-medium mt-0.5">{showMovModal.name}</p>
                 </div>
                 <button onClick={() => setShowMovModal(null)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500"><X size={18} /></button>
@@ -696,7 +696,7 @@ export function InventoryPage() {
                   {(['ENTRY', 'EXIT'] as const).map((t) => (
                     <button key={t} type="button" onClick={() => setMovType(t)}
                       className={cn(
-                        'py-3 rounded-lg font-black text-sm border-2 flex items-center justify-center gap-2 transition-all',
+                        'py-3 rounded-lg font-bold text-sm border-2 flex items-center justify-center gap-2 transition-all',
                         movType === t
                           ? t === 'ENTRY' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700' : 'border-red-500 bg-red-500/10 text-red-600'
                           : 'border-line text-surface-400 hover:border-line'
@@ -708,7 +708,7 @@ export function InventoryPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Quantidade</label>
                   <input type="number" min="1" value={movQty} onChange={e => setMovQty(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-lg border border-line text-xl font-black text-center focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
+                    className="w-full px-4 py-3 rounded-lg border border-line text-xl font-bold text-center focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
                   <p className="text-xs text-surface-500 text-center">
                     Estoque atual: <strong>{showMovModal.currentStock || 0} {showMovModal.unit}</strong>
                     {movType === 'EXIT' && ` → ${Math.max(0, (showMovModal.currentStock || 0) - movQty)} após saída`}

@@ -4,11 +4,11 @@ import { cn } from '../../lib/utils';
 type ChipVariant = 'ok' | 'warn' | 'err' | 'neutral' | 'gold';
 
 const chipStyles: Record<ChipVariant, string> = {
-  ok: 'bg-[#23321f] text-[#b6e2a6]',
-  warn: 'bg-[#3a2e1e] text-[#f0c87a]',
-  err: 'bg-[#3a1f1f] text-[#f0a6a6]',
-  neutral: 'bg-surface-900 text-surface-300',
-  gold: 'bg-accent/10 text-accent',
+  ok: 'bg-emerald-100 text-emerald-800',
+  warn: 'bg-amber-100 text-amber-800',
+  err: 'bg-red-100 text-red-800',
+  neutral: 'bg-panel-2 text-muted',
+  gold: 'bg-accent/10 text-accent-ink',
 };
 
 export interface ChipProps extends HTMLAttributes<HTMLSpanElement> {

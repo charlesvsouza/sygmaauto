@@ -104,28 +104,26 @@ function KanbanCard({
     level === 'warning' ? 'border-amber-400/70' :
     'border-line';
 
-  const alertPulse = level === 'danger' ? 'animate-pulse' : '';
-
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-panel border-2 ${alertBorder} ${alertPulse} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
+      className={`bg-panel border-2 ${alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
     >
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-black ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
-          {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
+          {level === 'danger' ? <AlertTriangle size={11} className="shrink-0 animate-pulse" /> : <Timer size={11} className="shrink-0" />}
           <span className="truncate">{reason}</span>
         </div>
       )}
 
       {/* Número da OS + tempo */}
       <div className="flex items-center justify-between">
-        <span className={`font-black text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
+        <span className={`font-bold text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
           #{os.id.slice(-6).toUpperCase()}
         </span>
         <span className={`flex items-center gap-1 font-semibold ${urgencyColor(statusRefDate)}`}>
@@ -251,7 +249,7 @@ export function KanbanPage() {
           </button>
           <Tv2 className="text-cyan-600 w-5 h-5 mt-2 shrink-0" />
           <div>
-            <h1 className={`font-black text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
+            <h1 className={`font-bold text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Kanban de Pátio
             </h1>
             <p className="text-surface-400 text-xs">
@@ -339,7 +337,7 @@ export function KanbanPage() {
                     <span className={`font-bold text-ink truncate ${tvMode ? 'text-base' : 'text-sm'}`}>
                       {col.label}
                     </span>
-                    <span className={`ml-auto text-xs font-black px-2 py-0.5 rounded-full ${col.bg} text-ink`}>
+                    <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${col.bg} text-ink`}>
                       {colOrders.length}
                     </span>
                   </div>

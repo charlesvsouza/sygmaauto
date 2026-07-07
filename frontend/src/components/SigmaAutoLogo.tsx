@@ -15,17 +15,21 @@
 
 type LogoVariant = 'icon' | 'full' | 'compact';
 type LogoTone = 'light' | 'dark' | 'brand';
+// accent do wordmark "Auto": 'gold' = assinatura da MARCA (marketing/landing),
+// 'teal' = cor do PRODUTO (app). Mantém a identidade gold+teal deliberada.
+type LogoAccent = 'gold' | 'teal';
 
 interface SigmaAutoLogoProps {
   variant?: LogoVariant;
   size?: number; // tamanho do ícone em px
   className?: string;
   tone?: LogoTone;
+  accent?: LogoAccent;
 }
 
 const BRAND_GRADIENT = 'linear-gradient(135deg, #0f2557 0%, #1e3a8a 45%, #3b82f6 100%)';
 
-export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', tone = 'light' }: SigmaAutoLogoProps) {
+export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', tone = 'light', accent = 'gold' }: SigmaAutoLogoProps) {
   const primaryText = tone === 'dark' ? '#0f1f2b' : '#ffffff';
   const secondaryText = tone === 'dark' ? '#4f6470' : tone === 'brand' ? '#5a6b8a' : '#64748b';
 
@@ -39,7 +43,9 @@ export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', 
         }
       : { color: primaryText };
 
-  const accentColor = tone === 'brand' ? undefined : '#f59e0b';
+  // teal: escuro (#0a6458) sobre fundo claro, brilhante (#34d3bf) sobre fundo escuro
+  const tealAccent = tone === 'dark' ? '#0a6458' : '#34d3bf';
+  const accentColor = accent === 'teal' ? tealAccent : '#f59e0b';
   const accentStyle = tone === 'brand' ? wordStyle : { color: accentColor };
 
   const Icon =

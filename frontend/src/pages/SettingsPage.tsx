@@ -287,7 +287,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-6 pb-10">
       <div>
-        <h1 className="text-2xl font-black text-surface-50 tracking-tight uppercase">Configurações</h1>
+        <h1 className="text-2xl font-bold text-surface-50 tracking-tight uppercase">Configurações</h1>
         <p className="text-surface-400 font-medium text-sm">Gestão da oficina, operações, equipe e assinatura</p>
       </div>
 
@@ -321,11 +321,11 @@ export function SettingsPage() {
                       placeholder={tenantData.legalNature === 'PF' ? '000.000.000-00' : '00.000.000/0000-00'}
                       value={tenantData.taxId}
                       onChange={(e) => handleDocChange(e.target.value)}
-                      className="w-full rounded-lg border border-line px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                      className="w-full rounded-lg border border-line px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-accent transition-all"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {lookingUpDoc
-                        ? <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                        ? <Loader2 className="w-4 h-4 animate-spin text-accent-ink" />
                         : <Search className="w-4 h-4 text-surface-500" />}
                     </div>
                   </div>
@@ -341,7 +341,7 @@ export function SettingsPage() {
                   <select
                     value={tenantData.legalNature}
                     onChange={(e) => setTenantData({ ...tenantData, legalNature: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   >
                     <option value="PF">Pessoa Física (PF)</option>
                     <option value="PJ">Pessoa Jurídica (PJ)</option>
@@ -358,7 +358,7 @@ export function SettingsPage() {
                       'w-full rounded-lg border px-3 py-2 text-sm transition-all',
                       isTradeNameMissing
                         ? 'border-amber-500/40 bg-amber-500/10/40 focus:ring-2 focus:ring-amber-500'
-                        : 'border-line focus:ring-2 focus:ring-indigo-500',
+                        : 'border-line focus:ring-2 focus:ring-accent',
                     )}
                   />
                   {isTradeNameMissing && (
@@ -375,7 +375,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.legalName}
                     onChange={(e) => setTenantData({ ...tenantData, legalName: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -386,7 +386,7 @@ export function SettingsPage() {
                     value={tenantData.whatsappMetaPhoneNumberId}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappMetaPhoneNumberId: e.target.value })}
                     placeholder="Ex: 123456789012345"
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -397,7 +397,7 @@ export function SettingsPage() {
                     value={tenantData.whatsappDisplayNumber}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappDisplayNumber: e.target.value })}
                     placeholder="Ex: +55 21 99999-9999"
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -407,7 +407,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.stateRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, stateRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -417,7 +417,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.municipalRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, municipalRegistration: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -429,7 +429,7 @@ export function SettingsPage() {
                     placeholder="(00) 00000-0000"
                     value={tenantData.phone}
                     onChange={(e) => setTenantData({ ...tenantData, phone: formatPhone(e.target.value) })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -441,7 +441,7 @@ export function SettingsPage() {
                     placeholder="contato@suaoficina.com.br"
                     value={tenantData.email}
                     onChange={(e) => setTenantData({ ...tenantData, email: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
 
@@ -451,7 +451,7 @@ export function SettingsPage() {
                     type="text"
                     value={tenantData.address}
                     onChange={(e) => setTenantData({ ...tenantData, address: e.target.value })}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
               </div>
@@ -471,7 +471,7 @@ export function SettingsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-lg bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-50 shadow-md shadow-indigo-100 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide"
+                  className="rounded-lg bg-accent px-5 py-2 text-xs font-bold text-white hover:bg-accent-hover disabled:opacity-50 shadow-sm transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide"
                 >
                   {saving ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Salvando...</> : 'Salvar'}
                 </button>
@@ -499,7 +499,7 @@ export function SettingsPage() {
             <form onSubmit={handleSaveOps} className="p-5 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">
                     Mão de Obra (R$/h)
                   </label>
                   <p className="text-[11px] text-surface-500 ml-1 mb-1">
@@ -526,7 +526,7 @@ export function SettingsPage() {
 
                 {/* Preview do cálculo */}
                 <div className="p-3 bg-surface-950/40 rounded-lg border border-line space-y-2">
-                  <p className="text-[10px] font-bold text-surface-400 uppercase tracking-widest">Exemplos</p>
+                  <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide">Exemplos</p>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {[0.5, 1.0, 2.0].map((h) => (
                       <div key={h} className="bg-surface-900 rounded-lg p-2 border border-line">
@@ -541,7 +541,7 @@ export function SettingsPage() {
 
                 {/* Campo: Horas de Diagnóstico */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">Diagnóstico (h)</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Diagnóstico (h)</label>
                   <p className="text-[11px] text-surface-500 ml-1 mb-1">
                     Tempo padrão para diagnóstico.
                   </p>
@@ -568,7 +568,7 @@ export function SettingsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-widest ml-1">Comissão Global (%)</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Comissão Global (%)</label>
                   <p className="text-[11px] text-surface-500 ml-1 mb-1">
                     Valor padrão quando não há comissão individual.
                   </p>
@@ -582,7 +582,7 @@ export function SettingsPage() {
                       onChange={(e) => isMaster && setOpsData({ ...opsData, defaultCommissionPercent: Number(e.target.value) })}
                       disabled={!isMaster}
                       className={cn(
-                        "w-full pl-12 pr-5 py-4 rounded-lg border text-xl font-black transition-all",
+                        "w-full pl-12 pr-5 py-4 rounded-lg border text-xl font-bold transition-all",
                         isMaster
                           ? "border-line bg-surface-950/40 focus:ring-4 focus:ring-accent/40 focus:border-accent/40"
                           : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
@@ -605,7 +605,7 @@ export function SettingsPage() {
                     </div>
                   )}
                   <div className="flex justify-end">
-                    <button type="submit" disabled={savingOps} className="btn btn-primary h-14 px-10 rounded-lg font-black shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
+                    <button type="submit" disabled={savingOps} className="btn btn-primary h-14 px-10 rounded-lg font-bold shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
                       {savingOps ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Operações'}
                     </button>
                   </div>
@@ -657,7 +657,7 @@ export function SettingsPage() {
                           />
                         ))}
                       </div>
-                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-accent' : 'text-ink')}>{preset.label}</p>
+                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-accent-ink' : 'text-ink')}>{preset.label}</p>
                       <p className="text-[10px] text-muted mt-0.5 leading-tight">{preset.description}</p>
                     </button>
                   );
@@ -713,7 +713,7 @@ export function SettingsPage() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="font-bold text-surface-50 text-xs truncate">{u.name}</p>
-                            {isMe && <span className="text-[8px] px-1 py-0.5 bg-primary-100 text-primary-700 rounded font-black">Você</span>}
+                            {isMe && <span className="text-[8px] px-1 py-0.5 bg-primary-100 text-primary-700 rounded font-bold">Você</span>}
                           </div>
                         </div>
                         <p className="text-[10px] text-surface-400 truncate mb-2">{u.email}</p>
@@ -741,14 +741,14 @@ export function SettingsPage() {
           >
             <div className="relative z-10">
               <h2 className="text-base font-bold flex items-center gap-2 uppercase tracking-wide mb-5">
-                <Shield className="w-5 h-5 text-accent" /> Assinatura
+                <Shield className="w-5 h-5 text-accent-ink" /> Assinatura
               </h2>
 
               <div className="mb-6 p-4 bg-ink/5 rounded-lg border border-line backdrop-blur-md">
                 <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-2xl font-black text-ink">{getPlanLabel(currentPlan)}</h3>
-                  <div className="px-2 py-0.5 bg-accent text-white rounded text-[8px] font-black uppercase">Ativo</div>
+                  <h3 className="text-2xl font-bold text-ink">{getPlanLabel(currentPlan)}</h3>
+                  <div className="px-2 py-0.5 bg-accent text-white rounded text-[8px] font-bold uppercase">Ativo</div>
                 </div>
                 <p className="text-xs text-surface-500 mt-1 font-medium">Renovação automática em breve.</p>
               </div>
@@ -769,15 +769,15 @@ export function SettingsPage() {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <p className="font-bold text-sm uppercase tracking-tight">{getPlanLabel(plan.name)}</p>
-                          {(plan.name === 'PRO' || plan.name === 'RETIFICA_PRO') && <Zap size={12} className="text-accent fill-accent" />}
+                          {(plan.name === 'PRO' || plan.name === 'RETIFICA_PRO') && <Zap size={12} className="text-accent-ink fill-accent" />}
                         </div>
-                        <p className="text-lg font-black mt-0.5">
+                        <p className="text-lg font-bold mt-0.5">
                           R$ {Number(plan.price).toLocaleString('pt-BR')}
                           <span className="text-[10px] font-bold text-surface-500 ml-1">/mês</span>
                         </p>
                       </div>
                       {currentPlan === plan.name
-                        ? <CheckCircle className="text-accent" size={20} />
+                        ? <CheckCircle className="text-accent-ink" size={20} />
                         : <ArrowRight className="text-surface-300" size={20} />
                       }
                     </div>

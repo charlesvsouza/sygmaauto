@@ -111,23 +111,20 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
     level === 'warning' ? 'border-amber-400/70' :
     'border-line';
 
-  const alertPulse =
-    level === 'danger' ? 'animate-pulse' : '';
-
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-panel border-2 ${alertBorder} ${alertPulse} rounded-lg p-4 space-y-3 hover:border-line transition-all`}
+      className={`bg-panel border-2 ${alertBorder} rounded-lg p-4 space-y-3 hover:border-line transition-all`}
     >
       {/* Alerta */}
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-black ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
-          {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
+          {level === 'danger' ? <AlertTriangle size={11} className="shrink-0 animate-pulse" /> : <Timer size={11} className="shrink-0" />}
           {reason}
         </div>
       )}
@@ -138,7 +135,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
             <Car size={17} className="text-surface-400" />
           </div>
           <div className="min-w-0">
-            <p className={`font-black text-ink truncate leading-tight ${tvMode ? 'text-lg' : 'text-sm'}`}>
+            <p className={`font-bold text-ink truncate leading-tight ${tvMode ? 'text-lg' : 'text-sm'}`}>
               {os.vehicle?.brand} {os.vehicle?.model}
             </p>
             <p className="text-surface-400 text-xs font-mono tracking-wide">{os.vehicle?.plate}</p>
@@ -290,9 +287,9 @@ export function KanbanRecepcaoPage() {
           >
             <ArrowLeft size={18} />
           </button>
-          <Monitor className="text-purple-600 w-5 h-5 mt-2 shrink-0" />
+          <Monitor className="text-accent-ink w-5 h-5 mt-2 shrink-0" />
           <div>
-            <h1 className={`font-black text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
+            <h1 className={`font-bold text-ink ${tvMode ? 'text-2xl' : 'text-lg'}`}>
               Painel de Recepção
             </h1>
             <p className="text-surface-400 text-xs">
@@ -318,7 +315,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setTvMode(v => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-purple-500/20 text-purple-600' : 'bg-ink/5 text-surface-400 hover:text-ink'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-accent-soft text-accent-ink' : 'bg-ink/5 text-surface-400 hover:text-ink'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}
@@ -333,7 +330,7 @@ export function KanbanRecepcaoPage() {
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${filterKey === 'TODOS' ? 'bg-ink/5 text-ink' : 'text-surface-400 hover:text-ink hover:bg-ink/5'}`}
         >
           Todos
-          <span className="bg-ink/5 px-1.5 py-0.5 rounded-full font-black text-ink">{orders.length}</span>
+          <span className="bg-ink/5 px-1.5 py-0.5 rounded-full font-bold text-ink">{orders.length}</span>
         </button>
 
         {SUMMARY_GROUPS.map(g => {
@@ -346,7 +343,7 @@ export function KanbanRecepcaoPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${active ? `${g.activeBg} ${g.color}` : 'text-surface-400 hover:text-ink hover:bg-ink/5'}`}
             >
               {g.label}
-              <span className={`px-1.5 py-0.5 rounded-full font-black ${count > 0 ? `${g.activeBg} ${g.color}` : 'bg-ink/5 text-surface-500'}`}>
+              <span className={`px-1.5 py-0.5 rounded-full font-bold ${count > 0 ? `${g.activeBg} ${g.color}` : 'bg-ink/5 text-surface-500'}`}>
                 {count}
               </span>
             </button>
@@ -389,7 +386,7 @@ export function KanbanRecepcaoPage() {
       {/* Grade de cards */}
       {loading && orders.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin text-purple-600" size={40} />
+          <Loader2 className="animate-spin text-accent-ink" size={40} />
         </div>
       ) : displayed.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-3 text-surface-500">

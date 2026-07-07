@@ -34,6 +34,7 @@ export default {
           hover: 'rgb(var(--accent-hover) / <alpha-value>)',
           fg: 'rgb(var(--accent-fg) / <alpha-value>)',
           soft: 'rgb(var(--accent-soft) / <alpha-value>)',
+          ink: 'rgb(var(--accent-ink) / <alpha-value>)', // teal escuro p/ TEXTO em fundos claros/tint (AA)
         },
         sidebar: {
           DEFAULT: 'rgb(var(--sidebar) / <alpha-value>)',

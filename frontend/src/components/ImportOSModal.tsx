@@ -192,14 +192,14 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
         {/* Header */}
         <div className="p-6 border-b border-line flex items-center justify-between bg-surface-950/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center text-white shadow-lg shadow-md">
               <FileUp size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-surface-50 uppercase tracking-tight">
+              <h2 className="text-lg font-bold text-surface-50 uppercase tracking-tight">
                 {isAppendMode ? 'Importar Orçamento Externo na O.S.' : 'Importar Orçamento PDF'}
               </h2>
-              <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">IA Assistida · Verifique os dados abaixo</p>
+              <p className="text-xs font-bold text-surface-400 uppercase tracking-wide">IA Assistida · Verifique os dados abaixo</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
@@ -214,7 +214,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               <div className="w-24 h-24 bg-surface-800 rounded-[32px] flex items-center justify-center text-surface-500 mb-6 border-2 border-dashed border-line">
                 <FileUp size={40} />
               </div>
-              <h3 className="text-xl font-black text-surface-50 mb-2">Selecione o arquivo PDF</h3>
+              <h3 className="text-xl font-bold text-surface-50 mb-2">Selecione o arquivo PDF</h3>
               <p className="text-sm text-surface-400 mb-8 text-center max-w-md">
                 Nossa IA irá ler o orçamento e extrair automaticamente os dados do cliente, veículo, peças e serviços.
               </p>
@@ -229,7 +229,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               <label
                 htmlFor="pdf-upload"
                 className={cn(
-                  "cursor-pointer px-8 py-4 rounded-lg font-black text-sm uppercase tracking-widest transition-all shadow-xl flex items-center gap-3",
+                  "cursor-pointer px-8 py-4 rounded-lg font-bold text-sm uppercase tracking-wide transition-all shadow-xl flex items-center gap-3",
                   file ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" : "bg-accent text-white hover:bg-accent-hover shadow-black/40"
                 )}
               >
@@ -248,7 +248,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 <button
                   disabled={!file || loading}
                   onClick={handleUpload}
-                  className="w-full py-4 bg-indigo-600 text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-accent text-white rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-md flex items-center justify-center gap-2"
                 >
                   {loading ? <Loader2 size={20} className="animate-spin" /> : "Processar Orçamento"}
                 </button>
@@ -259,21 +259,21 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               {!isAppendMode && <div className="grid grid-cols-2 gap-8">
                 {/* Cliente */}
                 <div className="p-6 bg-surface-950/40 rounded-xl border border-line">
-                  <div className="flex items-center gap-2 mb-6 text-indigo-600 border-b border-line pb-3">
+                  <div className="flex items-center gap-2 mb-6 text-accent-ink border-b border-line pb-3">
                     <User size={18} />
                     <h4 className="text-xs font-semibold uppercase tracking-wide">Dados do Cliente</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Nome Completo</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Nome Completo</label>
                       <input 
-                        className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 transition-all"
+                        className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-accent transition-all"
                         value={data.customer.name}
                         onChange={(e) => updateCustomerField('name', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">CPF / CNPJ</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">CPF / CNPJ</label>
                       <input 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.document}
@@ -281,7 +281,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Telefone</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Telefone</label>
                       <input 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.phone}
@@ -299,7 +299,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Marca / Modelo</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Marca / Modelo</label>
                       <div className="flex gap-2">
                         <input 
                           className="w-1/3 bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
@@ -316,7 +316,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">Placa</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Placa</label>
                       <input 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold uppercase font-mono"
                         value={data.vehicle.plate}
@@ -324,7 +324,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-surface-500 uppercase mb-1 block">KM Atual</label>
+                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">KM Atual</label>
                       <input 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                         type="number"
@@ -345,7 +345,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               {/* Observações do PDF */}
               {(data.observations || data._warnings) && (
                 <div className="p-5 bg-amber-500/10 rounded-xl border border-amber-500/30">
-                  <label className="text-[10px] font-black text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
+                  <label className="text-[10px] font-bold text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
                   <textarea
                     className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
                     rows={3}
@@ -376,7 +376,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4">
                           <select 
                             className={cn(
-                              "text-[10px] font-black uppercase px-2 py-1 rounded border-none focus:ring-0 cursor-pointer",
+                              "text-[10px] font-bold uppercase px-2 py-1 rounded border-none focus:ring-0 cursor-pointer",
                               item.type === 'part' ? "bg-amber-500/15 text-amber-700" : "bg-blue-500/15 text-blue-700"
                             )}
                             value={item.type}
@@ -389,7 +389,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
                             <input 
-                              className="text-[10px] font-black text-surface-500 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-surface-600"
+                              className="text-[10px] font-bold text-surface-500 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-surface-600"
                               placeholder="Código de fábrica"
                               value={item.internalCode || ''}
                               onChange={(e) => updateItemField(idx, 'internalCode', e.target.value)}
@@ -404,17 +404,17 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         <td className="px-6 py-4">
                           <input 
                             type="number"
-                            className="w-full bg-surface-800 border-none rounded-lg px-2 py-1 text-sm font-bold text-center focus:ring-2 focus:ring-indigo-500"
+                            className="w-full bg-surface-800 border-none rounded-lg px-2 py-1 text-sm font-bold text-center focus:ring-2 focus:ring-accent"
                             value={item.quantity}
                             onChange={(e) => updateItemField(idx, 'quantity', e.target.value)}
                           />
                         </td>
                         <td className="px-6 py-4">
                           <div className="relative">
-                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-black text-surface-500">R$</span>
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-surface-500">R$</span>
                             <input 
                               type="number"
-                              className="w-full bg-surface-800 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-black text-right focus:ring-2 focus:ring-indigo-500"
+                              className="w-full bg-surface-800 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-bold text-right focus:ring-2 focus:ring-accent"
                               value={item.unitPrice}
                               onChange={(e) => updateItemField(idx, 'unitPrice', e.target.value)}
                             />
@@ -434,7 +434,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                   <tfoot className="bg-surface-950/40 border-t border-line">
                     <tr>
                       <td colSpan={3} className="px-6 py-6 font-semibold uppercase tracking-wide text-xs text-surface-400 text-right">Valor Total da O.S.</td>
-                      <td className="px-6 py-6 text-right font-black text-2xl text-surface-50">
+                      <td className="px-6 py-6 text-right font-bold text-2xl text-surface-50">
                         R$ {totalCalculated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </td>
                       <td></td>
@@ -457,7 +457,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
         <div className="p-6 border-t border-line bg-surface-950/40 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-3 rounded-lg font-black text-xs uppercase tracking-widest text-surface-400 hover:bg-ink/5 transition-all"
+            className="px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-wide text-surface-400 hover:bg-ink/5 transition-all"
           >
             Cancelar
           </button>
@@ -465,7 +465,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
             <button
               disabled={loading}
               onClick={handleConfirm}
-              className="px-8 py-3 bg-accent text-white rounded-lg font-black text-xs uppercase tracking-widest hover:bg-accent-hover transition-all shadow-xl shadow-black/40 flex items-center gap-2"
+              className="px-8 py-3 bg-accent text-white rounded-lg font-bold text-xs uppercase tracking-wide hover:bg-accent-hover transition-all shadow-xl shadow-black/40 flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {isAppendMode ? 'Importar na O.S. Aberta' : 'Confirmar e Abrir O.S.'}

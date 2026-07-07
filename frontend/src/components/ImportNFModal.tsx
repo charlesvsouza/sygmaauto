@@ -139,12 +139,12 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
       >
         <div className="p-6 border-b border-line flex items-center justify-between bg-surface-950/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
+            <div className="w-10 h-10 rounded-lg bg-accent text-white flex items-center justify-center shadow-lg shadow-md">
               <FileSpreadsheet size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-surface-50 uppercase tracking-tight">Importar Nota Fiscal de Entrada</h2>
-              <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">XML/PDF com revisão antes da carga</p>
+              <h2 className="text-lg font-bold text-surface-50 uppercase tracking-tight">Importar Nota Fiscal de Entrada</h2>
+              <p className="text-xs font-bold text-surface-400 uppercase tracking-wide">XML/PDF com revisão antes da carga</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
@@ -165,7 +165,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 <FileUp size={40} />
               </div>
 
-              <h3 className="text-xl font-black text-surface-50">Selecione o arquivo da nota fiscal</h3>
+              <h3 className="text-xl font-bold text-surface-50">Selecione o arquivo da nota fiscal</h3>
               <p className="text-sm text-surface-400 mt-2 max-w-md">
                 Aceita XML de NF-e e PDF. O sistema irá mapear código, fornecedor/origem, quantidade e valor unitário.
               </p>
@@ -180,7 +180,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <label
                 htmlFor="nf-upload"
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-black text-sm cursor-pointer hover:bg-accent-hover transition-colors"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-bold text-sm cursor-pointer hover:bg-accent-hover transition-colors"
               >
                 <FileUp size={16} /> Selecionar Arquivo
               </label>
@@ -192,7 +192,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
               <button
                 onClick={handleProcessFile}
                 disabled={!file || loading}
-                className="mt-5 inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-indigo-600 text-white font-black text-sm disabled:opacity-50"
+                className="mt-5 inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-accent text-white font-bold text-sm disabled:opacity-50"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                 Processar Nota
@@ -213,7 +213,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Fornecedor</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Fornecedor</label>
                   <input
                     value={data.supplier?.name || ''}
                     onChange={(e) => updateSupplierField('name', e.target.value)}
@@ -222,7 +222,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Documento</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Documento</label>
                   <input
                     value={data.supplier?.document || ''}
                     onChange={(e) => updateSupplierField('document', e.target.value)}
@@ -231,7 +231,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Numero NF</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Numero NF</label>
                   <input
                     value={data.invoice?.number || ''}
                     onChange={(e) => updateInvoiceField('number', e.target.value)}
@@ -240,7 +240,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-surface-500 uppercase tracking-widest">Data Emissao</label>
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Data Emissao</label>
                   <input
                     value={data.invoice?.issueDate || ''}
                     onChange={(e) => updateInvoiceField('issueDate', e.target.value)}
@@ -254,15 +254,15 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 <table className="w-full min-w-[980px]">
                   <thead className="bg-surface-950/40 border-b border-line">
                     <tr>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Codigo Original</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Descricao</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Origem</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">Tipo</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-black text-surface-500 uppercase tracking-widest">NCM</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Qtd</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-black text-surface-500 uppercase tracking-widest">Vlr Unit.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-black text-surface-500 uppercase tracking-widest">Un.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-black text-surface-500 uppercase tracking-widest">Acao</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Codigo Original</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Descricao</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Origem</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Tipo</th>
+                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">NCM</th>
+                      <th className="px-3 py-3 text-right text-[10px] font-bold text-surface-500 uppercase tracking-wide">Qtd</th>
+                      <th className="px-3 py-3 text-right text-[10px] font-bold text-surface-500 uppercase tracking-wide">Vlr Unit.</th>
+                      <th className="px-3 py-3 text-center text-[10px] font-bold text-surface-500 uppercase tracking-wide">Un.</th>
+                      <th className="px-3 py-3 text-center text-[10px] font-bold text-surface-500 uppercase tracking-wide">Acao</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line">
@@ -359,7 +359,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   <button
                     onClick={handleConfirm}
                     disabled={loading || data.items.length === 0}
-                    className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-black text-sm disabled:opacity-50 inline-flex items-center gap-2"
+                    className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm disabled:opacity-50 inline-flex items-center gap-2"
                   >
                     {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                     Confirmar Entrada
