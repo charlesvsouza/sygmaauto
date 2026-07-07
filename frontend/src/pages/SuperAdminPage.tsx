@@ -115,7 +115,7 @@ export function SuperAdminPage() {
     }
     if (tenant.subscription?.status === 'ACTIVE') return { label: 'ATIVO', cls: 'bg-emerald-500/10 text-emerald-600' };
     if (tenant.subscription?.status === 'TRIALING') return { label: 'TRIAL', cls: 'bg-sky-500/10 text-sky-600' };
-    return { label: tenant.subscription?.status ?? 'SEM PLANO', cls: 'bg-surface-800 text-surface-500' };
+    return { label: tenant.subscription?.status ?? 'SEM PLANO', cls: 'bg-panel-2 text-muted' };
   };
 
   const filteredTenants = tenants.filter((t) => {
@@ -196,22 +196,22 @@ export function SuperAdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-accent text-white">
+    <div className="min-h-screen bg-app text-ink">
       <div className="border-b border-line px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20">
             <Shield className="text-red-600 w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-black text-white text-lg">Super Admin</h1>
-            <p className="text-surface-400 text-xs">{superAdminInfo?.email ?? 'Sistema Sigma Auto'}</p>
+            <h1 className="font-black text-ink text-lg">Super Admin</h1>
+            <p className="text-faint text-xs">{superAdminInfo?.email ?? 'Sistema Sigma Auto'}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => setShowProvisionModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all text-sm font-bold">
             <Plus size={16} /> Novo Tenant
           </button>
-          <button onClick={loadData} className="p-2 text-surface-500 hover:text-white hover:bg-ink/5 rounded-xl transition-all">
+          <button onClick={loadData} className="p-2 text-muted hover:text-ink hover:bg-ink/5 rounded-xl transition-all">
             <RefreshCw size={16} />
           </button>
           <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold">
@@ -246,12 +246,12 @@ export function SuperAdminPage() {
               { label: 'Ordens de Servico', value: stats.totalServiceOrders, icon: FileText, color: 'text-amber-600' },
               { label: 'Receita Total', value: `R$ ${Number(stats.totalRevenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-purple-600' },
             ].map((s) => (
-              <div key={s.label} className="bg-black/60 border border-line rounded-lg p-5">
+              <div key={s.label} className="bg-panel border border-line rounded-lg p-5 shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <s.icon className={`${s.color} w-5 h-5`} />
-                  <span className="text-surface-500 text-xs font-semibold uppercase tracking-widest">{s.label}</span>
+                  <span className="text-muted text-xs font-semibold uppercase tracking-widest">{s.label}</span>
                 </div>
-                <p className="text-2xl font-black text-white">{s.value}</p>
+                <p className="text-2xl font-black text-ink">{s.value}</p>
               </div>
             ))}
           </div>
@@ -259,13 +259,13 @@ export function SuperAdminPage() {
 
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-            <h2 className="text-lg font-black text-white flex items-center gap-2">
+            <h2 className="text-lg font-black text-ink flex items-center gap-2">
               <BarChart3 className="text-blue-600 w-5 h-5" /> Tenants Cadastrados
             </h2>
             <div className="flex gap-2 sm:ml-auto">
               {(['all', 'pending', 'active'] as const).map((f) => (
                 <button key={f} onClick={() => setFilterStatus(f)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-ink/5 text-surface-500 hover:bg-ink/5'}`}>
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-ink/5 text-muted hover:bg-ink/10'}`}>
                   {f === 'all' ? `Todos (${tenants.length})` : f === 'pending' ? `Pendentes (${tenants.filter(t => t.status === 'PENDING_SETUP').length})` : `Ativos (${tenants.filter(t => t.status !== 'PENDING_SETUP' && t.subscription?.status === 'ACTIVE').length})`}
                 </button>
               ))}
@@ -278,15 +278,15 @@ export function SuperAdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTenants.map((tenant) => (
                 <motion.div key={tenant.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-                  className="bg-black/60 border border-line p-5 rounded-lg">
+                  className="bg-panel border border-line p-5 rounded-lg shadow-sm">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/10">
                         <Building className="text-blue-600 w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-white">{tenant.name}</h3>
-                        <p className="text-xs text-surface-400">{tenant.id.substring(0, 8)}...</p>
+                        <h3 className="font-bold text-ink">{tenant.name}</h3>
+                        <p className="text-xs text-faint">{tenant.id.substring(0, 8)}...</p>
                       </div>
                     </div>
                     {(() => { const b = getTenantStatusBadge(tenant); return (
@@ -302,20 +302,20 @@ export function SuperAdminPage() {
                       { label: 'Pecas', val: tenant._count?.parts ?? 0, icon: Package },
                     ].map((c) => (
                       <div key={c.label} className="bg-ink/5 rounded-xl px-3 py-2 flex items-center gap-2">
-                        <c.icon className="w-3.5 h-3.5 text-surface-400" />
-                        <span className="text-surface-500">{c.label}</span>
-                        <span className="text-white font-bold ml-auto">{c.val}</span>
+                        <c.icon className="w-3.5 h-3.5 text-faint" />
+                        <span className="text-muted">{c.label}</span>
+                        <span className="text-ink font-bold ml-auto">{c.val}</span>
                       </div>
                     ))}
                   </div>
 
-                  <p className="text-xs text-surface-400 mb-4">
+                  <p className="text-xs text-faint mb-4">
                     Criado em {new Date(tenant.createdAt).toLocaleDateString('pt-BR')} · Plano: {tenant.subscription?.plan?.name ?? 'N/A'}
                   </p>
 
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleViewDetails(tenant)}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-ink/5 hover:bg-ink/5 text-white text-xs font-bold py-2 rounded-xl transition-all">
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-ink/5 hover:bg-ink/10 text-ink text-xs font-bold py-2 rounded-xl transition-all">
                       <Eye size={13} /> Detalhes
                     </button>
                     {tenant.status !== 'PENDING_SETUP' && (
@@ -349,8 +349,8 @@ export function SuperAdminPage() {
             <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30 }}
               className="w-full max-w-lg bg-surface-900 border-l border-line h-full overflow-y-auto">
               <div className="p-6 border-b border-line flex items-center justify-between">
-                <h2 className="font-black text-white">Detalhes do Tenant</h2>
-                <button onClick={() => setSelectedTenant(null)} className="text-surface-500 hover:text-white"><X size={20} /></button>
+                <h2 className="font-black text-ink">Detalhes do Tenant</h2>
+                <button onClick={() => setSelectedTenant(null)} className="text-muted hover:text-ink"><X size={20} /></button>
               </div>
 
               {detailLoading ? (
@@ -358,9 +358,9 @@ export function SuperAdminPage() {
               ) : selectedTenant && (
                 <div className="p-6 space-y-6">
                   <div>
-                    <h3 className="text-xl font-black text-white">{selectedTenant.name}</h3>
-                    <p className="text-surface-500 text-sm">{selectedTenant.email ?? 'sem email'}</p>
-                    <p className="text-surface-400 text-xs mt-1">ID: {selectedTenant.id}</p>
+                    <h3 className="text-xl font-black text-ink">{selectedTenant.name}</h3>
+                    <p className="text-muted text-sm">{selectedTenant.email ?? 'sem email'}</p>
+                    <p className="text-faint text-xs mt-1">ID: {selectedTenant.id}</p>
                     {(() => { const b = getTenantStatusBadge(selectedTenant); return (
                       <span className={`inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-lg ${b.cls}`}>{b.label}</span>
                     ); })()}
@@ -369,16 +369,16 @@ export function SuperAdminPage() {
                   {selectedTenant.status === 'PENDING_SETUP' && (
                     <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 space-y-2">
                       <p className="text-amber-600 text-xs font-bold flex items-center gap-2"><Mail size={13} /> Convite Pendente</p>
-                      <p className="text-surface-500 text-xs">Email: <span className="text-white">{selectedTenant.setupInviteEmail ?? '—'}</span></p>
+                      <p className="text-muted text-xs">Email: <span className="text-ink">{selectedTenant.setupInviteEmail ?? '—'}</span></p>
                       {selectedTenant.setupInviteExpiresAt && (
-                        <p className="text-surface-500 text-xs">Expira em: <span className={`font-bold ${new Date(selectedTenant.setupInviteExpiresAt) < new Date() ? 'text-red-600' : 'text-white'}`}>{new Date(selectedTenant.setupInviteExpiresAt).toLocaleString('pt-BR')}</span></p>
+                        <p className="text-muted text-xs">Expira em: <span className={`font-bold ${new Date(selectedTenant.setupInviteExpiresAt) < new Date() ? 'text-red-600' : 'text-ink'}`}>{new Date(selectedTenant.setupInviteExpiresAt).toLocaleString('pt-BR')}</span></p>
                       )}
                       {selectedTenant.setupInviteToken && (
                         <div className="flex gap-2 mt-2">
                           <input readOnly value={`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`}
-                            className="flex-1 bg-surface-950 border border-line rounded-xl text-xs text-surface-600 px-3 py-2 outline-none min-w-0" />
+                            className="flex-1 bg-surface-950 border border-line rounded-xl text-xs text-ink px-3 py-2 outline-none min-w-0" />
                           <button onClick={() => copyToClipboard(`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`)}
-                            className="px-3 py-2 bg-ink/5 hover:bg-ink/5 rounded-xl text-xs text-white flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
+                            className="px-3 py-2 bg-ink/5 hover:bg-ink/10 rounded-xl text-xs text-ink flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
                             {copiedLink ? <CheckCircle2 size={13} className="text-emerald-600" /> : <Copy size={13} />} {copiedLink ? 'Copiado!' : 'Copiar'}
                           </button>
                         </div>
@@ -399,30 +399,30 @@ export function SuperAdminPage() {
                       ['Transacoes', selectedTenant._count?.financialTransactions],
                     ].map(([l, v]) => (
                       <div key={l as string} className="bg-ink/5 rounded-xl p-3">
-                        <p className="text-surface-500 text-xs">{l}</p>
-                        <p className="text-white font-black text-lg">{v}</p>
+                        <p className="text-muted text-xs">{l}</p>
+                        <p className="text-ink font-black text-lg">{v}</p>
                       </div>
                     ))}
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-bold text-surface-600 mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-ink mb-3 flex items-center gap-2">
                       <Users size={14} /> Usuarios ({selectedTenant.users?.length ?? 0})
                     </h4>
                     <div className="space-y-2">
                       {selectedTenant.users?.map((u: any) => (
                         <div key={u.id} className="flex items-center gap-3 bg-ink/5 rounded-xl p-3">
-                          <div className="w-8 h-8 rounded-xl bg-surface-800 flex items-center justify-center text-xs font-bold text-white">
+                          <div className="w-8 h-8 rounded-xl bg-accent-soft flex items-center justify-center text-xs font-bold text-accent-ink">
                             {u.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm font-semibold truncate">{u.name}</p>
-                            <p className="text-surface-400 text-xs truncate">{u.email}</p>
+                            <p className="text-ink text-sm font-semibold truncate">{u.name}</p>
+                            <p className="text-faint text-xs truncate">{u.email}</p>
                           </div>
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${
                             u.role === 'MASTER' ? 'bg-amber-500/10 text-amber-600' :
                             u.role === 'ADMIN' ? 'bg-blue-500/10 text-blue-600' :
-                            'bg-surface-800 text-surface-500'
+                            'bg-panel-2 text-muted'
                           }`}>{u.role}</span>
                         </div>
                       ))}
@@ -440,7 +440,7 @@ export function SuperAdminPage() {
 
                   {/* Status */}
                   <div className="bg-ink/5 rounded-lg p-4 space-y-3">
-                    <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Status do Tenant</p>
+                    <p className="text-xs font-bold text-muted uppercase tracking-widest">Status do Tenant</p>
                     <div className="flex gap-2">
                       <button onClick={() => handleUpdateStatus(selectedTenant.id, 'ACTIVE')}
                         disabled={updatingStatus || selectedTenant.status === 'ACTIVE'}
@@ -458,8 +458,8 @@ export function SuperAdminPage() {
                   {/* Alterar Plano */}
                   {selectedTenant.subscription && (
                     <div className="bg-ink/5 rounded-lg p-4 space-y-3">
-                      <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Alterar Plano</p>
-                      <p className="text-xs text-surface-400">Atual: <span className="text-white font-bold">{selectedTenant.subscription?.plan?.name ?? 'N/A'}</span></p>
+                      <p className="text-xs font-bold text-muted uppercase tracking-widest">Alterar Plano</p>
+                      <p className="text-xs text-faint">Atual: <span className="text-ink font-bold">{selectedTenant.subscription?.plan?.name ?? 'N/A'}</span></p>
                       <div className="flex gap-2">
                         {['START', 'PRO', 'REDE'].map((plan) => (
                           <button key={plan} onClick={() => handleUpdatePlan(selectedTenant.id, plan)}
@@ -475,9 +475,9 @@ export function SuperAdminPage() {
                   {/* Estender Assinatura */}
                   {selectedTenant.subscription && (
                     <div className="bg-ink/5 rounded-lg p-4 space-y-3">
-                      <p className="text-xs font-bold text-surface-500 uppercase tracking-widest">Estender Assinatura</p>
+                      <p className="text-xs font-bold text-muted uppercase tracking-widest">Estender Assinatura</p>
                       {selectedTenant.subscription?.currentPeriodEnd && (
-                        <p className="text-xs text-surface-400">Expira em: <span className="text-white">{new Date(selectedTenant.subscription.currentPeriodEnd).toLocaleDateString('pt-BR')}</span></p>
+                        <p className="text-xs text-faint">Expira em: <span className="text-ink">{new Date(selectedTenant.subscription.currentPeriodEnd).toLocaleDateString('pt-BR')}</span></p>
                       )}
                       <div className="flex gap-2">
                         {[30, 60, 90].map((days) => (
@@ -512,16 +512,16 @@ export function SuperAdminPage() {
                   <AlertTriangle className="text-red-600 w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-black text-white text-lg">Excluir Tenant</h3>
-                  <p className="text-surface-500 text-sm">Esta acao e irreversivel</p>
+                  <h3 className="font-black text-ink text-lg">Excluir Tenant</h3>
+                  <p className="text-muted text-sm">Esta acao e irreversivel</p>
                 </div>
               </div>
 
-              <p className="text-surface-600 text-sm mb-2">
-                Todos os dados de <span className="font-bold text-white">{pendingDelete.name}</span> serao permanentemente excluidos: clientes, veiculos, ordens de servico, estoque, financeiro e usuarios.
+              <p className="text-ink text-sm mb-2">
+                Todos os dados de <span className="font-bold">{pendingDelete.name}</span> serao permanentemente excluidos: clientes, veiculos, ordens de servico, estoque, financeiro e usuarios.
               </p>
 
-              <p className="text-surface-500 text-sm mb-4">
+              <p className="text-muted text-sm mb-4">
                 Para confirmar, digite o nome do tenant:
               </p>
 
@@ -530,12 +530,12 @@ export function SuperAdminPage() {
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder={pendingDelete.name}
-                className="w-full bg-surface-950 border border-line rounded-xl py-3 px-4 text-sm text-white mb-6 outline-none focus:ring-2 focus:ring-red-500/40"
+                className="w-full bg-surface-950 border border-line rounded-xl py-3 px-4 text-sm text-ink mb-6 outline-none focus:ring-2 focus:ring-red-500/40"
               />
 
               <div className="flex gap-3">
                 <button onClick={() => setPendingDelete(null)}
-                  className="flex-1 bg-ink/5 hover:bg-ink/5 text-white font-bold py-3 rounded-lg transition-all">
+                  className="flex-1 bg-ink/5 hover:bg-ink/10 text-ink font-bold py-3 rounded-lg transition-all">
                   Cancelar
                 </button>
                 <button

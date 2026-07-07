@@ -1130,7 +1130,7 @@ export function ServiceOrdersPage() {
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent transition-colors"
+                className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
               >
                 <Plus size={18} />
               </button>
@@ -1299,12 +1299,12 @@ export function ServiceOrdersPage() {
 
             {/* Banner: OS reprovada + opção de diagnostico */}
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
-              <div className="mx-6 mt-4 p-4 bg-accent border border-accent/40 rounded-lg flex items-start justify-between gap-4">
+              <div className="mx-6 mt-4 p-4 bg-accent-soft border border-accent/40 rounded-lg flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <span className="text-2xl text-accent-ink">!</span>
                   <div>
-                    <p className="text-sm font-bold text-surface-100">Orcamento reprovado pelo cliente</p>
-                    <p className="text-xs text-surface-400 mt-0.5">
+                    <p className="text-sm font-bold text-ink">Orcamento reprovado pelo cliente</p>
+                    <p className="text-xs text-muted mt-0.5">
                       Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnostico</strong>?
                       O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
                     </p>
@@ -1314,13 +1314,13 @@ export function ServiceOrdersPage() {
                   <button
                     onClick={createDiagnosticOrder}
                     disabled={creatingDiagOrder}
-                    className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
+                    className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
                     {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'OK'} Sim, criar nova O.S.
                   </button>
                   <button
                     onClick={() => setShowDiagBanner(false)}
-                    className="px-4 py-2 bg-white border border-surface-800 text-surface-300 rounded-xl text-xs font-bold hover:bg-surface-950 transition-all whitespace-nowrap"
+                    className="px-4 py-2 bg-panel border border-line text-muted rounded-xl text-xs font-bold hover:bg-panel-2 transition-all whitespace-nowrap"
                   >
                     Nao, obrigado
                   </button>
@@ -1410,7 +1410,7 @@ export function ServiceOrdersPage() {
 
                 <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h3 className="text-[10px] font-bold text-accent-ink uppercase tracking-wide flex items-center gap-2">
+                    <h3 className="text-[10px] font-bold text-white/70 uppercase tracking-wide flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
@@ -1486,23 +1486,23 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Veiculo</p>
+                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">Veiculo</p>
                       <p className="font-bold text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
-                      <p className="font-mono font-bold text-accent-ink">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
+                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
+                      <p className="font-mono font-bold text-white">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
+                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">KM Atual</p>
+                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">KM Atual</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">KM Entrada</p>
+                      <p className="text-[10px] text-white/70 font-bold uppercase mb-1">KM Entrada</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                   </div>
@@ -1641,7 +1641,7 @@ export function ServiceOrdersPage() {
                     onClick={() => openCatalog('part')}
                     className={cn(
                       'text-[9px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
-                      canManageStock ? 'bg-accent text-white hover:bg-accent' : 'bg-surface-700 text-surface-500'
+                      canManageStock ? 'bg-accent text-white hover:bg-accent-hover' : 'bg-panel-2 text-muted'
                     )}
                     title={canManageStock ? 'Lancar peca' : 'Sem permissao para alterar estoque'}
                   >
@@ -1795,13 +1795,13 @@ export function ServiceOrdersPage() {
                     { label: 'Pecas', val: selectedOrder.totalParts },
                     ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'Mao de Obra', val: selectedOrder.totalLabor }] : []),
                   ].map(({ label, val }) => (
-                    <div key={label} className="flex justify-between text-[10px] font-bold text-surface-600 uppercase tracking-wider">
+                    <div key={label} className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
                       <span>{label}</span>
                       <span>R$ {fmtBR(val)}</span>
                     </div>
                   ))}
                   <div className="pt-3 border-t border-accent">
-                    <p className="text-[10px] font-bold text-accent-ink uppercase tracking-wide mb-1">Total da Ordem</p>
+                    <p className="text-[10px] font-bold text-white/70 uppercase tracking-wide mb-1">Total da Ordem</p>
                     <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
                 </div>
@@ -1826,10 +1826,10 @@ export function ServiceOrdersPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-sm uppercase tracking-wide">Reserva de Pecas</h3>
-                    <p className="text-[10px] text-surface-200 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
+                    <p className="text-[10px] text-white/80 font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
-                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-surface-100/60 hover:text-surface-100 transition-colors">
+                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/60 hover:text-white transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -1880,7 +1880,7 @@ export function ServiceOrdersPage() {
                     <button
                       onClick={handleReserveParts}
                       disabled={reserveLoading}
-                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent text-white font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent-hover text-white font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                     >
                       {reserveLoading ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
                       {reserveLoading ? 'Processando...' : 'Confirmar Reserva'}
@@ -1956,7 +1956,7 @@ export function ServiceOrdersPage() {
               {/* Header */}
               <div className="p-5 border-b border-surface-800/70 bg-surface-950 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-white', catalogMode === 'service' ? 'bg-accent' : 'bg-accent')}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-accent">
                     {catalogMode === 'service' ? <Wrench size={20} /> : <Package size={20} />}
                   </div>
                   <div>
@@ -2104,7 +2104,7 @@ export function ServiceOrdersPage() {
                   </div>
                   <button
                     onClick={quickAddItem}
-                    className="h-9 px-4 bg-accent hover:bg-accent text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 whitespace-nowrap"
+                    className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 whitespace-nowrap"
                   >
                     <Plus size={13} /> Lancar
                   </button>
@@ -2219,8 +2219,8 @@ export function ServiceOrdersPage() {
                                 className={cn(
                                   'w-10 h-10 rounded-xl flex items-center justify-center shadow transition-all',
                                   !canManageStock || notEnoughStock
-                                    ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                                    : 'bg-accent text-white hover:bg-accent'
+                                    ? 'bg-panel-2 text-faint cursor-not-allowed'
+                                    : 'bg-accent text-white hover:bg-accent-hover'
                                 )}
                               >
                                 <Plus size={18} />

@@ -592,8 +592,8 @@ export function FinancialPage() {
 
               <form onSubmit={handleAddTransaction} className="p-10 space-y-6">
                 <div className="grid grid-cols-2 gap-4 p-1 bg-surface-800 rounded-lg mb-6">
-                  <button type="button" onClick={() => setFormData({ ...formData, type: 'INCOME' })} className={cn('py-3 rounded-xl text-xs font-semibold uppercase tracking-wide transition-all', formData.type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg' : 'text-surface-400 hover:bg-ink/5')}>Entrada</button>
-                  <button type="button" onClick={() => setFormData({ ...formData, type: 'EXPENSE' })} className={cn('py-3 rounded-xl text-xs font-semibold uppercase tracking-wide transition-all', formData.type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg' : 'text-surface-400 hover:bg-ink/5')}>Saída</button>
+                  <button type="button" onClick={() => setFormData({ ...formData, type: 'INCOME' })} className={cn('py-3 rounded-xl text-xs font-semibold uppercase tracking-wide transition-all', formData.type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg' : 'text-muted hover:bg-ink/5')}>Entrada</button>
+                  <button type="button" onClick={() => setFormData({ ...formData, type: 'EXPENSE' })} className={cn('py-3 rounded-xl text-xs font-semibold uppercase tracking-wide transition-all', formData.type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg' : 'text-muted hover:bg-ink/5')}>Saída</button>
                 </div>
 
                 <div className="space-y-1.5">

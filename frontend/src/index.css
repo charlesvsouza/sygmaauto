@@ -5,11 +5,11 @@
 @tailwind utilities;
 
 /* ===================================================================
-   TEMA — variáveis semânticas (claro "verde-água" por padrão).
-   O seletor de tema da Settings troca [data-theme] no <html>.
+   TEMA — variáveis semânticas (claro "verde-água", único tema do produto).
+   [data-theme='dark'] existe só como escopo local do registro de marca
+   (Login/Register) — não é mais selecionável pelo usuário.
    =================================================================== */
-:root,
-:root[data-theme='light'] {
+:root {
   /* Superfícies */
   --app: 238 243 242;          /* #eef3f2 fundo do app */
   --panel: 255 255 255;        /* #ffffff painéis */
@@ -50,7 +50,6 @@
   --radius: 8px;
 }
 
-:root[data-theme='dark'],
 [data-theme='dark'] {
   --app: 8 9 10;
   --panel: 24 24 29;
@@ -210,8 +209,8 @@ textarea {
   .badge-pendente { @apply bg-amber-100 text-amber-800; }
   .badge-execucao { @apply bg-blue-100 text-blue-800; }
   .badge-pronto { @apply bg-accent-soft text-accent-ink; }
-  .badge-finalizado { @apply bg-emerald-100 text-emerald-800; }
-  .badge-pago { @apply bg-teal-100 text-teal-800; }
+  .badge-finalizado { @apply bg-accent-soft text-accent-ink; }
+  .badge-pago { @apply bg-accent-soft text-accent-ink; }
   .badge-cancelado { @apply bg-red-100 text-red-800; }
 
   /* Tabela */

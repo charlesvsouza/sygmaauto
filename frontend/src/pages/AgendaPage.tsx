@@ -152,15 +152,15 @@ export function AgendaPage() {
               }`}
             >
               {/* Cabeçalho do dia */}
-              <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-accent/40 bg-accent/10' : 'border-line bg-surface-950/40'}`}>
-                <p className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? 'text-accent-ink' : 'text-surface-500'}`}>
+              <div className={`px-3 py-2 rounded-t-2xl border-b ${isToday ? 'border-accent/40 bg-accent/10' : 'border-line bg-panel-2'}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? 'text-accent-ink' : 'text-muted'}`}>
                   {WEEKDAYS[day.getDay()]}
                 </p>
-                <p className={`text-xl font-bold leading-tight ${isToday ? 'text-accent-ink' : 'text-surface-100'}`}>
+                <p className={`text-xl font-bold leading-tight ${isToday ? 'text-accent-ink' : 'text-ink'}`}>
                   {day.getDate()}
                 </p>
                 {dayOrders.length > 0 && (
-                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isToday ? 'bg-accent/20 text-accent-ink' : 'bg-surface-800 text-surface-300'}`}>
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isToday ? 'bg-accent/20 text-accent-ink' : 'bg-panel text-muted border border-line'}`}>
                     {dayOrders.length}
                   </span>
                 )}

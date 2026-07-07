@@ -14,7 +14,6 @@ import {
   Lock,
   Search,
   AlertCircle,
-  Palette,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -26,7 +25,6 @@ import {
   lookupCnpj,
   onlyDigits,
 } from '../lib/masks';
-import { applyThemePreset, getStoredThemePreset, THEME_PRESETS, type ThemePresetId } from '../lib/themePresets';
 import { getPlanLabel, getPlanRank } from '../lib/planAccess';
 
 type TenantForm = {
@@ -79,7 +77,6 @@ export function SettingsPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<string | null>(null);
   const [users, setUsers] = useState<any[]>([]);
-  const [themePreset, setThemePreset] = useState<ThemePresetId>(getStoredThemePreset());
   const currentPlan = subscription?.plan?.name || 'START';
   const isUpgrade = (planName: string) => getPlanRank(planName) > getPlanRank(currentPlan);
   const isDowngrade = (planName: string) => getPlanRank(planName) < getPlanRank(currentPlan);
@@ -100,11 +97,6 @@ export function SettingsPage() {
   };
 
   useEffect(() => { loadData(); }, []);
-
-  const handleThemeChange = (presetId: ThemePresetId) => {
-    setThemePreset(presetId);
-    applyThemePreset(presetId);
-  };
 
   const loadData = async () => {
     try {
@@ -612,58 +604,6 @@ export function SettingsPage() {
                 </div>
               )}
             </form>
-          </motion.div>
-
-          {/* Aparência */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden"
-          >
-            <div className="px-5 py-3 border-b border-line bg-surface-950/40 flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wide">
-                  <Palette className="w-5 h-5" /> Aparência
-                </h2>
-                <p className="text-xs text-surface-400 mt-0.5">Tema visual da plataforma</p>
-              </div>
-            </div>
-
-            <div className="p-5 space-y-3">
-              <p className="text-xs font-bold text-surface-500 uppercase tracking-wider">Tema</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-xl">
-                {THEME_PRESETS.map((preset) => {
-                  const active = themePreset === preset.id;
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => handleThemeChange(preset.id)}
-                      className={cn(
-                        'text-left rounded-lg border p-3 transition-all',
-                        active
-                          ? 'border-accent bg-accent-soft shadow-sm ring-1 ring-accent'
-                          : 'border-line bg-panel hover:border-line-strong hover:shadow-sm'
-                      )}
-                    >
-                      {/* Swatches */}
-                      <div className="flex gap-1 mb-2">
-                        {preset.swatches.map((color, i) => (
-                          <span
-                            key={i}
-                            className="block h-4 rounded-sm flex-1 border border-black/10"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                      <p className={cn('text-xs font-bold uppercase tracking-wide', active ? 'text-accent-ink' : 'text-ink')}>{preset.label}</p>
-                      <p className="text-[10px] text-muted mt-0.5 leading-tight">{preset.description}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </motion.div>
 
           {/* Equipe */}

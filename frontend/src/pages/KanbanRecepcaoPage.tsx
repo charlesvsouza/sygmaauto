@@ -307,7 +307,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setAutoView((v) => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-700' : 'bg-ink/5 text-surface-400 hover:text-ink'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-700' : 'bg-ink/5 text-muted hover:text-ink'}`}
             title="Alterna automaticamente entre as 4 perspectivas a cada 2 minutos"
           >
             <RefreshCw size={14} className={autoView ? 'animate-spin' : ''} />
@@ -315,7 +315,7 @@ export function KanbanRecepcaoPage() {
           </button>
           <button
             onClick={() => setTvMode(v => !v)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-accent-soft text-accent-ink' : 'bg-ink/5 text-surface-400 hover:text-ink'}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-accent-soft text-accent-ink' : 'bg-ink/5 text-muted hover:text-ink'}`}
           >
             {tvMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {tvMode ? 'Sair do modo TV' : 'Modo TV'}

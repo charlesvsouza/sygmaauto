@@ -4,7 +4,7 @@ import { cn } from '../../lib/utils';
 type ChipVariant = 'ok' | 'warn' | 'err' | 'neutral' | 'gold';
 
 const chipStyles: Record<ChipVariant, string> = {
-  ok: 'bg-emerald-100 text-emerald-800',
+  ok: 'bg-accent-soft text-accent-ink',
   warn: 'bg-amber-100 text-amber-800',
   err: 'bg-red-100 text-red-800',
   neutral: 'bg-panel-2 text-muted',

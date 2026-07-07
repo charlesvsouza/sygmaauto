@@ -203,7 +203,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-accent hover:bg-accent-hover text-surface-950 font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-8 shadow-lg shadow-accent/20"
+              className="w-full bg-accent hover:bg-accent-hover text-accent-fg font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-8 shadow-lg shadow-accent/20"
             >
               {loading ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
