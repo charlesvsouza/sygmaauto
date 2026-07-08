@@ -114,6 +114,14 @@ Nota de segurança:
 - Google: suporte a OCR/importação de PDF quando GOOGLE_API_KEY configurado.
 - Retífica de Motores: linha de produto própria (planos RETIFICA_PRO/RETIFICA_REDE) com fluxo de status dedicado, metrologia por cilindro e laudo técnico em PDF. Ver `ROADMAP.md` (Sprint 3.5) para detalhes e dívida técnica conhecida (metrologia sem model Prisma próprio).
 
+### 6.1 Backup do banco de dados
+
+- Workflow `.github/workflows/backup-db.yml`: `pg_dump` diário (03:00 BRT) + disparo manual (`gh workflow run backup-db.yml`), formato custom comprimido, enviado como artifact privado do repositório (retenção 30 dias). Reusa o secret `DATABASE__PUBLIC_URL` já existente.
+- **Importante:** o servidor de produção roda **Postgres 18** — o dump usa a imagem `postgres:18-alpine` via Docker no runner para evitar erro de `server version mismatch` (pg_dump precisa ser da mesma versão ou mais novo que o servidor).
+- **Restaurar um backup:** baixar o artifact (`gh run download <run-id> -n db-backup-<stamp>`), depois `pg_restore --clean --if-exists -d "$DATABASE_URL" sygmaauto-<stamp>.dump`. Isso restaura o banco INTEIRO (todos os tenants) — não é uma operação por tenant. Use com backend parado/health-check desligado para evitar escrita concorrente durante o restore.
+- Ainda pendente: confirmar/ativar o backup nativo de volume do Railway (Postgres service → Settings → Backups no dashboard — não acessível via CLI) como camada adicional.
+- Ver `.github/workflows/db-reset.yml`: workflow manual existente que **apaga e recria o banco inteiro** (todos os tenants) para popular só com o seed padrão. Não é tenant-scoped — cuidado ao disparar em produção com tenants reais ativos (ex.: POWER&TRAIN).
+
 ## 7. Checklist rápido para incidentes
 
 1. Verificar status do serviço Railway: sygmaauto-api.
@@ -121,6 +129,7 @@ Nota de segurança:
 3. Confirmar endpoints públicos: GET / e GET /health retornando 200.
 4. Verificar variáveis WhatsApp/Meta se houver falha de mensageria.
 5. Se mudança de variável crítica, aguardar novo deployment até SUCCESS.
+6. **Se um endpoint de listagem retornar 500 logo após um deploy com mudança de schema:** verificar se a tabela nova foi criada (`railway run npx prisma db push --accept-data-loss` recria de forma aditiva). Incidente real em 07/07/2026: `prisma db push` falhou silenciosamente no release do Railway, deixando `GET /service-orders` quebrado para todos os tenants por ~20min até rodar o push manualmente. Dados não foram perdidos — o erro era só de leitura (relação para tabela inexistente).
 
 ## 8. Referências úteis
 - COMPLIANCE.md: políticas LGPD, privacidade, retenção, incidentes.
