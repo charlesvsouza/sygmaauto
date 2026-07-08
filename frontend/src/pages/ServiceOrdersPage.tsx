@@ -2309,8 +2309,8 @@ export function ServiceOrdersPage() {
                 <h2 className="text-lg md:text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
                 <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
-              <div className="grid gap-3">
-                <form className="grid gap-3" onSubmit={async (e) => {
+              <div className="grid gap-2">
+                <form className="grid gap-2" onSubmit={async (e) => {
                 e.preventDefault();
                 try {
                   const payload = {
@@ -2352,7 +2352,7 @@ export function ServiceOrdersPage() {
                     </button>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
                     <select aria-label="Cliente da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
@@ -2391,7 +2391,7 @@ export function ServiceOrdersPage() {
                     {newOrder.customerId && showQuickVehicleForm && (
                       <div className="rounded-lg border border-surface-800 bg-surface-950 p-2 space-y-2">
                         <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                           <input
                             aria-label="Placa do veículo"
                             className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
@@ -2435,7 +2435,7 @@ export function ServiceOrdersPage() {
                             onClick={createQuickVehicle}
                             disabled={creatingQuickVehicle}
                             className={cn(
-                              'px-3 py-1 rounded-md text-xs font-semibold transition-all',
+                              'px-2 py-1 rounded-md text-xs font-semibold transition-all',
                               creatingQuickVehicle
                                 ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
                                 : 'bg-accent text-white hover:bg-accent-hover'
@@ -2483,17 +2483,17 @@ export function ServiceOrdersPage() {
                     </div>
                   </div>
                 )}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">KM Entrada</label>
-                  <input aria-label="KM de entrada" type="number" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
+                  <input aria-label="KM de entrada" type="number" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Data / Hora do Agendamento</label>
-                  <input aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
+                  <input aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Reclamacao Principal</label>
-                  <textarea aria-label="Reclamação principal da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-20 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
+                  <textarea aria-label="Reclamação principal da nova ordem" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-16 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
                 <label className="flex items-center gap-2 rounded-md border border-surface-800 bg-surface-950 px-2 py-1 text-xs font-semibold text-surface-300">
                   <input
@@ -2504,9 +2504,9 @@ export function ServiceOrdersPage() {
                   />
                   Reservar pecas para debitar automaticamente na aprovacao
                 </label>
-                <div className="flex justify-end gap-3 pt-3">
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="px-3 py-1 rounded-md text-xs font-semibold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
-                  <button type="submit" className="px-3 py-1 bg-accent text-white rounded-md font-semibold hover:bg-accent-hover shadow transition-all">Criar Ordem</button>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button type="button" onClick={() => setShowCreateModal(false)} className="px-2 py-1 rounded-md text-xs font-semibold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
+                  <button type="submit" className="px-2 py-1 bg-accent text-white rounded-md font-semibold hover:bg-accent-hover shadow transition-all">Criar Ordem</button>
                 </div>
               </form>
               </div>
