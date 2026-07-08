@@ -109,7 +109,9 @@
 
 ---
 
-### ✅ Sprint 2 — Fidelização e Relatórios *(concluído em 05/05/2026)*
+### ✅ Sprint 2 — Fidelização e Relatórios *(entregas principais concluídas em 05/05/2026; itens complementares ainda em evolução)*
+
+> Nota: o núcleo de relatórios, comissões e DRE foi entregue, mas o Sprint 2 manteve pendências operacionais em manutenção preventiva e NPS.
 
 - [x] **Comissão de Mecânicos** — backend 100% implementado (CommissionsModule, CommissionRate, Commission)
   - Modelos `CommissionRate` e `Commission` adicionados ao schema Prisma
@@ -183,6 +185,7 @@
   - Sidebar desktop: `overflow-y-auto` (era `overflow-hidden` — itens ficavam escondidos em telas pequenas)
   - Header desktop: avatar + nome + e-mail + botão Sair movidos para a extremidade direita
   - Scrollbar fina e discreta na nav da sidebar via CSS
+  - Documentação de autoprogamação criada para guia de correção de abertura de O.S. e defeitos de layout: `docs/AUTOPROGRAMACAO_ABERTURA_OS.md`
 - [x] **Correções Módulo Retífica** *(05/05/2026 — commits `62f1c85`, `5964182`, `cf9c46b`)*
   - Campos `motorBrand/motorModel/motorSerial` → `equipmentBrand/equipmentModel/serialNumber` (alinhamento com schema Prisma)
   - Fix build TS: `Set<unknown>` → `Set<string>` em `metrologiaTarget`

@@ -94,6 +94,8 @@ Branch: master
 
 ## Sprint 2 — Estado Atual
 
+> Sprint 2 já entregou o núcleo de relatórios e o backend de comissões, mas ainda não está totalmente fechado. Os itens de manutenção preventiva e NPS continuam em evolução e serão validados em registros subsequentes.
+
 | Feature | Status |
 |---|---|
 | Comissão de Mecânicos (backend) | ✅ implementado — ⚠️ tabelas ausentes em produção |
