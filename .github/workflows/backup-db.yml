@@ -1,0 +1,50 @@
+name: Backup Database
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 03:00 America/Sao_Paulo, todos os dias
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: pg_dump → GitHub Artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate DATABASE__PUBLIC_URL
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE__PUBLIC_URL está vazio. Veja o secret usado por db-reset.yml."
+            exit 1
+          fi
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE__PUBLIC_URL }}
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump database (formato custom, comprimido)
+        run: |
+          mkdir -p backup
+          STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges --file="backup/sygmaauto-$STAMP.dump"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE__PUBLIC_URL }}
+
+      - name: Validar tamanho do dump
+        run: |
+          FILE="backup/sygmaauto-${STAMP}.dump"
+          SIZE=$(stat -c%s "$FILE")
+          echo "Dump gerado: $FILE ($SIZE bytes)"
+          if [ "$SIZE" -lt 10000 ]; then
+            echo "::error::Dump suspeito de vazio/incompleto (menos de 10KB)."
+            exit 1
+          fi
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ env.STAMP }}
+          path: backup/*.dump
+          retention-days: 30
+          if-no-files-found: error
