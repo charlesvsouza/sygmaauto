@@ -2304,12 +2304,13 @@ export function ServiceOrdersPage() {
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-[24rem] min-h-[42rem] max-h-[92vh] overflow-hidden p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
                 <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
-              <form className="space-y-5" onSubmit={async (e) => {
+              <div className="max-h-[calc(92vh-5rem)] overflow-y-auto pr-1">
+                <form className="space-y-4" onSubmit={async (e) => {
                 e.preventDefault();
                 try {
                   const payload = {
@@ -2507,6 +2508,7 @@ export function ServiceOrdersPage() {
                   <button type="submit" className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold hover:bg-accent-hover shadow-lg active:scale-95 transition-all">Criar Ordem</button>
                 </div>
               </form>
+              </div>
             </motion.div>
           </div>
         )}
