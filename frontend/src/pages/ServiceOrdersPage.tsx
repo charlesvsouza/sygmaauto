@@ -2304,7 +2304,7 @@ export function ServiceOrdersPage() {
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl shadow-2xl w-full max-w-[95vw] max-h-[90vh] overflow-hidden p-5 md:p-6">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl shadow-2xl w-full max-w-[50%] max-h-[90vh] overflow-hidden p-5 md:p-6">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <h2 className="text-lg md:text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
                 <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
@@ -2504,9 +2504,9 @@ export function ServiceOrdersPage() {
                   />
                   Reservar pecas para debitar automaticamente na aprovacao
                 </label>
-                <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-6 py-3 rounded-lg text-sm font-bold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
-                  <button type="submit" className="flex-1 px-6 py-3 bg-accent text-white rounded-lg font-bold hover:bg-accent-hover shadow-lg active:scale-95 transition-all">Criar Ordem</button>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-md text-sm font-semibold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
+                  <button type="submit" className="px-4 py-2 bg-accent text-white rounded-md font-semibold hover:bg-accent-hover shadow transition-all">Criar Ordem</button>
                 </div>
               </form>
               </div>
