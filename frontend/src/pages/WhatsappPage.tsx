@@ -120,7 +120,7 @@ export function WhatsappPage() {
           <h1 className="text-xl font-bold text-surface-50">WhatsApp Automático</h1>
           <p className="text-xs text-surface-400">Notificações automáticas por WhatsApp</p>
         </div>
-        <button
+        <button type="button"
           onClick={fetchStatus}
           className="ml-auto p-2 hover:bg-ink/5 rounded-xl transition"
           title="Atualizar status"

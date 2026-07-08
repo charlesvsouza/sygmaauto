@@ -127,7 +127,7 @@ export default function WelcomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
               >
-                <button
+                <button type="button"
                   onClick={goToLogin}
                   className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-accent text-white font-black rounded-lg hover:brightness-110 transition-all hover:scale-105 shadow-xl shadow-accent/20"
                 >

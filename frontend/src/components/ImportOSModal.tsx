@@ -202,7 +202,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               <p className="text-xs font-bold text-surface-400 uppercase tracking-wide">IA Assistida · Verifique os dados abaixo</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
+          <button type="button" onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -245,7 +245,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               )}
 
               <div className="mt-12 w-full max-w-md">
-                <button
+                <button type="button"
                   disabled={!file || loading}
                   onClick={handleUpload}
                   className="w-full py-4 bg-accent text-white rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-md flex items-center justify-center gap-2"
@@ -421,7 +421,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button 
+                          <button type="button" 
                             onClick={() => removeItem(idx)}
                             className="p-2 text-surface-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                           >
@@ -455,14 +455,14 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
 
         {/* Footer */}
         <div className="p-6 border-t border-line bg-surface-950/40 flex justify-end gap-3">
-          <button
+          <button type="button"
             onClick={onClose}
             className="px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-wide text-surface-400 hover:bg-ink/5 transition-all"
           >
             Cancelar
           </button>
           {step === 'review' && (
-            <button
+            <button type="button"
               disabled={loading}
               onClick={handleConfirm}
               className="px-8 py-3 bg-accent text-white rounded-lg font-bold text-xs uppercase tracking-wide hover:bg-accent-hover transition-all shadow-xl shadow-black/40 flex items-center gap-2"

@@ -111,7 +111,7 @@ export function LandingPage() {
               transition={{ duration: 0.5, delay: 0.42 }}
               className="mt-9 flex flex-wrap gap-3"
             >
-              <button
+              <button type="button"
                 onClick={handleAccess}
                 className="h-[52px] px-8 rounded-lg bg-[#0b7f86] text-white font-black text-base tracking-wide hover:bg-[#076168] transition-all shadow-[0_16px_34px_rgba(11,127,134,0.28)] inline-flex items-center gap-2"
               >
@@ -376,7 +376,7 @@ export function LandingPage() {
                 ))}
               </ul>
 
-              <button
+              <button type="button"
                 onClick={() => startPlanCheckout(plan.name)}
                 className={`mt-6 h-11 w-full rounded-xl text-sm font-black transition-all inline-flex items-center justify-center gap-2 ${
                   plan.featured
@@ -426,7 +426,7 @@ export function LandingPage() {
                   ))}
                 </ul>
 
-                <button
+                <button type="button"
                   onClick={() => startPlanCheckout(plan.name)}
                   className="mt-6 h-11 w-full rounded-xl bg-[#ff7b2f] text-white hover:bg-[#f06820] shadow-[0_0_20px_rgba(255,123,47,0.28)] text-sm font-black transition-all inline-flex items-center justify-center gap-2"
                 >

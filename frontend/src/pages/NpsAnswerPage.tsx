@@ -113,7 +113,7 @@ export function NpsAnswerPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {SCORES.map((n) => (
-              <button
+              <button type="button"
                 key={n}
                 onClick={() => setScore(n)}
                 className={`w-10 h-10 rounded-full text-sm font-bold border-2 transition-all
@@ -150,7 +150,7 @@ export function NpsAnswerPage() {
           <p className="text-sm text-red-500 text-center">{submitError}</p>
         )}
 
-        <button
+        <button type="button"
           onClick={handleSubmit}
           disabled={score === null || submitting}
           className="w-full py-3 rounded-xl font-semibold text-white bg-primary-600 hover:bg-primary-700

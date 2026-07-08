@@ -83,13 +83,13 @@ export function MarketingShell({ children }: MarketingShellProps) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button
+            <button type="button"
               onClick={handleAccess}
               className="h-9 px-4 rounded-xl border border-[#1f9aa2]/35 text-xs font-black text-[#80d6dc] hover:border-[#33b6bf] hover:bg-[#0b7f86] hover:text-white transition-all hidden sm:flex items-center"
             >
               Acessar sistema
             </button>
-            <button
+            <button type="button"
               onClick={() => setMenuOpen((value) => !value)}
               className="md:hidden w-9 h-9 rounded-xl border border-line flex items-center justify-center text-[#d1d9e2] hover:text-white transition-colors"
               aria-label="Menu"
@@ -119,7 +119,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
                 <Link to="/privacidade" className={navItemClass('/privacidade')}>
                   Privacidade
                 </Link>
-                <button
+                <button type="button"
                   onClick={handleAccess}
                   className="mt-2 h-10 rounded-xl bg-[#0b7f86] text-white font-black text-sm shadow-[0_10px_24px_rgba(11,127,134,0.34)]"
                 >

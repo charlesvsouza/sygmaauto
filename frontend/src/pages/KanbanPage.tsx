@@ -154,7 +154,7 @@ function KanbanCard({
 
       {/* Botão avançar */}
       {next && (
-        <button
+        <button type="button"
           onClick={() => onAdvance(os.id, next)}
           disabled={isAdv}
           className="w-full mt-1 py-1.5 rounded-lg bg-ink/5 hover:bg-ink/5 text-muted hover:text-ink font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
@@ -240,7 +240,7 @@ export function KanbanPage() {
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-line ${tvMode ? 'py-3' : 'py-4'}`}>
         <div className="flex items-start gap-3">
-          <button
+          <button type="button"
             onClick={() => navigate('/dashboard')}
             className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-line bg-ink/5 text-surface-200 hover:text-ink hover:bg-ink/5 transition-all shrink-0"
             aria-label="Voltar para dashboard"
@@ -266,14 +266,14 @@ export function KanbanPage() {
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {isCompactViewport && !tvMode && (
             <>
-              <button
+              <button type="button"
                 onClick={() => scrollColumns('left', columnWidth)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ink/5 text-surface-200 hover:text-ink hover:bg-ink/5 transition-all text-xs font-bold"
               >
                 <ChevronLeft size={14} />
                 Colunas
               </button>
-              <button
+              <button type="button"
                 onClick={() => scrollColumns('right', columnWidth)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ink/5 text-surface-200 hover:text-ink hover:bg-ink/5 transition-all text-xs font-bold"
               >
@@ -282,13 +282,13 @@ export function KanbanPage() {
               </button>
             </>
           )}
-          <button
+          <button type="button"
             onClick={() => load(false)}
             className="p-2 text-surface-400 hover:text-ink hover:bg-ink/5 rounded-xl transition-all"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
-          <button
+          <button type="button"
             onClick={() => setTvMode((v) => !v)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-cyan-500/20 text-cyan-600' : 'bg-ink/5 text-surface-400 hover:text-ink'}`}
           >

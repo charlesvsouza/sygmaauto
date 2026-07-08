@@ -153,7 +153,7 @@ export function ServicesPage() {
           <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Serviços</h1>
           <p className="text-surface-400 font-medium">{services.length} serviços cadastrados no catálogo</p>
         </div>
-        <button
+        <button type="button"
           onClick={() => {
             if (!canManageServices) {
               toast.error('Voce nao tem permissao para cadastrar servicos.');
@@ -253,7 +253,7 @@ export function ServicesPage() {
                     <td className="px-4 py-3 text-right font-semibold text-ink">R$ {priceOf(service).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                     <td className="px-4 py-3">
                       <div className="inline-flex items-center justify-end gap-1.5 w-full">
-                        <button
+                        <button type="button"
                           onClick={() => handleEdit(service)}
                           disabled={!canManageServices}
                           className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -261,7 +261,7 @@ export function ServicesPage() {
                         >
                           <Edit size={15} />
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(service.id)}
                           disabled={!canManageServices}
                           className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -299,7 +299,7 @@ export function ServicesPage() {
                 <h2 className="text-xl font-bold text-surface-50 uppercase">
                   {editingService ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
-                <button
+                <button type="button"
                   onClick={() => setShowModal(false)}
                   className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >

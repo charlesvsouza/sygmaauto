@@ -331,7 +331,7 @@ export function DashboardPage() {
             {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
-        <button onClick={() => navigate('/service-orders?new=true')}
+        <button type="button" onClick={() => navigate('/service-orders?new=true')}
           className="flex items-center gap-2 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-lg hover:bg-accent-hover transition-all active:scale-95 self-start md:self-auto">
           <Plus size={18} /> Nova OS
         </button>
@@ -358,7 +358,7 @@ export function DashboardPage() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-bold text-surface-400 uppercase tracking-wide">Período de Análise</span>
           {[7, 30, 90].map((days) => (
-            <button
+            <button type="button"
               key={days}
               onClick={() => setProductivityWindowDays(days as 7 | 30 | 90)}
               className={cn(
@@ -593,7 +593,7 @@ export function DashboardPage() {
               </div>
               <h3 className="text-base font-bold mb-2 tracking-tight">Insight</h3>
               <p className="text-surface-600 text-xs leading-relaxed mb-5">{insightMessage}</p>
-              <button onClick={() => navigate('/service-orders')}
+              <button type="button" onClick={() => navigate('/service-orders')}
                 className="w-full py-3 bg-surface-900 text-surface-50 font-bold rounded-xl hover:bg-ink/5 transition-all active:scale-95 text-sm">
                 Ver Ordens
               </button>
@@ -668,7 +668,7 @@ export function DashboardPage() {
                   <Calendar size={14} className="text-blue-500" />
                   <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">Agenda de Hoje</p>
                 </div>
-                <button onClick={() => navigate('/agenda')} className="text-[10px] font-bold text-blue-500 hover:underline">
+                <button type="button" onClick={() => navigate('/agenda')} className="text-[10px] font-bold text-blue-500 hover:underline">
                   Ver completa →
                 </button>
               </div>
@@ -707,7 +707,7 @@ export function DashboardPage() {
               <p className="text-xs text-surface-400 mt-1.5 mb-4 leading-relaxed">
                 WhatsApp automático, Kanban de pátio e muito mais.
               </p>
-              <button onClick={() => navigate('/settings')} className="text-xs font-bold text-primary-600 hover:underline">
+              <button type="button" onClick={() => navigate('/settings')} className="text-xs font-bold text-primary-600 hover:underline">
                 Ver planos →
               </button>
             </motion.div>

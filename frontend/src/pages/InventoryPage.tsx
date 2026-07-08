@@ -203,7 +203,7 @@ function SupplierModal({ onClose, onSaved }: { onClose: () => void; onSaved: () 
         className="relative bg-surface-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
         <div className="px-8 py-6 border-b border-line flex items-center justify-between">
           <h2 className="text-lg font-bold text-surface-50 uppercase">Novo Fornecedor</h2>
-          <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors"><X size={18} /></button>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -379,16 +379,16 @@ export function InventoryPage() {
           <p className="text-surface-400 font-medium">{parts.length} itens • {suppliers.length} fornecedores</p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setShowImportNFModal(true)}
+          <button type="button" onClick={() => setShowImportNFModal(true)}
             disabled={!canManageParts}
             className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-accent/30 text-accent-ink font-bold hover:border-accent/50 hover:bg-accent/10 transition-all text-sm disabled:opacity-50">
             <FileSpreadsheet className="w-4 h-4" /> Importar NF
           </button>
-          <button onClick={() => setShowSupplierModal(true)}
+          <button type="button" onClick={() => setShowSupplierModal(true)}
             className="flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-line text-surface-200 font-bold hover:border-line hover:bg-ink/5 transition-all text-sm">
             <Truck className="w-4 h-4" /> Fornecedor
           </button>
-          <button onClick={openNew}
+          <button type="button" onClick={openNew}
             disabled={!canManageParts}
             className="flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-bold shadow-lg hover:bg-accent-hover transition-all active:scale-95">
             <Plus className="w-5 h-5" /> Nova Peça
@@ -502,15 +502,15 @@ export function InventoryPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="inline-flex items-center justify-end gap-1 w-full">
-                          <button onClick={() => { setShowMovModal(part); setMovType('ENTRY'); }} title="Entrada" disabled={!canManageParts}
+                          <button type="button" onClick={() => { setShowMovModal(part); setMovType('ENTRY'); }} title="Entrada" disabled={!canManageParts}
                             className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <ArrowDownLeft className="w-4 h-4" />
                           </button>
-                          <button onClick={() => { setShowMovModal(part); setMovType('EXIT'); }} title="Saída" disabled={!canManageParts}
+                          <button type="button" onClick={() => { setShowMovModal(part); setMovType('EXIT'); }} title="Saída" disabled={!canManageParts}
                             className="p-1.5 rounded-md text-danger hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <ArrowUpRight className="w-4 h-4" />
                           </button>
-                          <button onClick={() => openEdit(part)} disabled={!canManageParts}
+                          <button type="button" onClick={() => openEdit(part)} disabled={!canManageParts}
                             className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <Edit className="w-4 h-4" />
                           </button>
@@ -538,7 +538,7 @@ export function InventoryPage() {
                 <h2 className="text-xl font-bold text-surface-50 uppercase">
                   {editingPart ? 'Editar Peça' : 'Cadastrar Peça'}
                 </h2>
-                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors">
+                <button type="button" onClick={() => setShowModal(false)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500 hover:text-surface-50 transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -689,7 +689,7 @@ export function InventoryPage() {
                   <h2 className="text-lg font-bold text-surface-50 uppercase">Movimentação</h2>
                   <p className="text-sm text-surface-400 font-medium mt-0.5">{showMovModal.name}</p>
                 </div>
-                <button onClick={() => setShowMovModal(null)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500"><X size={18} /></button>
+                <button type="button" onClick={() => setShowMovModal(null)} className="p-2 hover:bg-ink/5 rounded-full text-surface-500"><X size={18} /></button>
               </div>
               <div className="p-8 space-y-5">
                 <div className="grid grid-cols-2 gap-3">
@@ -726,8 +726,8 @@ export function InventoryPage() {
                   </p>
                 )}
                 <div className="flex justify-end gap-3 pt-2">
-                  <button onClick={() => { setShowMovModal(null); setMovError(''); }} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-ink/5 rounded-xl transition-all">Cancelar</button>
-                  <button onClick={handleMovement}
+                  <button type="button" onClick={() => { setShowMovModal(null); setMovError(''); }} className="px-6 py-2.5 text-sm font-bold text-surface-400 hover:bg-ink/5 rounded-xl transition-all">Cancelar</button>
+                  <button type="button" onClick={handleMovement}
                     className={cn('px-8 py-2.5 text-white rounded-xl font-bold transition-all active:scale-95 shadow-sm',
                       movType === 'ENTRY' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-500 hover:bg-red-600')}>
                     Confirmar {movType === 'ENTRY' ? 'Entrada' : 'Saída'}

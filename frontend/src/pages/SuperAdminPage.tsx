@@ -208,13 +208,13 @@ export function SuperAdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => setShowProvisionModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all text-sm font-bold">
+          <button type="button" onClick={() => setShowProvisionModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all text-sm font-bold">
             <Plus size={16} /> Novo Tenant
           </button>
-          <button onClick={loadData} className="p-2 text-muted hover:text-ink hover:bg-ink/5 rounded-xl transition-all">
+          <button type="button" onClick={loadData} className="p-2 text-muted hover:text-ink hover:bg-ink/5 rounded-xl transition-all">
             <RefreshCw size={16} />
           </button>
-          <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold">
+          <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-500/10 rounded-xl transition-all text-sm font-bold">
             <LogOut size={16} /> Sair
           </button>
         </div>
@@ -226,14 +226,14 @@ export function SuperAdminPage() {
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg p-4 text-sm">
               <AlertCircle size={16} /> {error}
-              <button onClick={() => setError(null)} className="ml-auto"><X size={14} /></button>
+              <button type="button" onClick={() => setError(null)} className="ml-auto"><X size={14} /></button>
             </motion.div>
           )}
           {successMsg && (
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-lg p-4 text-sm">
               <CheckCircle2 size={16} /> {successMsg}
-              <button onClick={() => setSuccessMsg(null)} className="ml-auto"><X size={14} /></button>
+              <button type="button" onClick={() => setSuccessMsg(null)} className="ml-auto"><X size={14} /></button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -264,7 +264,7 @@ export function SuperAdminPage() {
             </h2>
             <div className="flex gap-2 sm:ml-auto">
               {(['all', 'pending', 'active'] as const).map((f) => (
-                <button key={f} onClick={() => setFilterStatus(f)}
+                <button type="button" key={f} onClick={() => setFilterStatus(f)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === f ? 'bg-blue-600 text-white' : 'bg-ink/5 text-muted hover:bg-ink/10'}`}>
                   {f === 'all' ? `Todos (${tenants.length})` : f === 'pending' ? `Pendentes (${tenants.filter(t => t.status === 'PENDING_SETUP').length})` : `Ativos (${tenants.filter(t => t.status !== 'PENDING_SETUP' && t.subscription?.status === 'ACTIVE').length})`}
                 </button>
@@ -314,23 +314,23 @@ export function SuperAdminPage() {
                   </p>
 
                   <div className="flex gap-2 flex-wrap">
-                    <button onClick={() => handleViewDetails(tenant)}
+                    <button type="button" onClick={() => handleViewDetails(tenant)}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-ink/5 hover:bg-ink/10 text-ink text-xs font-bold py-2 rounded-xl transition-all">
                       <Eye size={13} /> Detalhes
                     </button>
                     {tenant.status !== 'PENDING_SETUP' && (
-                      <button onClick={() => handleImpersonate(tenant.id)} disabled={impersonating === tenant.id}
+                      <button type="button" onClick={() => handleImpersonate(tenant.id)} disabled={impersonating === tenant.id}
                         className="flex-1 flex items-center justify-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
                         {impersonating === tenant.id ? <Loader2 size={13} className="animate-spin" /> : <LogIn size={13} />} Acessar
                       </button>
                     )}
                     {tenant.status === 'PENDING_SETUP' && (
-                      <button onClick={() => handleResendInvite(tenant.id)} disabled={resendingId === tenant.id}
+                      <button type="button" onClick={() => handleResendInvite(tenant.id)} disabled={resendingId === tenant.id}
                         className="flex-1 flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-xs font-bold py-2 rounded-xl transition-all disabled:opacity-50">
                         {resendingId === tenant.id ? <Loader2 size={13} className="animate-spin" /> : <Mail size={13} />} Reenviar
                       </button>
                     )}
-                    <button onClick={() => { setPendingDelete({ id: tenant.id, name: tenant.name }); setDeleteConfirmText(''); }}
+                    <button type="button" onClick={() => { setPendingDelete({ id: tenant.id, name: tenant.name }); setDeleteConfirmText(''); }}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 text-xs font-bold py-2 rounded-xl transition-all">
                       <Trash2 size={13} /> Excluir
                     </button>
@@ -350,7 +350,7 @@ export function SuperAdminPage() {
               className="w-full max-w-lg bg-surface-900 border-l border-line h-full overflow-y-auto">
               <div className="p-6 border-b border-line flex items-center justify-between">
                 <h2 className="font-black text-ink">Detalhes do Tenant</h2>
-                <button onClick={() => setSelectedTenant(null)} className="text-muted hover:text-ink"><X size={20} /></button>
+                <button type="button" onClick={() => setSelectedTenant(null)} className="text-muted hover:text-ink"><X size={20} /></button>
               </div>
 
               {detailLoading ? (
@@ -377,13 +377,13 @@ export function SuperAdminPage() {
                         <div className="flex gap-2 mt-2">
                           <input readOnly value={`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`}
                             className="flex-1 bg-surface-950 border border-line rounded-xl text-xs text-ink px-3 py-2 outline-none min-w-0" />
-                          <button onClick={() => copyToClipboard(`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`)}
+                          <button type="button" onClick={() => copyToClipboard(`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`)}
                             className="px-3 py-2 bg-ink/5 hover:bg-ink/10 rounded-xl text-xs text-ink flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
                             {copiedLink ? <CheckCircle2 size={13} className="text-emerald-600" /> : <Copy size={13} />} {copiedLink ? 'Copiado!' : 'Copiar'}
                           </button>
                         </div>
                       )}
-                      <button onClick={() => handleResendInvite(selectedTenant.id)} disabled={resendingId === selectedTenant.id}
+                      <button type="button" onClick={() => handleResendInvite(selectedTenant.id)} disabled={resendingId === selectedTenant.id}
                         className="w-full mt-1 flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50">
                         {resendingId === selectedTenant.id ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />} Reenviar Convite
                       </button>
@@ -431,7 +431,7 @@ export function SuperAdminPage() {
 
                   {/* Acesso como MASTER (impersonação) */}
                   {selectedTenant.status !== 'PENDING_SETUP' && (
-                    <button onClick={() => handleImpersonate(selectedTenant.id)} disabled={impersonating === selectedTenant.id}
+                    <button type="button" onClick={() => handleImpersonate(selectedTenant.id)} disabled={impersonating === selectedTenant.id}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black py-3 rounded-lg transition-all">
                       {impersonating === selectedTenant.id ? <Loader2 size={16} className="animate-spin" /> : <LogIn size={16} />}
                       Acessar como MASTER
@@ -442,12 +442,12 @@ export function SuperAdminPage() {
                   <div className="bg-ink/5 rounded-lg p-4 space-y-3">
                     <p className="text-xs font-bold text-muted uppercase tracking-widest">Status do Tenant</p>
                     <div className="flex gap-2">
-                      <button onClick={() => handleUpdateStatus(selectedTenant.id, 'ACTIVE')}
+                      <button type="button" onClick={() => handleUpdateStatus(selectedTenant.id, 'ACTIVE')}
                         disabled={updatingStatus || selectedTenant.status === 'ACTIVE'}
                         className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 disabled:opacity-40">
                         {updatingStatus ? <Loader2 size={14} className="animate-spin mx-auto" /> : 'Ativar'}
                       </button>
-                      <button onClick={() => handleUpdateStatus(selectedTenant.id, 'SUSPENDED')}
+                      <button type="button" onClick={() => handleUpdateStatus(selectedTenant.id, 'SUSPENDED')}
                         disabled={updatingStatus || selectedTenant.status === 'SUSPENDED'}
                         className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 disabled:opacity-40">
                         Suspender
@@ -462,7 +462,7 @@ export function SuperAdminPage() {
                       <p className="text-xs text-faint">Atual: <span className="text-ink font-bold">{selectedTenant.subscription?.plan?.name ?? 'N/A'}</span></p>
                       <div className="flex gap-2">
                         {['START', 'PRO', 'REDE'].map((plan) => (
-                          <button key={plan} onClick={() => handleUpdatePlan(selectedTenant.id, plan)}
+                          <button type="button" key={plan} onClick={() => handleUpdatePlan(selectedTenant.id, plan)}
                             disabled={updatingPlan || selectedTenant.subscription?.plan?.name === plan}
                             className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 disabled:opacity-40">
                             {updatingPlan ? <Loader2 size={12} className="animate-spin mx-auto" /> : plan}
@@ -481,7 +481,7 @@ export function SuperAdminPage() {
                       )}
                       <div className="flex gap-2">
                         {[30, 60, 90].map((days) => (
-                          <button key={days} onClick={() => handleExtendSubscription(selectedTenant.id, days)}
+                          <button type="button" key={days} onClick={() => handleExtendSubscription(selectedTenant.id, days)}
                             disabled={extendingDays !== null}
                             className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 disabled:opacity-40">
                             {extendingDays === days ? <Loader2 size={12} className="animate-spin mx-auto" /> : `+${days}d`}
@@ -491,7 +491,7 @@ export function SuperAdminPage() {
                     </div>
                   )}
 
-                  <button onClick={() => { setPendingDelete({ id: selectedTenant.id, name: selectedTenant.name }); setDeleteConfirmText(''); }}
+                  <button type="button" onClick={() => { setPendingDelete({ id: selectedTenant.id, name: selectedTenant.name }); setDeleteConfirmText(''); }}
                     className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 font-bold py-3 rounded-lg transition-all">
                     <Trash2 size={16} /> Excluir este Tenant
                   </button>
@@ -534,11 +534,11 @@ export function SuperAdminPage() {
               />
 
               <div className="flex gap-3">
-                <button onClick={() => setPendingDelete(null)}
+                <button type="button" onClick={() => setPendingDelete(null)}
                   className="flex-1 bg-ink/5 hover:bg-ink/10 text-ink font-bold py-3 rounded-lg transition-all">
                   Cancelar
                 </button>
-                <button
+                <button type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== pendingDelete.name || deleteLoading}
                   className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-black py-3 rounded-lg transition-all flex items-center justify-center gap-2">

@@ -58,7 +58,7 @@ export function Modal({
             <h2 className="text-base font-semibold tracking-[0.02em] text-surface-50">
               {title}
             </h2>
-            <button
+            <button type="button"
               onClick={onClose}
               className="rounded-md p-1 text-surface-400 transition-colors hover:bg-ink/5 hover:text-surface-100"
               aria-label="Fechar"

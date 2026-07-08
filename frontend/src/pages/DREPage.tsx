@@ -255,7 +255,7 @@ export function DREPage() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Seletores de mês e ano */}
           <div className="flex items-center gap-1 bg-surface-900 border border-line rounded-lg px-2 py-1.5 shadow-sm">
-            <button onClick={prevMonth} className="p-1.5 hover:bg-ink/5 rounded-xl transition-colors">
+            <button type="button" onClick={prevMonth} className="p-1.5 hover:bg-ink/5 rounded-xl transition-colors">
               <ChevronLeft className="w-4 h-4 text-surface-300" />
             </button>
             <select
@@ -277,7 +277,7 @@ export function DREPage() {
             >
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
-            <button
+            <button type="button"
               onClick={nextMonth}
               disabled={year === currentYear && month === now.getMonth() + 1}
               className="p-1.5 hover:bg-ink/5 rounded-xl transition-colors disabled:opacity-30"
@@ -285,7 +285,7 @@ export function DREPage() {
               <ChevronRight className="w-4 h-4 text-surface-300" />
             </button>
           </div>
-          <button
+          <button type="button"
             onClick={handlePrint}
             className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-bold rounded-xl hover:bg-accent-hover transition-all shadow-sm"
           >

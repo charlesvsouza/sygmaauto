@@ -280,7 +280,7 @@ export function KanbanRecepcaoPage() {
       {/* Header */}
       <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 border-b border-line ${tvMode ? 'py-4' : 'py-3'}`}>
         <div className="flex items-start gap-3">
-          <button
+          <button type="button"
             onClick={() => navigate('/dashboard')}
             className="mt-0.5 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-line bg-ink/5 text-surface-200 hover:text-ink hover:bg-ink/5 transition-all shrink-0"
             aria-label="Voltar para dashboard"
@@ -299,13 +299,13 @@ export function KanbanRecepcaoPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <button
+          <button type="button"
             onClick={() => load(false)}
             className="p-2 text-surface-400 hover:text-ink hover:bg-ink/5 rounded-xl transition-all"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
-          <button
+          <button type="button"
             onClick={() => setAutoView((v) => !v)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${autoView ? 'bg-cyan-500/20 text-cyan-700' : 'bg-ink/5 text-muted hover:text-ink'}`}
             title="Alterna automaticamente entre as 4 perspectivas a cada 2 minutos"
@@ -313,7 +313,7 @@ export function KanbanRecepcaoPage() {
             <RefreshCw size={14} className={autoView ? 'animate-spin' : ''} />
             {autoView ? 'Rotação 2min: ON' : 'Rotação 2min: OFF'}
           </button>
-          <button
+          <button type="button"
             onClick={() => setTvMode(v => !v)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${tvMode ? 'bg-accent-soft text-accent-ink' : 'bg-ink/5 text-muted hover:text-ink'}`}
           >
@@ -325,7 +325,7 @@ export function KanbanRecepcaoPage() {
 
       {/* Faixa de filtros / resumo */}
       <div className="flex items-center gap-2 px-6 py-2.5 border-b border-line overflow-x-auto">
-        <button
+        <button type="button"
           onClick={() => setFilterKey('TODOS')}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${filterKey === 'TODOS' ? 'bg-ink/5 text-ink' : 'text-surface-400 hover:text-ink hover:bg-ink/5'}`}
         >
@@ -337,7 +337,7 @@ export function KanbanRecepcaoPage() {
           const count = orders.filter(o => g.statuses.includes(o.status)).length;
           const active = filterKey === g.key;
           return (
-            <button
+            <button type="button"
               key={g.key}
               onClick={() => setFilterKey(active ? 'TODOS' : g.key)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${active ? `${g.activeBg} ${g.color}` : 'text-surface-400 hover:text-ink hover:bg-ink/5'}`}

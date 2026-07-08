@@ -306,13 +306,13 @@ export function FinancialPage() {
           <p className="text-surface-400 font-medium mt-2">Relatórios detalhados e controle de fluxo de caixa</p>
         </motion.div>
         <motion.div variants={itemVariants} className="flex gap-3">
-          <button
+          <button type="button"
             onClick={handlePrint}
             className="h-12 px-6 rounded-lg bg-surface-900 border border-line text-surface-200 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
           >
             <Printer size={18} className="text-surface-500" /> Imprimir Relatório
           </button>
-          <button
+          <button type="button"
             onClick={() => setShowAddModal(true)}
             disabled={!canManageFinancial}
             className="h-12 px-6 rounded-lg bg-accent text-white font-bold text-sm shadow-xl shadow-black/40 hover:bg-accent-hover transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -585,7 +585,7 @@ export function FinancialPage() {
                     <p className="text-xs text-surface-400 font-bold uppercase tracking-wide">Movimentação Manual</p>
                   </div>
                 </div>
-                <button onClick={() => setShowAddModal(false)} className="p-3 hover:bg-ink/5 rounded-lg text-surface-500 hover:text-surface-50 transition-colors">
+                <button type="button" onClick={() => setShowAddModal(false)} className="p-3 hover:bg-ink/5 rounded-lg text-surface-500 hover:text-surface-50 transition-colors">
                   <X size={24} />
                 </button>
               </div>

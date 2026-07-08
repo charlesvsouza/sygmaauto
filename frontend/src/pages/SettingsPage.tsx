@@ -621,7 +621,7 @@ export function SettingsPage() {
                 <p className="text-xs text-surface-400 mt-0.5">{users.length} membro{users.length !== 1 ? 's' : ''}</p>
               </div>
               {canManageUsers && (
-                <button
+                <button type="button"
                   onClick={() => navigate('/users')}
                   className="flex items-center gap-1 px-4 py-2 bg-accent text-white rounded-lg text-xs font-bold hover:bg-accent-hover transition-all uppercase tracking-wide"
                 >
@@ -729,7 +729,7 @@ export function SettingsPage() {
                           <span className="text-[9px] font-bold uppercase tracking-tight text-surface-400">Após vencimento</span>
                         </div>
                       ) : (
-                        <button
+                        <button type="button"
                           onClick={() => currentPlan !== plan.name && handleCheckoutPlan(plan.name)}
                           disabled={currentPlan === plan.name || checkoutLoadingPlan === plan.name}
                           className="h-8 rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-1.5"

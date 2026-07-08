@@ -179,7 +179,7 @@ export function VehiclesPage() {
             {vehicles.filter(isMaintenanceDue).length} veículo(s) com manutenção vencida
           </div>
         )}
-        <button
+        <button type="button"
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -268,14 +268,14 @@ export function VehiclesPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleEdit(vehicle)}
                           className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft transition-colors"
                           aria-label="Editar veículo"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(vehicle.id)}
                           className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
                           aria-label="Excluir veículo"
@@ -312,7 +312,7 @@ export function VehiclesPage() {
                 <h2 className="text-xl font-bold text-surface-50">
                   {editingVehicle ? 'Editar Veículo' : 'Novo Veículo'}
                 </h2>
-                <button
+                <button type="button"
                   onClick={() => setShowModal(false)}
                   className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >

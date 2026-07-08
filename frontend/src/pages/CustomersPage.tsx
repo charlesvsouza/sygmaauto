@@ -179,7 +179,7 @@ export function CustomersPage() {
           <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Clientes</h1>
           <p className="text-surface-400 font-medium">Gestão e cadastro de clientes da oficina</p>
         </div>
-        <button
+        <button type="button"
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -272,14 +272,14 @@ export function CustomersPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleEdit(customer)}
                           className="p-1.5 rounded-md text-muted hover:text-accent-ink hover:bg-accent-soft transition-colors"
                           aria-label="Editar cliente"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(customer.id)}
                           className="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-50 transition-colors"
                           aria-label="Excluir cliente"
@@ -325,7 +325,7 @@ export function CustomersPage() {
                     <p className="text-sm text-surface-400 font-medium">Preencha as informações detalhadas abaixo</p>
                   </div>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => setShowModal(false)}
                   className="p-2 hover:bg-ink/5 rounded-full transition-colors"
                 >

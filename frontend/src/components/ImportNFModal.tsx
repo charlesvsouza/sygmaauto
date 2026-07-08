@@ -147,7 +147,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
               <p className="text-xs font-bold text-surface-400 uppercase tracking-wide">XML/PDF com revisão antes da carga</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
+          <button type="button" onClick={onClose} className="p-2 hover:bg-ink/5 rounded-xl transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -189,7 +189,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 <p className="mt-3 text-sm font-bold text-surface-200">{file.name}</p>
               )}
 
-              <button
+              <button type="button"
                 onClick={handleProcessFile}
                 disabled={!file || loading}
                 className="mt-5 inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-accent text-white font-bold text-sm disabled:opacity-50"
@@ -350,13 +350,13 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   Itens: <strong>{data.items.length}</strong> | Valor total: <strong>R$ {totalAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
                 </div>
                 <div className="flex gap-2">
-                  <button
+                  <button type="button"
                     onClick={() => setStep('upload')}
                     className="px-5 py-2.5 rounded-xl border border-line text-surface-200 font-bold text-sm"
                   >
                     Voltar
                   </button>
-                  <button
+                  <button type="button"
                     onClick={handleConfirm}
                     disabled={loading || data.items.length === 0}
                     className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm disabled:opacity-50 inline-flex items-center gap-2"

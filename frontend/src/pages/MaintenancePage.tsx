@@ -35,7 +35,7 @@ export function MaintenancePage() {
             Veículos com intervalo de manutenção vencido — lembretes enviados via WhatsApp automaticamente às 8h.
           </p>
         </div>
-        <button
+        <button type="button"
           onClick={load}
           className="flex items-center gap-2 px-4 py-2 bg-surface-800 hover:bg-ink/5 text-surface-200 rounded-lg text-sm font-medium transition-colors"
         >

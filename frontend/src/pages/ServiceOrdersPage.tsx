@@ -1115,7 +1115,7 @@ export function ServiceOrdersPage() {
               <ClipboardList size={16} /> Ordens de Servico
             </h2>
             <div className="flex gap-2">
-              <button
+              <button type="button"
                 onClick={() => {
                   setImportTargetOrderId(null);
                   setShowImportModal(true);
@@ -1125,7 +1125,7 @@ export function ServiceOrdersPage() {
               >
                 <FileUp size={18} />
               </button>
-              <button
+              <button type="button"
                 onClick={() => setShowCreateModal(true)}
                 className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
               >
@@ -1215,7 +1215,7 @@ export function ServiceOrdersPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <button type="button"
                   onClick={viewOrderPdf}
                   className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all shadow-sm"
                   title="Visualizar O.S. em PDF"
@@ -1223,7 +1223,7 @@ export function ServiceOrdersPage() {
                   <FileText size={15} /> Visualizar O.S.
                 </button>
                 {/* Botões de Checklist - verde quando ja preenchido */}
-                <button
+                <button type="button"
                   onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}
                   disabled={!canUseChecklist}
                   className={cn(
@@ -1240,7 +1240,7 @@ export function ServiceOrdersPage() {
                   Entrada
                   {canUseChecklist && checklistFlags.ENTRADA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => canUseChecklist && setChecklistModal('SAIDA')}
                   disabled={!canUseChecklist}
                   className={cn(
@@ -1257,7 +1257,7 @@ export function ServiceOrdersPage() {
                   Saída
                   {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setImportTargetOrderId(selectedOrder.id);
                     setShowImportModal(true);
@@ -1268,13 +1268,13 @@ export function ServiceOrdersPage() {
                 >
                   <FileUp size={15} /> Importar Orcamento Externo
                 </button>
-                <button
+                <button type="button"
                   onClick={() => navigate('/service-orders')}
                   className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white hover:bg-surface-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <X size={15} /> Fechar
                 </button>
-                <button
+                <button type="button"
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
                   className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
@@ -1283,7 +1283,7 @@ export function ServiceOrdersPage() {
                   <Save size={15} /> Salvar alterações
                 </button>
                 {canDelete && (
-                  <button
+                  <button type="button"
                     onClick={openDeleteModal}
                     className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-all"
                     title="Excluir O.S. permanentemente (somente MASTER)"
@@ -1308,14 +1308,14 @@ export function ServiceOrdersPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">
-                  <button
+                  <button type="button"
                     onClick={createDiagnosticOrder}
                     disabled={creatingDiagOrder}
                     className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
                     {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'OK'} Sim, criar nova O.S.
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => setShowDiagBanner(false)}
                     className="px-4 py-2 bg-panel border border-line text-muted rounded-xl text-xs font-bold hover:bg-panel-2 transition-all whitespace-nowrap"
                   >
@@ -1420,7 +1420,7 @@ export function ServiceOrdersPage() {
                         if (!prevPhase) return null;
                         const prevStatus = prevPhase.statuses[0];
                         return (
-                          <button
+                          <button type="button"
                             onClick={async () => {
                               if (!confirm(`Retroceder para "${prevPhase.label}"? Esta ação e para correção de fluxo.`)) return;
                               await changeStatus(prevStatus, true);
@@ -1433,7 +1433,7 @@ export function ServiceOrdersPage() {
                         );
                        })()}
                       {canChangeStatus ? (
-                        <button
+                        <button type="button"
                           onClick={() => setShowStatusDropdown((v) => !v)}
                           title="Clique para alterar o status"
                           className={cn(
@@ -1460,7 +1460,7 @@ export function ServiceOrdersPage() {
                             .map(([key, cfg]) => {
                               const isNegative = key === 'CANCELADO' || key === 'REPROVADO';
                               return (
-                                <button
+                                <button type="button"
                                   key={key}
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
@@ -1553,7 +1553,7 @@ export function ServiceOrdersPage() {
                     <Wrench size={14} /> Servicos Realizados
                     <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{serviceItems.length}</span>
                   </h3>
-                  <button
+                  <button type="button"
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
                     className="text-[9px] font-semibold uppercase tracking-wide bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-1"
@@ -1610,7 +1610,7 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
-                          <button
+                          <button type="button"
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageItems}
                             className={cn('p-1 rounded transition-colors', isClosed || !canManageItems ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
@@ -1634,7 +1634,7 @@ export function ServiceOrdersPage() {
                     <Package size={14} /> Pecas e Materiais
                     <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{partItems.length}</span>
                   </h3>
-                  <button
+                  <button type="button"
                     onClick={() => openCatalog('part')}
                     className={cn(
                       'text-[9px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
@@ -1680,7 +1680,7 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
-                          <button
+                          <button type="button"
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageStock}
                             className={cn('p-1 rounded transition-colors', isClosed || !canManageStock ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
@@ -1712,7 +1712,7 @@ export function ServiceOrdersPage() {
                       const isReprovadoBtn = status === 'REPROVADO';
                       const isNegative = isCancel || isReprovadoBtn;
                       return (
-                        <button
+                        <button type="button"
                           key={status}
                           onClick={() => {
                             if (isNegative && !confirm(`Confirmar: ${STATUS_ACTION_LABEL[status] || status}?`)) return;
@@ -1732,7 +1732,7 @@ export function ServiceOrdersPage() {
 
                     {/* Botão Reservar Pecas - visível em APROVADO e AGUARDANDO_PECAS com pecas na OS */}
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (
-                      <button
+                      <button type="button"
                         onClick={() => { setReserveResult(null); setExpectedPartsDate(''); setShowReserveParts(true); }}
                         className="w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
                       >
@@ -1778,7 +1778,7 @@ export function ServiceOrdersPage() {
 
                 {/* Totais */}
                 <div className="bg-accent rounded-xl p-6 text-white shadow-xl flex flex-col gap-3">
-                  <button
+                  <button type="button"
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
                     className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-accent-hover disabled:opacity-60"
@@ -1826,7 +1826,7 @@ export function ServiceOrdersPage() {
                     <p className="text-[10px] text-white font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
-                <button onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
+                <button type="button" onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -1874,7 +1874,7 @@ export function ServiceOrdersPage() {
                       <p className="text-[10px] text-surface-500">Opcional. Pecas disponíveis serão reservadas imediatamente. Pecas faltantes gerarão um Pedido de Compra.</p>
                     </div>
 
-                    <button
+                    <button type="button"
                       onClick={handleReserveParts}
                       disabled={reserveLoading}
                       className="w-full py-3 rounded-lg bg-accent hover:bg-accent-hover text-white font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
@@ -1920,7 +1920,7 @@ export function ServiceOrdersPage() {
                           </div>
                         ))}
 
-                        <button
+                        <button type="button"
                           onClick={downloadPurchaseOrderPdf}
                           className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
                         >
@@ -1929,7 +1929,7 @@ export function ServiceOrdersPage() {
                       </div>
                     )}
 
-                    <button
+                    <button type="button"
                       onClick={() => setShowReserveParts(false)}
                       className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-bold text-xs tracking-wide hover:bg-surface-800 transition-all"
                     >
@@ -1966,7 +1966,7 @@ export function ServiceOrdersPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <button type="button"
                     onClick={() => { setShowAiPanel((v) => !v); setAiSuggestions([]); setAiDescription(''); }}
                     className={cn(
                       'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-all',
@@ -1979,7 +1979,7 @@ export function ServiceOrdersPage() {
                     <Sparkles size={13} />
                     IA
                   </button>
-                  <button onClick={() => setCatalogMode(null)} className="text-surface-600 hover:text-red-500 transition-colors">
+                  <button type="button" onClick={() => setCatalogMode(null)} className="text-surface-600 hover:text-red-500 transition-colors">
                     <XCircle size={24} />
                   </button>
                 </div>
@@ -2008,7 +2008,7 @@ export function ServiceOrdersPage() {
                           onKeyDown={(e) => e.key === 'Enter' && handleAiSuggest()}
                           className="flex-1 px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold focus:ring-2 focus:ring-surface-100/10 focus:border-accent transition-all"
                         />
-                        <button
+                        <button type="button"
                           onClick={handleAiSuggest}
                           disabled={aiLoading || !aiDescription.trim()}
                           className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 disabled:opacity-50"
@@ -2034,7 +2034,7 @@ export function ServiceOrdersPage() {
                                 {s.estimatedPrice > 0 && (
                                   <p className="text-[10px] font-bold text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
                                 )}
-                                <button
+                                <button type="button"
                                   onClick={() => addItem({
                                     type: s.type,
                                     ...(s.id ? (s.type === 'service' ? { serviceId: s.id } : { partId: s.id }) : {}),
@@ -2099,7 +2099,7 @@ export function ServiceOrdersPage() {
                       className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-center focus:ring-2 focus:ring-surface-100/10 transition-all"
                     />
                   </div>
-                  <button
+                  <button type="button"
                     onClick={quickAddItem}
                     className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 whitespace-nowrap"
                   >
@@ -2144,7 +2144,7 @@ export function ServiceOrdersPage() {
                     {catalogItems.services
                       .filter((s) => s.name.toLowerCase().includes(catalogSearch.toLowerCase()))
                       .map((s) => (
-                        <button
+                        <button type="button"
                           key={s.id}
                           onClick={() => addItem({
                             type: 'service',
@@ -2205,11 +2205,11 @@ export function ServiceOrdersPage() {
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               <div className="flex items-center border border-surface-800 rounded-xl overflow-hidden">
-                                <button onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">-</button>
+                                <button type="button" onClick={() => setPartQties({ ...partQties, [p.id]: Math.max(1, qty - 1) })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">-</button>
                                 <span className="w-8 text-center text-sm font-bold">{qty}</span>
-                                <button onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">+</button>
+                                <button type="button" onClick={() => setPartQties({ ...partQties, [p.id]: qty + 1 })} className="w-7 h-8 flex items-center justify-center text-surface-400 hover:bg-surface-950 text-xs font-bold">+</button>
                               </div>
-                              <button
+                              <button type="button"
                                 onClick={() => addItem({ type: 'part', partId: p.id, description: p.name, quantity: qty, unitPrice: p.unitPrice })}
                                 disabled={isClosed || !canManageStock || notEnoughStock}
                                 title={isClosed ? 'OS finalizada nao pode ser editada' : !canManageStock ? 'Somente MASTER/ADMIN podem alterar estoque' : notEnoughStock ? 'Quantidade maior que estoque disponivel' : 'Adicionar peca'}
@@ -2251,7 +2251,7 @@ export function ServiceOrdersPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
+                <button type="button" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
               <form className="space-y-5" onSubmit={async (e) => {
                 e.preventDefault();
@@ -2552,13 +2552,13 @@ export function ServiceOrdersPage() {
             </div>
 
             <div className="flex gap-3">
-              <button
+              <button type="button"
                 onClick={() => setShowDeleteModal(false)}
                 className="flex-1 h-11 rounded-xl border border-surface-800 text-sm font-bold text-surface-400 hover:bg-surface-950 transition-all"
               >
                 Cancelar
               </button>
-              <button
+              <button type="button"
                 onClick={handleDeleteOrder}
                 disabled={deleteConfirmInput.trim().toUpperCase() !== selectedOrder.id.slice(0, 8).toUpperCase() || deleting}
                 className="flex-1 h-11 rounded-xl bg-red-600 text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"

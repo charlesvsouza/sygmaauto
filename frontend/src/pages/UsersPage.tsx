@@ -240,7 +240,7 @@ export function UsersPage() {
           <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Cadastro de Usuários</h1>
           <p className="text-surface-400 mt-1 font-medium">Gestão de acessos e colaboradores (Produtivos e Escritório).</p>
         </div>
-        <button
+        <button type="button"
           onClick={() => {
             resetForm();
             setShowModal(true);
@@ -355,21 +355,21 @@ export function UsersPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center justify-end gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleEdit(user)}
                           className="p-1.5 rounded-md text-muted hover:bg-blue-500/10 hover:text-blue-600 transition-colors"
                           title="Editar"
                         >
                           <Edit size={16} />
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => openResetPasswordModal(user)}
                           className="p-1.5 rounded-md text-muted hover:bg-amber-500/10 hover:text-amber-600 transition-colors"
                           title="Redefinir senha"
                         >
                           <KeyRound size={16} />
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(user.id)}
                           className="p-1.5 rounded-md text-muted hover:bg-red-500/10 hover:text-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                           title="Excluir"

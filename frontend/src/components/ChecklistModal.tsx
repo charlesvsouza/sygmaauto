@@ -198,7 +198,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
               <p className="text-xs text-surface-400 mt-0.5">OS #{orderNumber}</p>
             )}
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-lg transition">
+          <button type="button" onClick={onClose} className="p-2 hover:bg-ink/5 rounded-lg transition">
             <X size={18} />
           </button>
         </div>
@@ -229,7 +229,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
               </label>
               <div className="flex items-center gap-1">
                 {Array.from({ length: 9 }, (_, i) => (
-                  <button
+                  <button type="button"
                     key={i}
                     onClick={() => setFuelLevel(i)}
                     className={cn(
@@ -274,7 +274,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                         {/* Condition buttons */}
                         <div className="flex gap-1 flex-wrap justify-end">
                           {CONDITIONS.map((c) => (
-                            <button
+                            <button type="button"
                               key={c.key}
                               onClick={() => setCondition(area.key, item.condition === c.key ? '' : c.key)}
                               className={cn(
@@ -289,7 +289,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                           ))}
                         </div>
                         {/* Expand toggle */}
-                        <button
+                        <button type="button"
                           onClick={() => toggleExpand(area.key)}
                           className="p-1 hover:bg-ink/5 rounded transition"
                         >
@@ -318,7 +318,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                                   alt=""
                                   className="w-16 h-16 object-cover rounded-lg border border-line"
                                 />
-                                <button
+                                <button type="button"
                                   onClick={() => removePhoto(area.key, idx)}
                                   className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
                                 >
@@ -327,7 +327,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                               </div>
                             ))}
                             {item.photos.length < 3 && (
-                              <button
+                              <button type="button"
                                 onClick={() => openCamera(area.key)}
                                 className="w-16 h-16 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center text-surface-500 hover:border-line hover:bg-ink/5 transition text-[10px] gap-1"
                               >
@@ -363,13 +363,13 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
         {/* Footer */}
         {!loading && (
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-line sticky bottom-0 bg-surface-900 rounded-b-2xl">
-            <button
+            <button type="button"
               onClick={onClose}
               className="px-4 py-2 text-sm font-semibold text-surface-300 hover:bg-ink/5 rounded-xl transition"
             >
               Cancelar
             </button>
-            <button
+            <button type="button"
               onClick={handleSave}
               disabled={saving || saved}
               className={cn(

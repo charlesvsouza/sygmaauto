@@ -80,7 +80,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               >
                 <Icon size={18} className={cn('mt-0.5 shrink-0', accentMap[t.type])} />
                 <p className="flex-1 text-sm text-surface-100">{t.message}</p>
-                <button
+                <button type="button"
                   onClick={() => remove(t.id)}
                   className="text-surface-500 transition-colors hover:text-surface-200"
                   aria-label="Fechar"

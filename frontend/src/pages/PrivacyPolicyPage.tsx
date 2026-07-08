@@ -18,7 +18,7 @@ export function PrivacyPolicyPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-line bg-[#090e17]/80 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center gap-4">
-          <button
+          <button type="button"
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm"
           >
@@ -278,7 +278,7 @@ export function PrivacyPolicyPage() {
         {/* Footer da página */}
         <div className="mt-16 pt-8 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/25">© {new Date().getFullYear()} SigmaAuto · sigmaauto.com.br · Todos os direitos reservados</p>
-          <button
+          <button type="button"
             onClick={() => navigate('/')}
             className="text-xs text-[#ff7b2f] hover:underline"
           >

@@ -63,7 +63,7 @@ export function ContactPage() {
             <CheckCircle2 size={44} className="text-[#ff7b2f] mx-auto mb-4" />
             <h2 className="text-2xl font-black text-white">Mensagem registrada</h2>
             <p className="mt-3 text-sm text-white/55">Nossa equipe responderá em breve no e-mail informado.</p>
-            <button
+            <button type="button"
               onClick={() => {
                 setContactSent(false);
                 setContactForm({ name: '', email: '', message: '' });

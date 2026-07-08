@@ -115,19 +115,19 @@ export function AgendaPage() {
           <p className="text-sm text-surface-500 mt-0.5">{weekLabel} · {totalSemana} OS agendada{totalSemana !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setWeekOffset(0)} className="px-3 py-2 text-xs font-bold text-surface-300 hover:bg-ink/5 rounded-xl transition-all">
+          <button type="button" onClick={() => setWeekOffset(0)} className="px-3 py-2 text-xs font-bold text-surface-300 hover:bg-ink/5 rounded-xl transition-all">
             Hoje
           </button>
-          <button onClick={() => setWeekOffset(w => w - 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
+          <button type="button" onClick={() => setWeekOffset(w => w - 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={() => setWeekOffset(w => w + 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
+          <button type="button" onClick={() => setWeekOffset(w => w + 1)} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all">
             <ChevronRight size={16} />
           </button>
-          <button onClick={load} disabled={loading} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all disabled:opacity-50">
+          <button type="button" onClick={load} disabled={loading} className="p-2 text-surface-400 hover:bg-ink/5 rounded-xl transition-all disabled:opacity-50">
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </button>
-          <button
+          <button type="button"
             onClick={() => navigate('/service-orders')}
             className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent-hover transition-all shadow-lg"
           >
@@ -172,7 +172,7 @@ export function AgendaPage() {
                   <p className="text-[10px] text-surface-600 text-center mt-4">—</p>
                 )}
                 {dayOrders.map((o) => (
-                  <button
+                  <button type="button"
                     key={o.id}
                     onClick={() => navigate('/service-orders')}
                     className="w-full text-left rounded-xl p-2 bg-surface-900 border border-line hover:border-line hover:shadow-sm transition-all"

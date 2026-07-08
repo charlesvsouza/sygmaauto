@@ -87,7 +87,7 @@ export default function ManualPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <button type="button"
               onClick={handleDownload}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line text-surface-400 hover:text-white hover:border-line text-xs font-semibold transition-all"
             >
@@ -122,7 +122,7 @@ export default function ManualPage() {
                 className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-ink/5 border border-line text-white text-xs placeholder:text-surface-500 focus:outline-none focus:border-amber-500/30 transition-all"
               />
               {search && (
-                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-white">
+                <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-white">
                   <X size={12} />
                 </button>
               )}

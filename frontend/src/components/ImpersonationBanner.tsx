@@ -24,14 +24,14 @@ export function ImpersonationBanner() {
       </div>
       <div className="flex items-center gap-2">
         <span className="text-red-700 hidden sm:inline">Token expira em 2h</span>
-        <button
+        <button type="button"
           onClick={handleExit}
           className="flex items-center gap-1.5 bg-red-700 hover:bg-red-800 px-3 py-1.5 rounded-lg transition-all"
         >
           <X size={12} />
           Sair da impersonação
         </button>
-        <button
+        <button type="button"
           onClick={() => { stopImpersonation(); navigate('/admin'); }}
           className="flex items-center gap-1.5 bg-ink/5 hover:bg-ink/5 px-3 py-1.5 rounded-lg transition-all"
         >

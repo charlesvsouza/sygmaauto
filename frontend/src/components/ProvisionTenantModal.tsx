@@ -51,7 +51,7 @@ export function ProvisionTenantModal({ onClose, onCreated }: { onClose: () => vo
             <h2 className="text-xl font-bold text-ink">Provisionar Novo Tenant</h2>
             <p className="text-sm text-faint">Cria um tenant pendente e gera o link de ativação do primeiro MASTER.</p>
           </div>
-          <button onClick={onClose} className="text-faint hover:text-ink"><X size={18} /></button>
+          <button type="button" onClick={onClose} className="text-faint hover:text-ink"><X size={18} /></button>
         </div>
 
         <div className="p-8 space-y-6">
@@ -85,7 +85,7 @@ export function ProvisionTenantModal({ onClose, onCreated }: { onClose: () => vo
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button onClick={copyLink} className="flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm">
+                <button type="button" onClick={copyLink} className="flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm">
                   <Copy size={16} /> Copiar link
                 </button>
                 <div className={`px-4 py-3 rounded-xl text-sm font-semibold ${result.emailSent ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}`}>

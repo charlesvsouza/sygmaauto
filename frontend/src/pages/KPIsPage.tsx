@@ -372,7 +372,7 @@ export function KPIsPage() {
             const active = selectedPeriod === key;
             const label = periodos[key]?.label || key;
             return (
-              <button
+              <button type="button"
                 key={key}
                 onClick={() => setSelectedPeriod(key)}
                 className={cn(
@@ -386,7 +386,7 @@ export function KPIsPage() {
               </button>
             );
           })}
-          <button
+          <button type="button"
             onClick={load}
             className="px-3 py-2 rounded-xl text-xs font-bold border border-line text-surface-300 hover:bg-ink/5"
           >

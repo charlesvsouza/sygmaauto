@@ -327,7 +327,7 @@ export function DashboardRetificaPage() {
             </div>
             <div className="flex items-center gap-2">
               {PERIODS.map((p) => (
-                <button
+                <button type="button"
                   key={p.key}
                   onClick={() => setPeriod(p.key)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
@@ -339,7 +339,7 @@ export function DashboardRetificaPage() {
                   {p.label}
                 </button>
               ))}
-              <button
+              <button type="button"
                 onClick={load}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ink/5 text-muted hover:bg-ink/10 text-xs font-bold"
               >
@@ -443,7 +443,7 @@ export function DashboardRetificaPage() {
               <h3 className="text-sm font-bold text-ink">Acoes Prioritarias</h3>
               <p className="text-xs text-muted">Motores com tempo acima do SLA da fase atual.</p>
             </div>
-            <button
+            <button type="button"
               onClick={() => navigate('/kanban-retifica')}
               className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/90 hover:bg-blue-500 text-xs font-bold text-white"
             >
@@ -482,7 +482,7 @@ export function DashboardRetificaPage() {
                       {item.reason}
                     </p>
                   </div>
-                  <button
+                  <button type="button"
                     onClick={() => navigate(`/kanban-retifica?os=${item.id}`)}
                     className="shrink-0 px-3 py-1.5 rounded-lg bg-ink/5 hover:bg-ink/10 text-ink text-xs font-bold"
                   >

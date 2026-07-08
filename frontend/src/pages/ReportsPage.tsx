@@ -942,7 +942,7 @@ const ICON_BG: Record<string, string> = {
           const Icon = r.icon;
           const active = type === r.id;
           return (
-            <button
+            <button type="button"
               key={r.id}
               onClick={() => { setType(r.id); setReportData(null); }}
               className={cn(
@@ -1062,7 +1062,7 @@ const ICON_BG: Record<string, string> = {
             </p>
           )}
 
-          <button
+          <button type="button"
             onClick={generate}
             disabled={loading}
             className="h-11 px-8 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow-lg hover:bg-accent-hover transition-all disabled:opacity-60 flex items-center gap-2 shrink-0"
@@ -1073,13 +1073,13 @@ const ICON_BG: Record<string, string> = {
 
           {reportData && (
             <>
-              <button
+              <button type="button"
                 onClick={() => setShowPreview(true)}
                 className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
                 <FileText size={16} className="text-surface-500" /> Visualizar PDF
               </button>
-              <button
+              <button type="button"
                 onClick={handlePrint}
                 className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
@@ -1137,11 +1137,11 @@ const ICON_BG: Record<string, string> = {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={handlePrint}
+                  <button type="button" onClick={handlePrint}
                     className="h-9 px-5 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-wide hover:bg-accent-hover transition-all flex items-center gap-2">
                     <Printer size={14} /> Imprimir / Salvar PDF
                   </button>
-                  <button onClick={() => setShowPreview(false)}
+                  <button type="button" onClick={() => setShowPreview(false)}
                     className="p-2 hover:bg-ink/5 rounded-xl text-surface-500 hover:text-surface-200 transition-colors">
                     <X size={20} />
                   </button>
