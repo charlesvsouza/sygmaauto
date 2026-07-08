@@ -198,11 +198,23 @@ function adjustArr<T>(arr: T[], n: number, empty: T): T[] {
 function NumStepper({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
     <div className="flex items-center gap-2">
-      <button type="button" onClick={() => onChange(Math.max(1, value - 1))}
-        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Minus size={12} /></button>
+      <button
+        type="button"
+        aria-label="Diminuir quantidade"
+        onClick={() => onChange(Math.max(1, value - 1))}
+        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"
+      >
+        <Minus size={12} />
+      </button>
       <span className="w-6 text-center text-white font-bold text-sm">{value}</span>
-      <button type="button" onClick={() => onChange(Math.min(16, value + 1))}
-        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"><Plus size={12} /></button>
+      <button
+        type="button"
+        aria-label="Aumentar quantidade"
+        onClick={() => onChange(Math.min(16, value + 1))}
+        className="p-1 rounded-lg bg-ink/5 hover:bg-ink/5 text-surface-600 transition-colors"
+      >
+        <Plus size={12} />
+      </button>
     </div>
   );
 }
@@ -421,7 +433,12 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 1 ? 'bg-blue-500' : 'bg-ink/5'}`} />
                 <div className={`w-6 h-1.5 rounded-full transition-colors ${step === 2 ? 'bg-emerald-500' : 'bg-ink/5'}`} />
               </div>
-              <button type="button" onClick={onCancel} className="p-2 text-surface-400 hover:text-white rounded-lg hover:bg-ink/5 transition-colors">
+              <button
+                type="button"
+                aria-label="Fechar modal"
+                onClick={onCancel}
+                className="p-2 text-surface-400 hover:text-white rounded-lg hover:bg-ink/5 transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>

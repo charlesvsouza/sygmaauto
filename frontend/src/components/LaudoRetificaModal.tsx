@@ -423,6 +423,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
               </button>
               <button
                 type="button"
+                aria-label="Fechar modal"
                 onClick={onClose}
                 className="p-2 text-surface-400 hover:text-white transition-colors rounded-lg hover:bg-ink/5"
               >
@@ -436,8 +437,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
             ref={iframeRef}
             srcDoc={fullDoc}
             title="Laudo Retífica"
-            className="flex-1 w-full rounded-b-2xl bg-surface-900"
-            style={{ border: 'none' }}
+            className="flex-1 w-full rounded-b-2xl bg-surface-900 border-0"
           />
         </motion.div>
       </motion.div>

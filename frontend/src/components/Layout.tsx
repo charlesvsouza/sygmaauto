@@ -319,7 +319,12 @@ export function Layout() {
       }`}>
         <div className="p-5 border-b border-line flex items-center justify-between">
           <SigmaAutoLogo variant="full" size={36} accent="teal" />
-          <button type="button" onClick={() => setSidebarOpen(false)} className="text-sidebar-ink hover:text-white">
+          <button
+            type="button"
+            aria-label="Fechar menu lateral"
+            onClick={() => setSidebarOpen(false)}
+            className="text-sidebar-ink hover:text-white"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -344,7 +349,12 @@ export function Layout() {
       <main className={cn('app-main-frame flex-1 min-w-0 flex flex-col min-h-0 transition-[margin] duration-200', rail ? 'lg:ml-16' : 'lg:ml-64')}>
         {/* Header mobile */}
         <header className="lg:hidden bg-surface-900 border-b border-line px-4 py-3 flex items-center justify-between sticky top-0 z-20">
-          <button type="button" onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-surface-300 hover:text-surface-100">
+          <button
+            type="button"
+            aria-label="Abrir menu lateral"
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 -ml-2 text-surface-300 hover:text-surface-100"
+          >
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
@@ -374,7 +384,11 @@ export function Layout() {
             </button>
 
             {/* Notifications */}
-            <button type="button" className="relative p-2 text-surface-400 hover:text-surface-100 hover:bg-ink/5 rounded-lg">
+            <button
+              type="button"
+              aria-label="Notificações"
+              className="relative p-2 text-surface-400 hover:text-surface-100 hover:bg-ink/5 rounded-lg"
+            >
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full" />
             </button>

@@ -283,6 +283,7 @@ export function CommissionsPage() {
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           className="input bg-surface-950/40 border-line"
+          aria-label="Status da comissão"
         >
           <option value="">Todos status</option>
           <option value="PENDENTE">Pendente</option>
@@ -294,6 +295,7 @@ export function CommissionsPage() {
           onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
           className="input bg-surface-950/40 border-line"
           disabled={!canFilterByUser}
+          aria-label="Executor"
         >
           <option value="">Todos executores</option>
           {filteredUsers.map((u) => (
@@ -305,6 +307,7 @@ export function CommissionsPage() {
           value={filters.workshopArea}
           onChange={(e) => setFilters({ ...filters, workshopArea: e.target.value })}
           className="input bg-surface-950/40 border-line"
+          aria-label="Área da oficina"
         >
           <option value="">Todas áreas</option>
           <option value="MECANICA">Mecânica</option>
@@ -319,6 +322,7 @@ export function CommissionsPage() {
           value={filters.startDate}
           onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
           className="input bg-surface-950/40 border-line"
+          aria-label="Data inicial"
         />
 
         <input
@@ -326,6 +330,7 @@ export function CommissionsPage() {
           value={filters.endDate}
           onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
           className="input bg-surface-950/40 border-line"
+          aria-label="Data final"
         />
 
         <div className="flex gap-2">

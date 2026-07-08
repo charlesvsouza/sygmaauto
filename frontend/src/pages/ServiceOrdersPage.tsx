@@ -164,8 +164,43 @@ const DOC_STYLES = `
   border-color: #1e293b !important;
 }
 .os-doc .nb td, .os-doc .nb th { border-color: transparent; padding: 0; }
+.os-doc .no-border { border: none; }
 .os-doc .tr { text-align: right; }
 .os-doc .tc { text-align: center; }
+.os-doc .print-header-table { margin-bottom: 6px; }
+.os-doc .print-header-left { border: none; padding-left: 0; vertical-align: top; width: 62%; }
+.os-doc .print-company-name { font-size: 15pt; font-weight: 900; line-height: 1.1; }
+.os-doc .print-company-meta { font-size: 8.5pt; margin-top: 2px; }
+.os-doc .print-company-address { font-size: 8.5pt; }
+.os-doc .print-company-contact { font-size: 8.5pt; }
+.os-doc .print-header-right { border: 2px solid #1e293b; padding: 8px 14px; text-align: right; vertical-align: top; min-width: 155px; }
+.os-doc .print-observations-col { width: 55%; padding-right: 10px; }
+.os-doc .print-totals-col { vertical-align: top; }
+.os-doc .print-discount-label { color: #b91c1c; }
+.os-doc .print-discount-value { color: #b91c1c; }
+.os-doc .print-doc-type { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #666; }
+.os-doc .print-doc-number { font-size: 19pt; font-weight: 900; font-family: monospace; letter-spacing: 2px; line-height: 1.1; }
+.os-doc .print-doc-meta { font-size: 8.5pt; color: #444; margin-top: 3px; }
+.os-doc .print-doc-meta-muted { font-size: 8.5pt; color: #444; }
+.os-doc .print-plate { font-family: monospace; font-weight: 900; }
+.os-doc .print-pre-wrap { min-height: 22px; white-space: pre-wrap; }
+.os-doc .print-col-28 { width: 28px; }
+.os-doc .print-col-60 { width: 60px; }
+.os-doc .print-col-90 { width: 90px; }
+.os-doc .print-col-95 { width: 95px; }
+.os-doc .print-col-80 { width: 80px; }
+.os-doc .print-col-50 { width: 50px; }
+.os-doc .print-col-110 { width: 110px; }
+.os-doc .print-serial-cell { color: #888; font-size: 7.5pt; }
+.os-doc .print-part-cell { font-size: 7.5pt; color: #555; font-family: monospace; }
+.os-doc .print-observations { min-height: 38px; font-size: 8.5pt; white-space: pre-wrap; }
+.os-doc .print-sign-authorize { margin-top: 14px; font-size: 8pt; color: #333; line-height: 1.5; }
+.os-doc .print-sign-table { margin-top: 16px; }
+.os-doc .print-sign-cell { border: none; text-align: center; padding-top: 36px; width: 50%; }
+.os-doc .print-sign-line { border-top: 1px solid #666; display: inline-block; width: 210px; margin-bottom: 3px; }
+.os-doc .print-sign-label { font-size: 9pt; font-weight: 700; }
+.os-doc .print-sign-sub { font-size: 8pt; color: #555; }
+.os-doc .print-footer { margin-top: 10px; padding-top: 5px; border-top: 1px solid #ddd; font-size: 7pt; color: #aaa; text-align: center; }
 .os-doc hr { border: none; border-top: 1px solid #bbb; margin: 5px 0; }
 .os-doc thead { display: table-row-group; }
 `;
@@ -857,52 +892,52 @@ export function ServiceOrdersPage() {
         {selectedOrder && (
           <div ref={printContentRef} className="os-doc">
             {/* Cabecalho: empresa (esq) + tipo/numero do documento (dir) */}
-            <table style={{ marginBottom: '6px' }}>
+            <table className="print-header-table">
               <tbody>
                 <tr>
-                  <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '62%' }}>
-                    <div style={{ fontSize: '15pt', fontWeight: 900, lineHeight: 1.1 }}>
+                  <td className="print-header-left">
+                    <div className="print-company-name">
                       {tenantFullData?.name || tenantFullData?.tradeName || tenantFullData?.legalName || ''}
                     </div>
                     {(tenantFullData?.taxId || tenantFullData?.document) && (
-                      <div style={{ fontSize: '8.5pt', marginTop: '2px' }}>
+                      <div className="print-company-meta">
                         {tenantFullData?.companyType ?? 'CNPJ'}: {tenantFullData?.taxId || tenantFullData?.document}
                       </div>
                     )}
                     {tenantFullData?.address && (
-                      <div style={{ fontSize: '8.5pt' }}>{tenantFullData.address}</div>
+                      <div className="print-company-address">{tenantFullData.address}</div>
                     )}
-                    <div style={{ fontSize: '8.5pt' }}>
+                    <div className="print-company-contact">
                       {tenantFullData?.phone && `Tel: ${tenantFullData.phone}`}
                       {tenantFullData?.phone && tenantFullData?.email && '  -  '}
                       {tenantFullData?.email}
                     </div>
                   </td>
-                  <td style={{ border: '2px solid #1e293b', padding: '8px 14px', textAlign: 'right', verticalAlign: 'top', minWidth: '155px' }}>
-                    <div style={{ fontSize: '7.5pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#666' }}>
+                  <td className="print-header-right">
+                    <div className="print-doc-type">
                       {selectedOrder.orderType === 'ORCAMENTO' ? 'Orcamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retifica de Motor' : 'Ordem de Servico'}
                     </div>
-                    <div style={{ fontSize: '19pt', fontWeight: 900, fontFamily: 'monospace', letterSpacing: '2px', lineHeight: 1.1 }}>
+                    <div className="print-doc-number">
                       {selectedOrder.id.slice(0, 8).toUpperCase()}
                     </div>
-                    <div style={{ fontSize: '8.5pt', color: '#444', marginTop: '3px' }}>
+                    <div className="print-doc-meta">
                       Abertura: {new Date(selectedOrder.createdAt).toLocaleDateString('pt-BR')}
                     </div>
                     {selectedOrder.scheduledDate && (
-                      <div style={{ fontSize: '8.5pt', color: '#444' }}>
+                      <div className="print-doc-meta-muted">
                         Agendamento: {new Date(selectedOrder.scheduledDate).toLocaleDateString('pt-BR')}
                       </div>
                     )}
-                    <div style={{ fontSize: '8.5pt', color: '#444' }}>
+                    <div className="print-doc-meta-muted">
                       Tipo O.S.: {selectedOrder.orderType === 'ORCAMENTO' ? 'Orcamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retifica de Motor' : 'OS'}
                     </div>
                     {(selectedOrder.paymentMethod || edit.paymentMethod) && (
-                      <div style={{ fontSize: '8.5pt', color: '#444' }}>
+                      <div className="print-doc-meta-muted">
                         Cond. Pgto: {selectedOrder.paymentMethod || edit.paymentMethod}
                       </div>
                     )}
                     {selectedOrder.kmEntrada != null && (
-                      <div style={{ fontSize: '8.5pt', color: '#444' }}>
+                      <div className="print-doc-meta-muted">
                         KM Entrada: {Number(selectedOrder.kmEntrada).toLocaleString('pt-BR')}
                       </div>
                     )}
@@ -938,7 +973,7 @@ export function ServiceOrdersPage() {
                   <td colSpan={2}><strong>Marca / Modelo:</strong> {selectedOrder.vehicle?.brand} {selectedOrder.vehicle?.model}</td>
                   <td><strong>Ano:</strong> {selectedOrder.vehicle?.year || '-'}</td>
                   <td><strong>Cor:</strong> {selectedOrder.vehicle?.color || '-'}</td>
-                  <td><strong>Placa:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 900 }}>{selectedOrder.vehicle?.plate || '-'}</span></td>
+                  <td><strong>Placa:</strong> <span className="print-plate">{selectedOrder.vehicle?.plate || '-'}</span></td>
                   <td><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</td>
                 </tr>
                 {selectedOrder.vehicle?.vin && (
@@ -953,15 +988,15 @@ export function ServiceOrdersPage() {
                 <tbody>
                   {selectedOrder.complaint && <>
                     <tr className="hdr"><td>RECLAMACAO DO CLIENTE</td></tr>
-                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.complaint}</td></tr>
+                    <tr><td className="print-pre-wrap">{selectedOrder.complaint}</td></tr>
                   </>}
                   {selectedOrder.diagnosis && <>
                     <tr className="hdr"><td>DIAGNOSTICO TECNICO</td></tr>
-                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.diagnosis}</td></tr>
+                    <tr><td className="print-pre-wrap">{selectedOrder.diagnosis}</td></tr>
                   </>}
                   {selectedOrder.technicalReport && <>
                     <tr className="hdr"><td>LAUDO / SOLUCAO APLICADA</td></tr>
-                    <tr><td style={{ minHeight: '22px', whiteSpace: 'pre-wrap' }}>{selectedOrder.technicalReport}</td></tr>
+                    <tr><td className="print-pre-wrap">{selectedOrder.technicalReport}</td></tr>
                   </>}
                 </tbody>
               </table>
@@ -973,17 +1008,17 @@ export function ServiceOrdersPage() {
                 <thead>
                   <tr className="hdr"><td colSpan={5}>SERVICOS / MAO DE OBRA</td></tr>
                   <tr>
-                    <th className="tc" style={{ width: '28px' }}>#</th>
+                    <th className="tc print-col-28">#</th>
                     <th>Descricao</th>
-                    <th className="tc" style={{ width: '60px' }}>Qtd/Hrs</th>
-                    <th className="tr" style={{ width: '90px' }}>Vl. Unit.</th>
-                    <th className="tr" style={{ width: '95px' }}>Vl. Total</th>
+                    <th className="tc print-col-60">Qtd/Hrs</th>
+                    <th className="tr print-col-90">Vl. Unit.</th>
+                    <th className="tr print-col-95">Vl. Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {serviceItems.map((item: any, idx: number) => (
                     <tr key={item.id}>
-                      <td className="tc" style={{ color: '#888', fontSize: '7.5pt' }}>{idx + 1}</td>
+                      <td className="tc print-serial-cell">{idx + 1}</td>
                       <td>{item.description}</td>
                       <td className="tc">{Number(item.quantity).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</td>
                       <td className="tr">R$ {fmtBR(item.unitPrice)}</td>
@@ -1000,19 +1035,19 @@ export function ServiceOrdersPage() {
                 <thead>
                   <tr className="hdr"><td colSpan={6}>PECAS E MATERIAIS</td></tr>
                   <tr>
-                    <th className="tc" style={{ width: '28px' }}>#</th>
-                    <th style={{ width: '80px' }}>Referencia</th>
+                    <th className="tc print-col-28">#</th>
+                    <th className="print-col-80">Referencia</th>
                     <th>Descricao</th>
-                    <th className="tc" style={{ width: '50px' }}>Qtd</th>
-                    <th className="tr" style={{ width: '90px' }}>Vl. Unit.</th>
-                    <th className="tr" style={{ width: '95px' }}>Vl. Total</th>
+                    <th className="tc print-col-50">Qtd</th>
+                    <th className="tr print-col-90">Vl. Unit.</th>
+                    <th className="tr print-col-95">Vl. Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {partItems.map((item: any, idx: number) => (
                     <tr key={item.id}>
-                      <td className="tc" style={{ color: '#888', fontSize: '7.5pt' }}>{idx + 1}</td>
-                      <td style={{ fontSize: '7.5pt', color: '#555', fontFamily: 'monospace' }}>{item.part?.internalCode || item.internalCode || '-'}</td>
+                      <td className="tc print-serial-cell">{idx + 1}</td>
+                      <td className="print-part-cell">{item.part?.internalCode || item.internalCode || '-'}</td>
                       <td>{item.description}</td>
                       <td className="tc">{Number(item.quantity).toLocaleString('pt-BR')}</td>
                       <td className="tr">R$ {fmtBR(item.unitPrice)}</td>
@@ -1028,12 +1063,12 @@ export function ServiceOrdersPage() {
               <tbody>
                 <tr className="nb">
                   {/* Esquerda: observacoes */}
-                  <td style={{ border: 'none', width: '55%', verticalAlign: 'top', paddingRight: '10px' }}>
+                  <td className="no-border print-header-left print-observations-col">
                     <table>
                       <tbody>
                         <tr className="hdr"><td>OBSERVACOES</td></tr>
                         <tr>
-                          <td style={{ minHeight: '38px', fontSize: '8.5pt', whiteSpace: 'pre-wrap' }}>
+                          <td className="print-observations">
                             {selectedOrder.observations || ''}
                           </td>
                         </tr>
@@ -1042,12 +1077,12 @@ export function ServiceOrdersPage() {
                   </td>
 
                   {/* Direita: totais */}
-                  <td style={{ border: 'none', verticalAlign: 'top' }}>
+                  <td className="no-border print-totals-col">
                     <table>
                       <tbody>
                         <tr className="subtotal-row">
                           <td className="tr">Total Servicos</td>
-                          <td className="tr" style={{ width: '110px' }}>R$ {fmtBR(selectedOrder.totalServices)}</td>
+                          <td className="tr print-col-110">R$ {fmtBR(selectedOrder.totalServices)}</td>
                         </tr>
                         <tr className="subtotal-row">
                           <td className="tr">Total Produtos</td>
@@ -1061,8 +1096,8 @@ export function ServiceOrdersPage() {
                         )}
                         {Number(selectedOrder.totalDiscount) > 0 && (
                           <tr>
-                            <td className="tr" style={{ color: '#b91c1c' }}>Desconto</td>
-                            <td className="tr" style={{ color: '#b91c1c' }}>- R$ {fmtBR(selectedOrder.totalDiscount)}</td>
+                            <td className="tr print-discount-label">Desconto</td>
+                            <td className="tr print-discount-value">- R$ {fmtBR(selectedOrder.totalDiscount)}</td>
                           </tr>
                         )}
                         <tr className="total-final">
@@ -1077,30 +1112,30 @@ export function ServiceOrdersPage() {
             </table>
 
             {/* Autorizacao + Assinatura */}
-            <div style={{ marginTop: '14px', fontSize: '8pt', color: '#333', lineHeight: 1.5 }}>
+            <div className="print-sign-authorize">
               Autorizo os servicos e a substituicao das pecas deste{' '}
               {selectedOrder.orderType === 'ORCAMENTO' ? 'ORCAMENTO' : 'documento'}, e o necessario
               teste de rua com o veiculo. Estou ciente que a empresa nao se responsabiliza pela perda
               ou roubo de qualquer objeto que se encontra no interior do veiculo.
             </div>
-            <table style={{ marginTop: '16px' }}>
+            <table className="print-sign-table">
               <tbody>
                 <tr>
-                  <td style={{ border: 'none', textAlign: 'center', paddingTop: '36px', width: '50%' }}>
-                    <div style={{ borderTop: '1px solid #666', display: 'inline-block', width: '210px', marginBottom: '3px' }} />
-                    <br /><span style={{ fontSize: '9pt', fontWeight: 700 }}>Assinatura do Cliente</span>
-                    <br /><span style={{ fontSize: '8pt', color: '#555' }}>Data: _____ / _____ / ____________</span>
+                  <td className="print-sign-cell">
+                    <div className="print-sign-line" />
+                    <br /><span className="print-sign-label">Assinatura do Cliente</span>
+                    <br /><span className="print-sign-sub">Data: _____ / _____ / ____________</span>
                   </td>
-                  <td style={{ border: 'none', textAlign: 'center', paddingTop: '36px', width: '50%' }}>
-                    <div style={{ borderTop: '1px solid #666', display: 'inline-block', width: '210px', marginBottom: '3px' }} />
-                    <br /><span style={{ fontSize: '9pt', fontWeight: 700 }}>Consultor Tecnico</span>
-                    <br /><span style={{ fontSize: '8pt', color: '#555' }}>Nome: _________________________________</span>
+                  <td className="print-sign-cell">
+                    <div className="print-sign-line" />
+                    <br /><span className="print-sign-label">Consultor Tecnico</span>
+                    <br /><span className="print-sign-sub">Nome: _________________________________</span>
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <div style={{ marginTop: '10px', paddingTop: '5px', borderTop: '1px solid #ddd', fontSize: '7pt', color: '#aaa', textAlign: 'center' }}>
+            <div className="print-footer">
               Documento gerado em {new Date().toLocaleString('pt-BR')} - Sigma Auto - Sistema de Gestao para Oficinas Automotivas
             </div>
           </div>
@@ -1115,7 +1150,9 @@ export function ServiceOrdersPage() {
               <ClipboardList size={16} /> Ordens de Servico
             </h2>
             <div className="flex gap-2">
-              <button type="button"
+              <button
+                type="button"
+                aria-label="Importar de orçamento PDF"
                 onClick={() => {
                   setImportTargetOrderId(null);
                   setShowImportModal(true);
@@ -1125,7 +1162,9 @@ export function ServiceOrdersPage() {
               >
                 <FileUp size={18} />
               </button>
-              <button type="button"
+              <button
+                type="button"
+                aria-label="Criar nova ordem de serviço"
                 onClick={() => setShowCreateModal(true)}
                 className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
               >
@@ -1136,6 +1175,7 @@ export function ServiceOrdersPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-600" size={14} />
             <input
+              aria-label="Buscar ordens de serviço"
               type="text"
               placeholder="Buscar por placa ou cliente..."
               className="w-full bg-white border border-surface-800 rounded-xl py-2 pl-9 pr-4 text-xs font-bold focus:ring-4 focus:ring-surface-100/5 transition-all"
@@ -1514,6 +1554,7 @@ export function ServiceOrdersPage() {
                       {['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
                     </label>
                     <textarea
+                      aria-label={['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
                       value={edit[field]}
                       ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = `${el.scrollHeight}px`; } }}
                       onChange={(e) => {
@@ -1579,6 +1620,7 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3 font-bold text-surface-100">{item.description}</td>
                         <td className="px-5 py-3">
                           <select
+                            aria-label={`Executor do serviço ${item.description}`}
                             value={item.assignedUserId || ''}
                             onChange={(e) => {
                               const nextUserId = e.target.value;
@@ -1601,6 +1643,7 @@ export function ServiceOrdersPage() {
                         </td>
                         <td className="px-5 py-3">
                           <input
+                            aria-label={`Quantidade do serviço ${item.description}`}
                             type="number" step="0.5" min="0.5"
                             className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-bold text-xs"
                             value={pendingQtyByItem[item.id] ?? item.quantity}
@@ -1610,7 +1653,9 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
-                          <button type="button"
+                          <button
+                            type="button"
+                            aria-label="Remover serviço"
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageItems}
                             className={cn('p-1 rounded transition-colors', isClosed || !canManageItems ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
@@ -1667,6 +1712,7 @@ export function ServiceOrdersPage() {
                         </td>
                         <td className="px-5 py-3">
                           <input
+                            aria-label={`Quantidade da peça ${item.description}`}
                             type="number" min="1"
                             disabled={isClosed || !canManageStock}
                             className={cn(
@@ -1680,7 +1726,9 @@ export function ServiceOrdersPage() {
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
-                          <button type="button"
+                          <button
+                            type="button"
+                            aria-label="Remover peça"
                             onClick={() => removeItem(item.id)}
                             disabled={isClosed || !canManageStock}
                             className={cn('p-1 rounded transition-colors', isClosed || !canManageStock ? 'text-surface-800 cursor-not-allowed' : 'text-surface-700 hover:text-red-500')}
@@ -1747,6 +1795,7 @@ export function ServiceOrdersPage() {
                 <div className="space-y-2">
                   <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Agendamento</h4>
                   <input
+                    aria-label="Data e hora do agendamento"
                     type="datetime-local"
                     value={edit.scheduledDate}
                     onChange={(e) => setEdit({ ...edit, scheduledDate: e.target.value })}
@@ -1826,7 +1875,7 @@ export function ServiceOrdersPage() {
                     <p className="text-[10px] text-white font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
-                <button type="button" onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
+                <button type="button" aria-label="Fechar modal de reserva de peças" onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -1865,6 +1914,7 @@ export function ServiceOrdersPage() {
                         <Calendar size={11} /> Data prevista de chegada (para pecas faltantes)
                       </label>
                       <input
+                        aria-label="Data prevista de chegada"
                         type="date"
                         value={expectedPartsDate}
                         min={new Date().toISOString().slice(0,10)}
@@ -1979,7 +2029,7 @@ export function ServiceOrdersPage() {
                     <Sparkles size={13} />
                     IA
                   </button>
-                  <button type="button" onClick={() => setCatalogMode(null)} className="text-surface-600 hover:text-red-500 transition-colors">
+                  <button type="button" aria-label="Fechar catálogo" onClick={() => setCatalogMode(null)} className="text-surface-600 hover:text-red-500 transition-colors">
                     <XCircle size={24} />
                   </button>
                 </div>
@@ -2001,6 +2051,7 @@ export function ServiceOrdersPage() {
                       </p>
                       <div className="flex gap-2">
                         <input
+                          aria-label="Descrição do problema para sugestão de IA"
                           type="text"
                           placeholder="Ex: motor falhando ao acelerar, barulho na suspensão..."
                           value={aiDescription}
@@ -2070,6 +2121,7 @@ export function ServiceOrdersPage() {
                   <div className="flex-1 space-y-1">
                     <label className="text-[9px] font-bold text-surface-500 uppercase">Descricao *</label>
                     <input
+                      aria-label="Descrição do item rápido"
                       type="text"
                       placeholder={catalogMode === 'service' ? 'Ex: Limpeza de bicos injetores' : 'Ex: Correia auxiliar Fiat Uno'}
                       value={quickAdd.description}
@@ -2080,6 +2132,7 @@ export function ServiceOrdersPage() {
                   <div className="w-28 space-y-1">
                     <label className="text-[9px] font-bold text-surface-500 uppercase">R$ *</label>
                     <input
+                      aria-label="Preço unitário do item rápido"
                       type="text"
                       inputMode="decimal"
                       placeholder="0,00"
@@ -2091,6 +2144,7 @@ export function ServiceOrdersPage() {
                   <div className="w-20 space-y-1">
                     <label className="text-[9px] font-bold text-surface-500 uppercase">{catalogMode === 'service' ? 'Qtd/Hrs' : 'Qtd'}</label>
                     <input
+                      aria-label="Quantidade do item rápido"
                       type="number"
                       min="0.5"
                       step={catalogMode === 'service' ? '0.5' : '1'}
@@ -2110,6 +2164,7 @@ export function ServiceOrdersPage() {
                   <div className="mt-2">
                     <label className="text-[9px] font-bold text-surface-500 uppercase">Executor do Servico</label>
                     <select
+                      aria-label="Executor do serviço rápido"
                       value={quickAssignedUserId}
                       onChange={(e) => setQuickAssignedUserId(e.target.value)}
                       className="mt-1 w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
@@ -2128,6 +2183,7 @@ export function ServiceOrdersPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-600" size={14} />
                   <input
+                    aria-label="Pesquisar no catálogo"
                     type="text"
                     placeholder={`Pesquisar no catalogo de ${catalogMode === 'service' ? 'servicos' : 'pecas'}...`}
                     className="w-full bg-surface-950 border border-surface-800 rounded-xl py-2.5 pl-9 text-sm font-bold focus:bg-white transition-all"
@@ -2251,7 +2307,7 @@ export function ServiceOrdersPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-10">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
-                <button type="button" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
+                <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
               <form className="space-y-5" onSubmit={async (e) => {
                 e.preventDefault();
@@ -2297,7 +2353,7 @@ export function ServiceOrdersPage() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
-                  <select className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
+                  <select aria-label="Cliente da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
                     setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
                     setShowQuickVehicleForm(false);
                     setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
@@ -2319,7 +2375,7 @@ export function ServiceOrdersPage() {
                       </button>
                     )}
                   </div>
-                  <select className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
+                  <select aria-label="Veículo da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
                     <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veiculo' : 'Selecione um veiculo...'}</option>
                     {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
                   </select>
@@ -2335,30 +2391,35 @@ export function ServiceOrdersPage() {
                       <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <input
+                          aria-label="Placa do veículo"
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Placa *"
                           value={quickVehicle.plate}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
                         />
                         <input
+                          aria-label="Marca do veículo"
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Marca *"
                           value={quickVehicle.brand}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, brand: e.target.value }))}
                         />
                         <input
+                          aria-label="Modelo do veículo"
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Modelo *"
                           value={quickVehicle.model}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
                         />
                         <input
+                          aria-label="Cor do veículo"
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Cor (opcional)"
                           value={quickVehicle.color}
                           onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
                         />
                         <input
+                          aria-label="Ano do veículo"
                           type="number"
                           className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
                           placeholder="Ano (opcional)"
@@ -2408,29 +2469,29 @@ export function ServiceOrdersPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Marca do motor</label>
-                      <input value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
+                      <input aria-label="Marca do motor" value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Modelo / família</label>
-                      <input value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
+                      <input aria-label="Modelo do motor" value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">N. de serie</label>
-                      <input value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
+                      <input aria-label="Número de série" value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
                     </div>
                   </div>
                 )}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">KM Entrada</label>
-                  <input type="number" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
+                  <input aria-label="KM de entrada" type="number" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Data / Hora do Agendamento</label>
-                  <input type="datetime-local" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
+                  <input aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Reclamacao Principal</label>
-                  <textarea className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-24 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
+                  <textarea aria-label="Reclamação principal da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-24 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
                 <label className="flex items-center gap-2 rounded-xl border border-surface-800 bg-surface-950 px-3 py-2 text-xs font-bold text-surface-300">
                   <input
@@ -2530,6 +2591,7 @@ export function ServiceOrdersPage() {
                 Motivo da exclusão (opcional)
               </label>
               <textarea
+                aria-label="Motivo da exclusão"
                 value={deleteReason}
                 onChange={(e) => setDeleteReason(e.target.value)}
                 placeholder="Ex: Orcamento duplicado, erro de cadastro..."
@@ -2542,6 +2604,7 @@ export function ServiceOrdersPage() {
                 <span className="ml-2 font-mono text-surface-100">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
               </label>
               <input
+                aria-label="Confirmação da exclusão"
                 type="text"
                 value={deleteConfirmInput}
                 onChange={(e) => setDeleteConfirmInput(e.target.value.toUpperCase())}
