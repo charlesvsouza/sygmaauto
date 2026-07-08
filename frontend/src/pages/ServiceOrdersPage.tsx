@@ -2304,13 +2304,13 @@ export function ServiceOrdersPage() {
         {showCreateModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-xl shadow-2xl w-full max-w-[24rem] min-h-[42rem] max-h-[92vh] overflow-hidden p-6">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl shadow-2xl w-full max-w-[95vw] max-h-[90vh] overflow-hidden p-5 md:p-6">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <h2 className="text-lg md:text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
                 <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
-              <div className="max-h-[calc(92vh-5rem)] overflow-y-auto pr-1">
-                <form className="space-y-4" onSubmit={async (e) => {
+              <div className="grid gap-4">
+                <form className="grid gap-4" onSubmit={async (e) => {
                 e.preventDefault();
                 try {
                   const payload = {
@@ -2330,7 +2330,7 @@ export function ServiceOrdersPage() {
                 } catch (err: any) { alert('Erro ao criar OS: ' + (err?.response?.data?.message || err?.message || 'Verifique os dados.')); }
               }}>
                 {/* Tipo de documento */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
                     { value: 'ORCAMENTO', label: 'Orcamento', desc: 'Aguarda aprovacao do cliente' },
                     { value: 'ORDEM_SERVICO', label: 'Ordem de Servico', desc: 'Servico ja autorizado' },
@@ -2352,119 +2352,120 @@ export function ServiceOrdersPage() {
                     </button>
                   ))}
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
-                  <select aria-label="Cliente da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
-                    setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
-                    setShowQuickVehicleForm(false);
-                    setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
-                  }} required>
-                    <option value="">Selecione um cliente...</option>
-                    {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Veiculo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
-                    {newOrder.customerId && (
-                      <button
-                        type="button"
-                        onClick={() => setShowQuickVehicleForm((prev) => !prev)}
-                        className="text-[10px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
-                      >
-                        <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veiculo'}
-                      </button>
-                    )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
+                    <select aria-label="Cliente da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
+                      setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
+                      setShowQuickVehicleForm(false);
+                      setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
+                    }} required>
+                      <option value="">Selecione um cliente...</option>
+                      {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
                   </div>
-                  <select aria-label="Veículo da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
-                    <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veiculo' : 'Selecione um veiculo...'}</option>
-                    {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
-                  </select>
-
-                  {newOrder.customerId && vehiclesOfSelectedCustomer.length === 0 && !showQuickVehicleForm && (
-                    <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium">
-                      Este cliente ainda nao possui veiculo cadastrado. Clique em Incluir veiculo para cadastrar agora.
-                    </div>
-                  )}
-
-                  {newOrder.customerId && showQuickVehicleForm && (
-                    <div className="rounded-lg border border-surface-800 bg-surface-950 p-3 space-y-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <input
-                          aria-label="Placa do veículo"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
-                          placeholder="Placa *"
-                          value={quickVehicle.plate}
-                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
-                        />
-                        <input
-                          aria-label="Marca do veículo"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
-                          placeholder="Marca *"
-                          value={quickVehicle.brand}
-                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, brand: e.target.value }))}
-                        />
-                        <input
-                          aria-label="Modelo do veículo"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
-                          placeholder="Modelo *"
-                          value={quickVehicle.model}
-                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
-                        />
-                        <input
-                          aria-label="Cor do veículo"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
-                          placeholder="Cor (opcional)"
-                          value={quickVehicle.color}
-                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
-                        />
-                        <input
-                          aria-label="Ano do veículo"
-                          type="number"
-                          className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
-                          placeholder="Ano (opcional)"
-                          value={quickVehicle.year}
-                          onChange={(e) => setQuickVehicle((prev) => ({ ...prev, year: e.target.value }))}
-                        />
-                      </div>
-                      <div className="flex justify-end">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Veiculo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
+                      {newOrder.customerId && (
                         <button
                           type="button"
-                          onClick={createQuickVehicle}
-                          disabled={creatingQuickVehicle}
-                          className={cn(
-                            'px-4 py-2 rounded-xl text-xs font-bold transition-all',
-                            creatingQuickVehicle
-                              ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                              : 'bg-accent text-white hover:bg-accent-hover'
-                          )}
+                          onClick={() => setShowQuickVehicleForm((prev) => !prev)}
+                          className="text-[10px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
                         >
-                          {creatingQuickVehicle ? 'Salvando...' : 'Salvar veiculo'}
+                          <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veiculo'}
                         </button>
-                      </div>
+                      )}
                     </div>
-                  )}
+                    <select aria-label="Veículo da nova ordem" className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
+                      <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veiculo' : 'Selecione um veiculo...'}</option>
+                      {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
+                    </select>
 
-                  {/* Aviso de OSs abertas para o veiculo selecionado */}
-                  {newOrder.vehicleId && (() => {
-                    const CLOSED = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
-                    const openForVehicle = orders.filter(
-                      (o) => o.vehicleId === newOrder.vehicleId && !CLOSED.includes(o.status)
-                    );
-                    if (openForVehicle.length === 0) return null;
-                    return (
-                      <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium space-y-1">
-                        <p>
-                          Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
-                          {openForVehicle.map((o: any) => (
-                            <span key={o.id} className="ml-1 font-mono font-bold">#{o.id.slice(0, 8).toUpperCase()}</span>
-                          ))}
-                        </p>
-                        <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
+                    {newOrder.customerId && vehiclesOfSelectedCustomer.length === 0 && !showQuickVehicleForm && (
+                      <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium">
+                        Este cliente ainda nao possui veiculo cadastrado. Clique em Incluir veiculo para cadastrar agora.
                       </div>
-                    );
-                  })()}
+                    )}
+
+                    {newOrder.customerId && showQuickVehicleForm && (
+                      <div className="rounded-lg border border-surface-800 bg-surface-950 p-3 space-y-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input
+                            aria-label="Placa do veículo"
+                            className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
+                            placeholder="Placa *"
+                            value={quickVehicle.plate}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
+                          />
+                          <input
+                            aria-label="Marca do veículo"
+                            className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
+                            placeholder="Marca *"
+                            value={quickVehicle.brand}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, brand: e.target.value }))}
+                          />
+                          <input
+                            aria-label="Modelo do veículo"
+                            className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
+                            placeholder="Modelo *"
+                            value={quickVehicle.model}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
+                          />
+                          <input
+                            aria-label="Cor do veículo"
+                            className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
+                            placeholder="Cor (opcional)"
+                            value={quickVehicle.color}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
+                          />
+                          <input
+                            aria-label="Ano do veículo"
+                            type="number"
+                            className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold"
+                            placeholder="Ano (opcional)"
+                            value={quickVehicle.year}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, year: e.target.value }))}
+                          />
+                        </div>
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={createQuickVehicle}
+                            disabled={creatingQuickVehicle}
+                            className={cn(
+                              'px-4 py-2 rounded-xl text-xs font-bold transition-all',
+                              creatingQuickVehicle
+                                ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
+                                : 'bg-accent text-white hover:bg-accent-hover'
+                            )}
+                          >
+                            {creatingQuickVehicle ? 'Salvando...' : 'Salvar veiculo'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {newOrder.vehicleId && (() => {
+                      const CLOSED = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
+                      const openForVehicle = orders.filter(
+                        (o) => o.vehicleId === newOrder.vehicleId && !CLOSED.includes(o.status)
+                      );
+                      if (openForVehicle.length === 0) return null;
+                      return (
+                        <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium space-y-1">
+                          <p>
+                            Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
+                            {openForVehicle.map((o: any) => (
+                              <span key={o.id} className="ml-1 font-mono font-bold">#{o.id.slice(0, 8).toUpperCase()}</span>
+                            ))}
+                          </p>
+                          <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
                 {newOrder.orderType === 'RETIFICA_MOTOR' && !newOrder.vehicleId && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
