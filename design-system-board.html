@@ -98,6 +98,7 @@
     display:flex;align-items:center;justify-content:space-between;gap:16px;
     padding:var(--pad-md) var(--pad-lg);
     background:color-mix(in srgb, var(--bg-base) 85%, transparent);
+    -webkit-backdrop-filter:saturate(140%) blur(10px);
     backdrop-filter:saturate(140%) blur(10px);
     border-bottom:1px solid var(--border-mid);
   }
@@ -170,6 +171,7 @@
     padding:var(--pad-md);
     display:flex;flex-direction:column;gap:10px;
     box-shadow:0 10px 30px var(--shadow-1);
+    -webkit-backdrop-filter:blur(var(--blur-elev));
     backdrop-filter:blur(var(--blur-elev));
   }
   .card-title{font-weight:600;font-size:13px;letter-spacing:.02em}
@@ -222,7 +224,7 @@
   /* Modal */
   .backdrop{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);
+    background:rgba(0,0,0,0.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
     z-index:100;padding:24px;
   }
   .modal{
