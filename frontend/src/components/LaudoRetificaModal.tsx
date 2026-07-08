@@ -415,12 +415,14 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition-all"
               >
                 <Printer size={15} /> Imprimir / Salvar PDF
               </button>
               <button
+                type="button"
                 onClick={onClose}
                 className="p-2 text-surface-400 hover:text-white transition-colors rounded-lg hover:bg-ink/5"
               >

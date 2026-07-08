@@ -241,18 +241,21 @@ export function CommissionsPage() {
           <p className="text-surface-400 font-medium">Controle por executor e por item de serviço.</p>
         </div>
         <button
+          type="button"
           onClick={exportCsv}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-white text-sm font-bold hover:bg-accent-hover"
         >
           <Download size={16} /> Exportar CSV
         </button>
         <button
+          type="button"
           onClick={exportXlsx}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-500"
         >
           <FileSpreadsheet size={16} /> Exportar XLSX
         </button>
         <button
+          type="button"
           onClick={printReport}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-panel border border-line text-ink text-sm font-bold hover:bg-panel-2"
         >
@@ -326,8 +329,9 @@ export function CommissionsPage() {
         />
 
         <div className="flex gap-2">
-          <button onClick={() => load()} className="btn btn-primary flex-1">Filtrar</button>
+          <button type="button" onClick={() => load()} className="btn btn-primary flex-1">Filtrar</button>
           <button
+            type="button"
             onClick={clearFilters}
             disabled={!hasActiveFilters}
             className="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
@@ -426,6 +430,7 @@ export function CommissionsPage() {
                   <td className="px-4 py-3 text-right">
                     {canMarkAsPaid && row.status !== 'PAGO' ? (
                       <button
+                        type="button"
                         onClick={() => markAsPaid(row.id)}
                         disabled={payingId === row.id}
                         className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold hover:bg-surface-700 disabled:opacity-60"
