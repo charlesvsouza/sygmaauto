@@ -19,15 +19,18 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE__PUBLIC_URL }}
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
       - name: Dump database (formato custom, comprimido)
         run: |
           mkdir -p backup
           STAMP=$(date -u +%Y%m%dT%H%M%SZ)
           echo "STAMP=$STAMP" >> "$GITHUB_ENV"
-          pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges --file="backup/sygmaauto-$STAMP.dump"
+          # Servidor de producao roda Postgres 18 — usa a imagem oficial 18 para
+          # garantir que o pg_dump nao seja mais antigo que o servidor (obrigatorio).
+          docker run --rm \
+            -e PGDUMP_URL="$DATABASE_URL" \
+            -v "$PWD/backup:/backup" \
+            postgres:18-alpine \
+            pg_dump "$PGDUMP_URL" --format=custom --no-owner --no-privileges --file="/backup/sygmaauto-$STAMP.dump"
         env:
           DATABASE_URL: ${{ secrets.DATABASE__PUBLIC_URL }}
 
