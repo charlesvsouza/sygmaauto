@@ -93,9 +93,6 @@ jobs:
     needs: [detect-changes, frontend-check]
     if: needs.detect-changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -105,6 +102,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
+      # Roda a partir da raiz do repo (não de frontend/): o projeto Vercel já
+      # tem Root Directory = "frontend" configurado no dashboard: rodar de
+      # dentro de frontend/ fazia o CLI procurar "frontend/frontend" e falhar.
       - name: Deploy to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
         env:
