@@ -130,6 +130,15 @@ Nota de segurança:
 4. Verificar variáveis WhatsApp/Meta se houver falha de mensageria.
 5. Se mudança de variável crítica, aguardar novo deployment até SUCCESS.
 6. **Se um endpoint de listagem retornar 500 logo após um deploy com mudança de schema:** verificar se a tabela nova foi criada (`railway run npx prisma db push --accept-data-loss` recria de forma aditiva). Incidente real em 07/07/2026: `prisma db push` falhou silenciosamente no release do Railway, deixando `GET /service-orders` quebrado para todos os tenants por ~20min até rodar o push manualmente. Dados não foram perdidos — o erro era só de leitura (relação para tabela inexistente).
+7. **Sempre conferir o resultado do workflow `Deploy` no GitHub Actions após um push que mexe em frontend** (`gh run list --workflow=deploy.yml --limit 1`) — não basta o push ter ido, o job "Deploy Frontend → Vercel" precisa aparecer como `success`.
+
+### 7.1 Incidente: deploy do frontend quebrado há ~30 commits (encontrado e corrigido em 07/07/2026)
+
+- **Sintoma:** nenhum indício visível — o push para `master` "funcionava" (sem erro no terminal do desenvolvedor), mas o job "Deploy Frontend → Vercel" falhava silenciosamente em **todo** commit desde `7d682d2` (04/07/2026 19:19) até a correção.
+- **Causa:** o job rodava `vercel deploy` a partir de `working-directory: frontend`, mas o projeto Vercel tem **Root Directory = `frontend`** configurado no dashboard. O CLI combinava os dois caminhos e procurava `frontend/frontend` (inexistente), abortando com `Error: The provided path "...frontend/frontend" does not exist`.
+- **Impacto:** ~30 commits de UI (migração dark→claro verde-água, grades ERP, correções de contraste, LGPD, sidebar nova, etc.) nunca chegaram ao Vercel em produção — o site ficou parado na versão de 04/07 por dias, enquanto o repositório (e a percepção de quem só olhava o git log) indicava que tudo estava entregue.
+- **Correção:** mover o passo `vercel deploy` para rodar a partir da raiz do repositório (commit `d0cca89`), já que o Root Directory do projeto Vercel já aponta para `frontend`.
+- **Como não repetir:** após qualquer mudança em `.github/workflows/deploy.yml`, disparar `gh workflow run deploy.yml` manualmente e conferir os 5 jobs com `gh run view <id> --json jobs`.
 
 ## 8. Referências úteis
 - COMPLIANCE.md: políticas LGPD, privacidade, retenção, incidentes.
