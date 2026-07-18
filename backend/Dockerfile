@@ -1,11 +1,13 @@
-# Build stage -- bust cache: 20260503g
+# Build stage
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY backend/package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 COPY backend/. .
-# Timestamp abaixo muda a cada deploy para garantir prisma generate sempre roda
-RUN echo "prisma-gen: 20260503T160000" && npx prisma generate
+# Deriva do commit SHA (Railway injeta automaticamente) para nunca cachear
+# uma camada de prisma generate desatualizada em relação ao schema.prisma.
+ARG RAILWAY_GIT_COMMIT_SHA=local
+RUN echo "prisma-gen: ${RAILWAY_GIT_COMMIT_SHA}" && npx prisma generate
 RUN npm run build
 RUN mkdir -p dist/service-orders/templates && cp src/service-orders/templates/os-template.html dist/service-orders/templates/
 
