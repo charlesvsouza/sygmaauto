@@ -1968,8 +1968,33 @@ export function ServiceOrdersPage() {
                       <span>R$ {fmtBR(val)}</span>
                     </div>
                   ))}
+                  {(() => {
+                    const totalGeral = Number(selectedOrder.totalParts) + Number(selectedOrder.totalServices) + Number(selectedOrder.totalLabor);
+                    const discountPartsValue = Number(selectedOrder.totalParts) * (Number(selectedOrder.discountPartsPercent || 0) / 100);
+                    const discountServicesValue = (Number(selectedOrder.totalServices) + Number(selectedOrder.totalLabor)) * (Number(selectedOrder.discountServicesPercent || 0) / 100);
+                    return (
+                      <>
+                        <div className="pt-3 mt-1 border-t border-white/25 flex justify-between text-[10px] font-bold text-white/90 uppercase tracking-wider">
+                          <span>Total Geral</span>
+                          <span>R$ {fmtBR(totalGeral)}</span>
+                        </div>
+                        {discountPartsValue > 0 && (
+                          <div className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
+                            <span>Desconto Pecas ({fmtBR(selectedOrder.discountPartsPercent, 0)}%)</span>
+                            <span>- R$ {fmtBR(discountPartsValue)}</span>
+                          </div>
+                        )}
+                        {discountServicesValue > 0 && (
+                          <div className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
+                            <span>Desconto Servicos ({fmtBR(selectedOrder.discountServicesPercent, 0)}%)</span>
+                            <span>- R$ {fmtBR(discountServicesValue)}</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   <div className="pt-3 border-t border-accent">
-                    <p className="text-[10px] font-bold text-white uppercase tracking-wide mb-1">Total da Ordem</p>
+                    <p className="text-[10px] font-bold text-white uppercase tracking-wide mb-1">Total Geral com Desconto</p>
                     <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
                 </div>
