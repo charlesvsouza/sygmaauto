@@ -84,7 +84,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id')
-  @Roles('MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO')
+  @Roles('MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO')
   @ApiOperation({ summary: 'Atualizar ordem' })
   async update(
     @Tenant() tenant: { tenantId: string },

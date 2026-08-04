@@ -356,6 +356,10 @@ model ServiceOrder {
   totalDiscount Float         @default(0)
   totalCost    Float           @default(0)
 
+  // Desconto concedido nesta O.S. (%), sujeito ao teto do tenant para GERENTE
+  discountPartsPercent    Float? @default(0)
+  discountServicesPercent Float? @default(0)
+
   
   // Datas
   scheduledDate  DateTime?

@@ -366,6 +366,24 @@ export class ServiceOrdersService {
       throw new BadRequestException('Não é possível editar uma OS finalizada ou cancelada');
     }
 
+    const effectivePaymentMethod = dto.paymentMethod !== undefined ? dto.paymentMethod : order.paymentMethod;
+    const finalDiscountPartsPercent = dto.discountPartsPercent !== undefined ? dto.discountPartsPercent : (order.discountPartsPercent || 0);
+    const finalDiscountServicesPercent = dto.discountServicesPercent !== undefined ? dto.discountServicesPercent : (order.discountServicesPercent || 0);
+    // Só considera "tocado" se o valor enviado realmente difere do que já está salvo — evita
+    // que um simples "Salvar alterações" (que sempre envia esses 2 campos do form) dispare a
+    // validação de permissão de desconto para quem só está editando outros campos da O.S.
+    const discountFieldsTouched =
+      (dto.discountPartsPercent !== undefined && dto.discountPartsPercent !== (order.discountPartsPercent || 0)) ||
+      (dto.discountServicesPercent !== undefined && dto.discountServicesPercent !== (order.discountServicesPercent || 0));
+
+    if ((finalDiscountPartsPercent > 0 || finalDiscountServicesPercent > 0) && effectivePaymentMethod === 'A Prazo / Parcelado') {
+      throw new BadRequestException('Desconto não é válido para pagamento a prazo parcelado.');
+    }
+
+    if (discountFieldsTouched) {
+      await this.ensureCanGrantOrderDiscount(tenantId, userId, finalDiscountPartsPercent, finalDiscountServicesPercent);
+    }
+
     const updateData: any = {
       complaint: dto.complaint,
       diagnosis: dto.diagnosis,
@@ -386,6 +404,22 @@ export class ServiceOrdersService {
       updateData.scheduledDate = dto.scheduledDate ? new Date(dto.scheduledDate) : null;
     }
 
+    if (discountFieldsTouched) {
+      updateData.discountPartsPercent = finalDiscountPartsPercent;
+      updateData.discountServicesPercent = finalDiscountServicesPercent;
+
+      // Preserva qualquer desconto pré-existente que não venha do % (ex.: crédito de diagnóstico na aprovação)
+      const oldPartsDiscount = order.totalParts * ((order.discountPartsPercent || 0) / 100);
+      const oldServicesDiscount = (order.totalServices + order.totalLabor) * ((order.discountServicesPercent || 0) / 100);
+      const otherDiscount = Math.max(0, order.totalDiscount - oldPartsDiscount - oldServicesDiscount);
+
+      const newPartsDiscount = order.totalParts * (finalDiscountPartsPercent / 100);
+      const newServicesDiscount = (order.totalServices + order.totalLabor) * (finalDiscountServicesPercent / 100);
+
+      updateData.totalDiscount = otherDiscount + newPartsDiscount + newServicesDiscount;
+      updateData.totalCost = (order.totalParts + order.totalServices + order.totalLabor) - updateData.totalDiscount;
+    }
+
     return this.prisma.serviceOrder.update({
       where: { id },
       data: updateData,
@@ -399,6 +433,48 @@ export class ServiceOrdersService {
         },
       },
     });
+  }
+
+  private async ensureCanGrantOrderDiscount(
+    tenantId: string,
+    userId: string,
+    partsPercent: number,
+    servicesPercent: number,
+  ) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, tenantId, isActive: true },
+      select: { role: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (!['MASTER', 'ADMIN', 'GERENTE'].includes(user.role)) {
+      throw new ForbiddenException('Seu perfil não pode conceder desconto nesta O.S.');
+    }
+
+    // MASTER e ADMIN não têm teto; só GERENTE é limitado pela configuração do tenant
+    if (user.role !== 'GERENTE') return;
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { maxDiscountPercentParts: true, maxDiscountPercentServices: true },
+    });
+
+    const limitParts = tenant?.maxDiscountPercentParts ?? 0;
+    const limitServices = tenant?.maxDiscountPercentServices ?? 0;
+
+    if (partsPercent > limitParts + 1e-6) {
+      throw new ForbiddenException(
+        `Desconto de ${partsPercent}% em peças excede o limite de ${limitParts}% permitido para o seu perfil.`,
+      );
+    }
+    if (servicesPercent > limitServices + 1e-6) {
+      throw new ForbiddenException(
+        `Desconto de ${servicesPercent}% em serviços excede o limite de ${limitServices}% permitido para o seu perfil.`,
+      );
+    }
   }
 
   async requestApproval(tenantId: string, id: string) {
@@ -1028,10 +1104,28 @@ export class ServiceOrdersService {
 
     const order = await this.prisma.serviceOrder.findUnique({
       where: { id: orderId },
-      select: { totalDiscount: true },
+      select: {
+        totalParts: true,
+        totalServices: true,
+        totalLabor: true,
+        totalDiscount: true,
+        discountPartsPercent: true,
+        discountServicesPercent: true,
+      },
     });
 
-    const totalDiscount = order?.totalDiscount || 0;
+    // Reaplica o % de desconto já concedido na O.S. sobre a nova base de peças/serviços,
+    // preservando qualquer outro valor que componha o totalDiscount (ex.: crédito de diagnóstico).
+    const discountPartsPercent = order?.discountPartsPercent || 0;
+    const discountServicesPercent = order?.discountServicesPercent || 0;
+
+    const oldPartsDiscount = (order?.totalParts || 0) * (discountPartsPercent / 100);
+    const oldServicesDiscount = ((order?.totalServices || 0) + (order?.totalLabor || 0)) * (discountServicesPercent / 100);
+    const otherDiscount = Math.max(0, (order?.totalDiscount || 0) - oldPartsDiscount - oldServicesDiscount);
+
+    const newPartsDiscount = totalParts * (discountPartsPercent / 100);
+    const newServicesDiscount = (totalServices + totalLabor) * (discountServicesPercent / 100);
+    const totalDiscount = otherDiscount + newPartsDiscount + newServicesDiscount;
 
     await this.prisma.serviceOrder.update({
       where: { id: orderId },
@@ -1039,6 +1133,7 @@ export class ServiceOrdersService {
         totalParts,
         totalServices,
         totalLabor,
+        totalDiscount,
         totalCost: (totalParts + totalServices + totalLabor) - totalDiscount,
       },
     });

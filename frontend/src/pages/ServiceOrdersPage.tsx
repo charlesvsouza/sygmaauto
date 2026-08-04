@@ -235,7 +235,8 @@ export function ServiceOrdersPage() {
   const canUseRetificaMode = canAccessRetificaMode(planName);
   const canManageItems = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
   const canManageStock = canManageItems;
-  const canEditOrderDetails = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
+  const canEditOrderDetails = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
+  const canGrantOrderDiscount = ['MASTER', 'ADMIN', 'GERENTE'].includes(userRole);
   const canCreateDiagnostic = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
   const canSyncOrder = ['MASTER', 'ADMIN', 'GERENTE', 'PRODUTIVO'].includes(userRole);
   const canReserveParts = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'SECRETARIA'].includes(userRole);
@@ -271,7 +272,7 @@ export function ServiceOrdersPage() {
   const [edit, setEdit] = useState({
     complaint: '', diagnosis: '', technicalReport: '',
     observations: '', notes: '', paymentMethod: '', reserveStock: false,
-    scheduledDate: '',
+    scheduledDate: '', discountPartsPercent: 0, discountServicesPercent: 0,
   });
 
   // Catalog state
@@ -408,6 +409,8 @@ export function ServiceOrdersPage() {
         paymentMethod: o.paymentMethod || '',
         reserveStock: Boolean(o.reserveStock),
         scheduledDate: o.scheduledDate ? new Date(o.scheduledDate).toISOString().slice(0, 16) : '',
+        discountPartsPercent: Number(o.discountPartsPercent || 0),
+        discountServicesPercent: Number(o.discountServicesPercent || 0),
       });
       setPendingQtyByItem({});
           // Carrega status dos checklists
@@ -1885,6 +1888,63 @@ export function ServiceOrdersPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Desconto */}
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Desconto</h4>
+                  {edit.paymentMethod === 'A Prazo / Parcelado' && (
+                    <p className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
+                      Desconto não é válido para pagamento a prazo parcelado.
+                    </p>
+                  )}
+                  {!canGrantOrderDiscount && (
+                    <p className="text-[10px] font-bold text-surface-500">Seu perfil não pode conceder desconto.</p>
+                  )}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-surface-500 uppercase">Peças (%)</label>
+                      <input
+                        aria-label="Desconto percentual em peças"
+                        type="number" min="0" max="100" step="1"
+                        disabled={isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado'}
+                        value={edit.discountPartsPercent}
+                        onChange={(e) => setEdit({ ...edit, discountPartsPercent: Number(e.target.value) })}
+                        style={{ color: (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado') ? undefined : '#0f172a' }}
+                        className={cn(
+                          'w-full px-3 py-2 rounded-xl border text-xs font-bold text-center transition-all',
+                          (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado')
+                            ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
+                            : 'bg-white border-surface-800'
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-surface-500 uppercase">Serviços (%)</label>
+                      <input
+                        aria-label="Desconto percentual em serviços"
+                        type="number" min="0" max="100" step="1"
+                        disabled={isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado'}
+                        value={edit.discountServicesPercent}
+                        onChange={(e) => setEdit({ ...edit, discountServicesPercent: Number(e.target.value) })}
+                        style={{ color: (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado') ? undefined : '#0f172a' }}
+                        className={cn(
+                          'w-full px-3 py-2 rounded-xl border text-xs font-bold text-center transition-all',
+                          (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado')
+                            ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
+                            : 'bg-white border-surface-800'
+                        )}
+                      />
+                    </div>
+                  </div>
+                  {userRole === 'GERENTE' && (
+                    <p className="text-[9px] text-surface-500">
+                      Seu limite: {Number(tenantFullData?.maxDiscountPercentParts ?? 0)}% em peças, {Number(tenantFullData?.maxDiscountPercentServices ?? 0)}% em serviços.
+                    </p>
+                  )}
+                  {canGrantOrderDiscount && (
+                    <p className="text-[9px] text-surface-600">Clique em "Salvar alterações" para aplicar o desconto.</p>
+                  )}
                 </div>
 
                 {/* Totais */}

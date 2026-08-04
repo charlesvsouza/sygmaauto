@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, IsNumber, IsBoolean, IsInt } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, IsNumber, IsBoolean, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
@@ -221,6 +221,20 @@ export class UpdateOrcamentoDto {
   @IsOptional()
   @IsString()
   scheduledDate?: string;
+
+  @ApiProperty({ required: false, description: 'Desconto (%) concedido em peças nesta O.S.' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  discountPartsPercent?: number;
+
+  @ApiProperty({ required: false, description: 'Desconto (%) concedido em serviços/mão de obra nesta O.S.' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  discountServicesPercent?: number;
 }
 
 export class UpdateStatusDto {
