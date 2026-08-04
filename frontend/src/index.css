@@ -10,6 +10,10 @@
    (Login/Register) — não é mais selecionável pelo usuário.
    =================================================================== */
 :root {
+  /* Evita que o navegador aplique tema nativo escuro (texto claro) em inputs/selects
+     quando o SO/navegador prefere dark mode — o produto só tem o tema claro selecionável. */
+  color-scheme: light;
+
   /* Superfícies */
   --app: 238 243 242;          /* #eef3f2 fundo do app */
   --panel: 255 255 255;        /* #ffffff painéis */
@@ -51,6 +55,8 @@
 }
 
 [data-theme='dark'] {
+  color-scheme: dark;
+
   --app: 8 9 10;
   --panel: 24 24 29;
   --panel-2: 40 40 47;
