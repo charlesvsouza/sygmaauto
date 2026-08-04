@@ -212,7 +212,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/items')
-  @Roles('MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO')
+  @Roles('MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO')
   @ApiOperation({ summary: 'Adicionar item à ordem' })
   async addItem(
     @Tenant() tenant: { tenantId: string },
@@ -224,7 +224,7 @@ export class ServiceOrdersController {
   }
 
   @Delete(':id/items/:itemId')
-  @Roles('MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO')
+  @Roles('MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO')
   @ApiOperation({ summary: 'Remover item da ordem' })
   async removeItem(
     @Tenant() tenant: { tenantId: string },
@@ -236,7 +236,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id/items/:itemId')
-  @Roles('MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO')
+  @Roles('MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO')
   @ApiOperation({ summary: 'Atualizar item da ordem' })
   async updateItem(
     @Tenant() tenant: { tenantId: string },

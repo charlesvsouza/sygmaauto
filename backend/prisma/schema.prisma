@@ -68,6 +68,8 @@ model Tenant {
   laborHourlyRate Float?   @default(120)
   diagnosticHours Float?   @default(0.5)  // horas padrão para serviço de diagnóstico
   defaultCommissionPercent Float? @default(0) // percentual padrão de comissão
+  maxDiscountPercentParts    Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em peças
+  maxDiscountPercentServices Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em serviços/mão de obra
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

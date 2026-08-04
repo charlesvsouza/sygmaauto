@@ -83,6 +83,51 @@ export class ServiceOrdersService {
     }
   }
 
+  private async ensureDiscountWithinLimit(
+    tenantId: string,
+    userId: string,
+    itemType: 'service' | 'part' | 'labor',
+    unitPrice: number,
+    quantity: number,
+    discount: number,
+  ) {
+    if (!discount || discount <= 0) return;
+
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, tenantId, isActive: true },
+      select: { role: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    // Somente GERENTE tem teto de desconto; MASTER, ADMIN e demais roles com acesso a itens não têm limite
+    if (user.role !== 'GERENTE') return;
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { maxDiscountPercentParts: true, maxDiscountPercentServices: true },
+    });
+
+    const base = unitPrice * quantity;
+    const limit = itemType === 'part'
+      ? (tenant?.maxDiscountPercentParts ?? 0)
+      : (tenant?.maxDiscountPercentServices ?? 0); // 'service' e 'labor' usam o mesmo teto
+
+    if (base <= 0) {
+      throw new ForbiddenException('Não é possível aplicar desconto sem um valor unitário/quantidade válidos.');
+    }
+
+    const discountPercent = (discount / base) * 100;
+    if (discountPercent > limit + 1e-6) {
+      const label = itemType === 'part' ? 'peças' : 'serviços';
+      throw new ForbiddenException(
+        `Desconto de ${discountPercent.toFixed(2)}% excede o limite de ${limit}% permitido para o seu perfil em ${label}.`,
+      );
+    }
+  }
+
   private async applyStockMovement(
     tenantId: string,
     partId: string,
@@ -797,6 +842,7 @@ export class ServiceOrdersService {
     }
 
     const discount = dto.discount || 0;
+    await this.ensureDiscountWithinLimit(tenantId, userId, dto.type, unitPrice, qty, discount);
     const totalPrice = (unitPrice * qty) - discount;
 
     let finalPartId = dto.partId;
@@ -919,6 +965,8 @@ export class ServiceOrdersService {
     const qty = dto.quantity !== undefined ? dto.quantity : oldItem.quantity;
     const unitPrice = dto.unitPrice !== undefined ? dto.unitPrice : oldItem.unitPrice;
     const discount = dto.discount !== undefined ? dto.discount : oldItem.discount;
+    const itemType = (dto.type ?? oldItem.type) as 'service' | 'part' | 'labor';
+    await this.ensureDiscountWithinLimit(tenantId, userId, itemType, unitPrice, qty, discount);
     const totalPrice = (unitPrice * qty) - discount;
 
     // Atualiza estoque se a quantidade mudou e for peça

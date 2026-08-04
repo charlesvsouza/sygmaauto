@@ -1,8 +1,10 @@
 import { Controller, Get, Patch, Body, UseGuards, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantsService } from './tenants.service';
-import { UpdateTenantDto } from './dto/tenant.dto';
+import { UpdateTenantDto, UpdateDiscountSettingsDto } from './dto/tenant.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { Tenant } from '../common/decorators/tenant.decorator';
 
 @ApiTags('Tenants')
@@ -22,5 +24,16 @@ export class TenantsController {
   @ApiOperation({ summary: 'Update current tenant' })
   async updateMe(@Tenant() tenant: { tenantId: string }, @Body() dto: UpdateTenantDto) {
     return this.tenantsService.update(tenant.tenantId, dto);
+  }
+
+  @Patch('discount-settings')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Atualizar tetos de desconto do tenant (MASTER/ADMIN)' })
+  async updateDiscountSettings(
+    @Tenant() tenant: { tenantId: string },
+    @Body() dto: UpdateDiscountSettingsDto,
+  ) {
+    return this.tenantsService.updateDiscountSettings(tenant.tenantId, dto);
   }
 }

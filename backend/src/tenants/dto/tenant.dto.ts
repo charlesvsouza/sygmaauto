@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTenantDto {
@@ -86,4 +86,20 @@ export class UpdateTenantDto {
   @IsOptional()
   @IsNumber()
   defaultCommissionPercent?: number;
+}
+
+export class UpdateDiscountSettingsDto {
+  @ApiProperty({ required: false, description: 'Desconto máximo (%) que o GERENTE pode aplicar em peças' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  maxDiscountPercentParts?: number;
+
+  @ApiProperty({ required: false, description: 'Desconto máximo (%) que o GERENTE pode aplicar em serviços/mão de obra' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  maxDiscountPercentServices?: number;
 }

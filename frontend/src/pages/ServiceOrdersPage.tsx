@@ -220,6 +220,12 @@ function fmtBR(v: number | string | undefined, dec = 2) {
   return Number(v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 
+function itemDiscountPercent(item: any): number {
+  const base = Number(item.unitPrice || 0) * Number(item.quantity || 0);
+  if (base <= 0) return 0;
+  return Math.round(((Number(item.discount || 0) / base) * 100) * 100) / 100;
+}
+
 export function ServiceOrdersPage() {
   const { user, tenant } = useAuthStore();
   const navigate = useNavigate();
@@ -227,11 +233,11 @@ export function ServiceOrdersPage() {
   const planName = tenant?.subscription?.plan?.name || 'START';
   const canUseChecklist = canAccessFeature(planName, 'CHECKLIST');
   const canUseRetificaMode = canAccessRetificaMode(planName);
-  const canManageItems = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
+  const canManageItems = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
   const canManageStock = canManageItems;
   const canEditOrderDetails = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
   const canCreateDiagnostic = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
-  const canSyncOrder = ['MASTER', 'ADMIN', 'PRODUTIVO'].includes(userRole);
+  const canSyncOrder = ['MASTER', 'ADMIN', 'GERENTE', 'PRODUTIVO'].includes(userRole);
   const canReserveParts = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'SECRETARIA'].includes(userRole);
   const canDelete = userRole === 'MASTER';
   const canChangeStatus = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA'].includes(userRole);
@@ -272,10 +278,11 @@ export function ServiceOrdersPage() {
   const [catalogMode, setCatalogMode] = useState<'service' | 'part' | null>(null);
   const [catalogItems, setCatalogItems] = useState<{ services: any[]; parts: any[] }>({ services: [], parts: [] });
   const [catalogSearch, setCatalogSearch] = useState('');
-  const [quickAdd, setQuickAdd] = useState({ description: '', unitPrice: '', quantity: '1' });
+  const [quickAdd, setQuickAdd] = useState({ description: '', unitPrice: '', quantity: '1', discountPercent: '0' });
   const [partQties, setPartQties] = useState<Record<string, number>>({});
   const [quickAssignedUserId, setQuickAssignedUserId] = useState('');
   const [pendingQtyByItem, setPendingQtyByItem] = useState<Record<string, number>>({});
+  const [pendingDiscountPctByItem, setPendingDiscountPctByItem] = useState<Record<string, number>>({});
   const [syncingTotals, setSyncingTotals] = useState(false);
   // IA Assistiva
   const [showAiPanel, setShowAiPanel] = useState(false);
@@ -466,31 +473,53 @@ export function ServiceOrdersPage() {
       return;
     }
 
-    const changedEntries = Object.entries(pendingQtyByItem).filter(([itemId, newQty]) => {
+    const qtyChanges: Record<string, number> = {};
+    Object.entries(pendingQtyByItem).forEach(([itemId, newQty]) => {
       const current = selectedOrder.items?.find((i: any) => i.id === itemId);
-      return current && Number(newQty) > 0 && Number(newQty) !== Number(current.quantity);
+      if (current && Number(newQty) > 0 && Number(newQty) !== Number(current.quantity)) {
+        qtyChanges[itemId] = Number(newQty);
+      }
     });
 
-    const hasPartChangeWithoutPermission = changedEntries.some(([itemId]) => {
+    const discountChanges: Record<string, number> = {};
+    Object.entries(pendingDiscountPctByItem).forEach(([itemId, pct]) => {
+      const current = selectedOrder.items?.find((i: any) => i.id === itemId);
+      if (current && Number(pct) !== itemDiscountPercent(current)) {
+        discountChanges[itemId] = Number(pct);
+      }
+    });
+
+    const changedItemIds = Array.from(new Set([...Object.keys(qtyChanges), ...Object.keys(discountChanges)]));
+
+    const hasPartChangeWithoutPermission = changedItemIds.some((itemId) => {
       const current = selectedOrder.items?.find((i: any) => i.id === itemId);
       return current?.type?.toLowerCase() === 'part' && !canManageStock;
     });
 
     if (hasPartChangeWithoutPermission) {
-      alert('Seu perfil nao possui permissao para alterar quantidade de pecas.');
+      alert('Seu perfil nao possui permissao para alterar quantidade/desconto de pecas.');
       return;
     }
 
     setSyncingTotals(true);
     try {
-      // 1. Aplica alterações de quantidade pendentes (se houver)
-      if (changedEntries.length > 0) {
+      // 1. Aplica alterações de quantidade/desconto pendentes (mescladas por item)
+      if (changedItemIds.length > 0) {
         await Promise.all(
-          changedEntries.map(([itemId, newQty]) =>
-            serviceOrdersApi.updateItem(selectedOrder.id, itemId, { quantity: Number(newQty) })
-          )
+          changedItemIds.map((itemId) => {
+            const current = selectedOrder.items.find((i: any) => i.id === itemId);
+            const finalQty = qtyChanges[itemId] ?? current.quantity;
+            const data: any = {};
+            if (itemId in qtyChanges) data.quantity = finalQty;
+            if (itemId in discountChanges) {
+              const pct = Math.min(100, Math.max(0, discountChanges[itemId]));
+              data.discount = Number(current.unitPrice) * finalQty * (pct / 100);
+            }
+            return serviceOrdersApi.updateItem(selectedOrder.id, itemId, data);
+          })
         );
         setPendingQtyByItem({});
+        setPendingDiscountPctByItem({});
       }
 
       // 2. Sincroniza precos do catalogo (pecas, servicos, perfil da oficina)
@@ -759,7 +788,7 @@ export function ServiceOrdersPage() {
       setCatalogSearch('');
       setPartQties({});
       setQuickAssignedUserId(selectedOrder?.mechanicId || '');
-      setQuickAdd({ description: '', unitPrice: '', quantity: '1' });
+      setQuickAdd({ description: '', unitPrice: '', quantity: '1', discountPercent: '0' });
     } catch (err) {
       console.error(err);
     }
@@ -791,11 +820,14 @@ export function ServiceOrdersPage() {
     const qty = parseFloat(quickAdd.quantity) || 1;
     if (!quickAdd.description.trim()) { alert('Informe a descricao.'); return; }
     if (!price || price <= 0) { alert('Informe um preco valido.'); return; }
+    const discountPct = Math.min(100, Math.max(0, parseFloat(quickAdd.discountPercent) || 0));
+    const discountValue = (price * qty) * (discountPct / 100);
     await addItem({
       type: catalogMode,
       description: quickAdd.description.trim(),
       quantity: qty,
       unitPrice: price,
+      ...(discountValue > 0 ? { discount: discountValue } : {}),
       ...(catalogMode === 'service' && quickAssignedUserId ? { assignedUserId: quickAssignedUserId } : {}),
     });
   };
@@ -838,7 +870,9 @@ export function ServiceOrdersPage() {
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
       loadOrders();
-    } catch (err) { console.error(err); }
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Erro ao atualizar item.');
+    }
   };
 
   const removeItem = async (itemId: string) => {
@@ -1609,6 +1643,7 @@ export function ServiceOrdersPage() {
                       <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-56">Executor</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd/Hrs</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
@@ -1650,6 +1685,19 @@ export function ServiceOrdersPage() {
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
+                        <td className="px-5 py-3">
+                          <input
+                            aria-label={`Desconto percentual do serviço ${item.description}`}
+                            type="number" step="1" min="0" max="100"
+                            disabled={isClosed || !canManageItems}
+                            className={cn(
+                              'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
+                              isClosed || !canManageItems ? 'bg-surface-900 text-surface-600 cursor-not-allowed' : 'bg-surface-950 hover:border-surface-800'
+                            )}
+                            value={pendingDiscountPctByItem[item.id] ?? itemDiscountPercent(item)}
+                            onChange={(e) => setPendingDiscountPctByItem({ ...pendingDiscountPctByItem, [item.id]: Number(e.target.value) })}
+                          />
+                        </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
@@ -1666,7 +1714,7 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {serviceItems.length === 0 && (
-                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhum servico lançado</td></tr>
+                      <tr><td colSpan={7} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhum servico lançado</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1695,6 +1743,7 @@ export function ServiceOrdersPage() {
                     <tr>
                       <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
@@ -1723,6 +1772,19 @@ export function ServiceOrdersPage() {
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
+                        <td className="px-5 py-3">
+                          <input
+                            aria-label={`Desconto percentual da peça ${item.description}`}
+                            type="number" step="1" min="0" max="100"
+                            disabled={isClosed || !canManageStock}
+                            className={cn(
+                              'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
+                              isClosed || !canManageStock ? 'bg-surface-900 text-surface-600 cursor-not-allowed' : 'bg-surface-950 hover:border-surface-800'
+                            )}
+                            value={pendingDiscountPctByItem[item.id] ?? itemDiscountPercent(item)}
+                            onChange={(e) => setPendingDiscountPctByItem({ ...pendingDiscountPctByItem, [item.id]: Number(e.target.value) })}
+                          />
+                        </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
                         <td className="px-5 py-3 text-right">
@@ -1739,7 +1801,7 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {partItems.length === 0 && (
-                      <tr><td colSpan={5} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhuma peca lançada</td></tr>
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhuma peca lançada</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -2150,6 +2212,19 @@ export function ServiceOrdersPage() {
                       step={catalogMode === 'service' ? '0.5' : '1'}
                       value={quickAdd.quantity}
                       onChange={(e) => setQuickAdd({ ...quickAdd, quantity: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-center focus:ring-2 focus:ring-surface-100/10 transition-all"
+                    />
+                  </div>
+                  <div className="w-20 space-y-1">
+                    <label className="text-[9px] font-bold text-surface-500 uppercase">Desc. %</label>
+                    <input
+                      aria-label="Desconto percentual do item rápido"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={quickAdd.discountPercent}
+                      onChange={(e) => setQuickAdd({ ...quickAdd, discountPercent: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-surface-800 bg-white text-xs font-bold text-center focus:ring-2 focus:ring-surface-100/10 transition-all"
                     />
                   </div>

@@ -98,6 +98,7 @@ export const onboardingApi = {
 export const tenantsApi = {
   getMe: () => api.get('/tenants/me'),
   update: (data: any) => api.patch('/tenants/me', data),
+  updateDiscountSettings: (data: any) => api.patch('/tenants/discount-settings', data),
 };
 
 export const usersApi = {

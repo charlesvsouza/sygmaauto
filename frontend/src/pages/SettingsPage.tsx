@@ -73,6 +73,10 @@ export function SettingsPage() {
     address: '',
   });
   const [opsData, setOpsData] = useState({ laborHourlyRate: 120, diagnosticHours: 0.5, defaultCommissionPercent: 0 });
+  const [discountData, setDiscountData] = useState({ maxDiscountPercentParts: 0, maxDiscountPercentServices: 0 });
+  const [savingDiscounts, setSavingDiscounts] = useState(false);
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [discountSuccess, setDiscountSuccess] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [plans, setPlans] = useState<any[]>([]);
   const [checkoutLoadingPlan, setCheckoutLoadingPlan] = useState<string | null>(null);
@@ -83,6 +87,7 @@ export function SettingsPage() {
 
   const isMaster = user?.role === 'MASTER';
   const canManageUsers = user?.role === 'MASTER' || user?.role === 'ADMIN';
+  const canConfigureDiscounts = user?.role === 'MASTER' || user?.role === 'ADMIN';
   const isTradeNameMissing = !tenantData.name.trim();
 
   const ROLE_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
@@ -127,6 +132,10 @@ export function SettingsPage() {
           laborHourlyRate: t.laborHourlyRate ?? 120,
           diagnosticHours: t.diagnosticHours ?? 0.5,
           defaultCommissionPercent: t.defaultCommissionPercent ?? 0,
+        });
+        setDiscountData({
+          maxDiscountPercentParts: t.maxDiscountPercentParts ?? 0,
+          maxDiscountPercentServices: t.maxDiscountPercentServices ?? 0,
         });
       } else {
         console.error('Falha ao carregar dados da oficina:', tenantResult.reason);
@@ -218,6 +227,27 @@ export function SettingsPage() {
       setTimeout(() => setOpsError(null), 5000);
     } finally {
       setSavingOps(false);
+    }
+  };
+
+  const handleSaveDiscounts = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingDiscounts(true);
+    setDiscountError(null);
+    setDiscountSuccess(false);
+    try {
+      await tenantsApi.updateDiscountSettings({
+        maxDiscountPercentParts: Number(discountData.maxDiscountPercentParts),
+        maxDiscountPercentServices: Number(discountData.maxDiscountPercentServices),
+      });
+      setDiscountSuccess(true);
+      setTimeout(() => setDiscountSuccess(false), 3000);
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || 'Falha ao salvar limites de desconto.';
+      setDiscountError(Array.isArray(msg) ? msg.join(', ') : msg);
+      setTimeout(() => setDiscountError(null), 5000);
+    } finally {
+      setSavingDiscounts(false);
     }
   };
 
@@ -599,6 +629,88 @@ export function SettingsPage() {
                   <div className="flex justify-end">
                     <button type="submit" disabled={savingOps} className="btn btn-primary h-14 px-10 rounded-lg font-bold shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
                       {savingOps ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Operações'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+
+            <div className="border-t border-line" />
+
+            <form onSubmit={handleSaveDiscounts} className="p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-surface-50 uppercase tracking-wide">Limites de Desconto (Gerente)</h3>
+                {!canConfigureDiscounts && (
+                  <div className="flex items-center gap-1 text-[10px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
+                    <Lock className="w-3 h-3" /> Admin
+                  </div>
+                )}
+              </div>
+              <p className="text-[11px] text-surface-500">
+                Define o desconto máximo que o perfil Gerente pode aplicar ao lançar itens em Ordens de Serviço. MASTER e ADMIN não têm limite.
+              </p>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Desconto Máx. Peças</label>
+                  <div className="relative">
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      max="100"
+                      value={discountData.maxDiscountPercentParts}
+                      onChange={(e) => canConfigureDiscounts && setDiscountData({ ...discountData, maxDiscountPercentParts: Number(e.target.value) })}
+                      disabled={!canConfigureDiscounts}
+                      className={cn(
+                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
+                        canConfigureDiscounts
+                          ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+                          : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Desconto Máx. Serviços</label>
+                  <div className="relative">
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      max="100"
+                      value={discountData.maxDiscountPercentServices}
+                      onChange={(e) => canConfigureDiscounts && setDiscountData({ ...discountData, maxDiscountPercentServices: Number(e.target.value) })}
+                      disabled={!canConfigureDiscounts}
+                      className={cn(
+                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
+                        canConfigureDiscounts
+                          ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+                          : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {canConfigureDiscounts && (
+                <div className="space-y-2 pt-2">
+                  {discountError && (
+                    <div className="flex items-center gap-2 text-xs text-red-600 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {discountError}
+                    </div>
+                  )}
+                  {discountSuccess && (
+                    <div className="flex items-center gap-2 text-xs text-green-700 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
+                      ✓ Limites de desconto salvos com sucesso!
+                    </div>
+                  )}
+                  <div className="flex justify-end">
+                    <button type="submit" disabled={savingDiscounts} className="btn btn-primary h-14 px-10 rounded-lg font-bold shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
+                      {savingDiscounts ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Limites de Desconto'}
                     </button>
                   </div>
                 </div>
