@@ -663,8 +663,9 @@ export function SettingsPage() {
                       value={discountData.maxDiscountPercentParts}
                       onChange={(e) => canConfigureDiscounts && setDiscountData({ ...discountData, maxDiscountPercentParts: Number(e.target.value) })}
                       disabled={!canConfigureDiscounts}
+                      style={{ color: canConfigureDiscounts ? '#0f172a' : undefined }}
                       className={cn(
-                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all text-surface-50",
+                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         canConfigureDiscounts
                           ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                           : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
@@ -685,8 +686,9 @@ export function SettingsPage() {
                       value={discountData.maxDiscountPercentServices}
                       onChange={(e) => canConfigureDiscounts && setDiscountData({ ...discountData, maxDiscountPercentServices: Number(e.target.value) })}
                       disabled={!canConfigureDiscounts}
+                      style={{ color: canConfigureDiscounts ? '#0f172a' : undefined }}
                       className={cn(
-                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all text-surface-50",
+                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
                         canConfigureDiscounts
                           ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                           : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"
