@@ -1569,6 +1569,12 @@ export function ServiceOrdersPage() {
                       <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
                       <p className="font-mono font-bold text-white">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
+                    {selectedOrder.vehicle && (
+                      <div>
+                        <p className="text-[10px] text-white font-bold uppercase mb-1">Chassi / VIN</p>
+                        <p className="font-mono font-bold text-white text-sm">{selectedOrder.vehicle?.vin || '-'}</p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
