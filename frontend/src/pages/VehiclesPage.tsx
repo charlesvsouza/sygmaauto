@@ -353,6 +353,21 @@ export function VehiclesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Chassi (VIN)</label>
+                    <input
+                      type="text"
+                      value={formData.vin}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vin: e.target.value.toUpperCase() })
+                      }
+                      placeholder="Ex: 9BWZZZ377VT004251"
+                      maxLength={17}
+                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-mono uppercase"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Ano</label>
                     <input
                       type="number"
@@ -365,8 +380,6 @@ export function VehiclesPage() {
                       max={new Date().getFullYear() + 1}
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Marca *</label>
                     <input
@@ -380,6 +393,8 @@ export function VehiclesPage() {
                       required
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Modelo *</label>
                     <input
@@ -393,8 +408,6 @@ export function VehiclesPage() {
                       required
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Cor</label>
                     <input
@@ -406,17 +419,17 @@ export function VehiclesPage() {
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">KM Atual</label>
-                    <input
-                      type="number"
-                      value={formData.km}
-                      onChange={(e) =>
-                        setFormData({ ...formData, km: e.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
-                    />
-                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">KM Atual</label>
+                  <input
+                    type="number"
+                    value={formData.km}
+                    onChange={(e) =>
+                      setFormData({ ...formData, km: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
+                  />
                 </div>
 
                 {/* Manutenção Preventiva */}

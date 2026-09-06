@@ -297,7 +297,7 @@ export function ServiceOrdersPage() {
   const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
   const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
   const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
-  const [quickVehicle, setQuickVehicle] = useState({ plate: '', brand: '', model: '', color: '', year: '' });
+  const [quickVehicle, setQuickVehicle] = useState({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -582,6 +582,7 @@ export function ServiceOrdersPage() {
     }
 
     const plate = quickVehicle.plate.trim().toUpperCase();
+    const vin = quickVehicle.vin.trim().toUpperCase();
     const brand = quickVehicle.brand.trim();
     const model = quickVehicle.model.trim();
 
@@ -596,6 +597,7 @@ export function ServiceOrdersPage() {
       const payload = {
         customerId: newOrder.customerId,
         plate,
+        vin: vin || undefined,
         brand,
         model,
         color: quickVehicle.color.trim() || undefined,
@@ -611,7 +613,7 @@ export function ServiceOrdersPage() {
       });
 
       setNewOrder((prev) => ({ ...prev, vehicleId: createdVehicle.id }));
-      setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
+      setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
       setShowQuickVehicleForm(false);
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Erro ao cadastrar veiculo.');
@@ -1008,14 +1010,14 @@ export function ServiceOrdersPage() {
                 <tr className="hdr"><td colSpan={6}>DADOS DO VEICULO</td></tr>
                 <tr>
                   <td colSpan={2}><strong>Marca / Modelo:</strong> {selectedOrder.vehicle?.brand} {selectedOrder.vehicle?.model}</td>
-                  <td><strong>Ano:</strong> {selectedOrder.vehicle?.year || '-'}</td>
-                  <td><strong>Cor:</strong> {selectedOrder.vehicle?.color || '-'}</td>
-                  <td><strong>Placa:</strong> <span className="print-plate">{selectedOrder.vehicle?.plate || '-'}</span></td>
-                  <td><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</td>
+                  <td colSpan={2}><strong>Placa:</strong> <span className="print-plate">{selectedOrder.vehicle?.plate || '-'}</span></td>
+                  <td colSpan={2}><strong>Chassi / VIN:</strong> {selectedOrder.vehicle?.vin || '-'}</td>
                 </tr>
-                {selectedOrder.vehicle?.vin && (
-                  <tr><td colSpan={6}><strong>Chassi / VIN:</strong> {selectedOrder.vehicle.vin}</td></tr>
-                )}
+                <tr>
+                  <td colSpan={2}><strong>Ano:</strong> {selectedOrder.vehicle?.year || '-'}</td>
+                  <td colSpan={2}><strong>Cor:</strong> {selectedOrder.vehicle?.color || '-'}</td>
+                  <td colSpan={2}><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</td>
+                </tr>
               </tbody>
             </table>
 
@@ -2518,7 +2520,7 @@ export function ServiceOrdersPage() {
                     <select aria-label="Cliente da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
                       setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
                       setShowQuickVehicleForm(false);
-                      setQuickVehicle({ plate: '', brand: '', model: '', color: '', year: '' });
+                      setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
                     }} required>
                       <option value="">Selecione um cliente...</option>
                       {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -2558,6 +2560,14 @@ export function ServiceOrdersPage() {
                             placeholder="Placa *"
                             value={quickVehicle.plate}
                             onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
+                          />
+                          <input
+                            aria-label="Chassi (VIN) do veículo"
+                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold uppercase"
+                            placeholder="Chassi / VIN (opcional)"
+                            maxLength={17}
+                            value={quickVehicle.vin}
+                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, vin: e.target.value.toUpperCase() }))}
                           />
                           <input
                             aria-label="Marca do veículo"

@@ -1519,6 +1519,7 @@ export class ServiceOrdersService {
         order.tenant.tradeName ||
         order.tenant.legalName ||
         'SygmaAuto',
+      companyLogo: order.tenant.logo || '',
       companyAddress: order.tenant.address || 'Endereço não configurado',
       companyPhone: order.tenant.phone || '',
       companyEmail: order.tenant.email || '',

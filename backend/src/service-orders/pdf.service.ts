@@ -65,6 +65,22 @@ export class PdfService {
       // Carregar HTML
       await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
 
+      // Imagens em data: URI (ex.: logo da empresa) não geram requisição de rede,
+      // então 'networkidle2' pode resolver antes delas terminarem de decodificar.
+      // Aguarda explicitamente o carregamento de todas as <img> antes de gerar o PDF.
+      await page.evaluate(() =>
+        Promise.all(
+          Array.from(document.images).map((img) =>
+            img.complete
+              ? Promise.resolve()
+              : new Promise((resolve) => {
+                  img.addEventListener('load', resolve, { once: true });
+                  img.addEventListener('error', resolve, { once: true });
+                }),
+          ),
+        ),
+      );
+
       // Gerar PDF
       const pdfBuffer = await page.pdf({
         format: (options.format || 'A4') as any,

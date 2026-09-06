@@ -200,6 +200,9 @@ export function FinancialPage() {
               <tbody>
                 <tr>
                   <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
+                    {tenantData.logo && (
+                      <img src={tenantData.logo} alt="Logo" style={{ maxHeight: '48px', maxWidth: '130px', objectFit: 'contain', marginBottom: '4px' }} />
+                    )}
                     <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
                       {tenantData.name || tenantData.tradeName || tenantData.legalName || 'Oficina'}
                     </div>

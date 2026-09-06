@@ -35,13 +35,25 @@
             padding-bottom: 15px;
         }
         
+        .company-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 55%;
+        }
+
+        .company-logo-img {
+            max-height: 56px;
+            max-width: 140px;
+            object-fit: contain;
+        }
+
         .company-logo {
             font-size: 20px;
             font-weight: bold;
             color: #333;
             letter-spacing: 1px;
             line-height: 1.2;
-            max-width: 55%;
         }
         
         .company-info {
@@ -251,7 +263,10 @@
     <div class="container">
         <!-- CABEÇALHO -->
         <div class="header">
-            <div class="company-logo">{{companyName}}</div>
+            <div class="company-left">
+                {{#if companyLogo}}<img class="company-logo-img" src="{{companyLogo}}" alt="Logo" />{{/if}}
+                <div class="company-logo">{{companyName}}</div>
+            </div>
             <div class="company-info">
                 {{companyAddress}}<br>
                 {{companyPhone}}<br>

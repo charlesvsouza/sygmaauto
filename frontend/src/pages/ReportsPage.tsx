@@ -202,6 +202,9 @@ const ICON_BG: Record<string, string> = {
       <tbody>
         <tr>
           <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
+            {tenant?.logo && (
+              <img src={tenant.logo} alt="Logo" style={{ maxHeight: '48px', maxWidth: '130px', objectFit: 'contain', marginBottom: '4px' }} />
+            )}
             <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
               {tenant?.name || tenant?.tradeName || tenant?.legalName || 'Oficina'}
             </div>

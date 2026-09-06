@@ -57,6 +57,21 @@ export class PdfService implements OnModuleDestroy {
       await page.setViewport({ width: 1280, height: 900 });
       await page.setContent(this.ensureHtmlDocument(html), { waitUntil: 'networkidle2' });
 
+      // Imagens em data: URI (ex.: logo da empresa) não geram requisição de rede,
+      // então 'networkidle2' pode resolver antes delas terminarem de decodificar.
+      await page.evaluate(() =>
+        Promise.all(
+          Array.from(document.images).map((img) =>
+            img.complete
+              ? Promise.resolve()
+              : new Promise((resolve) => {
+                  img.addEventListener('load', resolve, { once: true });
+                  img.addEventListener('error', resolve, { once: true });
+                }),
+          ),
+        ),
+      );
+
       const pdfBuffer = await page.pdf({
         format: (options.format || 'A4') as any,
         landscape: Boolean(options.landscape),

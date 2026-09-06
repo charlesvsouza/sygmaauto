@@ -14,6 +14,9 @@ import {
   Lock,
   Search,
   AlertCircle,
+  Upload,
+  Trash2,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -73,6 +76,9 @@ export function SettingsPage() {
     address: '',
   });
   const [opsData, setOpsData] = useState({ laborHourlyRate: 120, diagnosticHours: 0.5, defaultCommissionPercent: 0 });
+  const [logo, setLogo] = useState<string>('');
+  const [savingLogo, setSavingLogo] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
   const [discountData, setDiscountData] = useState({ maxDiscountPercentParts: 0, maxDiscountPercentServices: 0 });
   const [savingDiscounts, setSavingDiscounts] = useState(false);
   const [discountError, setDiscountError] = useState<string | null>(null);
@@ -128,6 +134,7 @@ export function SettingsPage() {
           email: t.email || '',
           address: t.address || '',
         });
+        setLogo(t.logo || '');
         setOpsData({
           laborHourlyRate: t.laborHourlyRate ?? 120,
           diagnosticHours: t.diagnosticHours ?? 0.5,
@@ -205,6 +212,77 @@ export function SettingsPage() {
       setSaveError(error?.response?.data?.message || 'Erro ao salvar. Tente novamente.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const resizeLogoFile = (file: File, maxSize = 320): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxSize || height > maxSize) {
+            if (width >= height) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            } else {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { reject(new Error('Canvas não suportado')); return; }
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => reject(new Error('Não foi possível ler a imagem'));
+        img.src = reader.result as string;
+      };
+      reader.onerror = () => reject(new Error('Não foi possível ler o arquivo'));
+      reader.readAsDataURL(file);
+    });
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setLogoError('Selecione um arquivo de imagem (PNG, JPG ou SVG rasterizado).');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setLogoError('Imagem muito grande (máx. 8MB).');
+      return;
+    }
+    setLogoError(null);
+    setSavingLogo(true);
+    try {
+      const dataUrl = await resizeLogoFile(file);
+      await tenantsApi.update({ logo: dataUrl });
+      setLogo(dataUrl);
+      toast.success('Logo atualizada com sucesso.');
+    } catch (error: any) {
+      setLogoError(error?.response?.data?.message || error?.message || 'Falha ao salvar a logo.');
+    } finally {
+      setSavingLogo(false);
+    }
+  };
+
+  const handleLogoRemove = async () => {
+    setSavingLogo(true);
+    setLogoError(null);
+    try {
+      await tenantsApi.update({ logo: '' });
+      setLogo('');
+      toast.success('Logo removida.');
+    } catch (error: any) {
+      setLogoError(error?.response?.data?.message || 'Falha ao remover a logo.');
+    } finally {
+      setSavingLogo(false);
     }
   };
 
@@ -329,6 +407,43 @@ export function SettingsPage() {
             </div>
             <form onSubmit={handleSaveTenant} className="p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Logo da empresa */}
+                <div className="col-span-2 flex items-center gap-4 pb-4 border-b border-line">
+                  <div className="w-20 h-20 rounded-lg border border-line bg-surface-950/40 flex items-center justify-center overflow-hidden shrink-0">
+                    {logo ? (
+                      <img src={logo} alt="Logo da oficina" className="w-full h-full object-contain" />
+                    ) : (
+                      <ImageIcon className="w-8 h-8 text-surface-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <label className="block text-sm font-medium text-surface-200">Logo da Empresa</label>
+                    <p className="text-xs text-surface-500">Aparece no cabeçalho da Ordem de Serviço, orçamentos e relatórios em PDF.</p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-line text-xs font-medium cursor-pointer hover:bg-surface-950/40 transition-colors">
+                        {savingLogo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                        {logo ? 'Trocar logo' : 'Enviar logo'}
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} disabled={savingLogo} className="hidden" />
+                      </label>
+                      {logo && (
+                        <button
+                          type="button"
+                          onClick={handleLogoRemove}
+                          disabled={savingLogo}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-line text-xs font-medium text-danger hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Remover
+                        </button>
+                      )}
+                    </div>
+                    {logoError && (
+                      <p className="flex items-center gap-1 text-xs text-amber-600">
+                        <AlertCircle className="w-3.5 h-3.5" /> {logoError}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
                 {/* 1º campo: CPF / CNPJ com lookup automático */}
                 <div className="col-span-2">
