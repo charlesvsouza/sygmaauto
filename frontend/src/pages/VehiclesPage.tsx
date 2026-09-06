@@ -87,7 +87,8 @@ export function VehiclesPage() {
         maintenanceIntervalDays: formData.maintenanceIntervalDays ? parseInt(formData.maintenanceIntervalDays) : undefined,
       };
       if (editingVehicle) {
-        await vehiclesApi.update(editingVehicle.id, data);
+        const { customerId, ...updateData } = data;
+        await vehiclesApi.update(editingVehicle.id, updateData);
       } else {
         await vehiclesApi.create(data);
       }
