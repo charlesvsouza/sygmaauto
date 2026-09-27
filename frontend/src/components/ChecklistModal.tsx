@@ -20,8 +20,27 @@ const AREAS = [
   { key: 'PARA_CHOQUE_TRAS',  label: 'Para-choque Tras.' },
   { key: 'INTERIOR',          label: 'Interior / Bancos' },
   { key: 'PNEUS',             label: 'Pneus' },
+];
+
+// Item genérico das vistorias antigas: só aparece se já estiver marcado.
+const LEGACY_AREAS = [
   { key: 'EQUIPAMENTOS',      label: 'Equipamentos (chave, estepe…)' },
 ];
+
+// ─── Acessórios e objetos (lista fixa: presente / ausente) ─────────────────
+// Mesmas chaves e rótulos do backend (common/checklist-labels.ts).
+const ACCESSORIES = [
+  { key: 'ESTEPE',            label: 'Estepe' },
+  { key: 'MACACO',            label: 'Macaco' },
+  { key: 'CHAVE_RODA',        label: 'Chave de roda' },
+  { key: 'TRIANGULO',         label: 'Triângulo' },
+  { key: 'RADIO',             label: 'Rádio / multimídia' },
+  { key: 'TAPETES',           label: 'Tapetes' },
+  { key: 'DOCUMENTO',         label: 'Documento do veículo (CRLV)' },
+  { key: 'OBJETOS_PESSOAIS',  label: 'Objetos pessoais (descrever)' },
+];
+
+const ALL_ITEMS = [...AREAS, ...LEGACY_AREAS, ...ACCESSORIES];
 
 type Condition = 'OK' | 'RISCO' | 'AMASSADO' | 'QUEBRADO' | 'AUSENTE' | '';
 
@@ -30,6 +49,11 @@ const CONDITIONS: { key: Condition; label: string; color: string }[] = [
   { key: 'RISCO',    label: 'Risco',    color: 'bg-amber-500/15 text-amber-700 border-amber-500/40' },
   { key: 'AMASSADO', label: 'Amassado', color: 'bg-orange-500/15 text-orange-700 border-orange-500/40' },
   { key: 'QUEBRADO', label: 'Quebrado', color: 'bg-red-500/15 text-red-700 border-red-500/40' },
+  { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-surface-800 text-surface-400 border-line' },
+];
+
+const ACCESSORY_CONDITIONS: { key: Condition; label: string; color: string }[] = [
+  { key: 'OK',       label: 'Presente', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/40' },
   { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-surface-800 text-surface-400 border-line' },
 ];
 
@@ -81,7 +105,7 @@ const FUEL_LABELS = ['Vazio', '1/8', '2/8', '3/8', '4/8 (Meio)', '5/8', '6/8', '
 
 function defaultItems(): ItemsMap {
   return Object.fromEntries(
-    AREAS.map((a) => [a.key, { condition: '' as Condition, notes: '', photos: [], expanded: false }])
+    ALL_ITEMS.map((a) => [a.key, { condition: '' as Condition, notes: '', photos: [], expanded: false }])
   );
 }
 
@@ -161,7 +185,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
         fuelLevel,
         observations,
         completedBy,
-        items: AREAS
+        items: ALL_ITEMS
           .filter((a) => items[a.key].condition !== '')
           .map((a) => ({
             area: a.key,
@@ -185,7 +209,92 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
   }
 
   const title = type === 'ENTRADA' ? '🔑 Checklist de Entrada' : '🚗 Checklist de Saída';
-  const markedCount = AREAS.filter((a) => items[a.key].condition !== '').length;
+  const visibleAreas = [...AREAS, ...LEGACY_AREAS.filter((a) => items[a.key].condition !== '')];
+  const markedCount = visibleAreas.filter((a) => items[a.key].condition !== '').length;
+  const accessoriesMarked = ACCESSORIES.filter((a) => items[a.key].condition !== '').length;
+
+  const renderItem = (area: { key: string; label: string }, conditions: typeof CONDITIONS) => {
+    const item = items[area.key];
+    return (
+      <div
+        key={area.key}
+        className="border border-line rounded-xl overflow-hidden"
+      >
+        {/* Area header row */}
+        <div className="flex items-center gap-2 px-3 py-2 bg-surface-950/40">
+          <span className="text-xs font-semibold text-surface-200 flex-1">
+            {area.label}
+          </span>
+          {/* Condition buttons */}
+          <div className="flex gap-1 flex-wrap justify-end">
+            {conditions.map((c) => (
+              <button type="button"
+                key={c.key}
+                onClick={() => setCondition(area.key, item.condition === c.key ? '' : c.key)}
+                className={cn(
+                  'text-[10px] font-bold px-2 py-0.5 rounded-lg border transition',
+                  item.condition === c.key
+                    ? c.color + ' shadow-sm'
+                    : 'bg-surface-900 text-surface-500 border-line hover:bg-ink/5',
+                )}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          {/* Expand toggle */}
+          <button type="button"
+            onClick={() => toggleExpand(area.key)}
+            className="p-1 hover:bg-ink/5 rounded transition"
+          >
+            <ChevronDown
+              size={14}
+              className={cn('transition-transform', item.expanded && 'rotate-180')}
+            />
+          </button>
+        </div>
+
+        {/* Expanded: notes + photos */}
+        {item.expanded && (
+          <div className="px-3 py-2 border-t border-line space-y-2 bg-surface-900">
+            <input
+              className="w-full border border-line rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-accent/40"
+              placeholder="Observação sobre esta área (opcional)"
+              value={item.notes}
+              onChange={(e) => setNotes(area.key, e.target.value)}
+            />
+            {/* Photos */}
+            <div className="flex flex-wrap gap-2">
+              {item.photos.map((p, idx) => (
+                <div key={idx} className="relative w-16 h-16">
+                  <img
+                    src={`data:${p.mimeType};base64,${p.data}`}
+                    alt=""
+                    className="w-16 h-16 object-cover rounded-lg border border-line"
+                  />
+                  <button type="button"
+                    onClick={() => removePhoto(area.key, idx)}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
+                  >
+                    <Trash2 size={9} />
+                  </button>
+                </div>
+              ))}
+              {item.photos.length < 3 && (
+                <button type="button"
+                  onClick={() => openCamera(area.key)}
+                  className="w-16 h-16 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center text-surface-500 hover:border-line hover:bg-ink/5 transition text-[10px] gap-1"
+                >
+                  <Camera size={16} />
+                  <span>Foto</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-4 px-2">
@@ -254,93 +363,26 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                   Condição das Áreas
                 </label>
                 <span className="text-xs text-surface-500">
-                  {markedCount}/{AREAS.length} marcadas
+                  {markedCount}/{visibleAreas.length} marcadas
                 </span>
               </div>
               <div className="space-y-2">
-                {AREAS.map((area) => {
-                  const item = items[area.key];
-                  const cond = CONDITIONS.find((c) => c.key === item.condition);
-                  return (
-                    <div
-                      key={area.key}
-                      className="border border-line rounded-xl overflow-hidden"
-                    >
-                      {/* Area header row */}
-                      <div className="flex items-center gap-2 px-3 py-2 bg-surface-950/40">
-                        <span className="text-xs font-semibold text-surface-200 flex-1">
-                          {area.label}
-                        </span>
-                        {/* Condition buttons */}
-                        <div className="flex gap-1 flex-wrap justify-end">
-                          {CONDITIONS.map((c) => (
-                            <button type="button"
-                              key={c.key}
-                              onClick={() => setCondition(area.key, item.condition === c.key ? '' : c.key)}
-                              className={cn(
-                                'text-[10px] font-bold px-2 py-0.5 rounded-lg border transition',
-                                item.condition === c.key
-                                  ? c.color + ' shadow-sm'
-                                  : 'bg-surface-900 text-surface-500 border-line hover:bg-ink/5',
-                              )}
-                            >
-                              {c.label}
-                            </button>
-                          ))}
-                        </div>
-                        {/* Expand toggle */}
-                        <button type="button"
-                          onClick={() => toggleExpand(area.key)}
-                          className="p-1 hover:bg-ink/5 rounded transition"
-                        >
-                          <ChevronDown
-                            size={14}
-                            className={cn('transition-transform', item.expanded && 'rotate-180')}
-                          />
-                        </button>
-                      </div>
+                {visibleAreas.map((area) => renderItem(area, CONDITIONS))}
+              </div>
+            </div>
 
-                      {/* Expanded: notes + photos */}
-                      {item.expanded && (
-                        <div className="px-3 py-2 border-t border-line space-y-2 bg-surface-900">
-                          <input
-                            className="w-full border border-line rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-accent/40"
-                            placeholder="Observação sobre esta área (opcional)"
-                            value={item.notes}
-                            onChange={(e) => setNotes(area.key, e.target.value)}
-                          />
-                          {/* Photos */}
-                          <div className="flex flex-wrap gap-2">
-                            {item.photos.map((p, idx) => (
-                              <div key={idx} className="relative w-16 h-16">
-                                <img
-                                  src={`data:${p.mimeType};base64,${p.data}`}
-                                  alt=""
-                                  className="w-16 h-16 object-cover rounded-lg border border-line"
-                                />
-                                <button type="button"
-                                  onClick={() => removePhoto(area.key, idx)}
-                                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
-                                >
-                                  <Trash2 size={9} />
-                                </button>
-                              </div>
-                            ))}
-                            {item.photos.length < 3 && (
-                              <button type="button"
-                                onClick={() => openCamera(area.key)}
-                                className="w-16 h-16 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center text-surface-500 hover:border-line hover:bg-ink/5 transition text-[10px] gap-1"
-                              >
-                                <Camera size={16} />
-                                <span>Foto</span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            {/* Acessórios e objetos */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-surface-300">
+                  Acessórios e Objetos no Veículo
+                </label>
+                <span className="text-xs text-surface-500">
+                  {accessoriesMarked}/{ACCESSORIES.length} marcados
+                </span>
+              </div>
+              <div className="space-y-2">
+                {ACCESSORIES.map((area) => renderItem(area, ACCESSORY_CONDITIONS))}
               </div>
             </div>
 
