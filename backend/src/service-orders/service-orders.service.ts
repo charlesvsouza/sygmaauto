@@ -7,6 +7,7 @@ import { CommissionsService } from '../commissions/commissions.service';
 import { PdfService } from '../pdf/pdf.service';
 import * as path from 'path';
 import { escapeHtml, formatDateBR, pdfIssuedLine, serviceOrderStatusLabel } from '../common/pdf-format';
+import { formatOrderCode, nextOrderNumber, orderFileName } from '../common/order-number';
 
 type GeneratedOrderPdf = {
   buffer: Buffer;
@@ -302,9 +303,10 @@ export class ServiceOrdersService {
       });
     }
 
-    const order = await this.prisma.serviceOrder.create({
+    const order = await this.prisma.$transaction(async (tx) => tx.serviceOrder.create({
       data: {
         tenantId,
+        number: await nextOrderNumber(tx, tenantId),
         customerId: dto.customerId,
         vehicleId: dto.vehicleId || undefined,
         orderType: requestedOrderType === 'RETIFICA_MOTOR' ? 'RETIFICA_MOTOR' : 'ORCAMENTO',
@@ -330,7 +332,7 @@ export class ServiceOrdersService {
         vehicle: true,
         items: true,
       },
-    });
+    }));
 
     await this.createTimeline(order.id, 'ABERTA', 'O.S. aberta', userId);
 
@@ -537,7 +539,7 @@ export class ServiceOrdersService {
             tenantId: order.tenantId,
             type: 'INCOME',
             amount: order.diagnosticCost,
-            description: `Custo de Diagnóstico (Orçamento Reprovado) - OS ${order.id.slice(0, 8)}`,
+            description: `Custo de Diagnóstico (Orçamento Reprovado) - OS ${formatOrderCode(order)}`,
             category: 'servicos',
             referenceId: order.id,
             referenceType: 'service_order',
@@ -576,7 +578,7 @@ export class ServiceOrdersService {
         tenantId: order.tenantId,
         type: 'INCOME',
         amount: updated.totalCost,
-        description: `Serviços/Peças - OS ${order.id.slice(0, 8)}`,
+        description: `Serviços/Peças - OS ${formatOrderCode(order)}`,
         category: 'servicos',
         referenceId: order.id,
         referenceType: 'service_order',
@@ -592,7 +594,7 @@ export class ServiceOrdersService {
           item.partId,
           'EXIT',
           item.quantity,
-          `OS ${order.id.slice(0, 8)} aprovada`,
+          `OS ${formatOrderCode(order)} aprovada`,
         );
         await this.prisma.serviceOrderItem.update({
           where: { id: item.id },
@@ -704,7 +706,7 @@ export class ServiceOrdersService {
           tenantId,
           customerName: c.name ?? '',
           customerPhone: phone,
-          orderNumber: (updated as any).orderNumber ?? updated.id.slice(0, 8),
+          orderNumber: formatOrderCode(updated),
           vehicleBrand: v?.brand ?? '',
           vehicleModel: v?.model ?? '',
           plate: v?.plate ?? '',
@@ -747,7 +749,7 @@ export class ServiceOrdersService {
           item.partId,
           'EXIT',
           item.quantity,
-          `OS ${order.id.slice(0, 8)}`,
+          `OS ${formatOrderCode(order)}`,
         );
 
         // Marca item como aplicado
@@ -766,7 +768,7 @@ export class ServiceOrdersService {
           tenantId,
           type: 'EXPENSE',
           amount: totalPartsNum,
-          description: `Peças - OS ${order.id.slice(0, 8)}`,
+          description: `Peças - OS ${formatOrderCode(order)}`,
           category: 'pecas',
           referenceId: order.id,
           referenceType: 'service_order',
@@ -799,7 +801,7 @@ export class ServiceOrdersService {
           tenantId,
           type: 'INCOME',
           amount: amountPaid,
-          description: `Pagamento - OS ${order.id.slice(0, 8)}`,
+          description: `Pagamento - OS ${formatOrderCode(order)}`,
           category: 'servicos',
           referenceId: order.id,
           referenceType: 'service_order',
@@ -824,7 +826,7 @@ export class ServiceOrdersService {
         entityId: id,
         action: 'DELETE',
         changes: JSON.stringify({
-          osNumber: id.slice(0, 8).toUpperCase(),
+          osNumber: formatOrderCode(order),
           status: order.status,
           orderType: order.orderType,
           customerId: order.customerId,
@@ -872,8 +874,8 @@ export class ServiceOrdersService {
         customerId: source.customerId,
         vehicleId: source.vehicleId,
         orderType: 'ORDEM_SERVICO',
-        complaint: `Taxa de Diagnóstico — referente ao orçamento #${source.id.slice(0, 8).toUpperCase()} reprovado`,
-        observations: `Gerado automaticamente a partir da OS ${source.id.slice(0, 8).toUpperCase()}`,
+        complaint: `Taxa de Diagnóstico — referente ao orçamento #${formatOrderCode(source)} reprovado`,
+        observations: `Gerado automaticamente a partir da OS ${formatOrderCode(source)}`,
         kmEntrada: source.kmEntrada ?? 0,
         reserveStock: false,
         items: [
@@ -943,7 +945,7 @@ export class ServiceOrdersService {
         finalPartId,
         'ENTRY',
         qty,
-        `Entrada automática via Quick Add na OS ${order.id.slice(0, 8)}`,
+        `Entrada automática via Quick Add na OS ${formatOrderCode(order)}`,
       );
     }
 
@@ -971,7 +973,7 @@ export class ServiceOrdersService {
           finalPartId,
           'EXIT',
           qty,
-          `Saída OS ${order.id.slice(0, 8)}`,
+          `Saída OS ${formatOrderCode(order)}`,
         );
 
         await this.prisma.serviceOrderItem.update({
@@ -1010,7 +1012,7 @@ export class ServiceOrdersService {
         item.partId,
         'ENTRY',
         item.quantity,
-        `Estorno (Item removido da OS ${order.id.slice(0, 8)})`,
+        `Estorno (Item removido da OS ${formatOrderCode(order)})`,
       );
     }
 
@@ -1055,7 +1057,7 @@ export class ServiceOrdersService {
           oldItem.partId,
           'EXIT',
           diff,
-          `Ajuste Qtd OS ${order.id.slice(0, 8)}`,
+          `Ajuste Qtd OS ${formatOrderCode(order)}`,
         );
       } else if (diff < 0) {
         await this.applyStockMovement(
@@ -1063,7 +1065,7 @@ export class ServiceOrdersService {
           oldItem.partId,
           'ENTRY',
           Math.abs(diff),
-          `Estorno Ajuste Qtd OS ${order.id.slice(0, 8)}`,
+          `Estorno Ajuste Qtd OS ${formatOrderCode(order)}`,
         );
       }
     }
@@ -1258,7 +1260,7 @@ export class ServiceOrdersService {
           item.partId,
           'EXIT',
           needed,
-          `Reserva OS ${order.id.slice(0, 8).toUpperCase()}`,
+          `Reserva OS ${formatOrderCode(order)}`,
         );
         await this.prisma.serviceOrderItem.update({
           where: { id: item.id },
@@ -1355,7 +1357,7 @@ export class ServiceOrdersService {
         item.partId,
         'ENTRY',
         Math.ceil(Number(item.quantity)),
-        `Cancelamento de reserva OS ${order.id.slice(0, 8).toUpperCase()}`,
+        `Cancelamento de reserva OS ${formatOrderCode(order)}`,
       );
       await this.prisma.serviceOrderItem.update({
         where: { id: item.id },
@@ -1414,7 +1416,7 @@ export class ServiceOrdersService {
         item.partId,
         'ENTRY',
         item.quantity,
-        `Estorno OS ${order.id.slice(0, 8)} — orçamento reprovado`,
+        `Estorno OS ${formatOrderCode(order)} — orçamento reprovado`,
       );
       await this.prisma.serviceOrderItem.update({
         where: { id: item.id },
@@ -1507,7 +1509,7 @@ export class ServiceOrdersService {
     );
     const subtotal = order.totalParts + order.totalServices + order.totalLabor;
     const total = subtotal - order.totalDiscount;
-    const documentNumber = order.id.slice(0, 8).toUpperCase();
+    const documentNumber = formatOrderCode(order);
     const documentTitle = this.getDocumentTitle(order.orderType);
 
     const templateData = {
@@ -1570,7 +1572,7 @@ export class ServiceOrdersService {
 
     return {
       buffer,
-      fileName: `${documentNumber}.pdf`,
+      fileName: orderFileName(order.orderType === 'ORCAMENTO' ? 'ORCAMENTO' : 'OS', order, order.vehicle?.plate),
     };
   }
 }

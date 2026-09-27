@@ -144,6 +144,49 @@ async function ensureMissingTables(url) {
   }
 }
 
+// Numeração sequencial do atendimento (common/order-number.ts). Idempotente: numera,
+// por oficina e em ordem de abertura, só as O.S. ainda sem número, continuando do
+// maior número existente, e alinha o contador do tenant.
+async function backfillOrderNumbers(url) {
+  const cleanUrl = stripPoolParams(url);
+  const client = new Client({
+    connectionString: cleanUrl,
+    connectionTimeoutMillis: 15000,
+    ssl: url.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+  });
+  try {
+    await client.connect();
+    await client.query('BEGIN');
+    const res = await client.query(`
+      WITH seq AS (
+        SELECT so.id,
+               COALESCE(mx.max_number, 0)
+                 + ROW_NUMBER() OVER (PARTITION BY so."tenantId" ORDER BY so."createdAt", so.id) AS n
+        FROM service_orders so
+        LEFT JOIN (
+          SELECT "tenantId", MAX(number) AS max_number
+          FROM service_orders
+          GROUP BY "tenantId"
+        ) mx ON mx."tenantId" = so."tenantId"
+        WHERE so.number IS NULL
+      )
+      UPDATE service_orders s SET number = seq.n FROM seq WHERE s.id = seq.id
+    `);
+    await client.query(`
+      UPDATE tenants t
+      SET "orderSequence" = GREATEST(t."orderSequence", COALESCE(
+        (SELECT MAX(number) FROM service_orders so WHERE so."tenantId" = t.id), 0))
+    `);
+    await client.query('COMMIT');
+    console.log(`[release] backfillOrderNumbers: ${res.rowCount} O.S. numerada(s).`);
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch (_) {}
+    console.warn('[release] backfillOrderNumbers error (non-fatal):', err.message);
+  } finally {
+    try { await client.end(); } catch (_) {}
+  }
+}
+
 async function main() {
   await terminateAllAppConnections();
 
@@ -161,6 +204,8 @@ async function main() {
   } catch (err) {
     console.error('[release] prisma db push failed (non-fatal, SQL fallback already ran):', err.message);
   }
+
+  await backfillOrderNumbers(rawUrl);
 
   const seedFlag = (process.env.SEED_DEMO || '').trim().toLowerCase();
   console.log(`[release] SEED_DEMO="${seedFlag}"`);

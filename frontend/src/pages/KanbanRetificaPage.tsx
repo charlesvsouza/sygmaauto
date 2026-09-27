@@ -11,6 +11,7 @@ import {
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
 import { PHASE_SLA_HOURS } from '../lib/retificaConstants';
+import { orderCode } from '../lib/orderCode';
 
 // ─── Colunas do fluxo de retífica ─────────────────────────────────────────────
 const KANBAN_COLUMNS = [
@@ -152,7 +153,7 @@ function RetificaCard({
       {/* Número + tempo na fase */}
       <div className="flex items-center justify-between">
         <span className={`font-bold text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
-          #{os.id.slice(-6).toUpperCase()}
+          #{orderCode(os)}
         </span>
         <span className={`flex items-center gap-1 font-semibold ${urgencyColor(os)}`}>
           <Clock size={tvMode ? 14 : 11} />
@@ -314,7 +315,7 @@ export function KanbanRetificaPage() {
       const existingDescriptions = new Set<string>(
         (os?.items ?? []).map((i: any) => String(i.description || i.name || '').toLowerCase())
       );
-      setMetrologiaTarget({ id, number: id.slice(-6).toUpperCase(), metrology: os?.metrology ?? null, existingDescriptions });
+      setMetrologiaTarget({ id, number: os ? orderCode(os) : id.slice(0, 8).toUpperCase(), metrology: os?.metrology ?? null, existingDescriptions });
       return;
     }
     setAdvancing(id);

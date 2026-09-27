@@ -24,6 +24,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { orderCode } from '../lib/orderCode';
 
 const FLOW_STATUSES = [
   'ABERTA',
@@ -265,7 +266,7 @@ export function DashboardRetificaPage() {
 
         return {
           id: o.id,
-          shortId: String(o.id).slice(-6).toUpperCase(),
+          shortId: orderCode(o),
           customer: o.customer?.name || 'Cliente nao informado',
           status: o.status,
           statusLabel: PHASE_LABEL[o.status] || o.status,

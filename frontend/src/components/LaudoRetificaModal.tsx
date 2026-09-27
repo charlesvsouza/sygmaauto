@@ -4,6 +4,7 @@ import { X, Printer, FileText } from 'lucide-react';
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import type { MetrologiaData } from './MetrologiaModal';
 import { useToast } from './ui';
+import { orderCode, orderFileCode } from '../lib/orderCode';
 
 // ─── Estilos do documento ──────────────────────────────────────────────────────
 const DOC_STYLES = `
@@ -77,7 +78,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
     ? `${fmt(os.equipmentBrand)} ${fmt(os.equipmentModel)}${os.serialNumber ? ` — Serial: ${escapeHtml(os.serialNumber)}` : ''}`.trim()
     : `${fmt(os.vehicle?.brand)} ${fmt(os.vehicle?.model)} (${fmt(os.vehicle?.plate)})`;
 
-  const osNum = os.id.slice(-6).toUpperCase();
+  const osNum = orderCode(os);
 
   // Items da OS (serviços/peças)
   const items: any[] = os.items ?? [];
@@ -366,13 +367,13 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
   const metrologia: MetrologiaData | null = os.metrology ?? null;
 
   const html    = buildLaudoHtml(os, metrologia, tenant);
-  const fullDoc = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Laudo Retífica OS #${os.id.slice(-6).toUpperCase()}</title><style>${PREVIEW_STYLE}</style></head><body>${html}</body></html>`;
+  const fullDoc = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Laudo Retífica OS #${escapeHtml(orderCode(os))}</title><style>${PREVIEW_STYLE}</style></head><body>${html}</body></html>`;
 
   const handlePrint = async () => {
     try {
       await downloadHtmlPdf(fullDoc.replace('</head>', `<style>${PRINT_STYLE}</style></head>`), {
-        title: `Laudo de Retífica #${os.id.slice(-6).toUpperCase()}`,
-        fileName: `Laudo-retifica-${os.id.slice(0, 8).toUpperCase()}`,
+        title: `Laudo de Retífica #${orderCode(os)}`,
+        fileName: `Laudo-retifica-${orderFileCode(os)}`,
       });
     } catch {
       toast.error('Erro ao gerar o laudo em PDF.');
@@ -401,7 +402,7 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
               <div>
                 <h2 className="text-white font-bold text-lg">Laudo Técnico de Retífica</h2>
                 <p className="text-surface-400 text-xs">
-                  OS #{os.id.slice(-6).toUpperCase()} · {os.customer?.name ?? '—'}
+                  OS #{orderCode(os)} · {os.customer?.name ?? '—'}
                   {metrologia ? ` · ${metrologia.numeroCilindros} cilindros` : ''}
                 </p>
               </div>

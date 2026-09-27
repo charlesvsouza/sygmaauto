@@ -8,6 +8,7 @@ import {
   RefreshCw, Maximize2, Minimize2, Loader2,
   Car, User, Clock, AlertCircle, Tv2, AlertTriangle, Timer, ArrowLeft, ChevronLeft, ChevronRight,
 } from 'lucide-react';
+import { orderCode } from '../lib/orderCode';
 
 // ─── Status visíveis no Kanban (exclui estados terminais) ────────────────────
 const KANBAN_COLUMNS = [
@@ -124,7 +125,7 @@ function KanbanCard({
       {/* Número da OS + tempo */}
       <div className="flex items-center justify-between">
         <span className={`font-bold text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
-          #{os.id.slice(-6).toUpperCase()}
+          #{orderCode(os)}
         </span>
         <span className={`flex items-center gap-1 font-semibold ${urgencyColor(statusRefDate)}`}>
           <Clock size={tvMode ? 14 : 11} />

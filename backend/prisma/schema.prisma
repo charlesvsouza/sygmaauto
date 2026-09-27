@@ -70,6 +70,7 @@ model Tenant {
   defaultCommissionPercent Float? @default(0) // percentual padrão de comissão
   maxDiscountPercentParts    Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em peças
   maxDiscountPercentServices Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em serviços/mão de obra
+  orderSequence   Int      @default(0) // último número de atendimento emitido (ver common/order-number.ts)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -307,6 +308,7 @@ model Part {
 model ServiceOrder {
   id              String            @id @default(uuid())
   tenantId        String
+  number          Int?              // sequencial da oficina; exibido como HEX/MM-AAAA
   customerId     String
   vehicleId      String?
   orderType      String         @default("ORCAMENTO")
@@ -386,6 +388,7 @@ model ServiceOrder {
   npsResponse NpsResponse?
   metrology   EngineMetrology?
 
+  @@unique([tenantId, number])
   @@map("service_orders")
 }
 

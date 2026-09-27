@@ -7,6 +7,7 @@ import {
   RefreshCw, Maximize2, Minimize2, Loader2,
   Car, User, Clock, AlertCircle, Monitor, AlertTriangle, Timer, ArrowLeft,
 } from 'lucide-react';
+import { orderCode } from '../lib/orderCode';
 
 const PROGRESS_STEPS = [
   { status: 'ABERTA',               short: 'Ab.',    label: 'Aberta' },
@@ -155,7 +156,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
       <div className="flex items-center gap-1.5">
         <User size={11} className="text-surface-400 shrink-0" />
         <span className="text-surface-200 text-xs truncate flex-1">{os.customer?.name}</span>
-        <span className="text-surface-500 text-xs font-mono shrink-0">#{os.id.slice(-6).toUpperCase()}</span>
+        <span className="text-surface-500 text-xs font-mono shrink-0">#{orderCode(os)}</span>
       </div>
 
       {/* Queixa */}

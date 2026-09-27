@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { nextOrderNumber } from '../common/order-number';
 import * as bcrypt from 'bcrypt';
 
 const pick = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
@@ -190,7 +191,7 @@ export class SeedService {
 
       const os = await this.prisma.serviceOrder.create({
         data: {
-          tenantId, customerId, vehicleId, orderType: 'ORDEM_SERVICO', status,
+          tenantId, number: await nextOrderNumber(this.prisma, tenantId), customerId, vehicleId, orderType: 'ORDEM_SERVICO', status,
           complaint: tpl.complaint,
           totalServices, totalParts, totalLabor: 0, totalCost: totalServices + totalParts,
           kmEntrada: rand(20000, 120000), createdAt, updatedAt: createdAt,

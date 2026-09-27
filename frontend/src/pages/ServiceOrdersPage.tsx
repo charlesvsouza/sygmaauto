@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
+import { orderCode, orderShortCode } from '../lib/orderCode';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -561,7 +562,7 @@ export function ServiceOrdersPage() {
 
   const handleDeleteOrder = async () => {
     if (!selectedOrder) return;
-    const expectedCode = selectedOrder.id.slice(0, 8).toUpperCase();
+    const expectedCode = orderShortCode(selectedOrder).toUpperCase();
     if (deleteConfirmInput.trim().toUpperCase() !== expectedCode) return;
     setDeleting(true);
     try {
@@ -906,6 +907,7 @@ export function ServiceOrdersPage() {
   const filteredOrders = orders.filter(
     (o) =>
       o.id.toLowerCase().includes(search.toLowerCase()) ||
+      orderCode(o).toLowerCase().includes(search.toLowerCase()) ||
       o.customer?.name?.toLowerCase().includes(search.toLowerCase()) ||
       o.vehicle?.plate?.toLowerCase().includes(search.toLowerCase()) ||
       o.vehicle?.model?.toLowerCase().includes(search.toLowerCase()) ||
@@ -949,7 +951,7 @@ export function ServiceOrdersPage() {
                       {selectedOrder.orderType === 'ORCAMENTO' ? 'Orcamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retifica de Motor' : 'Ordem de Servico'}
                     </div>
                     <div className="print-doc-number">
-                      {selectedOrder.id.slice(0, 8).toUpperCase()}
+                      {orderCode(selectedOrder)}
                     </div>
                     <div className="print-doc-meta">
                       Abertura: {new Date(selectedOrder.createdAt).toLocaleDateString('pt-BR')}
@@ -1235,7 +1237,7 @@ export function ServiceOrdersPage() {
                 )}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-[10px] font-mono font-bold text-surface-500">{'#' + order.id.slice(0, 8)}</span>
+                  <span className="text-[10px] font-mono font-bold text-surface-500">{'#' + orderCode(order)}</span>
                   <span className={cn('mt-1 h-2 w-2 rounded-full', statusIndicator(statusConfig[order.status]?.tone))} />
                 </div>
                 <p className="font-bold text-surface-100 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
@@ -1281,7 +1283,7 @@ export function ServiceOrdersPage() {
                     <span className="text-[10px] font-bold text-surface-600 uppercase tracking-wide">OS</span>
                   </div>
                   <h1 className="text-xl font-bold text-surface-100 tracking-tight uppercase">
-                    #{selectedOrder.id.slice(0, 8).toUpperCase()}
+                    #{orderCode(selectedOrder)}
                   </h1>
                 </div>
               </div>
@@ -1430,7 +1432,7 @@ export function ServiceOrdersPage() {
                       <button
                         key={phase.key}
                         type="button"
-                        onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: selectedOrder.id.slice(-6).toUpperCase(), metrology: selectedOrder.metrology ?? null })}
+                        onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: orderCode(selectedOrder), metrology: selectedOrder.metrology ?? null })}
                         className={cn(
                           'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-accent/40',
                           isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
@@ -2019,7 +2021,7 @@ export function ServiceOrdersPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-sm uppercase tracking-wide">Reserva de Pecas</h3>
-                    <p className="text-[10px] text-white font-semibold">OS {selectedOrder.id.slice(0,8).toUpperCase()} - {partItems.length} peca(s) na OS</p>
+                    <p className="text-[10px] text-white font-semibold">OS {orderCode(selectedOrder)} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
                 <button type="button" aria-label="Fechar modal de reserva de peças" onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
@@ -2626,7 +2628,7 @@ export function ServiceOrdersPage() {
                           <p>
                             Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
                             {openForVehicle.map((o: any) => (
-                              <span key={o.id} className="ml-1 font-mono font-bold">#{o.id.slice(0, 8).toUpperCase()}</span>
+                              <span key={o.id} className="ml-1 font-mono font-bold">#{orderCode(o)}</span>
                             ))}
                           </p>
                           <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
@@ -2752,7 +2754,7 @@ export function ServiceOrdersPage() {
             </div>
 
             <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-xs text-red-700 font-medium space-y-1">
-              <p><span className="font-bold">OS:</span> #{selectedOrder.id.slice(0, 8).toUpperCase()}</p>
+              <p><span className="font-bold">OS:</span> #{orderCode(selectedOrder)}</p>
               <p><span className="font-bold">Status atual:</span> {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}</p>
               <p><span className="font-bold">Total:</span> R$ {fmtBR(selectedOrder.totalCost)}</p>
             </div>
@@ -2772,14 +2774,14 @@ export function ServiceOrdersPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">
                 Digite o numero da O.S. para confirmar:
-                <span className="ml-2 font-mono text-surface-100">#{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
+                <span className="ml-2 font-mono text-surface-100">{orderShortCode(selectedOrder)}</span>
               </label>
               <input
                 aria-label="Confirmação da exclusão"
                 type="text"
                 value={deleteConfirmInput}
                 onChange={(e) => setDeleteConfirmInput(e.target.value.toUpperCase())}
-                placeholder={`Digite ${selectedOrder.id.slice(0, 8).toUpperCase()}`}
+                placeholder={`Digite ${orderShortCode(selectedOrder)}`}
                 className="w-full px-4 py-3 rounded-xl border border-surface-800 font-mono font-bold text-sm text-surface-300 focus:outline-none focus:ring-2 focus:ring-red-300"
                 autoFocus
               />
@@ -2794,7 +2796,7 @@ export function ServiceOrdersPage() {
               </button>
               <button type="button"
                 onClick={handleDeleteOrder}
-                disabled={deleteConfirmInput.trim().toUpperCase() !== selectedOrder.id.slice(0, 8).toUpperCase() || deleting}
+                disabled={deleteConfirmInput.trim().toUpperCase() !== orderShortCode(selectedOrder).toUpperCase() || deleting}
                 className="flex-1 h-11 rounded-xl bg-red-600 text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
