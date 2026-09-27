@@ -78,6 +78,27 @@ serviços Puppeteer (`pdf/` e `service-orders/`), cada um com seu próprio naveg
 - **Bug extra encontrado:** o template da O.S. escrevia `R$ {{total}}` com valor já formatado → "R$ R$ 100,00". Corrigido.
 - Provado com PDF real + `pypdf` (nome `João <b>Negrito</b> & Filhos $1 $& {{total}}` sai literal; 23:30 UTC → 20:30).
 
+### 2.4 Leva 2 — resultado (27/09)
+
+- **Um serviço de PDF só** (`backend/src/pdf/pdf.service.ts`): o `service-orders/pdf.service.ts` foi removido; a O.S.
+  usa `renderTemplate` do mesmo serviço (um navegador, mesmas margens, mesmo rodapé).
+- **Rodapé de toda folha:** `Oficina · Título · Emitido em dd/mm/aaaa hh:mm por Fulano · Página X de Y`. Hora e usuário
+  são carimbados **no servidor** (JWT), não vêm da tela.
+- **Frontend:** `lib/report.tsx` (CSS único `.rpt`, `ReportHeader` com filtros aplicados, `ReportSignature`,
+  `downloadReportPdf`/`downloadHtmlPdf`, datas sem fuso) e `lib/csv.ts` (BOM, `;`, vírgula decimal).
+  Migradas: Relatórios (6 tipos), DRE, Financeiro, Comissões (saiu do `window.print()`), Laudo, Pedido de compra.
+- **CSV** em todos os relatórios da tela Relatórios, DRE, Financeiro e Comissões (este já tinha, agora abre no Excel pt-BR).
+- **Bugs encontrados e corrigidos no caminho:**
+  - Relatórios: período do cabeçalho saía **um dia antes** (`new Date('AAAA-MM-DD')` é UTC); data final padrão
+    virava amanhã depois das 21h (`toISOString`); PDF mostrava o filtro **digitado**, não o consultado.
+  - Comissões: o impresso lia `r.amount`/`r.description`, campos que não existem → toda linha saía **R$ 0,00 e "—"**.
+  - Laudo e Pedido de compra: texto livre (reclamação, diagnóstico, nomes, descrições) ia cru para o HTML. Escapado.
+- **Prova:** componentes reais de `lib/report.tsx` renderizados (esbuild + `renderToStaticMarkup`) e enviados pelo
+  `PdfController` real: 3 linhas → 1 página; 150 linhas → 5 páginas, todas as linhas, cabeçalho da tabela repetido,
+  total na p.4, assinatura inteira na p.5, rodapé com "Emitido … por Maria Souza · Página X de 5" em todas.
+  Sem banco local: o fluxo completo (tela → API → PDF) precisa ser conferido no ambiente publicado.
+- **Fica para a leva 3:** `#os-print-doc` em `ServiceOrdersPage` (O.S. alternativa, só sai no Ctrl+P do navegador).
+
 ---
 
 ## 3. Proposta: padrão de relatório

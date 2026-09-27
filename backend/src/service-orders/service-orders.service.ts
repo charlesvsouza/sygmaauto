@@ -4,9 +4,9 @@ import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateSt
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
-import { PdfService } from './pdf.service';
+import { PdfService } from '../pdf/pdf.service';
 import * as path from 'path';
-import { escapeHtml, formatDateBR, formatDateTimeBR, serviceOrderStatusLabel } from '../common/pdf-format';
+import { escapeHtml, formatDateBR, pdfIssuedLine, serviceOrderStatusLabel } from '../common/pdf-format';
 
 type GeneratedOrderPdf = {
   buffer: Buffer;
@@ -1444,7 +1444,7 @@ export class ServiceOrdersService {
     return 'ORDEM DE SERVIÇO';
   }
 
-  async generateOsPdf(tenantId: string, osId: string): Promise<GeneratedOrderPdf> {
+  async generateOsPdf(tenantId: string, osId: string, userId?: string): Promise<GeneratedOrderPdf> {
     // Buscar OS com todos os dados
     const order = await this.prisma.serviceOrder.findFirst({
       where: { id: osId, tenantId },
@@ -1509,7 +1509,6 @@ export class ServiceOrdersService {
     const total = subtotal - order.totalDiscount;
     const documentNumber = order.id.slice(0, 8).toUpperCase();
     const documentTitle = this.getDocumentTitle(order.orderType);
-    const generatedAt = formatDateTimeBR(new Date());
 
     const templateData = {
       companyName:
@@ -1530,7 +1529,6 @@ export class ServiceOrdersService {
       
       documentTitle,
       documentTypeLine: `${documentTitle} #${documentNumber}`,
-      generatedAt,
       osNumber: documentNumber,
       osDate: this.formatDate(order.createdAt),
       osStatus: serviceOrderStatusLabel(order.status),
@@ -1562,8 +1560,12 @@ export class ServiceOrdersService {
       'templates',
       'os-template.html',
     );
-    const buffer = await this.pdf.generatePdfFromTemplate(templatePath, templateData, {
+    const issuer = userId
+      ? await this.prisma.user.findFirst({ where: { id: userId, tenantId }, select: { name: true } })
+      : null;
+    const buffer = await this.pdf.renderTemplate(templatePath, templateData, {
       footerLabel: `${templateData.companyName} · ${documentTitle} #${documentNumber}`,
+      footerIssued: pdfIssuedLine(issuer?.name),
     });
 
     return {

@@ -48,12 +48,24 @@ export function serviceOrderStatusLabel(status?: string | null): string {
   return SERVICE_ORDER_STATUS_LABEL[status] ?? status;
 }
 
+export function pdfIssuedLine(userName?: string | null, at: Date = new Date()): string {
+  const by = userName ? ` por ${userName}` : '';
+  return `Emitido em ${formatDateTimeBR(at)}${by}`;
+}
+
 // Rodapé do Puppeteer (displayHeaderFooter). Roda fora da página: precisa de estilo
 // próprio e fonte explícita, senão sai minúsculo. pageNumber/totalPages são
 // preenchidos pelo Chrome.
-export function pdfFooterTemplate(label?: string): string {
-  const left = label ? `<span>${escapeHtml(label)}</span>` : '<span></span>';
-  return `<div style="width:100%;font-family:Arial,Helvetica,sans-serif;font-size:8px;color:#666;padding:0 12mm;display:flex;justify-content:space-between;">${left}<span>Página <span class="pageNumber"></span> de <span class="totalPages"></span></span></div>`;
+export function pdfFooterTemplate(label?: string, issued?: string): string {
+  const cell = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+  return (
+    '<div style="width:100%;font-family:Arial,Helvetica,sans-serif;font-size:8px;color:#666;' +
+    'padding:0 12mm;display:flex;gap:12px;justify-content:space-between;">' +
+    `<span style="${cell}flex:1 1 auto;">${escapeHtml(label ?? '')}</span>` +
+    `<span style="${cell}flex:0 1 auto;">${escapeHtml(issued ?? '')}</span>` +
+    '<span style="white-space:nowrap;flex:0 0 auto;">Página <span class="pageNumber"></span> de <span class="totalPages"></span></span>' +
+    '</div>'
+  );
 }
 
 export const PDF_EMPTY_HEADER = '<span></span>';

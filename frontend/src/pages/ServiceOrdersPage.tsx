@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi, pdfApi } from '../api/client';
+import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
+import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -671,13 +672,13 @@ export function ServiceOrdersPage() {
     const now = new Date().toLocaleDateString('pt-BR');
     const rows = items.map((item: any) => `
       <tr>
-        <td>${item.internalCode || '-'}</td>
-        <td>${item.sku || '-'}</td>
-        <td>${item.description}</td>
+        <td>${escapeHtml(item.internalCode || '-')}</td>
+        <td>${escapeHtml(item.sku || '-')}</td>
+        <td>${escapeHtml(item.description)}</td>
         <td style="text-align:center">${item.lacking}</td>
         <td style="text-align:right">R$ ${Number(item.costPrice ?? item.unitPrice ?? 0).toFixed(2).replace('.', ',')}</td>
         <td style="text-align:right">R$ ${(Number(item.costPrice ?? item.unitPrice ?? 0) * item.lacking).toFixed(2).replace('.', ',')}</td>
-        <td>${item.supplierName || '-'}</td>
+        <td>${escapeHtml(item.supplierName || '-')}</td>
         <td>${o.id?.slice(0,8).toUpperCase() || '-'}</td>
       </tr>
     `).join('');
@@ -703,10 +704,10 @@ export function ServiceOrdersPage() {
     </style></head><body>
       <div class="header-row">
         <div>
-          <div class="company-name">${t.name || t.tradeName || t.legalName || ''}</div>
-          ${t.document ? `<div>${t.document}</div>` : ''}
-          ${t.address ? `<div>${t.address}</div>` : ''}
-          <div>${[t.phone ? 'Tel: ' + t.phone : '', t.email].filter(Boolean).join(' - ')}</div>
+          <div class="company-name">${escapeHtml(t.name || t.tradeName || t.legalName || '')}</div>
+          ${t.document ? `<div>${escapeHtml(t.document)}</div>` : ''}
+          ${t.address ? `<div>${escapeHtml(t.address)}</div>` : ''}
+          <div>${escapeHtml([t.phone ? 'Tel: ' + t.phone : '', t.email].filter(Boolean).join(' - '))}</div>
         </div>
         <div class="doc-box">
           <div class="doc-type">Pedido de Compra</div>
@@ -717,9 +718,9 @@ export function ServiceOrdersPage() {
       </div>
       <hr />
       <div style="font-size:8pt;margin-bottom:6px">
-        <strong>${(o.vehicle as any) ? 'Veiculo' : 'Motor'}:</strong> ${(o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} - Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` - Serie ${o.serialNumber}` : ''}`}
+        <strong>${(o.vehicle as any) ? 'Veiculo' : 'Motor'}:</strong> ${escapeHtml((o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} - Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` - Serie ${o.serialNumber}` : ''}`)}
         &nbsp;&nbsp;-&nbsp;&nbsp;
-        <strong>Cliente:</strong> ${(o.customer as any)?.name || ''}
+        <strong>Cliente:</strong> ${escapeHtml((o.customer as any)?.name || '')}
         &nbsp;&nbsp;-&nbsp;&nbsp;
         <strong>OS:</strong> ${o.id?.slice(0,8).toUpperCase() || ''}
       </div>
@@ -751,19 +752,10 @@ export function ServiceOrdersPage() {
     if (!reserveResult) return;
     try {
       const html = buildPurchaseOrderHtml({ ...reserveResult, expectedPartsDate: expectedPartsDate || null });
-      const documentFileName = `${reserveResult.purchaseOrderNumber || 'pedido-compra'}.pdf`;
-      const response = await pdfApi.render({
-        html,
-        fileName: documentFileName,
+      await downloadHtmlPdf(html, {
+        title: `Pedido de Compra ${reserveResult.purchaseOrderNumber || ''}`.trim(),
+        fileName: reserveResult.purchaseOrderNumber || 'Pedido-compra',
       });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = documentFileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
     } catch {
       alert('Erro ao gerar PDF do pedido de compra.');
     }

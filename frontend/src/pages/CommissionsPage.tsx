@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { commissionsApi, usersApi } from '../api/client';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { commissionsApi, tenantsApi, usersApi } from '../api/client';
+import { downloadReportPdf, periodLabel, ReportHeader, REPORT_CSS, todayInput } from '../lib/report';
+import { csvNumber, downloadCsv } from '../lib/csv';
 import { useAuthStore } from '../store/authStore';
 import { useToast } from '../components/ui';
 import { Loader2, DollarSign, CheckCircle2, Download, FileSpreadsheet, Trophy, Printer } from 'lucide-react';
@@ -16,8 +18,18 @@ import {
 const money = (value: number) =>
   Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const AREA_LABEL: Record<string, string> = {
+  MECANICA: 'Mecânica',
+  ELETRICA: 'Elétrica',
+  FUNILARIA_PINTURA: 'Funilaria e Pintura',
+  LAVACAO: 'Lavação',
+  HIGIENIZACAO_EMBELEZAMENTO: 'Higienização e Embelezamento',
+};
+
+const EMPTY_FILTERS = { status: '', userId: '', workshopArea: '', startDate: '', endDate: '' };
+
 export function CommissionsPage() {
-  const { user, tenant } = useAuthStore();
+  const { user } = useAuthStore();
   const toast = useToast();
   const canMarkAsPaid = ['MASTER', 'ADMIN', 'FINANCEIRO'].includes(user?.role ?? '');
 
@@ -27,13 +39,11 @@ export function CommissionsPage() {
   const [data, setData] = useState<any[]>([]);
   const [leadership, setLeadership] = useState<any[]>([]);
   const [totals, setTotals] = useState({ total: 0, pending: 0, paid: 0 });
-  const [filters, setFilters] = useState({
-    status: '',
-    userId: '',
-    workshopArea: '',
-    startDate: '',
-    endDate: '',
-  });
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  // Filtros da última consulta: o PDF/CSV descrevem o que está na tabela.
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
+  const [tenantData, setTenantData] = useState<any>(null);
+  const printRef = useRef<HTMLDivElement>(null);
 
   const canFilterByUser = ['MASTER', 'ADMIN', 'FINANCEIRO', 'CHEFE_OFICINA'].includes(user?.role ?? '');
 
@@ -54,6 +64,7 @@ export function CommissionsPage() {
       setLeadership(Array.isArray(commRes.data?.leadership?.leaderboard) ? commRes.data.leadership.leaderboard : []);
       setTotals(commRes.data?.totals || { total: 0, pending: 0, paid: 0 });
       setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+      setAppliedFilters(f);
     } catch (error) {
       console.error('Erro ao carregar comissões', error);
     } finally {
@@ -63,12 +74,12 @@ export function CommissionsPage() {
 
   useEffect(() => {
     load();
+    tenantsApi.getMe().then((r) => setTenantData(r.data)).catch(() => undefined);
   }, []);
 
   const clearFilters = () => {
-    const cleared = { status: '', userId: '', workshopArea: '', startDate: '', endDate: '' };
-    setFilters(cleared);
-    load(cleared);
+    setFilters(EMPTY_FILTERS);
+    load(EMPTY_FILTERS);
   };
 
   const hasActiveFilters = Boolean(
@@ -77,56 +88,27 @@ export function CommissionsPage() {
 
   const statusLabel = (s: string) => (s === 'PAGO' ? 'Pago' : s === 'PENDENTE' ? 'Pendente' : s || '—');
 
-  const printReport = () => {
-    const empresa = tenant?.name || 'Oficina';
-    const periodo =
-      filters.startDate || filters.endDate
-        ? `${filters.startDate ? new Date(filters.startDate + 'T00:00:00').toLocaleDateString('pt-BR') : '...'} a ${filters.endDate ? new Date(filters.endDate + 'T00:00:00').toLocaleDateString('pt-BR') : '...'}`
-        : 'Todos os períodos';
-    const statusTxt = filters.status ? statusLabel(filters.status) : 'Todos';
-    const rows = data
-      .map(
-        (r: any) => `<tr>
-          <td>${r.user?.name || r.userName || '—'}</td>
-          <td>${r.serviceOrder?.id ? '#' + String(r.serviceOrder.id).slice(-6).toUpperCase() : (r.osNumber || '—')}</td>
-          <td>${r.description || r.serviceName || '—'}</td>
-          <td style="text-align:center">${statusLabel(r.status)}</td>
-          <td style="text-align:right">${money(r.amount || r.value || 0)}</td>
-        </tr>`
-      )
-      .join('');
-    const win = window.open('', '_blank', 'width=900,height=700');
-    if (!win) {
-      toast.error('Não foi possível abrir o relatório. Verifique o bloqueador de pop-ups.');
-      return;
+  const osRef = (row: any) => (row.serviceOrderId ? String(row.serviceOrderId).slice(0, 8).toUpperCase() : '—');
+  const fileBase = () =>
+    `Comissoes-${appliedFilters.startDate || 'inicio'}_a_${appliedFilters.endDate || todayInput()}`;
+  const appliedDetails = () => {
+    const f = appliedFilters;
+    const executor = f.userId ? users.find((u) => u.id === f.userId)?.name ?? '—' : 'Todos';
+    return [
+      `Período: ${periodLabel(f.startDate, f.endDate)}`,
+      `Status: ${f.status ? statusLabel(f.status) : 'Todos'}`,
+      `Executor: ${executor}`,
+      `Área: ${f.workshopArea ? AREA_LABEL[f.workshopArea] ?? f.workshopArea : 'Todas'}`,
+    ];
+  };
+
+  const printReport = async () => {
+    if (!printRef.current) return;
+    try {
+      await downloadReportPdf(printRef.current, { title: 'Relatório de Comissões', fileName: fileBase() });
+    } catch {
+      toast.error('Erro ao gerar o PDF de comissões.');
     }
-    win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-      <title>Relatório de Comissões — ${empresa}</title>
-      <style>
-        * { font-family: Arial, Helvetica, sans-serif; }
-        body { margin: 24px; color: #1a2430; }
-        h1 { font-size: 18px; margin: 0; }
-        .meta { color: #5b6470; font-size: 12px; margin: 4px 0 16px; }
-        .meta strong { color: #1a2430; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { border-bottom: 1px solid #e2e5ea; padding: 8px 10px; text-align: left; }
-        th { background: #f4f5f7; text-transform: uppercase; font-size: 10px; letter-spacing: .04em; color: #5b6470; }
-        tfoot td { font-weight: bold; border-top: 2px solid #1a2430; }
-      </style></head><body>
-      <h1>${empresa}</h1>
-      <div class="meta">Relatório de Comissionamento &middot; <strong>Status:</strong> ${statusTxt} &middot; <strong>Período:</strong> ${periodo} &middot; Emitido em ${new Date().toLocaleString('pt-BR')}</div>
-      <table>
-        <thead><tr><th>Executor</th><th>OS</th><th>Descrição</th><th style="text-align:center">Status</th><th style="text-align:right">Valor</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="5" style="text-align:center;color:#8a9aa7">Nenhum lançamento no filtro selecionado</td></tr>'}</tbody>
-        <tfoot>
-          <tr><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">${money(totals.total)}</td></tr>
-          <tr><td colspan="4" style="text-align:right">Pendente</td><td style="text-align:right">${money(totals.pending)}</td></tr>
-          <tr><td colspan="4" style="text-align:right">Pago</td><td style="text-align:right">${money(totals.paid)}</td></tr>
-        </tfoot>
-      </table>
-      <script>window.onload = function(){ window.print(); };</script>
-      </body></html>`);
-    win.document.close();
   };
 
   const filteredUsers = useMemo(
@@ -171,45 +153,20 @@ export function CommissionsPage() {
   };
 
   const exportCsv = () => {
-    const header = [
-      'Executor',
-      'Area',
-      'Item',
-      'OS',
-      'Base',
-      'Percentual',
-      'Comissao',
-      'Status',
-      'CriadoEm',
-      'PagoEm',
-    ];
-
-    const rows = data.map((row) => [
-      row.user?.name || '',
-      row.user?.workshopArea || '',
-      row.serviceOrderItem?.description || '',
-      String(row.serviceOrderId || ''),
-      Number(row.baseValue || 0).toFixed(2),
-      Number(row.commissionPercent || 0).toFixed(2),
-      Number(row.commissionValue || 0).toFixed(2),
-      row.status || '',
-      row.createdAt ? new Date(row.createdAt).toISOString() : '',
-      row.paidAt ? new Date(row.paidAt).toISOString() : '',
-    ]);
-
-    const csv = [header, ...rows]
-      .map((line) => line.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `comissoes_${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadCsv(fileBase(),
+      ['Executor', 'Área', 'Item', 'O.S.', 'Base', 'Percentual', 'Comissão', 'Status', 'Criado em', 'Pago em'],
+      data.map((row) => [
+        row.user?.name || '',
+        AREA_LABEL[row.user?.workshopArea] ?? row.user?.workshopArea ?? '',
+        row.serviceOrderItem?.description || '',
+        osRef(row),
+        csvNumber(row.baseValue),
+        csvNumber(row.commissionPercent),
+        csvNumber(row.commissionValue),
+        statusLabel(row.status),
+        row.createdAt ? new Date(row.createdAt).toLocaleString('pt-BR') : '',
+        row.paidAt ? new Date(row.paidAt).toLocaleString('pt-BR') : '',
+      ]));
   };
 
   const exportXlsx = async () => {
@@ -217,7 +174,7 @@ export function CommissionsPage() {
       Executor: row.user?.name || '',
       Area: row.user?.workshopArea || '',
       Item: row.serviceOrderItem?.description || '',
-      OS: String(row.serviceOrderId || '').slice(0, 8).toUpperCase(),
+      OS: osRef(row),
       Base: Number(row.baseValue || 0),
       Percentual: Number(row.commissionPercent || 0),
       Comissao: Number(row.commissionValue || 0),
@@ -230,11 +187,54 @@ export function CommissionsPage() {
     const ws = xlsx.utils.json_to_sheet(rows);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, 'Comissoes');
-    xlsx.writeFile(wb, `comissoes_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    xlsx.writeFile(wb, `${fileBase()}.xlsx`);
   };
 
   return (
     <div className="space-y-6">
+      <style>{REPORT_CSS}</style>
+
+      {/* Documento enviado ao servidor para gerar o PDF (oculto na tela) */}
+      <div hidden ref={printRef}>
+        <div className="rpt">
+          <ReportHeader tenant={tenantData} title="Relatório de Comissões" details={appliedDetails()} />
+          <table>
+            <thead>
+              <tr className="sub-hdr">
+                <td>Executor</td>
+                <td style={{ width: '70px' }}>O.S.</td>
+                <td>Item</td>
+                <td style={{ width: '85px', textAlign: 'right' }}>Base</td>
+                <td style={{ width: '45px', textAlign: 'right' }}>%</td>
+                <td style={{ width: '65px', textAlign: 'center' }}>Status</td>
+                <td style={{ width: '90px', textAlign: 'right' }}>Comissão</td>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.id}>
+                  <td>{row.user?.name || '—'}</td>
+                  <td>{osRef(row)}</td>
+                  <td>{row.serviceOrderItem?.description || '—'}</td>
+                  <td style={{ textAlign: 'right' }}>{money(row.baseValue)}</td>
+                  <td style={{ textAlign: 'right' }}>{Number(row.commissionPercent || 0).toLocaleString('pt-BR')}</td>
+                  <td style={{ textAlign: 'center' }}>{statusLabel(row.status)}</td>
+                  <td style={{ textAlign: 'right' }}>{money(row.commissionValue)}</td>
+                </tr>
+              ))}
+              {data.length === 0 && (
+                <tr><td colSpan={7} style={{ textAlign: 'center', color: '#888' }}>Nenhum lançamento no filtro selecionado</td></tr>
+              )}
+            </tbody>
+            <tfoot>
+              <tr className="total-row"><td colSpan={6} style={{ textAlign: 'right' }}>Total</td><td style={{ textAlign: 'right' }}>{money(totals.total)}</td></tr>
+              <tr><td colSpan={6} style={{ textAlign: 'right' }}>Pendente</td><td style={{ textAlign: 'right' }}>{money(totals.pending)}</td></tr>
+              <tr><td colSpan={6} style={{ textAlign: 'right' }}>Pago</td><td style={{ textAlign: 'right' }}>{money(totals.paid)}</td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-bold text-surface-50 tracking-tight">Comissões</h1>
@@ -259,7 +259,7 @@ export function CommissionsPage() {
           onClick={printReport}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-panel border border-line text-ink text-sm font-bold hover:bg-panel-2"
         >
-          <Printer size={16} /> Gerar Relatório
+          <Printer size={16} /> Baixar PDF
         </button>
       </div>
 

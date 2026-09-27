@@ -235,7 +235,7 @@ export const reportsApi = {
 };
 
 export const pdfApi = {
-  render: (payload: { html: string; fileName?: string; landscape?: boolean; format?: string }) =>
+  render: (payload: { html: string; fileName?: string; title?: string; landscape?: boolean; format?: string }) =>
     api.post('/pdf/render', payload, { responseType: 'blob' }),
 };
 

@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { pdfApi, reportsApi, tenantsApi } from '../api/client';
+import { reportsApi, tenantsApi } from '../api/client';
+import { downloadReportPdf, firstOfMonthInput, periodLabel, ReportHeader, ReportSignature, REPORT_CSS, todayInput } from '../lib/report';
+import { csvNumber, downloadCsv } from '../lib/csv';
 import {
   FileText,
   BarChart3,
@@ -8,6 +10,7 @@ import {
   ShoppingCart,
   Loader2,
   Printer,
+  Download,
   X,
   Calendar,
   ChevronRight,
@@ -22,37 +25,13 @@ import {
 import { cn } from '../lib/utils';
 import { useToast } from '../components/ui';
 
-/* ─── print styles ─────────────────────────────────────────────────────────── */
-const PRINT_STYLE = `
-@media screen { #rpt-print-doc { display: none !important; } }
-@media print {
-  body * { visibility: hidden; }
-  #rpt-print-doc, #rpt-print-doc * { visibility: visible; }
-  #rpt-print-doc { position: absolute; left: 0; top: 0; width: 100%; background: white; }
-  @page { size: A4; margin: 12mm 14mm; }
-}
-.rpt { font-family: Arial, 'Helvetica Neue', sans-serif; font-size: 10pt; color: #111; width: 100%; }
-.rpt table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-.rpt td, .rpt th { border: 1px solid #ccc; padding: 5px 8px; font-size: 9pt; vertical-align: middle; }
-.rpt .hdr { background: #1e293b !important; color: #fff !important; border-color: #1e293b !important; font-weight: bold; text-transform: uppercase; font-size: 9pt; letter-spacing: .05em; }
-.rpt .sub-hdr { background: #f1f5f9 !important; font-weight: bold; font-size: 9pt; }
-.rpt .total-row { background: #f0fdf4 !important; font-weight: bold; }
-.rpt .critical { color: #dc2626; font-weight: bold; }
-.rpt .urgent   { color: #d97706; font-weight: bold; }
-.rpt .attention{ color: #2563eb; font-weight: bold; }
-.rpt hr { border: none; border-top: 1.5px solid #333; margin: 6px 0; }
-.rpt .kpi-grid { display: flex; gap: 8px; margin-bottom: 10px; }
-.rpt .kpi { flex: 1; border: 1px solid #ccc; padding: 8px 10px; text-align: center; }
-.rpt .kpi-label { font-size: 7.5pt; color: #555; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
-.rpt .kpi-value { font-size: 14pt; font-weight: 900; }
-`;
-
 /* ─── helpers ───────────────────────────────────────────────────────────────── */
 const fmtBR = (v: number, dec = 2) =>
   Number(v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 
 const fmt = (v: number) => `R$ ${fmtBR(v)}`;
 
+// Para timestamps (createdAt). Datas de filtro "AAAA-MM-DD" usam periodLabel/fmtDateInput.
 const fmtDate = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
 const STATUS_LABEL: Record<string, string> = {
@@ -119,8 +98,8 @@ const ICON_BG: Record<string, string> = {
   blue: 'bg-blue-600', emerald: 'bg-emerald-600', purple: 'bg-purple-600', amber: 'bg-amber-600',
 };export function ReportsPage() {
   const toast = useToast();
-  const today = new Date().toISOString().split('T')[0];
-  const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  const today = todayInput();
+  const firstOfMonth = firstOfMonthInput();
   const now = new Date();
 
   const [type, setType] = useState<ReportType>('os');
@@ -145,8 +124,15 @@ const ICON_BG: Record<string, string> = {
   const [commEnd,   setCommEnd]   = useState(today);
   const [commArea,  setCommArea]  = useState('');
 
+  /* Filtros usados na última consulta: o PDF e o CSV descrevem o que foi
+     consultado, não o que está digitado no formulário agora. */
+  const [applied, setApplied] = useState({
+    osStart: '', osEnd: '', osStatus: '', commStart: '', commEnd: '', commArea: '',
+  });
+
   /* ─── generate ─────────────────────────────────────────────────────────── */
   const generate = async () => {
+    const filtersAtRequest = { osStart, osEnd, osStatus, commStart, commEnd, commArea };
     setLoading(true);
     setReportData(null);
     try {
@@ -166,6 +152,7 @@ const ICON_BG: Record<string, string> = {
       ]);
       setTenant(tenantRes.data);
       setReportData(dataRes.data);
+      setApplied(filtersAtRequest);
     } catch (e) {
       toast.error('Erro ao gerar relatório. Verifique sua conexão.');
       console.error(e);
@@ -174,56 +161,90 @@ const ICON_BG: Record<string, string> = {
     }
   };
 
+  const reportTitle = (): string => {
+    if (type === 'os') return 'Relatório de Ordens de Serviço';
+    if (type === 'dre') return `DRE — ${reportData?.periodo?.label ?? ''}`;
+    if (type === 'dre-anual') return `DRE Anual — ${reportData?.periodo?.label ?? ''}`;
+    if (type === 'indicadores') return 'Indicadores Financeiros — KPI';
+    if (type === 'commissions') return 'Relatório de Comissões';
+    return 'Pedido de Compra — Projeção';
+  };
+
+  // Nome previsível: tipo + período consultado.
+  const reportFileBase = (): string => {
+    const range = (a: string, b: string) => `${a || 'inicio'}_a_${b || 'hoje'}`;
+    if (type === 'os') return `OS-${range(applied.osStart, applied.osEnd)}`;
+    if (type === 'dre') return `DRE-${reportData?.periodo?.ano ?? dreYear}-${String(reportData?.periodo?.mes ?? dreMonth).padStart(2, '0')}`;
+    if (type === 'dre-anual') return `DRE-anual-${reportData?.periodo?.ano ?? dreAnualYear}`;
+    if (type === 'indicadores') return `Indicadores-${today}`;
+    if (type === 'commissions') return `Comissoes-${range(applied.commStart, applied.commEnd)}`;
+    return `Pedido-compra-${today}`;
+  };
+
   const handlePrint = async () => {
     if (!printRef.current) return;
     try {
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${PRINT_STYLE}</style></head><body><div id="rpt-print-doc">${printRef.current.innerHTML}</div></body></html>`;
-      const response = await pdfApi.render({
-        html,
-        fileName: `relatorio-${type}-${new Date().toISOString().slice(0, 10)}.pdf`,
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `relatorio-${type}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      await downloadReportPdf(printRef.current, { title: reportTitle(), fileName: reportFileBase() });
     } catch (e) {
-      toast.error('Erro ao gerar PDF com Puppeteer.');
+      toast.error('Erro ao gerar o PDF.');
       console.error(e);
     }
   };
 
-  /* ─── report header (shared) ─────────────────────────────────────────────── */
-  const ReportHeader = ({ title }: { title: string }) => (
-    <table style={{ marginBottom: '6px' }}>
-      <tbody>
-        <tr>
-          <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
-            {tenant?.logo && (
-              <img src={tenant.logo} alt="Logo" style={{ maxHeight: '48px', maxWidth: '130px', objectFit: 'contain', marginBottom: '4px' }} />
-            )}
-            <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
-              {tenant?.name || tenant?.tradeName || tenant?.legalName || 'Oficina'}
-            </div>
-            {tenant?.document && <div style={{ fontSize: '9pt', marginTop: '3px' }}>CNPJ: {tenant.document}</div>}
-            {tenant?.address && <div style={{ fontSize: '9pt' }}>{tenant.address}</div>}
-            <div style={{ fontSize: '9pt' }}>
-              {tenant?.phone && `Tel: ${tenant.phone}`}
-              {tenant?.phone && tenant?.email && '  |  '}
-              {tenant?.email}
-            </div>
-          </td>
-          <td style={{ border: '2px solid #1e293b', padding: '8px 12px', textAlign: 'right', verticalAlign: 'top', minWidth: '170px' }}>
-            <div style={{ fontSize: '9pt', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#555' }}>{title}</div>
-            <div style={{ fontSize: '9pt', color: '#444', marginTop: '4px' }}>Gerado em: {new Date().toLocaleString('pt-BR')}</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  );
+  const handleCsv = () => {
+    if (!reportData) return;
+    const file = reportFileBase();
+    if (type === 'os') {
+      downloadCsv(file, ['Abertura', 'Cliente', 'Veículo', 'Placa', 'Status', 'Valor faturado'],
+        (reportData.orders ?? []).map((o: any) => [
+          fmtDate(o.createdAt),
+          o.customer?.name ?? '',
+          o.vehicle ? `${o.vehicle.brand ?? ''} ${o.vehicle.model ?? ''}`.trim() : '',
+          o.vehicle?.plate ?? '',
+          STATUS_LABEL[o.status] ?? o.status,
+          ['ENTREGUE', 'FATURADO'].includes(o.status) ? csvNumber(o.totalCost) : '',
+        ]));
+    } else if (type === 'dre') {
+      const { dre, detalhes, historico = [] } = reportData;
+      const rows: (string | number)[][] = [
+        ['Receita bruta', csvNumber(dre.receitaBruta)],
+        ['Deduções / impostos', csvNumber(-dre.deducoes)],
+        ['Receita líquida', csvNumber(dre.receitaLiquida)],
+        ['CMV — custo de peças', csvNumber(-dre.cmv)],
+        ['Margem bruta', csvNumber(dre.margemBruta)],
+        ['Margem bruta %', csvNumber(dre.margemBrutaPerc, 1)],
+        ['Despesas operacionais', csvNumber(-dre.despesasOperacionais)],
+        ['EBITDA', csvNumber(dre.ebitda)],
+        ['EBITDA %', csvNumber(dre.ebitdaPerc, 1)],
+        ['Resultado líquido', csvNumber(dre.resultadoLiquido)],
+      ];
+      Object.entries(detalhes?.despesasPorCategoria ?? {}).forEach(([cat, val]: any) =>
+        rows.push([`Despesa: ${cat}`, csvNumber(val)]));
+      historico.forEach((h: any) => rows.push([`Histórico ${h.mes}: resultado`, csvNumber(h.resultado)]));
+      downloadCsv(file, ['Linha', 'Valor'], rows);
+    } else if (type === 'dre-anual') {
+      downloadCsv(file, ['Mês', 'Receita', 'Despesa', 'EBITDA', 'Resultado'],
+        (reportData.meses ?? []).map((m: any) => [
+          m.mes, csvNumber(m.receita), csvNumber(m.despesa), csvNumber(m.ebitda), csvNumber(m.resultado),
+        ]));
+    } else if (type === 'indicadores') {
+      const keys = ['mesAtual', 'trimestre', 'semestre', 'semestreAnterior', 'anual'];
+      downloadCsv(file, ['Período', 'Receita bruta', 'Receita líquida', 'Margem bruta', 'Margem bruta %', 'EBITDA', 'EBITDA %', 'O.S. entregues', 'Ticket médio'],
+        keys.map((k) => reportData.periodos?.[k]).filter(Boolean).map((p: any) => [
+          p.label, csvNumber(p.receitaBruta), csvNumber(p.receitaLiquida), csvNumber(p.margemBruta),
+          csvNumber(p.margemBrutaPerc, 1), csvNumber(p.ebitda), csvNumber(p.ebitdaPerc, 1), p.osEntregues, csvNumber(p.ticketMedio),
+        ]));
+    } else if (type === 'commissions') {
+      downloadCsv(file, ['Posição', 'Colaborador', 'O.S. executadas', 'Comissão total'],
+        (reportData.leadership?.leaderboard ?? []).map((l: any, i: number) => [i + 1, l.name, l.count, csvNumber(l.total)]));
+    } else {
+      downloadCsv(file, ['Prioridade', 'Peça', 'Código', 'Fornecedor', 'Estoque', 'Mínimo', 'Giro/mês', 'Qtd sugerida', 'Unidade', 'Custo estimado'],
+        (reportData.items ?? []).map((p: any) => [
+          p.urgency, p.name, p.internalCode ?? '', p.supplier?.name ?? '', p.currentStock, p.minStock,
+          p.avgMonthlyExit, p.suggestedQty, p.unit ?? '', csvNumber(p.estimatedCost),
+        ]));
+    }
+  };
 
   /* ─── OS report print template ─────────────────────────────────────────── */
   const OSPrintDoc = () => {
@@ -231,8 +252,10 @@ const ICON_BG: Record<string, string> = {
     const { orders = [], summary, statusBreakdown = {}, topCustomers = [] } = reportData;
     return (
       <div className="rpt">
-        <ReportHeader title="Relatório de Ordens de Serviço" />
-        <hr />
+        <ReportHeader tenant={tenant} title="Relatório de Ordens de Serviço" details={[
+          `Período: ${periodLabel(applied.osStart, applied.osEnd)}`,
+          `Status: ${applied.osStatus ? STATUS_LABEL[applied.osStatus] ?? applied.osStatus : 'Todos'}`,
+        ]} />
         <div className="kpi-grid">
           <div className="kpi"><div className="kpi-label">Total de OS</div><div className="kpi-value">{summary.total}</div></div>
           <div className="kpi"><div className="kpi-label">Faturadas/Entregues</div><div className="kpi-value">{summary.delivered}</div></div>
@@ -240,7 +263,7 @@ const ICON_BG: Record<string, string> = {
           <div className="kpi"><div className="kpi-label">Ticket Médio</div><div className="kpi-value">R$ {fmtBR(summary.ticketMedio)}</div></div>
         </div>
         <table style={{ marginBottom: '10px' }}>
-          <thead><tr className="hdr"><td colSpan={5}>LISTA DE ORDENS DE SERVIÇO ({osStart ? fmtDate(osStart) : '—'} a {osEnd ? fmtDate(osEnd) : '—'})</td></tr>
+          <thead><tr className="hdr"><td colSpan={5}>LISTA DE ORDENS DE SERVIÇO ({periodLabel(applied.osStart, applied.osEnd)})</td></tr>
             <tr className="sub-hdr"><td style={{ width: '80px' }}>Abertura</td><td>Cliente</td><td>Veículo</td><td style={{ width: '130px' }}>Status</td><td style={{ width: '110px', textAlign: 'right' }}>Valor</td></tr>
           </thead>
           <tbody>
@@ -273,7 +296,7 @@ const ICON_BG: Record<string, string> = {
             ))}</tbody>
           </table>
         )}
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
@@ -296,8 +319,7 @@ const ICON_BG: Record<string, string> = {
     ];
     return (
       <div className="rpt">
-        <ReportHeader title={`DRE — ${periodo.label}`} />
-        <hr />
+        <ReportHeader tenant={tenant} title="Demonstrativo de Resultado" details={[`Período: ${periodo.label}`]} />
         <table style={{ marginBottom: '10px', maxWidth: '420px' }}>
           <thead><tr className="hdr"><td colSpan={2}>DEMONSTRATIVO DE RESULTADO — {periodo.label?.toUpperCase()}</td></tr></thead>
           <tbody>
@@ -338,7 +360,7 @@ const ICON_BG: Record<string, string> = {
             ))}</tbody>
           </table>
         )}
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
@@ -349,8 +371,7 @@ const ICON_BG: Record<string, string> = {
     const { dre, periodo, meses = [], detalhes } = reportData;
     return (
       <div className="rpt">
-        <ReportHeader title={`DRE Anual — ${periodo.label}`} />
-        <hr />
+        <ReportHeader tenant={tenant} title="DRE Anual" details={[`Período: ${periodo.label}`]} />
         <div className="kpi-grid">
           {[
             ['Receita Bruta', dre.receitaBruta],
@@ -406,7 +427,7 @@ const ICON_BG: Record<string, string> = {
             ))}</tbody>
           </table>
         )}
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
@@ -418,8 +439,7 @@ const ICON_BG: Record<string, string> = {
     const keys = ['mesAtual', 'trimestre', 'semestre', 'semestreAnterior', 'anual'] as const;
     return (
       <div className="rpt">
-        <ReportHeader title="Indicadores Financeiros — KPI" />
-        <hr />
+        <ReportHeader tenant={tenant} title="Indicadores Financeiros — KPI" />
         {keys.map((key) => {
           const p = periodos[key];
           return (
@@ -447,7 +467,7 @@ const ICON_BG: Record<string, string> = {
             </table>
           );
         })}
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
@@ -458,8 +478,10 @@ const ICON_BG: Record<string, string> = {
     const { totals, leadership } = reportData;
     return (
       <div className="rpt">
-        <ReportHeader title="Relatório de Comissões" />
-        <hr />
+        <ReportHeader tenant={tenant} title="Relatório de Comissões" details={[
+          `Período: ${periodLabel(applied.commStart, applied.commEnd)}`,
+          `Área: ${applied.commArea ? ({ MECANICA: 'Mecânica', ELETRICA: 'Elétrica', FUNILARIA_PINTURA: 'Funilaria e Pintura', LAVACAO: 'Lavação', HIGIENIZACAO_EMBELEZAMENTO: 'Higienização' } as Record<string, string>)[applied.commArea] ?? applied.commArea : 'Todas'}`,
+        ]} />
         <div className="kpi-grid">
           <div className="kpi"><div className="kpi-label">Total Comissões</div><div className="kpi-value">R$ {fmtBR(totals.total)}</div></div>
           <div className="kpi"><div className="kpi-label">Pendente</div><div className="kpi-value" style={{ color: '#d97706' }}>R$ {fmtBR(totals.pending)}</div></div>
@@ -486,7 +508,7 @@ const ICON_BG: Record<string, string> = {
             ))}
           </tbody>
         </table>
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
@@ -499,8 +521,7 @@ const ICON_BG: Record<string, string> = {
     const urgencyClass: Record<string, string> = { CRITICO: 'critical', URGENTE: 'urgent', ATENCAO: 'attention' };
     return (
       <div className="rpt">
-        <ReportHeader title="Pedido de Compra — Projeção" />
-        <hr />
+        <ReportHeader tenant={tenant} title="Pedido de Compra — Projeção" details={['Base: movimentação dos últimos 90 dias']} />
         <div className="kpi-grid">
           <div className="kpi"><div className="kpi-label">Itens p/ Repor</div><div className="kpi-value">{summary.total}</div></div>
           <div className="kpi"><div className="kpi-label">Críticos (sem estoque)</div><div className="kpi-value" style={{ color: '#dc2626' }}>{summary.criticalCount}</div></div>
@@ -544,24 +565,10 @@ const ICON_BG: Record<string, string> = {
             </tr>
           </tfoot>
         </table>
-        <PrintFooter />
+        <ReportSignature />
       </div>
     );
   };
-
-  const PrintFooter = () => (
-    <div style={{ marginTop: '28px', display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ borderTop: '1px solid #555', display: 'inline-block', width: '200px', marginBottom: '4px' }} />
-        <br /><span style={{ fontSize: '9pt' }}>Responsável</span>
-        <br /><span style={{ fontSize: '8pt', color: '#666' }}>Data: _____/_____/__________</span>
-      </div>
-      <div style={{ fontSize: '7pt', color: '#999', textAlign: 'right', alignSelf: 'flex-end' }}>
-        Sigma Auto — Sistema de Gestão<br />
-        Gerado em {new Date().toLocaleString('pt-BR')}
-      </div>
-    </div>
-  );
 
   /* ─── preview content (mirror of print template, screen-optimised) ─────── */
   const PreviewContent = () => {
@@ -919,10 +926,10 @@ const ICON_BG: Record<string, string> = {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-8 pb-10"
     >
-      <style>{PRINT_STYLE}</style>
+      <style>{REPORT_CSS}</style>
 
-      {/* Hidden print document */}
-      <div id="rpt-print-doc" ref={printRef}>
+      {/* Documento enviado ao servidor para gerar o PDF (oculto na tela) */}
+      <div hidden ref={printRef}>
         {tenant && reportData && <PreviewContent />}
       </div>
 
@@ -1086,7 +1093,13 @@ const ICON_BG: Record<string, string> = {
                 onClick={handlePrint}
                 className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
               >
-                <Printer size={16} className="text-surface-500" /> Imprimir
+                <Printer size={16} className="text-surface-500" /> Baixar PDF
+              </button>
+              <button type="button"
+                onClick={handleCsv}
+                className="h-11 px-6 bg-surface-900 border border-line text-surface-200 rounded-xl font-bold text-xs uppercase tracking-wide shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0"
+              >
+                <Download size={16} className="text-surface-500" /> Exportar CSV
               </button>
             </>
           )}
@@ -1142,7 +1155,7 @@ const ICON_BG: Record<string, string> = {
                 <div className="flex items-center gap-2">
                   <button type="button" onClick={handlePrint}
                     className="h-9 px-5 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-wide hover:bg-accent-hover transition-all flex items-center gap-2">
-                    <Printer size={14} /> Imprimir / Salvar PDF
+                    <Printer size={14} /> Baixar PDF
                   </button>
                   <button type="button" onClick={() => setShowPreview(false)}
                     className="p-2 hover:bg-ink/5 rounded-xl text-surface-500 hover:text-surface-200 transition-colors">

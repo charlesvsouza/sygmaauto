@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { financialApi, pdfApi, tenantsApi } from '../api/client';
+import { financialApi, tenantsApi } from '../api/client';
+import { downloadReportPdf, ReportHeader, ReportSignature, REPORT_CSS, todayInput } from '../lib/report';
+import { csvNumber, downloadCsv } from '../lib/csv';
 import { useAuthStore } from '../store/authStore';
 import {
   DollarSign,
@@ -26,35 +28,6 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useToast } from '../components/ui';
-
-const FINANCIAL_PRINT_STYLE = `
-@media screen {
-  #fin-print-doc { display: none; }
-}
-@media print {
-  body * { visibility: hidden; }
-  #fin-print-doc, #fin-print-doc * { visibility: visible; }
-  #fin-print-doc { position: absolute; left: 0; top: 0; width: 100%; background: white; }
-  @page { size: A4; margin: 12mm 14mm; }
-}
-.fin-doc {
-  font-family: Arial, 'Helvetica Neue', sans-serif;
-  font-size: 10pt;
-  color: #111;
-  width: 100%;
-}
-.fin-doc table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
-.fin-doc td, .fin-doc th { border: 1px solid #888; padding: 5px 8px; font-size: 9pt; vertical-align: middle; }
-.fin-doc th { font-weight: bold; }
-.fin-doc .hdr-row td, .fin-doc .hdr-row th {
-  background: #1e293b !important; color: #fff !important; border-color: #1e293b !important;
-  font-weight: bold; text-transform: uppercase; font-size: 9pt; letter-spacing: 0.05em;
-}
-.fin-doc .income-row td { background: #f0fdf4; }
-.fin-doc .expense-row td { background: #fff5f5; }
-.fin-doc .summary-value { font-size: 13pt; font-weight: 900; }
-.fin-doc hr { border: none; border-top: 1.5px solid #333; margin: 7px 0; }
-`;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -169,65 +142,47 @@ export function FinancialPage() {
   const handlePrint = async () => {
     if (!printRef.current) return;
     try {
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${FINANCIAL_PRINT_STYLE}</style></head><body><div id="fin-print-doc">${printRef.current.innerHTML}</div></body></html>`;
-      const response = await pdfApi.render({
-        html,
-        fileName: `financeiro-${new Date().toISOString().slice(0, 10)}.pdf`,
+      await downloadReportPdf(printRef.current, {
+        title: 'Relatório Financeiro',
+        fileName: `Financeiro-${todayInput()}`,
       });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'relatorio-financeiro.pdf';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
     } catch {
-      toast.error('Erro ao gerar PDF financeiro com Puppeteer.');
+      toast.error('Erro ao gerar o PDF financeiro.');
     }
+  };
+
+  // Mesmo conteúdo do PDF: todos os lançamentos carregados.
+  const handleCsv = () => {
+    downloadCsv(`Financeiro-${todayInput()}`,
+      ['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor', 'O.S.'],
+      transactions.map((t) => [
+        new Date(t.date).toLocaleDateString('pt-BR'),
+        t.description ?? '',
+        t.category || 'Geral',
+        t.type === 'INCOME' ? 'Entrada' : 'Saída',
+        csvNumber(t.type === 'INCOME' ? Number(t.amount) : -Number(t.amount)),
+        t.referenceId ? String(t.referenceId).slice(0, 8) : '',
+      ]));
   };
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8 pb-10">
-      <style>{FINANCIAL_PRINT_STYLE}</style>
+      <style>{REPORT_CSS}</style>
 
-      {/* PRINT DOCUMENT */}
-      <div id="fin-print-doc" ref={printRef}>
+      {/* Documento enviado ao servidor para gerar o PDF (oculto na tela) */}
+      <div hidden ref={printRef}>
         {tenantData && (
-          <div className="fin-doc">
-            {/* Header */}
-            <table style={{ marginBottom: '6px' }}>
-              <tbody>
-                <tr>
-                  <td style={{ border: 'none', paddingLeft: 0, verticalAlign: 'top', width: '65%' }}>
-                    {tenantData.logo && (
-                      <img src={tenantData.logo} alt="Logo" style={{ maxHeight: '48px', maxWidth: '130px', objectFit: 'contain', marginBottom: '4px' }} />
-                    )}
-                    <div style={{ fontSize: '16pt', fontWeight: 900, lineHeight: 1.1 }}>
-                      {tenantData.name || tenantData.tradeName || tenantData.legalName || 'Oficina'}
-                    </div>
-                    {tenantData.document && <div style={{ fontSize: '9pt', marginTop: '3px' }}>{tenantData.companyType || 'CNPJ'}: {tenantData.document}</div>}
-                    {tenantData.address && <div style={{ fontSize: '9pt' }}>{tenantData.address}</div>}
-                    <div style={{ fontSize: '9pt' }}>
-                      {tenantData.phone && `Tel: ${tenantData.phone}`}
-                      {tenantData.phone && tenantData.email && '  |  '}
-                      {tenantData.email}
-                    </div>
-                  </td>
-                  <td style={{ border: '2px solid #1e293b', padding: '8px 12px', textAlign: 'right', verticalAlign: 'top', minWidth: '155px' }}>
-                    <div style={{ fontSize: '9pt', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#555' }}>Relatório Financeiro</div>
-                    <div style={{ fontSize: '9pt', color: '#444', marginTop: '4px' }}>Gerado em: {new Date().toLocaleString('pt-BR')}</div>
-                    <div style={{ fontSize: '9pt', color: '#444' }}>Total de lançamentos: {transactions.length}</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <hr />
+          <div className="rpt">
+            <ReportHeader
+              tenant={tenantData}
+              title="Relatório Financeiro"
+              details={[`Lançamentos: ${transactions.length}`]}
+            />
 
             {/* Summary */}
             <table style={{ marginBottom: '8px' }}>
               <tbody>
-                <tr className="hdr-row"><td colSpan={4}>RESUMO DO PERÍODO</td></tr>
+                <tr className="hdr"><td colSpan={4}>RESUMO DO PERÍODO</td></tr>
                 <tr>
                   <td style={{ textAlign: 'center', padding: '10px' }}>
                     <div style={{ fontSize: '8pt', fontWeight: 'bold', color: '#555', textTransform: 'uppercase' }}>Receitas (Entradas)</div>
@@ -254,7 +209,7 @@ export function FinancialPage() {
             {/* Transactions */}
             <table>
               <thead>
-                <tr className="hdr-row">
+                <tr className="hdr">
                   <td style={{ width: '80px' }}>Data</td>
                   <td>Descrição</td>
                   <td style={{ width: '100px' }}>Categoria</td>
@@ -282,17 +237,7 @@ export function FinancialPage() {
               </tbody>
             </table>
 
-            {/* Footer */}
-            <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'space-between' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ borderTop: '1px solid #555', display: 'inline-block', width: '200px', marginBottom: '4px' }}></div><br />
-                <span style={{ fontSize: '9pt' }}>Responsável Financeiro</span><br />
-                <span style={{ fontSize: '8pt', color: '#666' }}>Data: _____/_____/__________</span>
-              </div>
-              <div style={{ fontSize: '7pt', color: '#999', textAlign: 'right', alignSelf: 'flex-end' }}>
-                Documento gerado em {new Date().toLocaleString('pt-BR')}<br />Sigma Auto — Sistema de Gestão
-              </div>
-            </div>
+            <ReportSignature label="Responsável Financeiro" />
           </div>
         )}
       </div>
@@ -313,7 +258,13 @@ export function FinancialPage() {
             onClick={handlePrint}
             className="h-12 px-6 rounded-lg bg-surface-900 border border-line text-surface-200 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
           >
-            <Printer size={18} className="text-surface-500" /> Imprimir Relatório
+            <Printer size={18} className="text-surface-500" /> Baixar PDF
+          </button>
+          <button type="button"
+            onClick={handleCsv}
+            className="h-12 px-6 rounded-lg bg-surface-900 border border-line text-surface-200 font-bold text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+          >
+            <Download size={18} className="text-surface-500" /> Exportar CSV
           </button>
           <button type="button"
             onClick={() => setShowAddModal(true)}

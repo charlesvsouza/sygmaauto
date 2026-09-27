@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { financialApi, pdfApi } from '../api/client';
+import { financialApi, tenantsApi } from '../api/client';
+import { downloadReportPdf, ReportHeader, REPORT_CSS } from '../lib/report';
+import { csvNumber, downloadCsv } from '../lib/csv';
 import { useToast } from '../components/ui';
 import {
   TrendingUp,
@@ -10,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Printer,
+  Download,
   Info,
 } from 'lucide-react';
 
@@ -22,26 +25,6 @@ const KPI_COLOR_CLASS: Record<string, string> = {
   blue: 'text-blue-600',
   red: 'text-red-600',
 };
-
-const DRE_PRINT_STYLE = `
-@media screen { #dre-print { display: none !important; } }
-@media print {
-  body * { visibility: hidden; }
-  #dre-print, #dre-print * { visibility: visible; }
-  #dre-print { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 20px; font-family: Arial, sans-serif; font-size: 10pt; color: #111; }
-  @page { size: A4; margin: 12mm 14mm; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-  td, th { border: 1px solid #ccc; padding: 6px 10px; font-size: 10pt; }
-  .hdr td { background: #1e293b !important; color: #fff !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .total-row td { background: #f0fdf4 !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .pos { color: #16a34a !important; font-weight: bold; }
-  .neg { color: #dc2626 !important; font-weight: bold; }
-  .kpi-grid { display: flex; gap: 8px; margin-bottom: 12px; }
-  .kpi { flex: 1; border: 1px solid #ccc; padding: 8px 10px; text-align: center; }
-  .kpi-label { font-size: 7.5pt; color: #555; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
-  .kpi-value { font-size: 14pt; font-weight: 900; }
-}
-`;
 
 function DRERow({ label, value, indent = 0, highlight = false, positive = true, note }: {
   label: string; value: number; indent?: number; highlight?: boolean; positive?: boolean; note?: string;
@@ -94,6 +77,7 @@ export function DREPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [tenant, setTenant] = useState<any>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
   const load = async (y: number, m: number) => {
@@ -110,6 +94,7 @@ export function DREPage() {
   };
 
   useEffect(() => { load(year, month); }, [year, month]);
+  useEffect(() => { tenantsApi.getMe().then((r) => setTenant(r.data)).catch(() => undefined); }, []);
 
   const prevMonth = () => {
     if (month === 1) { setYear(y => y - 1); setMonth(12); }
@@ -122,25 +107,43 @@ export function DREPage() {
     else setMonth(m => m + 1);
   };
 
+  // Período do PDF/CSV = o que a API devolveu (não o seletor, que pode ter mudado).
+  const fileBase = () => {
+    const p = data?.periodo;
+    return `DRE-${p?.ano ?? year}-${String(p?.mes ?? month).padStart(2, '0')}`;
+  };
+
   const handlePrint = async () => {
-    if (!printRef.current) return;
+    if (!printRef.current || !data?.dre) return;
     try {
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /><style>${DRE_PRINT_STYLE}</style></head><body><div id="dre-print">${printRef.current.innerHTML}</div></body></html>`;
-      const response = await pdfApi.render({
-        html,
-        fileName: `dre-${year}-${String(month).padStart(2, '0')}.pdf`,
+      await downloadReportPdf(printRef.current, {
+        title: `DRE — ${data.periodo?.label ?? ''}`,
+        fileName: fileBase(),
       });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `dre-${year}-${String(month).padStart(2, '0')}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
     } catch {
-      toast.error('Erro ao gerar PDF da DRE com Puppeteer.');
+      toast.error('Erro ao gerar o PDF da DRE.');
     }
+  };
+
+  const handleCsv = () => {
+    const d = data?.dre;
+    const det = data?.detalhes;
+    if (!d || !det) return;
+    const rows: (string | number)[][] = [
+      ['Receita bruta', csvNumber(d.receitaBruta)],
+      ['Receita de O.S. (serviços)', csvNumber(det.receitaBrutaOS)],
+      ['Receita manual (lançamentos)', csvNumber(det.receitaManual)],
+      ['Deduções (impostos estimados)', csvNumber(-d.deducoes)],
+      ['Receita líquida', csvNumber(d.receitaLiquida)],
+      ['CMV — custo das peças', csvNumber(-d.cmv)],
+      ['Margem bruta', csvNumber(d.margemBruta)],
+      ['Despesas operacionais', csvNumber(-d.despesasOperacionais)],
+      ['EBITDA', csvNumber(d.ebitda)],
+      ['Resultado líquido', csvNumber(d.resultadoLiquido)],
+    ];
+    Object.entries((det.despesasPorCategoria ?? {}) as Record<string, number>).forEach(([cat, val]) =>
+      rows.push([`Despesa: ${cat}`, csvNumber(val)]));
+    downloadCsv(fileBase(), ['Linha', 'Valor'], rows);
   };
 
   const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -153,16 +156,16 @@ export function DREPage() {
 
   return (
     <div className="space-y-6">
-      <style>{DRE_PRINT_STYLE}</style>
+      <style>{REPORT_CSS}</style>
 
-      {/* Hidden print div — must always be in DOM for window.print() to work */}
-      <div id="dre-print" ref={printRef}>
-        <h2 style={{ textAlign: 'center', fontSize: '16pt', marginBottom: 4, fontFamily: 'Arial, sans-serif' }}>
-          Demonstrativo de Resultado do Exercício — DRE
-        </h2>
-        <p style={{ textAlign: 'center', marginBottom: 16, color: '#555', fontSize: '11pt', fontFamily: 'Arial, sans-serif' }}>
-          {new Date(year, month - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-        </p>
+      {/* Documento enviado ao servidor para gerar o PDF (oculto na tela) */}
+      <div hidden ref={printRef}>
+        <div className="rpt">
+        <ReportHeader
+          tenant={tenant}
+          title="Demonstrativo de Resultado — DRE"
+          details={[`Período: ${data?.periodo?.label ?? ''}`]}
+        />
         {dre && detalhes && (
           <>
             <div className="kpi-grid">
@@ -240,10 +243,11 @@ export function DREPage() {
               </table>
             )}
             <p style={{ fontSize: '8pt', color: '#888', marginTop: 12 }}>
-              * Estimativas para fins gerenciais. Consulte seu contador para o DRE oficial. — Gerado em {new Date().toLocaleString('pt-BR')}
+              * Estimativas para fins gerenciais. Consulte seu contador para o DRE oficial.
             </p>
           </>
         )}
+        </div>
       </div>
 
       {/* Header */}
@@ -289,7 +293,14 @@ export function DREPage() {
             onClick={handlePrint}
             className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-bold rounded-xl hover:bg-accent-hover transition-all shadow-sm"
           >
-            <Printer className="w-4 h-4" /> Imprimir
+            <Printer className="w-4 h-4" /> Baixar PDF
+          </button>
+          <button type="button"
+            onClick={handleCsv}
+            disabled={!dre}
+            className="flex items-center gap-2 px-4 py-2 bg-surface-900 border border-line text-surface-200 text-sm font-bold rounded-xl hover:shadow-md transition-all shadow-sm disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" /> Exportar CSV
           </button>
         </div>
       </div>

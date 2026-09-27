@@ -272,10 +272,11 @@ export class ServiceOrdersController {
   @ApiOperation({ summary: 'Gerar PDF da OS (padrão: Puppeteer)' })
   async generatePdfDefault(
     @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId?: string },
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id, user?.userId);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${generated.fileName}"`,
@@ -288,10 +289,11 @@ export class ServiceOrdersController {
   @ApiOperation({ summary: 'Gerar PDF com Puppeteer (teste)' })
   async generatePdfPuppeteer(
     @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId?: string },
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id);
+    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id, user?.userId);
     const fileName = generated.fileName.replace(/\.pdf$/i, '-puppeteer.pdf');
     res.set({
       'Content-Type': 'application/pdf',

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Printer, FileText } from 'lucide-react';
-import { pdfApi } from '../api/client';
+import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import type { MetrologiaData } from './MetrologiaModal';
 import { useToast } from './ui';
 
@@ -52,8 +52,9 @@ const PREVIEW_STYLE = `body { padding: 12mm; background: #fff; } ${DOC_STYLES}`;
 const PRINT_STYLE   = `${DOC_STYLES} @page { size: A4; margin: 8mm 10mm; }`;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+// Sempre escapado: o laudo é montado como string HTML.
 function fmt(v: string | number | undefined | null, fallback = '—') {
-  return v != null && v !== '' ? String(v) : fallback;
+  return v != null && v !== '' ? escapeHtml(v) : fallback;
 }
 
 function fmtDate(iso: string | undefined | null) {
@@ -73,7 +74,7 @@ function fmtMM(v: string | number | undefined | null) {
 function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any): string {
   const isMotorAvulso = !os.vehicleId && !os.vehicle;
   const motorLabel = isMotorAvulso
-    ? `${fmt(os.equipmentBrand)} ${fmt(os.equipmentModel)}${os.serialNumber ? ` — Serial: ${os.serialNumber}` : ''}`.trim()
+    ? `${fmt(os.equipmentBrand)} ${fmt(os.equipmentModel)}${os.serialNumber ? ` — Serial: ${escapeHtml(os.serialNumber)}` : ''}`.trim()
     : `${fmt(os.vehicle?.brand)} ${fmt(os.vehicle?.model)} (${fmt(os.vehicle?.plate)})`;
 
   const osNum = os.id.slice(-6).toUpperCase();
@@ -159,10 +160,10 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
       <td style="border:none; padding:0; width:60%;">
         <div style="font-size:16pt; font-weight:900; color:#1e293b; line-height:1.1;">${workshopDisplayName}</div>
         <div style="font-size:8pt; color:#555; margin-top:2px;">
-          ${tenant?.phone ? `Tel: ${tenant.phone}` : ''}
-          ${tenant?.email ? ` · ${tenant.email}` : ''}
+          ${tenant?.phone ? `Tel: ${escapeHtml(tenant.phone)}` : ''}
+          ${tenant?.email ? ` · ${escapeHtml(tenant.email)}` : ''}
         </div>
-        ${tenant?.address ? `<div style="font-size:8pt; color:#555;">${tenant.address}</div>` : ''}
+        ${tenant?.address ? `<div style="font-size:8pt; color:#555;">${escapeHtml(tenant.address)}</div>` : ''}
       </td>
       <td style="border:none; padding:0; text-align:right; vertical-align:top;">
         <div style="font-size:13pt; font-weight:900; color:#1e293b;">LAUDO TÉCNICO DE RETÍFICA</div>
@@ -187,8 +188,8 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
       <th>${isMotorAvulso ? 'Motor / Equipamento' : 'Veículo'}</th>
       <td colspan="3">${motorLabel}</td>
     </tr>
-    ${os.complaint ? `<tr><th>Reclamação / Queixa</th><td colspan="3">${os.complaint}</td></tr>` : ''}
-    ${os.diagnosis  ? `<tr><th>Diagnóstico inicial</th><td colspan="3">${os.diagnosis}</td></tr>` : ''}
+    ${os.complaint ? `<tr><th>Reclamação / Queixa</th><td colspan="3">${escapeHtml(os.complaint)}</td></tr>` : ''}
+    ${os.diagnosis  ? `<tr><th>Diagnóstico inicial</th><td colspan="3">${escapeHtml(os.diagnosis)}</td></tr>` : ''}
   </table>
 
   <!-- Metrologia -->
@@ -276,7 +277,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
 
   ${metrologia.observacoes ? `
   <table>
-    <tr><td style="background:#fffbeb; font-style:italic; color:#555;"><strong>Obs. Metrologia:</strong> ${metrologia.observacoes}</td></tr>
+    <tr><td style="background:#fffbeb; font-style:italic; color:#555;"><strong>Obs. Metrologia:</strong> ${escapeHtml(metrologia.observacoes)}</td></tr>
   </table>` : ''}
 
   ` : `
@@ -326,7 +327,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
   ${os.observations || os.technicalReport ? `
   <table style="margin-top:4px;">
     <tr class="hdr"><th>Observações Técnicas</th></tr>
-    <tr><td>${os.technicalReport || os.observations}</td></tr>
+    <tr><td>${escapeHtml(os.technicalReport || os.observations)}</td></tr>
   </table>
   ` : ''}
 
@@ -334,7 +335,7 @@ function buildLaudoHtml(os: any, metrologia: MetrologiaData | null, tenant: any)
   <table style="margin-top: 24pt; border:none;">
     <tr style="border:none;">
       <td style="border:none; width:45%; padding: 0 8px;">
-        <div class="sign-box">Técnico Responsável${metrologia?.tecnico ? ` — ${metrologia.tecnico}` : ''}</div>
+        <div class="sign-box">Técnico Responsável${metrologia?.tecnico ? ` — ${escapeHtml(metrologia.tecnico)}` : ''}</div>
       </td>
       <td style="border:none; width:10%;"></td>
       <td style="border:none; width:45%; padding: 0 8px;">
@@ -369,20 +370,12 @@ export function LaudoRetificaModal({ os, tenant, onClose }: Props) {
 
   const handlePrint = async () => {
     try {
-      const response = await pdfApi.render({
-        html: fullDoc.replace('</head>', `<style>${PRINT_STYLE}</style></head>`),
-        fileName: `laudo-retifica-${os.id.slice(0, 8).toUpperCase()}.pdf`,
+      await downloadHtmlPdf(fullDoc.replace('</head>', `<style>${PRINT_STYLE}</style></head>`), {
+        title: `Laudo de Retífica #${os.id.slice(-6).toUpperCase()}`,
+        fileName: `Laudo-retifica-${os.id.slice(0, 8).toUpperCase()}`,
       });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `laudo-retifica-${os.id.slice(0, 8).toUpperCase()}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
     } catch {
-      toast.error('Erro ao gerar laudo em PDF com Puppeteer.');
+      toast.error('Erro ao gerar o laudo em PDF.');
     }
   };
 
