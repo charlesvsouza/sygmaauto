@@ -117,13 +117,17 @@ vistoria com **checklist fixo e fotos opcionais**; garantia **90 dias serviço /
   e o endpoint exigia login. Agora há `/public/approval/:token` e a página pública; o link decide uma vez só.
 - Aprovar no balcão também converte o orçamento em O.S.; "Aguardando aprovação" gera o link.
 
-**Pendências encontradas (não alteradas):**
-- **Financeiro:** a aprovação por link lança uma receita "Serviços/Peças" com o total, e o faturamento pode lançar
-  outra "Pagamento - OS" → a mesma O.S. pode aparecer duas vezes como receita. O modelo `FinancialTransaction`
-  não tem situação (a receber / recebido). Decidir com o dono antes de mexer.
-- **Aprovação no balcão × por link:** a do link lança receita e baixa estoque; a do balcão (mudança de status) não.
-- O termo de entrega considera "pago" só os lançamentos "Pagamento - OS…" (ou o total, se faturada sem lançamento).
-- Falta conferir no ambiente publicado: gerar cada documento de uma O.S. real e aprovar um orçamento pelo link.
+**Financeiro unificado (decisão do dono: "não podemos ter incongruências"):**
+- Uma só porta de transição (`updateStatus`): aprovação pelo balcão e pelo link têm o mesmo efeito
+  (vira O.S., baixa as peças pendentes, notifica) e **não lançam receita**.
+- **Receita da O.S. = um lançamento, no faturamento, pelo total** (`recordOrderRevenue`); faturar de novo não duplica.
+  `receive-payment` passa pelo mesmo faturamento; `apply-stock` só baixa estoque (sem despesa duplicando o CMV).
+- **Tela Financeiro, DRE e indicadores leem o mesmo livro-caixa.** A DRE deixou de somar as O.S. entregues por fora
+  (antes uma O.S. podia contar 2–3 vezes) e o CMV vem das O.S. faturadas no mesmo período (antes usava `updatedAt`).
+  "OS entregues" virou "O.S. faturadas".
+- `release.js` (`unifyOrderRevenue`, idempotente, testado em PGlite): acerta a receita das O.S. já faturadas, cria a
+  que falta e move para `audit_logs` a receita lançada na aprovação de O.S. nunca faturadas.
+- Termo de entrega: faturada = paga pelo total.
 
 ---
 

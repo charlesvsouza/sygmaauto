@@ -404,19 +404,9 @@ ${this.signatures(
 
   private async entrega(ctx: Ctx): Promise<string> {
     const { order, settings } = ctx;
-    // Só os lançamentos de pagamento criados no faturamento contam como pago: a aprovação
-    // do orçamento também lança uma receita (a receber) com referência à O.S.
-    const payments = await this.prisma.financialTransaction.aggregate({
-      where: {
-        tenantId: order.tenantId,
-        referenceId: order.id,
-        type: 'INCOME',
-        description: { startsWith: 'Pagamento - OS' },
-      },
-      _sum: { amount: true },
-    });
+    // A O.S. faturada está paga pelo total: o faturamento lança a receita única da O.S.
     const total = Number(order.totalCost || 0);
-    const paid = payments._sum.amount != null ? Number(payments._sum.amount) : order.paidAt ? total : 0;
+    const paid = order.paidAt ? total : 0;
     const balance = Math.max(0, total - paid);
     const deliveredAt: Date = order.deliveredAt ? new Date(order.deliveredAt) : new Date();
     const warrantyServices = addDays(deliveredAt, settings.warrantyDaysServices);

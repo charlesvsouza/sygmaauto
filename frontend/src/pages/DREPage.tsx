@@ -341,7 +341,7 @@ export function DREPage() {
                   <p className="text-xs text-surface-400 mt-1">{pct(dre.ebitdaPerc)} da receita líquida</p>
                 )}
                 {card.label === 'Receita Bruta' && (
-                  <p className="text-xs text-surface-400 mt-1">{detalhes?.osEntregues} OS entregues</p>
+                  <p className="text-xs text-surface-400 mt-1">{detalhes?.osEntregues} O.S. faturadas</p>
                 )}
               </div>
             ))}
@@ -371,7 +371,7 @@ export function DREPage() {
                     <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Custo dos Produtos</td>
                     </tr>
-                    <DRERow label="(-) CMV — Custo das Peças Utilizadas" value={-dre.cmv} note="Custo de compra das peças usadas nas OS entregues." />
+                    <DRERow label="(-) CMV — Custo das Peças Utilizadas" value={-dre.cmv} note="Custo de compra das peças usadas nas O.S. faturadas no período." />
                     <DRERow label="(=) Margem Bruta" value={dre.margemBruta} highlight />
                     <tr className="bg-accent text-white">
                       <td colSpan={2} className="py-2 px-4 text-xs font-bold uppercase tracking-wider">Despesas Operacionais</td>

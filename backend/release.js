@@ -187,6 +187,80 @@ async function backfillOrderNumbers(url) {
   }
 }
 
+// Receita única por O.S. (service-orders: recordOrderRevenue). Idempotente:
+// 1. O.S. faturadas: o lançamento de receita mais antigo da O.S. passa a valer o total,
+//    na data do faturamento; se não houver nenhum, é criado.
+// 2. Lançamentos automáticos da aprovação ("Serviços/Peças - OS ...") em O.S. que não
+//    foram faturadas são receita que não aconteceu: vão para audit_logs e saem do caixa.
+async function unifyOrderRevenue(url) {
+  const cleanUrl = stripPoolParams(url);
+  const client = new Client({
+    connectionString: cleanUrl,
+    connectionTimeoutMillis: 15000,
+    ssl: url.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+  });
+  const code = `lpad(upper(to_hex(so.number)), 8, '0') || '/' || to_char(so."createdAt" AT TIME ZONE 'America/Sao_Paulo', 'MM-YYYY')`;
+  try {
+    await client.connect();
+    await client.query('BEGIN');
+    const updated = await client.query(`
+      WITH first_income AS (
+        SELECT DISTINCT ON (ft."referenceId") ft.id, ft."referenceId"
+        FROM financial_transactions ft
+        WHERE ft."referenceType" = 'service_order' AND ft.type = 'INCOME'
+        ORDER BY ft."referenceId", ft."createdAt"
+      )
+      UPDATE financial_transactions t
+      SET amount = so."totalCost",
+          date = COALESCE(so."paidAt", so."deliveredAt", so."updatedAt"),
+          description = 'Receita - OS ' || ${code},
+          category = 'servicos'
+      FROM first_income fi
+      JOIN service_orders so ON so.id = fi."referenceId"
+      WHERE t.id = fi.id
+        AND so.status IN ('FATURADO', 'ENTREGUE')
+        AND (t.amount <> so."totalCost" OR t.date <> COALESCE(so."paidAt", so."deliveredAt", so."updatedAt")
+             OR t.description IS DISTINCT FROM 'Receita - OS ' || ${code})
+    `);
+    const inserted = await client.query(`
+      INSERT INTO financial_transactions (id, "tenantId", type, amount, description, category, "referenceId", "referenceType", date, "createdAt")
+      SELECT gen_random_uuid()::text, so."tenantId", 'INCOME', so."totalCost", 'Receita - OS ' || ${code}, 'servicos',
+             so.id, 'service_order', COALESCE(so."paidAt", so."deliveredAt", so."updatedAt"), now()
+      FROM service_orders so
+      WHERE so.status IN ('FATURADO', 'ENTREGUE') AND so."totalCost" > 0
+        AND NOT EXISTS (SELECT 1 FROM financial_transactions ft
+                        WHERE ft."referenceId" = so.id AND ft."referenceType" = 'service_order' AND ft.type = 'INCOME')
+    `);
+    const orphanFilter = `
+      FROM financial_transactions ft
+      JOIN service_orders so ON so.id = ft."referenceId"
+      WHERE ft."referenceType" = 'service_order' AND ft.type = 'INCOME'
+        AND ft.description LIKE 'Serviços/Peças - OS%'
+        AND so.status NOT IN ('FATURADO', 'ENTREGUE')`;
+    await client.query(`
+      INSERT INTO audit_logs (id, "tenantId", "userId", "entityType", "entityId", action, changes, "createdAt")
+      SELECT gen_random_uuid()::text, ft."tenantId", NULL, 'FinancialTransaction', ft.id, 'DELETE',
+             json_build_object('motivo', 'receita lançada na aprovação de O.S. não faturada (regra: receita no faturamento)',
+                               'transacao', row_to_json(ft))::text, now()
+      ${orphanFilter}
+    `);
+    const removed = await client.query(`DELETE FROM financial_transactions WHERE id IN (SELECT ft.id ${orphanFilter})`);
+    const dup = await client.query(`
+      SELECT count(*) AS n FROM (
+        SELECT "referenceId" FROM financial_transactions
+        WHERE "referenceType" = 'service_order' AND type = 'INCOME'
+        GROUP BY "referenceId" HAVING count(*) > 1) x
+    `);
+    await client.query('COMMIT');
+    console.log(`[release] unifyOrderRevenue: ${updated.rowCount} acertada(s), ${inserted.rowCount} criada(s), ${removed.rowCount} removida(s) para audit_logs; O.S. com mais de uma receita: ${dup.rows[0].n}`);
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch (_) {}
+    console.warn('[release] unifyOrderRevenue error (non-fatal):', err.message);
+  } finally {
+    try { await client.end(); } catch (_) {}
+  }
+}
+
 async function main() {
   await terminateAllAppConnections();
 
@@ -206,6 +280,7 @@ async function main() {
   }
 
   await backfillOrderNumbers(rawUrl);
+  await unifyOrderRevenue(rawUrl);
 
   const seedFlag = (process.env.SEED_DEMO || '').trim().toLowerCase();
   console.log(`[release] SEED_DEMO="${seedFlag}"`);

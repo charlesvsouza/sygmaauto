@@ -406,7 +406,7 @@ export function KPIsPage() {
           { title: 'Receita líquida', value: money(atual.receitaLiquida), icon: DollarSign, tone: 'text-emerald-600' },
           { title: 'Margem bruta', value: `${money(atual.margemBruta)} (${pct(atual.margemBrutaPerc)})`, icon: TrendingIcon, tone: atual.margemBruta >= 0 ? 'text-emerald-600' : 'text-red-600' },
           { title: 'EBITDA', value: `${money(atual.ebitda)} (${pct(atual.ebitdaPerc)})`, icon: Activity, tone: atual.ebitda >= 0 ? 'text-emerald-600' : 'text-red-600' },
-          { title: 'OS entregues', value: String(atual.osEntregues || 0), icon: Gauge, tone: 'text-surface-50' },
+          { title: 'O.S. faturadas', value: String(atual.osEntregues || 0), icon: Gauge, tone: 'text-surface-50' },
           { title: 'Ticket médio', value: money(atual.ticketMedio), icon: BarChart3, tone: 'text-blue-600' },
         ].map((kpi) => (
           <motion.div
@@ -643,7 +643,7 @@ export function KPIsPage() {
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <InfoCard title="Taxa de aprovação" value={pct(taxaAprovacao)} hint="Aprovadas sobre orçamentos no funil" />
             <InfoCard title="OS abertas" value={String(atual.osAbertas || 0)} hint="Total em andamento" />
-            <InfoCard title="OS entregues" value={String(atual.osEntregues || 0)} hint="Concluídas no período" />
+            <InfoCard title="O.S. faturadas" value={String(atual.osEntregues || 0)} hint="Faturadas no período" />
           </div>
         </section>
 

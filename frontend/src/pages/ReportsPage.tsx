@@ -229,7 +229,7 @@ const ICON_BG: Record<string, string> = {
         ]));
     } else if (type === 'indicadores') {
       const keys = ['mesAtual', 'trimestre', 'semestre', 'semestreAnterior', 'anual'];
-      downloadCsv(file, ['Período', 'Receita bruta', 'Receita líquida', 'Margem bruta', 'Margem bruta %', 'EBITDA', 'EBITDA %', 'O.S. entregues', 'Ticket médio'],
+      downloadCsv(file, ['Período', 'Receita bruta', 'Receita líquida', 'Margem bruta', 'Margem bruta %', 'EBITDA', 'EBITDA %', 'O.S. faturadas', 'Ticket médio'],
         keys.map((k) => reportData.periodos?.[k]).filter(Boolean).map((p: any) => [
           p.label, csvNumber(p.receitaBruta), csvNumber(p.receitaLiquida), csvNumber(p.margemBruta),
           csvNumber(p.margemBrutaPerc, 1), csvNumber(p.ebitda), csvNumber(p.ebitdaPerc, 1), p.osEntregues, csvNumber(p.ticketMedio),
@@ -447,7 +447,7 @@ const ICON_BG: Record<string, string> = {
               <thead><tr className="hdr"><td colSpan={6}>{p.label?.toUpperCase()}</td></tr>
                 <tr className="sub-hdr">
                   <td>Receita Bruta</td><td>Rec. Líquida</td><td>Margem Bruta</td>
-                  <td>EBITDA</td><td>OS Entregues</td><td>Ticket Médio</td>
+                  <td>EBITDA</td><td>O.S. Faturadas</td><td>Ticket Médio</td>
                 </tr>
               </thead>
               <tbody>
@@ -691,7 +691,7 @@ const ICON_BG: Record<string, string> = {
             <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
               <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-3">Detalhes</p>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-surface-400">OS entregues</span><span className="font-bold">{detalhes.osEntregues}</span></div>
+                <div className="flex justify-between"><span className="text-surface-400">O.S. faturadas</span><span className="font-bold">{detalhes.osEntregues}</span></div>
                 <div className="flex justify-between"><span className="text-surface-400">Receita de OS</span><span className="font-bold text-emerald-600">R$ {fmtBR(detalhes.receitaBrutaOS)}</span></div>
                 <div className="flex justify-between"><span className="text-surface-400">Receita manual</span><span className="font-bold">R$ {fmtBR(detalhes.receitaManual)}</span></div>
               </div>
@@ -785,7 +785,7 @@ const ICON_BG: Record<string, string> = {
                     { label: 'Receita Bruta', value: fmt(p.receitaBruta) },
                     { label: 'Margem Bruta', value: `${fmt(p.margemBruta)} (${p.margemBrutaPerc.toFixed(1)}%)` },
                     { label: 'EBITDA', value: `${fmt(p.ebitda)} (${p.ebitdaPerc.toFixed(1)}%)` },
-                    { label: 'OS Entregues', value: String(p.osEntregues) },
+                    { label: 'O.S. Faturadas', value: String(p.osEntregues) },
                     { label: 'Ticket Médio', value: fmt(p.ticketMedio) },
                   ].map((k) => (
                     <div key={k.label} className="p-4">

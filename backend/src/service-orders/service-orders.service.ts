@@ -7,6 +7,8 @@ import { CommissionsService } from '../commissions/commissions.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { resolveDocumentSettings } from '../common/document-settings';
 
+// Status em que o orçamento espera a resposta do cliente (oficina e retífica).
+const AWAITING_APPROVAL = ['AGUARDANDO_APROVACAO', 'AGUARDANDO_APROVACAO_RETIFICA'];
 
 @Injectable()
 export class ServiceOrdersService {
@@ -520,7 +522,7 @@ export class ServiceOrdersService {
     const expired = Boolean(order.approvalTokenExpires && new Date() > order.approvalTokenExpires);
     const state = order.approvalStatus === 'APPROVED' ? 'APPROVED'
       : order.approvalStatus === 'REJECTED' ? 'REJECTED'
-      : order.status !== 'AGUARDANDO_APROVACAO' ? 'CLOSED'
+      : !AWAITING_APPROVAL.includes(order.status) ? 'CLOSED'
       : expired ? 'EXPIRED' : 'PENDING';
 
     return {
@@ -549,11 +551,11 @@ export class ServiceOrdersService {
     };
   }
 
+  // Resposta do cliente pelo link. Usa exatamente a mesma transição do balcão
+  // (updateStatus): conversão em O.S., baixa de estoque, notificações e financeiro
+  // são iguais qualquer que seja o canal da aprovação.
   async approveOrcamento(approvalToken: string, dto: AprovarOrcamentoDto) {
-    const order = await this.prisma.serviceOrder.findFirst({
-      where: { approvalToken },
-      include: { items: true },
-    });
+    const order = await this.prisma.serviceOrder.findFirst({ where: { approvalToken } });
 
     if (!order) {
       throw new NotFoundException('Orçamento não encontrado');
@@ -563,100 +565,37 @@ export class ServiceOrdersService {
       throw new BadRequestException('Token expirado');
     }
 
-    // O link só decide uma vez: uma segunda resposta duplicaria a receita no financeiro
-    // e a baixa de estoque. Também não decide se a oficina já mudou a fase no balcão.
-    if (order.approvalStatus || order.status !== 'AGUARDANDO_APROVACAO') {
+    // O link só decide uma vez, e não decide se a oficina já mudou a fase no balcão.
+    if (order.approvalStatus || !AWAITING_APPROVAL.includes(order.status)) {
       throw new BadRequestException('Este orçamento já foi respondido ou não está aguardando aprovação');
     }
 
-    if (!dto.approved) {
-      await this.prisma.serviceOrder.update({
-        where: { id: order.id },
-        data: { status: 'REPROVADO', approvalStatus: 'REJECTED', statusChangedAt: new Date() },
-      });
+    const note = dto.notes?.trim();
+    const updated = await this.updateStatus(
+      order.tenantId,
+      order.id,
+      {
+        status: dto.approved ? 'APROVADO' : 'REPROVADO',
+        notes: `${dto.approved ? 'Orçamento aprovado' : 'Orçamento recusado'} pelo cliente (link)${note ? `: ${note}` : ''}`,
+      } as UpdateStatusDto,
+      undefined,
+      { approvedBy: 'Cliente (link de aprovação)' },
+    );
 
-      // Reverte estoque caso peças já tenham sido debitadas
-      await this.reverseStockIfApplied(order);
-
-      // Se não autorizado, cobra custo de diagnóstico se existir
-      if (order.diagnosticCost > 0) {
-        await this.prisma.financialTransaction.create({
-          data: {
-            tenantId: order.tenantId,
-            type: 'INCOME',
-            amount: order.diagnosticCost,
-            description: `Custo de Diagnóstico (Orçamento Reprovado) - OS ${formatOrderCode(order)}`,
-            category: 'servicos',
-            referenceId: order.id,
-            referenceType: 'service_order',
-          },
-        });
-      }
-
-      await this.createTimeline(order.id, 'REPROVADO', dto.notes || 'Orçamento reprovado pelo cliente', undefined);
-      return { success: false, message: 'Orçamento reprovado' };
-    }
-
-    // Aprova - transita para OS
-    let totalDiscount = order.totalDiscount;
-    
-    // Se autorizado, o custo de diagnóstico entra como desconto
-    if (order.diagnosticCost > 0) {
-      totalDiscount += order.diagnosticCost;
-    }
-
-    const updated = await this.prisma.serviceOrder.update({
-      where: { id: order.id },
-      data: {
-        orderType: 'ORDEM_SERVICO',
-        status: 'APROVADO',
-        statusChangedAt: new Date(),
-        approvedAt: new Date(),
-        approvalStatus: 'APPROVED',
-        approvedBy: 'Cliente (link de aprovação)',
-        totalDiscount,
-        totalCost: (order.totalParts + order.totalServices + order.totalLabor) - totalDiscount,
-      },
-    });
-
-    // Lança débito no financeiro (Receita pendente)
-    await this.prisma.financialTransaction.create({
-      data: {
-        tenantId: order.tenantId,
-        type: 'INCOME',
-        amount: updated.totalCost,
-        description: `Serviços/Peças - OS ${formatOrderCode(order)}`,
-        category: 'servicos',
-        referenceId: order.id,
-        referenceType: 'service_order',
-      },
-    });
-
-    // Na autorização do orçamento, debita todas as peças pendentes do estoque.
-    const parts = order.items.filter((item: any) => item.type === 'part' && !item.applied);
-    for (const item of parts) {
-      if (item.partId) {
-        await this.applyStockMovement(
-          order.tenantId,
-          item.partId,
-          'EXIT',
-          item.quantity,
-          `OS ${formatOrderCode(order)} aprovada`,
-        );
-        await this.prisma.serviceOrderItem.update({
-          where: { id: item.id },
-          data: { applied: true },
-        });
-      }
-    }
-
-    await this.createTimeline(order.id, 'APROVADO', 'Orçamento aprovado pelo cliente. Convertido em OS e gerado financeiro.', undefined);
-
-    return { success: true, order: updated };
+    return dto.approved
+      ? { success: true, order: updated }
+      : { success: false, message: 'Orçamento reprovado' };
   }
 
-
-  async updateStatus(tenantId: string, id: string, dto: UpdateStatusDto, userId: string) {
+  // Única porta de transição de status: balcão, link de aprovação e faturamento passam
+  // por aqui, então o efeito de cada fase (estoque, financeiro, datas) é sempre o mesmo.
+  async updateStatus(
+    tenantId: string,
+    id: string,
+    dto: UpdateStatusDto,
+    userId?: string,
+    origin: { approvedBy?: string } = {},
+  ) {
     const order = await this.findById(tenantId, id);
     const currentStatus = order.status;
     const newStatus = dto.status;
@@ -665,7 +604,7 @@ export class ServiceOrdersService {
     const allowed = this.getStatusFlow(order.orderType)[currentStatus] || [];
     if (!allowed.includes(newStatus)) {
       if (dto.adminOverride) {
-        const actor = await this.prisma.user.findUnique({ where: { id: userId } });
+        const actor = userId ? await this.prisma.user.findUnique({ where: { id: userId } }) : null;
         if (!actor || !['MASTER', 'ADMIN'].includes(actor.role)) {
           throw new BadRequestException('Permissão insuficiente para sobrescrever o fluxo de status');
         }
@@ -686,8 +625,9 @@ export class ServiceOrdersService {
       }
     }
 
-    // Reverte estoque ao reprovar via atualização manual de status
+    // Reprovado (balcão ou link): devolve ao estoque as peças já baixadas.
     if (newStatus === 'REPROVADO') {
+      updateData.approvalStatus = 'REJECTED';
       const orderWithItems = await this.prisma.serviceOrder.findUnique({
         where: { id },
         include: { items: true },
@@ -697,7 +637,7 @@ export class ServiceOrdersService {
 
     // Eventos de transição
     // Aguardando aprovação: garante um link de aprovação válido (WhatsApp e QR code do PDF).
-    if (newStatus === 'AGUARDANDO_APROVACAO' && !order.approvalStatus
+    if (AWAITING_APPROVAL.includes(newStatus) && !order.approvalStatus
       && (!order.approvalToken || (order.approvalTokenExpires && order.approvalTokenExpires < new Date()))) {
       const tenantDocs = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { budgetValidityDays: true } });
       const expires = new Date();
@@ -706,13 +646,24 @@ export class ServiceOrdersService {
       updateData.approvalTokenExpires = expires;
     }
 
-    // Aprovado no balcão: o orçamento vira O.S. com o mesmo número (como na aprovação por link).
-    if (newStatus === 'APROVADO' && order.orderType === 'ORCAMENTO') {
-      const actor = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      updateData.orderType = 'ORDEM_SERVICO';
+    // Aprovado (balcão ou link): o orçamento vira O.S. com o mesmo número. As peças
+    // pendentes são baixadas do estoque logo após a gravação. Não lança receita: a receita
+    // da O.S. entra uma única vez, no faturamento.
+    if (newStatus === 'APROVADO') {
+      if (order.orderType === 'ORCAMENTO') updateData.orderType = 'ORDEM_SERVICO';
       updateData.approvedAt = order.approvedAt ?? new Date();
       updateData.approvalStatus = 'APPROVED';
-      updateData.approvedBy = actor?.name ? `${actor.name} (balcão)` : 'Balcão';
+      if (origin.approvedBy) {
+        updateData.approvedBy = origin.approvedBy;
+      } else {
+        const actor = userId ? await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true } }) : null;
+        updateData.approvedBy = actor?.name ? `${actor.name} (balcão)` : 'Balcão';
+      }
+      // Custo de diagnóstico vira desconto quando o orçamento é aprovado.
+      if (order.diagnosticCost > 0 && !order.approvalStatus) {
+        updateData.totalDiscount = order.totalDiscount + order.diagnosticCost;
+        updateData.totalCost = order.totalParts + order.totalServices + order.totalLabor - updateData.totalDiscount;
+      }
     }
 
     if (newStatus === 'EM_EXECUCAO' && !order.startedAt) {
@@ -758,6 +709,14 @@ export class ServiceOrdersService {
     });
 
     await this.createTimeline(id, newStatus, dto.notes || `Status alterado para ${newStatus}`, userId);
+
+    if (newStatus === 'APROVADO') {
+      await this.applyPendingParts(order, `OS ${formatOrderCode(order)} aprovada`);
+    }
+
+    if (newStatus === 'FATURADO') {
+      await this.recordOrderRevenue(updated);
+    }
 
     if (newStatus === 'ENTREGUE') {
     }
@@ -805,48 +764,17 @@ export class ServiceOrdersService {
       throw new BadRequestException('Não é possível aplicar estoque neste status');
     }
 
-    // Aplica baixa de estoque para itens não aplicados
-    const items = order.items.filter((item: any) => item.type === 'part' && !item.applied);
-
-    for (const item of items) {
-      if (item.partId) {
-        await this.applyStockMovement(
-          tenantId,
-          item.partId,
-          'EXIT',
-          item.quantity,
-          `OS ${formatOrderCode(order)}`,
-        );
-
-        // Marca item como aplicado
-        await this.prisma.serviceOrderItem.update({
-          where: { id: item.id },
-          data: { applied: true },
-        });
-      }
-    }
-
-    // Lança despesa no financeiro
-    const totalPartsNum = Number(order.totalParts);
-    if (totalPartsNum > 0) {
-      await this.prisma.financialTransaction.create({
-        data: {
-          tenantId,
-          type: 'EXPENSE',
-          amount: totalPartsNum,
-          description: `Peças - OS ${formatOrderCode(order)}`,
-          category: 'pecas',
-          referenceId: order.id,
-          referenceType: 'service_order',
-        },
-      });
-    }
+    // Só baixa estoque. Não lança despesa: o custo das peças (CMV) entra na DRE a partir
+    // das O.S. faturadas; um lançamento aqui contaria o mesmo custo duas vezes.
+    const itemsApplied = await this.applyPendingParts(order, `OS ${formatOrderCode(order)}`);
 
     await this.createTimeline(id, 'STOCK_APPLIED', 'Estoque baixado', userId);
 
-    return { success: true, itemsApplied: items.length };
+    return { success: true, itemsApplied };
   }
 
+  // Faturamento pela API: mesmo efeito de mudar o status para FATURADO na tela
+  // (uma única receita, pelo total da O.S.).
   async receivePayment(tenantId: string, id: string, dto: FinalizeOrderDto, userId: string) {
     const order = await this.findById(tenantId, id);
 
@@ -854,30 +782,12 @@ export class ServiceOrdersService {
       throw new BadRequestException('OS deve estar em PRONTO_ENTREGA para registrar pagamento');
     }
 
-    const amountPaid = dto.amountPaid || Number(order.totalCost);
-
-    await this.prisma.serviceOrder.update({
-      where: { id },
-      data: { status: 'FATURADO', paidAt: new Date() },
-    });
-
-    if (dto.createIncomeTransaction) {
-      await this.prisma.financialTransaction.create({
-        data: {
-          tenantId,
-          type: 'INCOME',
-          amount: amountPaid,
-          description: `Pagamento - OS ${formatOrderCode(order)}`,
-          category: 'servicos',
-          referenceId: order.id,
-          referenceType: 'service_order',
-        },
-      });
+    if (dto.paymentMethod) {
+      await this.prisma.serviceOrder.update({ where: { id }, data: { paymentMethod: dto.paymentMethod } });
     }
 
-    await this.createTimeline(id, 'FATURADO', `Pagamento de R$ ${amountPaid.toFixed(2)} recebido`, userId);
-
-    return { success: true, amountPaid, status: 'FATURADO' };
+    const updated = await this.updateStatus(tenantId, id, { status: 'FATURADO' } as UpdateStatusDto, userId);
+    return { success: true, amountPaid: Number(updated.totalCost), status: 'FATURADO' };
   }
 
   async delete(tenantId: string, id: string, userId?: string, reason?: string) {
@@ -1470,6 +1380,42 @@ export class ServiceOrdersService {
         createdBy,
       },
     });
+  }
+
+  // Baixa do estoque as peças da O.S. ainda não aplicadas. Retorna quantas foram baixadas.
+  private async applyPendingParts(order: any, reason: string): Promise<number> {
+    const pending = (order.items ?? []).filter(
+      (item: any) => item.type === 'part' && item.partId && !item.applied,
+    );
+    for (const item of pending) {
+      await this.applyStockMovement(order.tenantId, item.partId, 'EXIT', item.quantity, reason);
+      await this.prisma.serviceOrderItem.update({ where: { id: item.id }, data: { applied: true } });
+    }
+    return pending.length;
+  }
+
+  // Receita da O.S.: exatamente um lançamento, feito no faturamento, pelo total da O.S.
+  // Se já houver um (ex.: o antigo lançamento feito na aprovação), ele é acertado para o
+  // valor e a data do faturamento em vez de duplicar.
+  private async recordOrderRevenue(order: any): Promise<void> {
+    const amount = Number(order.totalCost || 0);
+    const data = {
+      amount,
+      description: `Receita - OS ${formatOrderCode(order)}`,
+      category: 'servicos',
+      date: order.paidAt ?? new Date(),
+    };
+    const existing = await this.prisma.financialTransaction.findFirst({
+      where: { tenantId: order.tenantId, referenceId: order.id, referenceType: 'service_order', type: 'INCOME' },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (existing) {
+      await this.prisma.financialTransaction.update({ where: { id: existing.id }, data });
+    } else if (amount > 0) {
+      await this.prisma.financialTransaction.create({
+        data: { ...data, tenantId: order.tenantId, type: 'INCOME', referenceId: order.id, referenceType: 'service_order' },
+      });
+    }
   }
 
   private async reverseStockIfApplied(order: any): Promise<void> {

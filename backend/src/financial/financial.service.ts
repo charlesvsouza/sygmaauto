@@ -79,6 +79,36 @@ export class FinancialService {
     });
   }
 
+  // Regra única de receita: a receita de cada O.S. é UM lançamento no livro-caixa, feito no
+  // faturamento (service-orders: recordOrderRevenue). Tela Financeiro, DRE e indicadores
+  // leem o mesmo livro-caixa; a O.S. não é somada de novo por fora. O custo das peças
+  // (CMV) vem das O.S. faturadas no mesmo período da receita.
+  private invoicedOrdersWhere(tenantId: string, start: Date, end: Date) {
+    return {
+      tenantId,
+      OR: [
+        { paidAt: { gte: start, lte: end } },
+        // Legado: O.S. faturada sem data de pagamento gravada.
+        { paidAt: null, status: { in: ['FATURADO', 'ENTREGUE'] }, updatedAt: { gte: start, lte: end } },
+      ],
+    };
+  }
+
+  private splitLedger(txs: Array<{ type: string; amount: any; referenceType: string | null; category: string | null }>) {
+    const income = txs.filter((t) => t.type === 'INCOME');
+    // Despesa ligada a O.S. é custo de peça, já contado no CMV.
+    const expenses = txs.filter((t) => t.type === 'EXPENSE' && t.referenceType !== 'service_order');
+    const sum = (list: typeof txs) => list.reduce((acc, t) => acc + Number(t.amount), 0);
+    const receitaOS = sum(income.filter((t) => t.referenceType === 'service_order'));
+    const receitaManual = sum(income.filter((t) => t.referenceType !== 'service_order'));
+    return { receitaOS, receitaManual, receita: receitaOS + receitaManual, despesas: sum(expenses), expenses };
+  }
+
+  private cmvOf(orders: Array<{ items: Array<{ quantity: any; part: { costPrice: any } | null }> }>) {
+    return orders.reduce((sum, order) => sum + order.items.reduce(
+      (s, item) => s + Number(item.part?.costPrice ?? 0) * Number(item.quantity ?? 1), 0), 0);
+  }
+
   async getSummary(tenantId: string, startDate?: Date, endDate?: Date) {
     const where: any = { tenantId };
     if (startDate || endDate) {
@@ -198,44 +228,22 @@ export class FinancialService {
       where: { tenantId, date: { gte: startDate, lte: endDate } },
     });
 
-    // 2. OS entregues no período (fonte de receita)
-    const deliveredOrders = await this.prisma.serviceOrder.findMany({
-      where: {
-        tenantId,
-        status: 'ENTREGUE',
-        updatedAt: { gte: startDate, lte: endDate },
-      },
+    // 2. O.S. faturadas no período (base do CMV)
+    const invoicedOrders = await this.prisma.serviceOrder.findMany({
+      where: this.invoicedOrdersWhere(tenantId, startDate, endDate),
       include: { items: { include: { part: true } } },
     });
 
-    // Receita bruta de OS entregues
-    const receitaBrutaOS = deliveredOrders.reduce(
-      (sum, o) => sum + Number(o.totalCost ?? 0),
-      0,
-    );
-
-    // CMV = custo das peças usadas nas OS entregues
-    const cmv = deliveredOrders.reduce((sum, order) => {
-      const costParts = order.items.reduce((s, item) => {
-        const costPrice = Number(item.part?.costPrice ?? 0);
-        return s + costPrice * Number(item.quantity ?? 1);
-      }, 0);
-      return sum + costParts;
-    }, 0);
-
-    // Receita de transações manuais tipo INCOME
-    const receitaManual = transactions
-      .filter((t) => t.type === 'INCOME')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    // Despesas operacionais (EXPENSE sem CMV)
-    const despesasOperacionais = transactions
-      .filter((t) => t.type === 'EXPENSE')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+    // Receita e despesas do livro-caixa (a receita das O.S. já está nele)
+    const ledger = this.splitLedger(transactions);
+    const receitaBrutaOS = ledger.receitaOS;
+    const receitaManual = ledger.receitaManual;
+    const cmv = this.cmvOf(invoicedOrders);
+    const despesasOperacionais = ledger.despesas;
 
     // Deduções (impostos estimados ~8% sobre receita — configurável futuramente)
     const DEDUCAO_PERCENTUAL = 0.08;
-    const receitaBruta = receitaBrutaOS + receitaManual;
+    const receitaBruta = ledger.receita;
     const deducoes = receitaBruta * DEDUCAO_PERCENTUAL;
     const receitaLiquida = receitaBruta - deducoes;
     const margemBruta = receitaLiquida - cmv;
@@ -243,8 +251,7 @@ export class FinancialService {
     const resultadoLiquido = ebitda; // sem IR/CSLL (simplificado)
 
     // Breakdown por categoria de despesa
-    const despesasPorCategoria = transactions
-      .filter((t) => t.type === 'EXPENSE')
+    const despesasPorCategoria = ledger.expenses
       .reduce<Record<string, number>>((acc, t) => {
         const cat = t.category || 'Outros';
         acc[cat] = (acc[cat] ?? 0) + Number(t.amount);
@@ -259,12 +266,9 @@ export class FinancialService {
       const txs = await this.prisma.financialTransaction.findMany({
         where: { tenantId, date: { gte: d, lte: dEnd } },
       });
-      const orders = await this.prisma.serviceOrder.findMany({
-        where: { tenantId, status: 'ENTREGUE', updatedAt: { gte: d, lte: dEnd } },
-      });
-      const rec = orders.reduce((s, o) => s + Number(o.totalCost ?? 0), 0)
-        + txs.filter((t) => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0);
-      const des = txs.filter((t) => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0);
+      const monthLedger = this.splitLedger(txs);
+      const rec = monthLedger.receita;
+      const des = monthLedger.despesas;
       historico.push({
         mes: d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
         receita: rec,
@@ -292,7 +296,7 @@ export class FinancialService {
         resultadoLiquido,
       },
       detalhes: {
-        osEntregues: deliveredOrders.length,
+        osEntregues: invoicedOrders.length,
         receitaBrutaOS,
         receitaManual,
         despesasPorCategoria,
@@ -320,20 +324,18 @@ export class FinancialService {
       const [txs, orders] = await Promise.all([
         this.prisma.financialTransaction.findMany({ where: { tenantId, date: { gte: start, lte: end } } }),
         this.prisma.serviceOrder.findMany({
-          where: { tenantId, status: 'ENTREGUE', updatedAt: { gte: start, lte: end } },
+          where: this.invoicedOrdersWhere(tenantId, start, end),
           include: { items: { include: { part: true } } },
         }),
       ]);
 
-      const receitaOS = orders.reduce((s, o) => s + Number(o.totalCost ?? 0), 0);
-      const receitaManual = txs.filter((t) => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0);
-      const receita = receitaOS + receitaManual;
-      const cmvMes = orders.reduce((s, o) =>
-        s + o.items.reduce((si, i) => si + Number(i.part?.costPrice ?? 0) * Number(i.quantity ?? 1), 0), 0);
-      const despesa = txs.filter((t) => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0);
+      const monthLedger = this.splitLedger(txs);
+      const receita = monthLedger.receita;
+      const cmvMes = this.cmvOf(orders);
+      const despesa = monthLedger.despesas;
       const ebitdaMes = (receita - receita * DEDUCAO_PERCENTUAL) - cmvMes - despesa;
 
-      txs.filter((t) => t.type === 'EXPENSE').forEach((t) => {
+      monthLedger.expenses.forEach((t) => {
         const cat = t.category || 'Outros';
         despesasPorCat[cat] = (despesasPorCat[cat] ?? 0) + Number(t.amount);
       });
@@ -386,15 +388,14 @@ export class FinancialService {
       const [txs, orders] = await Promise.all([
         this.prisma.financialTransaction.findMany({ where: { tenantId, date: { gte: start, lte: end } } }),
         this.prisma.serviceOrder.findMany({
-          where: { tenantId, status: 'ENTREGUE', updatedAt: { gte: start, lte: end } },
+          where: this.invoicedOrdersWhere(tenantId, start, end),
           include: { items: { include: { part: true } } },
         }),
       ]);
-      const receitaBruta = orders.reduce((s, o) => s + Number(o.totalCost ?? 0), 0)
-        + txs.filter((t) => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0);
-      const cmv = orders.reduce((s, o) =>
-        s + o.items.reduce((si, i) => si + Number(i.part?.costPrice ?? 0) * Number(i.quantity ?? 1), 0), 0);
-      const despesas = txs.filter((t) => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0);
+      const periodLedger = this.splitLedger(txs);
+      const receitaBruta = periodLedger.receita;
+      const cmv = this.cmvOf(orders);
+      const despesas = periodLedger.despesas;
       const receitaLiquida = receitaBruta - receitaBruta * DEDUCAO;
       const margemBruta = receitaLiquida - cmv;
       const ebitda = margemBruta - despesas;
@@ -413,7 +414,7 @@ export class FinancialService {
         resultado: ebitda,
         osEntregues: orders.length,
         osAbertas,
-        ticketMedio: orders.length > 0 ? orders.reduce((s, o) => s + Number(o.totalCost ?? 0), 0) / orders.length : 0,
+        ticketMedio: orders.length > 0 ? periodLedger.receitaOS / orders.length : 0,
       };
     };
 
