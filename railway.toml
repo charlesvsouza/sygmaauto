@@ -6,5 +6,6 @@ dockerfilePath = "backend/Dockerfile"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 1
 healthcheckPath = "/health"
-releaseCommand = "node release.js"
-startCommand = "node dist/main"
+# Aplica o schema antes de subir. Sem --accept-data-loss: mudança destrutiva faz o
+# deploy falhar em vez de apagar dados. (releaseCommand não é executado pelo Railway.)
+startCommand = "sh -c 'npx prisma db push --skip-generate && node dist/main'"
