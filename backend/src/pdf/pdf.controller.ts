@@ -19,6 +19,7 @@ export class PdfController {
       fileName?: string;
       landscape?: boolean;
       format?: string;
+      footerLabel?: string;
     },
     @Res() res: any,
   ) {
@@ -26,6 +27,7 @@ export class PdfController {
     const pdf = await this.pdfService.renderHtml(body?.html || '', {
       landscape: Boolean(body?.landscape),
       format: body?.format || 'A4',
+      footerLabel: body?.footerLabel,
     });
 
     res.set({

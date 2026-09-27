@@ -6,6 +6,7 @@ import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
 import { PdfService } from './pdf.service';
 import * as path from 'path';
+import { escapeHtml, formatDateBR, formatDateTimeBR, serviceOrderStatusLabel } from '../common/pdf-format';
 
 type GeneratedOrderPdf = {
   buffer: Buffer;
@@ -1432,7 +1433,7 @@ export class ServiceOrdersService {
   }
 
   private formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('pt-BR').format(date);
+    return formatDateBR(date);
   }
 
   private getDocumentTitle(orderType?: string | null): string {
@@ -1473,7 +1474,7 @@ export class ServiceOrdersService {
         (item, index) => `
       <tr>
         <td>${index + 1}</td>
-        <td>${item.service?.name || item.description}</td>
+        <td>${escapeHtml(item.service?.name || item.description)}</td>
         <td class="col-qty">${item.quantity}</td>
         <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
         <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
@@ -1487,7 +1488,7 @@ export class ServiceOrdersService {
         (item, index) => `
       <tr>
         <td>${index + 1}</td>
-        <td>${item.part?.name || item.description}</td>
+        <td>${escapeHtml(item.part?.name || item.description)}</td>
         <td class="col-qty">${item.quantity}</td>
         <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
         <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
@@ -1508,10 +1509,7 @@ export class ServiceOrdersService {
     const total = subtotal - order.totalDiscount;
     const documentNumber = order.id.slice(0, 8).toUpperCase();
     const documentTitle = this.getDocumentTitle(order.orderType);
-    const generatedAt = new Intl.DateTimeFormat('pt-BR', {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    }).format(new Date());
+    const generatedAt = formatDateTimeBR(new Date());
 
     const templateData = {
       companyName:
@@ -1535,7 +1533,7 @@ export class ServiceOrdersService {
       generatedAt,
       osNumber: documentNumber,
       osDate: this.formatDate(order.createdAt),
-      osStatus: order.status,
+      osStatus: serviceOrderStatusLabel(order.status),
       
       vehicleBrand: order.vehicle?.brand || order.equipmentBrand || 'N/A',
       vehicleModel: order.vehicle?.model || order.equipmentModel || 'N/A',
@@ -1564,7 +1562,9 @@ export class ServiceOrdersService {
       'templates',
       'os-template.html',
     );
-    const buffer = await this.pdf.generatePdfFromTemplate(templatePath, templateData);
+    const buffer = await this.pdf.generatePdfFromTemplate(templatePath, templateData, {
+      footerLabel: `${templateData.companyName} · ${documentTitle} #${documentNumber}`,
+    });
 
     return {
       buffer,

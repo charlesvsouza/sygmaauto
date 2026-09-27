@@ -2,7 +2,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Readable } from 'stream';
+import { escapeHtml, pdfFooterTemplate, PDF_EMPTY_HEADER } from '../common/pdf-format';
+
+// Campos que já chegam como HTML montado pelo serviço (com o texto escapado lá).
+const RAW_HTML_KEYS = new Set(['servicesRows', 'productsRows']);
 
 interface PDFGenerationOptions {
   format?: string;
@@ -12,6 +15,8 @@ interface PDFGenerationOptions {
     bottom?: string;
     left?: string;
   };
+  // Texto à esquerda do rodapé "Página X de Y" (ex.: oficina · documento).
+  footerLabel?: string;
 }
 
 @Injectable()
@@ -91,6 +96,9 @@ export class PdfService {
           left: '0.5in',
         },
         printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate: PDF_EMPTY_HEADER,
+        footerTemplate: pdfFooterTemplate(options.footerLabel),
       });
 
       await page.close();
@@ -119,31 +127,13 @@ export class PdfService {
         (_match, key, inner) => (data[key] ? inner : ''),
       );
 
-      // Fazer replace de variáveis simples
+      // Substituir variáveis simples. O valor é escapado (texto do cliente pode ter
+      // <, & ou ") e a troca usa split/join, que não interpreta $&, $1 etc. no valor.
       Object.keys(data).forEach((key) => {
-        const value = data[key] || '';
-        const regex = new RegExp(`{{${key}}}`, 'g');
-        htmlContent = htmlContent.replace(regex, String(value));
+        const raw = data[key] ?? '';
+        const value = RAW_HTML_KEYS.has(key) ? String(raw) : escapeHtml(raw);
+        htmlContent = htmlContent.split(`{{${key}}}`).join(value);
       });
-
-      // Substituir variáveis de linhas (servicesRows, productsRows)
-      if (data.servicesRows) {
-        htmlContent = htmlContent.replace(
-          '{{servicesRows}}',
-          data.servicesRows,
-        );
-      } else {
-        htmlContent = htmlContent.replace('{{servicesRows}}', '');
-      }
-
-      if (data.productsRows) {
-        htmlContent = htmlContent.replace(
-          '{{productsRows}}',
-          data.productsRows,
-        );
-      } else {
-        htmlContent = htmlContent.replace('{{productsRows}}', '');
-      }
 
       // Limpar variáveis não usadas
       htmlContent = htmlContent.replace(/{{.*?}}/g, '');

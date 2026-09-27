@@ -1,10 +1,12 @@
 import { Injectable, InternalServerErrorException, OnModuleDestroy } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
+import { pdfFooterTemplate, PDF_EMPTY_HEADER } from '../common/pdf-format';
 
 interface RenderOptions {
   format?: string;
   landscape?: boolean;
+  footerLabel?: string;
 }
 
 @Injectable()
@@ -76,6 +78,9 @@ export class PdfService implements OnModuleDestroy {
         format: (options.format || 'A4') as any,
         landscape: Boolean(options.landscape),
         printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate: PDF_EMPTY_HEADER,
+        footerTemplate: pdfFooterTemplate(options.footerLabel),
         margin: {
           top: '0.5in',
           right: '0.5in',
@@ -85,7 +90,7 @@ export class PdfService implements OnModuleDestroy {
       });
 
       await page.close();
-  return Buffer.from(pdfBuffer);
+      return Buffer.from(pdfBuffer);
     } catch (error) {
       console.error('Erro ao renderizar PDF:', error);
       throw new InternalServerErrorException('Falha ao renderizar PDF');
