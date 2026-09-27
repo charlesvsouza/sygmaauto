@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { financialApi, tenantsApi } from '../api/client';
 import { downloadReportPdf, ReportHeader, ReportSignature, REPORT_CSS, todayInput } from '../lib/report';
 import { csvNumber, downloadCsv } from '../lib/csv';
+import { LEDGER_ROLES } from '../lib/roles';
 import { useAuthStore } from '../store/authStore';
 import {
   DollarSign,
@@ -39,7 +40,7 @@ export function FinancialPage() {
   const { user } = useAuthStore();
   const toast = useToast();
   const userRole = String(user?.role ?? '').toUpperCase();
-  const canManageFinancial = ['MASTER', 'ADMIN'].includes(userRole);
+  const canManageFinancial = LEDGER_ROLES.includes(userRole);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);

@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Tenant } from '../common/decorators/tenant.decorator';
+import { FRONT_OFFICE_ROLES } from '../common/roles';
 
 @ApiTags('Vehicles')
 @Controller('vehicles')
@@ -33,14 +34,14 @@ export class VehiclesController {
   }
 
   @Post()
-  @Roles('MASTER', 'ADMIN', 'PRODUTIVO')
+  @Roles(...FRONT_OFFICE_ROLES)
   @ApiOperation({ summary: 'Create vehicle' })
   async create(@Tenant() tenant: { tenantId: string }, @Body() dto: CreateVehicleDto) {
     return this.vehiclesService.create(tenant.tenantId, dto);
   }
 
   @Patch(':id')
-  @Roles('MASTER', 'ADMIN', 'PRODUTIVO')
+  @Roles(...FRONT_OFFICE_ROLES)
   @ApiOperation({ summary: 'Update vehicle' })
   async update(
     @Tenant() tenant: { tenantId: string },

@@ -6,6 +6,7 @@ import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { resolveDocumentSettings } from '../common/document-settings';
+import { canMoveToStatus } from '../common/roles';
 
 // Status em que o orçamento espera a resposta do cliente (oficina e retífica).
 const AWAITING_APPROVAL = ['AGUARDANDO_APROVACAO', 'AGUARDANDO_APROVACAO_RETIFICA'];
@@ -612,6 +613,15 @@ export class ServiceOrdersService {
         throw new BadRequestException(
           `Não é possível alterar de ${currentStatus} para ${newStatus}. Status permitidos: ${allowed.join(', ')}`
         );
+      }
+    }
+
+    // Permissão por destino: cada perfil só move a O.S. para as fases que lhe cabem
+    // (common/roles.ts). A resposta do cliente pelo link não tem usuário e já foi validada.
+    if (userId) {
+      const actor = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+      if (!canMoveToStatus(actor?.role, newStatus)) {
+        throw new ForbiddenException('Seu perfil de acesso não pode levar a O.S. para esta etapa');
       }
     }
 

@@ -4,6 +4,7 @@ import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi,
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import { orderCode, orderShortCode } from '../lib/orderCode';
 import { availableDocuments, type OrderDocumentKind } from '../lib/orderDocuments';
+import { canMoveToStatus, FRONT_OFFICE_ROLES, STATUS_CHANGE_ROLES, TECHNICAL_ROLES } from '../lib/roles';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -161,15 +162,17 @@ export function ServiceOrdersPage() {
   const planName = tenant?.subscription?.plan?.name || 'START';
   const canUseChecklist = canAccessFeature(planName, 'CHECKLIST');
   const canUseRetificaMode = canAccessRetificaMode(planName);
-  const canManageItems = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
+  // Regras em lib/roles.ts (espelho do backend).
+  const canManageItems = TECHNICAL_ROLES.includes(userRole);
   const canManageStock = canManageItems;
-  const canEditOrderDetails = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
+  const canEditOrderDetails = FRONT_OFFICE_ROLES.includes(userRole);
   const canGrantOrderDiscount = ['MASTER', 'ADMIN', 'GERENTE'].includes(userRole);
-  const canCreateDiagnostic = ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'PRODUTIVO'].includes(userRole);
-  const canSyncOrder = ['MASTER', 'ADMIN', 'GERENTE', 'PRODUTIVO'].includes(userRole);
+  const canCreateDiagnostic = TECHNICAL_ROLES.includes(userRole);
+  const canSyncOrder = TECHNICAL_ROLES.includes(userRole);
   const canReserveParts = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'SECRETARIA'].includes(userRole);
   const canDelete = userRole === 'MASTER';
-  const canChangeStatus = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA'].includes(userRole);
+  // Cada perfil só vê as etapas que pode aplicar (nextStatuses é filtrado por canMoveToStatus).
+  const canChangeStatus = STATUS_CHANGE_ROLES.includes(userRole);
   const canAssignExecutor = canManageItems;
   const CLOSED_STATUSES = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
   const statusDropdownRef = useRef<HTMLDivElement>(null);
@@ -850,7 +853,9 @@ export function ServiceOrdersPage() {
   const executorOptions = executors.filter((u: any) =>
     ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'MECANICO', 'PRODUTIVO'].includes(String(u.role || '').toUpperCase())
   );
-  const nextStatuses = selectedOrder ? (activeStatusFlow[selectedOrder.status] ?? []) : [];
+  const nextStatuses = selectedOrder
+    ? (activeStatusFlow[selectedOrder.status] ?? []).filter((status) => canMoveToStatus(userRole, status))
+    : [];
 
   const filteredOrders = orders.filter(
     (o) =>

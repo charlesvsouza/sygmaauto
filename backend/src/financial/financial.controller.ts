@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser, Tenant } from '../common/decorators/tenant.decorator';
+import { LEDGER_ROLES } from '../common/roles';
 
 @ApiTags('Financial')
 @Controller('financial')
@@ -101,7 +102,7 @@ export class FinancialController {
   }
 
   @Post()
-  @Roles('ADMIN')
+  @Roles(...LEDGER_ROLES)
   @ApiOperation({ summary: 'Create transaction' })
   async create(
     @Tenant() tenant: { tenantId: string },
@@ -112,7 +113,7 @@ export class FinancialController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Roles(...LEDGER_ROLES)
   @ApiOperation({ summary: 'Delete transaction' })
   async delete(
     @Tenant() tenant: { tenantId: string },
