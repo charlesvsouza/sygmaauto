@@ -99,6 +99,8 @@ export const tenantsApi = {
   getMe: () => api.get('/tenants/me'),
   update: (data: any) => api.patch('/tenants/me', data),
   updateDiscountSettings: (data: any) => api.patch('/tenants/discount-settings', data),
+  getDocumentSettings: () => api.get('/tenants/document-settings'),
+  updateDocumentSettings: (data: any) => api.patch('/tenants/document-settings', data),
 };
 
 export const usersApi = {

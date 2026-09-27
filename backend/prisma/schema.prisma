@@ -71,6 +71,13 @@ model Tenant {
   maxDiscountPercentParts    Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em peças
   maxDiscountPercentServices Float? @default(0) // teto de desconto (%) que o GERENTE pode aplicar em serviços/mão de obra
   orderSequence   Int      @default(0) // último número de atendimento emitido (ver common/order-number.ts)
+  // Documentos do atendimento (nulo = padrão de common/document-settings.ts)
+  warrantyDaysServices Int?
+  warrantyDaysParts    Int?
+  budgetValidityDays   Int?
+  authorizationText    String?
+  warrantyText         String?
+  belongingsText       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

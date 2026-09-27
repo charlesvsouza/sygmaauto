@@ -29,6 +29,7 @@ import {
   onlyDigits,
 } from '../lib/masks';
 import { getPlanLabel, getPlanRank } from '../lib/planAccess';
+import { DocumentSettingsForm } from '../components/DocumentSettingsForm';
 
 type TenantForm = {
   taxId: string;
@@ -833,6 +834,10 @@ export function SettingsPage() {
                 </div>
               )}
             </form>
+
+            <div className="border-t border-line" />
+
+            <DocumentSettingsForm canEdit={canConfigureDiscounts} />
           </motion.div>
 
           {/* Equipe */}

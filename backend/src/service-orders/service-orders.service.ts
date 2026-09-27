@@ -8,6 +8,7 @@ import { PdfService } from '../pdf/pdf.service';
 import * as path from 'path';
 import { escapeHtml, formatDateBR, pdfIssuedLine, serviceOrderStatusLabel } from '../common/pdf-format';
 import { formatOrderCode, nextOrderNumber, orderFileName } from '../common/order-number';
+import { resolveDocumentSettings } from '../common/document-settings';
 
 type GeneratedOrderPdf = {
   buffer: Buffer;
@@ -488,8 +489,10 @@ export class ServiceOrdersService {
     }
 
     const newToken = uuidv4();
+    // O link de aprovação vale pelo prazo de validade do orçamento da oficina.
+    const tenantDocs = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { budgetValidityDays: true } });
     const expires = new Date();
-    expires.setDate(expires.getDate() + 7);
+    expires.setDate(expires.getDate() + resolveDocumentSettings(tenantDocs).budgetValidityDays);
 
     const updated = await this.prisma.serviceOrder.update({
       where: { id },

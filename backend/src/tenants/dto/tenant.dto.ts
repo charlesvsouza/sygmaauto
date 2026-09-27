@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsInt, MaxLength, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTenantDto {
@@ -102,4 +102,44 @@ export class UpdateDiscountSettingsDto {
   @Min(0)
   @Max(100)
   maxDiscountPercentServices?: number;
+}
+export class UpdateDocumentSettingsDto {
+  @ApiProperty({ required: false, description: 'Garantia dos serviços, em dias' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(3650)
+  warrantyDaysServices?: number;
+
+  @ApiProperty({ required: false, description: 'Garantia das peças, em dias' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(3650)
+  warrantyDaysParts?: number;
+
+  @ApiProperty({ required: false, description: 'Validade do orçamento (e do link de aprovação), em dias' })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(365)
+  budgetValidityDays?: number;
+
+  @ApiProperty({ required: false, description: 'Texto de autorização do orçamento (vazio = padrão)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  authorizationText?: string;
+
+  @ApiProperty({ required: false, description: 'Texto de garantia; {servicos} e {pecas} viram os prazos (vazio = padrão)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  warrantyText?: string;
+
+  @ApiProperty({ required: false, description: 'Responsabilidade por objetos deixados no veículo (vazio = padrão)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  belongingsText?: string;
 }

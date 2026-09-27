@@ -1,7 +1,7 @@
 import { Controller, Get, Patch, Body, UseGuards, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantsService } from './tenants.service';
-import { UpdateTenantDto, UpdateDiscountSettingsDto } from './dto/tenant.dto';
+import { UpdateTenantDto, UpdateDiscountSettingsDto, UpdateDocumentSettingsDto } from './dto/tenant.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -35,5 +35,22 @@ export class TenantsController {
     @Body() dto: UpdateDiscountSettingsDto,
   ) {
     return this.tenantsService.updateDiscountSettings(tenant.tenantId, dto);
+  }
+
+  @Get('document-settings')
+  @ApiOperation({ summary: 'Garantia, validade do orçamento e textos dos documentos (efetivos e gravados)' })
+  async getDocumentSettings(@Tenant() tenant: { tenantId: string }) {
+    return this.tenantsService.getDocumentSettings(tenant.tenantId);
+  }
+
+  @Patch('document-settings')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Atualizar garantia, validade do orçamento e textos dos documentos (MASTER/ADMIN)' })
+  async updateDocumentSettings(
+    @Tenant() tenant: { tenantId: string },
+    @Body() dto: UpdateDocumentSettingsDto,
+  ) {
+    return this.tenantsService.updateDocumentSettings(tenant.tenantId, dto);
   }
 }
