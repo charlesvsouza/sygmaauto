@@ -99,6 +99,32 @@ serviços Puppeteer (`pdf/` e `service-orders/`), cada um com seu próprio naveg
   Sem banco local: o fluxo completo (tela → API → PDF) precisa ser conferido no ambiente publicado.
 - **Fica para a leva 3:** `#os-print-doc` em `ServiceOrdersPage` (O.S. alternativa, só sai no Ctrl+P do navegador).
 
+### 2.5 Leva 3 — decisões do dono e resultado (27/09)
+
+**Decisões:** atendimento começa na entrada, vai ao orçamento e, aprovado, vira O.S. (execução e entrega)
+com o **mesmo número**; número = contador da oficina em **hexadecimal + mês-ano** (`0000007B/09-2026`);
+vistoria com **checklist fixo e fotos opcionais**; garantia **90 dias serviço / 90 dias peça**, configurável;
+**via da oficina sem valores** para o funcionário.
+
+**Feito:**
+- Numeração: `Tenant.orderSequence` + `ServiceOrder.number`, atribuído em transação; `release.js` numera as O.S.
+  antigas por ordem de abertura (idempotente, testado em PGlite).
+- Configurações → "Documentos do Atendimento": garantias, validade do orçamento (= validade do link) e textos.
+- Vistoria: acessórios fixos (estepe, macaco, chave de roda, triângulo, rádio, tapetes, CRLV, objetos pessoais).
+- Documentos no servidor (`order-documents.service.ts`): entrada, orçamento (com QR code), O.S. via do cliente,
+  O.S. via da oficina, termo de entrega e garantia. Menu "Documentos" na O.S. conforme a fase.
+- Aprovação por link **passou a funcionar**: antes o WhatsApp levava a `/aprovacao/:token`, página que não existia,
+  e o endpoint exigia login. Agora há `/public/approval/:token` e a página pública; o link decide uma vez só.
+- Aprovar no balcão também converte o orçamento em O.S.; "Aguardando aprovação" gera o link.
+
+**Pendências encontradas (não alteradas):**
+- **Financeiro:** a aprovação por link lança uma receita "Serviços/Peças" com o total, e o faturamento pode lançar
+  outra "Pagamento - OS" → a mesma O.S. pode aparecer duas vezes como receita. O modelo `FinancialTransaction`
+  não tem situação (a receber / recebido). Decidir com o dono antes de mexer.
+- **Aprovação no balcão × por link:** a do link lança receita e baixa estoque; a do balcão (mudança de status) não.
+- O termo de entrega considera "pago" só os lançamentos "Pagamento - OS…" (ou o total, se faturada sem lançamento).
+- Falta conferir no ambiente publicado: gerar cada documento de uma O.S. real e aprovar um orçamento pelo link.
+
 ---
 
 ## 3. Proposta: padrão de relatório
