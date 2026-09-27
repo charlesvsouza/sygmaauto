@@ -239,6 +239,8 @@ Regras do link:
 
 **Aprovação no balcão:** se o cliente aprovar pessoalmente ou por telefone, use **Marcar como Aprovado**. O efeito é exatamente o mesmo da aprovação pelo link: o orçamento vira O.S. com o mesmo número, as peças pendentes são baixadas do estoque e fica registrado quem aprovou.
 
+**Revogar aprovação (MASTER e ADMIN):** se o cliente precisar aprovar de novo (por exemplo, depois de uma revisão do orçamento), use **Revogar Aprovação** na O.S. enquanto ela estiver em *Aprovado* ou *Aguardando Peças*. A O.S. volta a ser orçamento em *Aguardando Aprovação*, com o mesmo número; as peças baixadas na aprovação voltam ao estoque; o link anterior deixa de valer e um **link novo** é gerado (o PDF do orçamento passa a trazer o QR code novo e, com o WhatsApp conectado, o cliente recebe o link). O motivo fica registrado no histórico. Depois que a execução começa, não é possível revogar.
+
 ### 5.7 Finalizar e receber pagamento
 
 Quando os serviços estiverem concluídos:

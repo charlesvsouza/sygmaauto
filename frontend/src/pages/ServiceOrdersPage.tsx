@@ -702,6 +702,27 @@ export function ServiceOrdersPage() {
     }
   };
 
+  // Desfaz a aprovação para o cliente aprovar de novo (novo link/QR code).
+  const revokeApproval = async () => {
+    if (!selectedOrder) return;
+    const reason = window.prompt(
+      'Revogar a aprovação desta O.S.?\n\nEla volta a ser orçamento aguardando aprovação, com o mesmo número e um link novo para o cliente. '
+      + 'Peças baixadas na aprovação voltam ao estoque.\n\nMotivo (opcional):',
+      '',
+    );
+    if (reason === null) return;
+    try {
+      const res = await serviceOrdersApi.revokeApproval(selectedOrder.id, reason.trim() || undefined);
+      const fresh = await serviceOrdersApi.getById(selectedOrder.id);
+      setSelectedOrder(fresh.data);
+      loadOrders();
+      const returned = Number(res.data?.partsReturned || 0);
+      alert(`Aprovação revogada. Envie o orçamento (Documentos → Orçamento) ou o link ao cliente.${returned ? `\n${returned} peça(s) devolvida(s) ao estoque.` : ''}`);
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Erro ao revogar a aprovação');
+    }
+  };
+
   const openCatalog = async (mode: 'service' | 'part') => {
     try {
       const [sRes, pRes] = await Promise.all([servicesApi.getAll(), inventoryApi.getAllParts()]);
@@ -1533,6 +1554,18 @@ export function ServiceOrdersPage() {
                         </button>
                       );
                     })}
+
+                    {/* Revogar aprovação - MASTER/ADMIN, antes do início da execução */}
+                    {['MASTER', 'ADMIN'].includes(userRole) && selectedOrder?.approvalStatus === 'APPROVED'
+                      && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && (
+                      <button type="button"
+                        onClick={revokeApproval}
+                        className="w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                        title="Volta a orçamento aguardando aprovação, com link novo para o cliente"
+                      >
+                        Revogar Aprovação
+                      </button>
+                    )}
 
                     {/* Botão Reservar Pecas - visível em APROVADO e AGUARDANDO_PECAS com pecas na OS */}
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (

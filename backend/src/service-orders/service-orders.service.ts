@@ -721,40 +721,101 @@ export class ServiceOrdersService {
     if (newStatus === 'ENTREGUE') {
     }
 
-    // Notificações WhatsApp (fire-and-forget)
-    if (this.whatsapp.isConfigured()) {
-      const c = updated.customer as any;
-      const v = updated.vehicle as any;
-      const phone: string = c?.phone ?? '';
-      if (phone) {
-        const payload = {
-          tenantId,
-          customerName: c.name ?? '',
-          customerPhone: phone,
-          orderNumber: formatOrderCode(updated),
-          vehicleBrand: v?.brand ?? '',
-          vehicleModel: v?.model ?? '',
-          plate: v?.plate ?? '',
-          approvalLink: (updated as any).approvalToken
-            ? `${process.env.FRONTEND_URL ?? 'https://sigmaauto.com.br'}/aprovacao/${(updated as any).approvalToken}`
-            : undefined,
-          totalCost: (updated as any).totalCost,
-        };
-        if (newStatus === 'AGUARDANDO_APROVACAO') {
-          this.whatsapp.notifyOrcamentoPronto(payload);
-        } else if (newStatus === 'APROVADO') {
-          this.whatsapp.notifyAprovado(payload);
-        } else if (newStatus === 'PRONTO_ENTREGA') {
-          this.whatsapp.notifyProntoEntrega(payload);
-        } else if (newStatus === 'ENTREGUE') {
-          this.whatsapp.notifyEntregue(payload);
-        } else if (newStatus === 'CANCELADO') {
-          this.whatsapp.notifyCancelado(payload);
-        }
-      }
-    }
+    this.notifyStatusChange(tenantId, updated, newStatus);
 
     return updated;
+  }
+
+  // Desfaz uma aprovação (balcão ou link) para o cliente aprovar de novo: volta a ser
+  // orçamento aguardando aprovação, com o MESMO número e um link novo. Inverso exato da
+  // aprovação: devolve ao estoque as peças baixadas nela e limpa quem/quando aprovou.
+  // Só antes de a execução começar (depois disso há trabalho feito e peças aplicadas).
+  async revokeApproval(tenantId: string, id: string, userId: string, reason?: string) {
+    const order = await this.findById(tenantId, id);
+
+    if (order.approvalStatus !== 'APPROVED' || !['APROVADO', 'AGUARDANDO_PECAS'].includes(order.status)) {
+      throw new BadRequestException('Só é possível revogar uma aprovação antes do início da execução');
+    }
+
+    // Peças: em orçamento com reserva de estoque, a baixa aconteceu na aprovação (ou na
+    // reserva, que também é posterior a ela) e é desfeita. Sem reserva, as peças já
+    // saíam do estoque ao serem lançadas no orçamento, então continuam como estavam.
+    let returned = 0;
+    if (order.reserveStock) {
+      const applied = (order.items as any[]).filter((i) => i.type === 'part' && i.partId && i.applied);
+      for (const item of applied) {
+        await this.applyStockMovement(
+          tenantId,
+          item.partId,
+          'ENTRY',
+          item.quantity,
+          `Aprovação revogada OS ${formatOrderCode(order)}`,
+        );
+        await this.prisma.serviceOrderItem.update({ where: { id: item.id }, data: { applied: false } });
+      }
+      returned = applied.length;
+    }
+
+    const tenantDocs = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { budgetValidityDays: true } });
+    const expires = new Date();
+    expires.setDate(expires.getDate() + resolveDocumentSettings(tenantDocs).budgetValidityDays);
+    const isRetifica = order.orderType === 'RETIFICA_MOTOR';
+    const newStatus = isRetifica ? 'AGUARDANDO_APROVACAO_RETIFICA' : 'AGUARDANDO_APROVACAO';
+
+    const data: any = {
+      orderType: isRetifica ? 'RETIFICA_MOTOR' : 'ORCAMENTO',
+      status: newStatus,
+      statusChangedAt: new Date(),
+      approvalStatus: null,
+      approvedAt: null,
+      approvedBy: null,
+      approvalToken: uuidv4(),
+      approvalTokenExpires: expires,
+    };
+    if (order.reserveStock) {
+      Object.assign(data, { partsReserved: false, partsCheckedAt: null, expectedPartsDate: null, purchaseOrderNumber: null });
+    }
+    // A aprovação transforma o custo de diagnóstico em desconto; desfaz.
+    if (order.diagnosticCost > 0) {
+      data.totalDiscount = Math.max(0, order.totalDiscount - order.diagnosticCost);
+      data.totalCost = order.totalParts + order.totalServices + order.totalLabor - data.totalDiscount;
+    }
+
+    const updated = await this.prisma.serviceOrder.update({
+      where: { id },
+      data,
+      include: { customer: true, vehicle: true },
+    });
+
+    const actor = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+    const note = reason?.trim();
+    await this.createTimeline(
+      id,
+      newStatus,
+      `Aprovação revogada por ${actor?.name ?? 'usuário'}${note ? `: ${note}` : ''}. `
+        + `Novo link de aprovação gerado${returned ? `; ${returned} peça(s) devolvida(s) ao estoque` : ''}.`,
+      userId,
+    );
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId,
+        entityType: 'ServiceOrder',
+        entityId: id,
+        action: 'REVOKE_APPROVAL',
+        changes: JSON.stringify({
+          osNumber: formatOrderCode(order),
+          reason: note ?? null,
+          previous: { status: order.status, approvedAt: order.approvedAt, approvedBy: order.approvedBy },
+          partsReturned: returned,
+        }),
+      },
+    });
+
+    // Envia o novo link ao cliente (mesma mensagem de orçamento pronto).
+    this.notifyStatusChange(tenantId, updated, 'AGUARDANDO_APROVACAO');
+
+    return { success: true, status: newStatus, partsReturned: returned };
   }
 
   async applyStockAndFinancial(tenantId: string, id: string, userId: string) {
@@ -1380,6 +1441,41 @@ export class ServiceOrdersService {
         createdBy,
       },
     });
+  }
+
+  // Notificações WhatsApp da mudança de fase (fire-and-forget).
+  private notifyStatusChange(tenantId: string, updated: any, newStatus: string) {
+    if (this.whatsapp.isConfigured()) {
+      const c = updated.customer as any;
+      const v = updated.vehicle as any;
+      const phone: string = c?.phone ?? '';
+      if (phone) {
+        const payload = {
+          tenantId,
+          customerName: c.name ?? '',
+          customerPhone: phone,
+          orderNumber: formatOrderCode(updated),
+          vehicleBrand: v?.brand ?? '',
+          vehicleModel: v?.model ?? '',
+          plate: v?.plate ?? '',
+          approvalLink: (updated as any).approvalToken
+            ? `${process.env.FRONTEND_URL ?? 'https://sigmaauto.com.br'}/aprovacao/${(updated as any).approvalToken}`
+            : undefined,
+          totalCost: (updated as any).totalCost,
+        };
+        if (newStatus === 'AGUARDANDO_APROVACAO') {
+          this.whatsapp.notifyOrcamentoPronto(payload);
+        } else if (newStatus === 'APROVADO') {
+          this.whatsapp.notifyAprovado(payload);
+        } else if (newStatus === 'PRONTO_ENTREGA') {
+          this.whatsapp.notifyProntoEntrega(payload);
+        } else if (newStatus === 'ENTREGUE') {
+          this.whatsapp.notifyEntregue(payload);
+        } else if (newStatus === 'CANCELADO') {
+          this.whatsapp.notifyCancelado(payload);
+        }
+      }
+    }
   }
 
   // Baixa do estoque as peças da O.S. ainda não aplicadas. Retorna quantas foram baixadas.

@@ -128,6 +128,18 @@ export class ServiceOrdersController {
     return this.serviceOrdersService.requestApproval(tenant.tenantId, id);
   }
 
+  @Post(':id/revoke-approval')
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Revogar a aprovação (volta a orçamento aguardando aprovação, com link novo)' })
+  async revokeApproval(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return this.serviceOrdersService.revokeApproval(tenant.tenantId, id, user.userId, body?.reason);
+  }
+
   @Post(':id/apply-stock')
   @Roles('MASTER', 'ADMIN')
   @ApiOperation({ summary: 'Aplicar baixa de estoque e financeiro' })

@@ -157,6 +157,7 @@ export const serviceOrdersApi = {
   delete: (id: string, reason?: string) => api.delete(`/service-orders/${id}`, { data: { reason } }),
   syncPrices: (id: string) => api.post(`/service-orders/${id}/sync-prices`),
   requestApproval: (id: string) => api.post(`/service-orders/${id}/request-approval`),
+  revokeApproval: (id: string, reason?: string) => api.post(`/service-orders/${id}/revoke-approval`, { reason }),
   addItem: (id: string, data: any) => api.post(`/service-orders/${id}/items`, data),
   removeItem: (id: string, itemId: string) => api.delete(`/service-orders/${id}/items/${itemId}`),
   updateItem: (id: string, itemId: string, data: any) => api.patch(`/service-orders/${id}/items/${itemId}`, data),
