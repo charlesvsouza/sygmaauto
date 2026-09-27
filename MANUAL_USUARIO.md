@@ -1,37 +1,62 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 2.2 — Setembro/2026  
+**Versão:** 3.0 — Setembro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
+
+As seções seguem a ordem do menu lateral do sistema.
 
 ---
 
 ## Sumário
 
+**Começando**
 1. [Primeiro Acesso](#1-primeiro-acesso)
-2. [Painel Principal (Dashboard)](#2-painel-principal-dashboard)
-3. [Clientes](#3-clientes)
-4. [Veículos](#4-veículos)
-5. [Ordens de Serviço](#5-ordens-de-serviço)
-6. [Kanban de Pátio](#6-kanban-de-pátio)
-7. [Painel de Recepção (Modo TV)](#7-painel-de-recepção-modo-tv)
-8. [Checklist de Entrada e Saída](#8-checklist-de-entrada-e-saída)
-9. [WhatsApp Automático](#9-whatsapp-automático)
-10. [Serviços](#10-serviços)
-11. [Estoque](#11-estoque)
-12. [Financeiro](#12-financeiro)
-13. [Relatórios Gerenciais](#13-relatórios-gerenciais)
-14. [Usuários](#14-usuários)
-15. [Configurações e Assinatura](#15-configurações-e-assinatura)
-16. [Perfis de Acesso (Roles)](#16-perfis-de-acesso-roles)
-17. [Dúvidas Frequentes](#17-dúvidas-frequentes)
-18. [Comissões de Mecânicos](#18-comissões-de-mecânicos)
-19. [Manutenção Preventiva Automática](#19-manutenção-preventiva-automática)
-20. [NPS — Pesquisa de Satisfação](#20-nps--pesquisa-de-satisfação)
-21. [Módulo Retífica de Motores — Guia Completo](#21-módulo-retífica-de-motores--guia-completo)
-22. [Agenda — Agendamento Interno de OS](#22-agenda--agendamento-interno-de-os)
+2. [Planos e Perfis de Acesso](#2-planos-e-perfis-de-acesso)
+3. [Painel](#3-painel)
+
+**Atendimento**
+4. [Ordens de Serviço](#4-ordens-de-servico)
+5. [Vistoria de Entrada e Saída (Checklist)](#5-vistoria-de-entrada-e-saida-checklist)
+6. [Agenda](#6-agenda)
+7. [Clientes](#7-clientes)
+8. [Veículos](#8-veiculos)
+
+**Oficina**
+9. [Serviços](#9-servicos)
+10. [Estoque](#10-estoque)
+11. [WhatsApp Automático](#11-whatsapp-automatico)
+12. [Manutenção Preventiva](#12-manutencao-preventiva)
+
+**Painéis**
+13. [Kanban de Pátio](#13-kanban-de-patio)
+14. [Recepção / TV](#14-recepcao-tv)
+
+**Financeiro**
+15. [Fluxo de Caixa](#15-fluxo-de-caixa)
+16. [Comissões](#16-comissoes)
+17. [DRE](#17-dre)
+
+**Análise**
+18. [Indicadores](#18-indicadores)
+19. [Relatórios](#19-relatorios)
+20. [NPS — Satisfação](#20-nps-satisfacao)
+
+**Modo Retífica**
+21. [Retífica de Motores](#21-retifica-de-motores)
+
+**Administração**
+22. [Usuários](#22-usuarios)
+23. [LGPD](#23-lgpd)
+24. [Configurações e Assinatura](#24-configuracoes-e-assinatura)
+
+**Ajuda**
+25. [Dúvidas Frequentes](#25-duvidas-frequentes)
+26. [Contato e Suporte](#26-contato-e-suporte)
 
 ---
+
+# Começando
 
 ## 1. Primeiro Acesso
 
@@ -39,8 +64,7 @@
 
 1. Abra o navegador e acesse **sigmaauto.com.br**
 2. Clique em **"Acessar sistema"** no menu ou **"Entrar no sistema"** na página inicial
-3. Uma tela de carregamento será exibida brevemente
-4. Você será redirecionado para a tela de **Login**
+3. Você será levado à tela de **Login**
 
 ### 1.2 Login
 
@@ -48,98 +72,119 @@
 2. Clique em **Entrar**
 3. Caso tenha esquecido a senha, clique em **"Esqueci minha senha"**
 
-### 1.3 Tela de Boas-vindas
+### 1.3 Tela de boas-vindas
 
-Após o primeiro login, você verá a **tela de boas-vindas** com um resumo das principais funcionalidades. Clique em **"Entrar"** ou aguarde o redirecionamento automático para o painel.
+No primeiro login aparece um resumo das principais funcionalidades. Clique em **"Entrar"** ou aguarde o redirecionamento para o painel.
+
+> O sistema funciona em computador, tablet e celular, direto no navegador.
 
 ---
 
-## 2. Painel Principal (Dashboard)
+## 2. Planos e Perfis de Acesso
 
-O Dashboard é a tela inicial após o login. Ele exibe:
+### 2.1 O que cada plano inclui
+
+| Recurso | Start | Pro | Rede |
+|---|:---:|:---:|:---:|
+| Ordens de serviço, clientes, veículos, serviços, estoque, agenda, fluxo de caixa | ✓ | ✓ | ✓ |
+| Documentos do atendimento em PDF e aprovação por link/QR code | ✓ | ✓ | ✓ |
+| Vistoria (checklist) com fotos | — | ✓ | ✓ |
+| WhatsApp automático e manutenção preventiva | — | ✓ | ✓ |
+| Kanban de Pátio e Recepção / TV | — | ✓ | ✓ |
+| Comissões, DRE, Indicadores, Relatórios e NPS | — | ✓ | ✓ |
+| Várias unidades | — | — | ✓ |
+| O.S. por mês | 50 | ilimitadas | ilimitadas |
+| Usuários | 3 | 10 | ilimitados |
+
+Retificadoras de motores usam os planos **Modo Retífica Pro** e **Modo Retífica Rede**, que incluem os recursos do Pro/Rede mais o módulo de retífica (seção 21).
+
+Itens de um plano superior aparecem no menu com um cadeado; ao clicar, o sistema oferece o upgrade.
+
+### 2.2 Perfis de acesso
+
+Cada usuário tem um perfil, escolhido em **Usuários** (seção 22):
+
+| Perfil | Para quem |
+|---|---|
+| **Master** | Dono da conta (um por oficina). Pode tudo, inclusive assinatura e exclusão de O.S. |
+| **Admin** | Administração da oficina: equipe, configurações e gestão completa |
+| **Gerente** | Gerência operacional: atendimento, fases da O.S., descontos até o teto |
+| **Chefe de Oficina** | Liderança técnica por área: O.S., itens, fases e equipe delegada |
+| **Mecânico** | Execução: diagnóstico, peças, serviços e fases técnicas |
+| **Secretaria** | Recepção: abertura de O.S., cadastros, aprovação e entrega |
+| **Financeiro** | Pagamentos, fluxo de caixa e comissões |
+
+> O perfil antigo **Produtivo** tem as mesmas permissões do **Mecânico**.
+
+### 2.3 O que cada perfil pode fazer
+
+| Ação | Admin | Gerente | Chefe de Oficina | Mecânico | Secretaria | Financeiro |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Abrir O.S./orçamento; cadastrar e editar clientes e veículos | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| Lançar serviços e peças; diagnóstico; metrologia | ✓ | ✓ | ✓ | ✓ | — | — |
+| Em Diagnóstico → Orçamento Pronto → Execução → Pronto p/ Entrega | ✓ | ✓ | ✓ | ✓ | — | — |
+| Enviar para aprovação; aprovar ou reprovar no balcão | ✓ | ✓ | ✓ | — | ✓ | — |
+| Registrar pagamento (Faturado) | ✓ | ✓ | ✓ | — | — | ✓ |
+| Confirmar entrega | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| Cancelar O.S. | ✓ | ✓ | ✓ | — | — | — |
+| Reservar peças / pedido de compra | ✓ | ✓ | ✓ | — | ✓ | — |
+| Conceder desconto na O.S. | ✓ | ✓ (até o teto) | — | — | — | — |
+| Lançar no Fluxo de Caixa | ✓ | — | — | — | — | ✓ |
+| Marcar comissão como paga | ✓ | — | — | — | — | ✓ |
+| Revogar aprovação; forçar mudança de fase | ✓ | — | — | — | — | — |
+| Usuários, LGPD, textos dos documentos, tetos de desconto | ✓ | — | — | — | — | — |
+
+O **Master** pode tudo o que está na tabela e, além disso, **excluir O.S.** e gerenciar a **assinatura**.
+
+Na tela da O.S., cada perfil só vê os botões das etapas que pode aplicar. Todos os perfis podem consultar O.S., clientes e veículos e gerar os PDFs.
+
+---
+
+## 3. Painel
+
+O **Painel** é a tela inicial após o login:
 
 | Indicador | Descrição |
 |---|---|
-| **Faturamento** | Total recebido no mês atual (O.S. faturadas) |
-| **OS em Aberto** | Ordens de serviço ainda não finalizadas |
+| **Faturamento** | Total recebido no mês (O.S. faturadas) |
+| **OS em Aberto** | Ordens de serviço ainda não concluídas |
 | **Gráfico de Faturamento** | Receita dos últimos 6 meses |
-| **Agenda de Hoje** | Lista das OS agendadas para hoje ordenadas por horário |
+| **Agenda de Hoje** | O.S. agendadas para hoje, por horário |
 
-O painel **Agenda de Hoje** aparece automaticamente quando há OS com agendamento marcado para o dia atual. Clique em **"Ver completa →"** para abrir a página de agenda semanal.
-
----
-
-## 3. Clientes
-
-### 3.1 Cadastrar um cliente
-
-1. Clique em **Clientes** no menu lateral
-2. Clique no botão **"Novo Cliente"**
-3. Preencha os dados:
-   - **Nome completo** (obrigatório)
-   - **CPF/CNPJ**
-   - **Telefone**
-   - **E-mail**
-   - **Endereço**
-4. Clique em **Salvar**
-
-### 3.2 Pesquisar clientes
-
-Use a **barra de busca** no topo da listagem para pesquisar por nome, CPF ou telefone.
-
-### 3.3 Editar ou excluir
-
-Clique no cliente na lista para ver seus detalhes. Use os botões de **editar (lápis)** ou **excluir (lixeira)** conforme necessário.
+O quadro **Agenda de Hoje** aparece quando há O.S. agendadas para o dia. Clique em **"Ver completa →"** para abrir a Agenda (seção 6).
 
 ---
 
-## 4. Veículos
+# Atendimento
 
-Os veículos são sempre vinculados a um cliente.
+## 4. Ordens de Serviço
 
-### 4.1 Cadastrar um veículo
+A O.S. é o coração do sistema: registra todo o trabalho feito em um veículo.
 
-1. Clique em **Veículos** no menu lateral
-2. Clique em **"Novo Veículo"**
-3. Preencha:
-   - **Placa** (obrigatório)
-   - **Marca / Modelo / Ano**
-   - **Cor**
-   - **KM atual**
-   - **Cliente proprietário** (selecione da lista)
-4. Clique em **Salvar**
-
-### 4.2 Histórico de OS por veículo
-
-Ao abrir um veículo, você visualiza todas as Ordens de Serviço já realizadas nele.
-
----
-
-## 5. Ordens de Serviço
-
-A OS é o coração do sistema. Ela registra todo o trabalho realizado em um veículo.
-
-### 5.0 Ciclo do atendimento
+### 4.1 Ciclo do atendimento
 
 Todo atendimento segue o mesmo caminho:
 
-1. **Entrada** — o veículo chega, você registra a reclamação do cliente e faz a vistoria (checklist de entrada).
+1. **Entrada** — o veículo chega, você registra a reclamação e faz a vistoria (seção 5).
 2. **Orçamento** — após o diagnóstico, os serviços e peças são lançados e o orçamento é enviado ao cliente.
-3. **Ordem de Serviço** — quando o cliente aprova, o orçamento **vira O.S. com o mesmo número**, e segue para execução.
+3. **Ordem de Serviço** — quando o cliente aprova, o orçamento **vira O.S. com o mesmo número** e segue para execução.
 4. **Entrega** — serviço pronto, pagamento registrado (faturamento) e veículo entregue com o termo de garantia.
 
-**Número do atendimento:** cada oficina tem sua própria sequência, exibida em hexadecimal seguida do mês e ano da abertura — por exemplo, **0000007B/09-2026**. O número é o mesmo na entrada, no orçamento, na O.S. e no termo de entrega, e pode ser usado na busca da listagem de O.S.
+**Número do atendimento:** cada oficina tem sua própria sequência, exibida em hexadecimal seguida do mês e ano de abertura — por exemplo, **0000007B/09-2026**. O número é o mesmo na entrada, no orçamento, na O.S. e no termo de entrega, e pode ser usado na busca da listagem.
 
-### 5.1 Criar uma OS
+### 4.2 Criar uma O.S.
 
 1. Clique em **Ordens de Serviço** → **"Nova OS"**
 2. Selecione o **cliente** e o **veículo**
-3. Informe o **motivo da entrada** (reclamação do cliente)
-4. Informe a **KM de entrada** do veículo (se aplicável)
-5. Defina a **data e hora de agendamento** (campo opcional) — aparecerá na Agenda do Dashboard e na página `/agenda`
-6. Clique em **Criar OS**
+3. Informe a **reclamação do cliente**
+4. Informe a **KM de entrada**
+5. Opcional: **agendamento** (data e hora) — aparece no Painel e na Agenda
+6. Opcional: marque **Reserva de Peças no Orçamento** (veja 4.4)
+7. Clique em **Criar OS**
 
-### 5.2 Status da OS
+Também é possível trazer um orçamento feito fora do sistema: **Importar de orçamento PDF**.
+
+### 4.3 Etapas (status)
 
 | Status | Descrição |
 |---|---|
@@ -147,975 +192,629 @@ Todo atendimento segue o mesmo caminho:
 | **Em Diagnóstico** | Técnico avaliando o veículo |
 | **Orçamento Pronto** | Serviços e peças lançados, orçamento pronto para enviar |
 | **Aguardando Aprovação** | Orçamento enviado ao cliente (o link de aprovação é gerado nesta etapa) |
-| **Aprovado** | Cliente aprovou — o orçamento passa a ser **Ordem de Serviço** e as peças saem do estoque |
+| **Aprovado** | Cliente aprovou — o orçamento passa a ser **Ordem de Serviço** |
 | **Reprovado** | Cliente recusou — peças já baixadas voltam ao estoque |
 | **Aguardando Peças** | Serviço pausado por falta de peça |
 | **Em Execução** | Serviços sendo realizados |
 | **Pronto p/ Entrega** | Serviços concluídos, aguardando pagamento |
-| **Faturado** | Pagamento registrado — a receita da O.S. entra no Financeiro |
+| **Faturado** | Pagamento registrado — a receita da O.S. entra no Fluxo de Caixa |
 | **Entregue** | Veículo entregue ao cliente |
 | **Cancelado** | Atendimento cancelado |
 
-**Onde alterar o status:**
-- Dentro da O.S., no quadro **Dados do Veículo** (badge de status no topo do card).
-- O badge abre a lista de transições permitidas conforme perfil de acesso.
+**Onde mudar a etapa:** dentro da O.S., pelo selo de status no quadro **Dados do Veículo** ou pelos botões de **Avançar Status**. Cada perfil vê só as etapas que pode aplicar (seção 2.3).
 
-### 5.3 Adicionar serviços e peças
+### 4.4 Lançar serviços e peças
 
-Dentro da OS aberta:
-1. Clique em **"Adicionar Serviço"** para incluir mão de obra do catálogo
-2. Clique em **"Adicionar Peça"** para incluir peças do estoque
-3. Informe a quantidade e confirme
+Dentro da O.S.:
+1. Clique em **"Adicionar Servico"** para incluir mão de obra do catálogo
+2. Clique em **"Lançar Peça"** para incluir peças do estoque
+3. Informe a quantidade, o **executor** (para comissão) e confirme
 
-### 5.3A IA Assistiva no Orçamento *(novo — plano PRO e REDE)*
+**Quando a peça sai do estoque:**
+- Sem **Reserva de Peças no Orçamento**: ao ser lançada na O.S.
+- Com **Reserva de Peças no Orçamento**: na aprovação do orçamento (e volta ao estoque se o orçamento for reprovado ou a aprovação revogada)
 
-A IA Assistiva sugere serviços e peças automaticamente com base no **sintoma relatado** pelo cliente, cruzando com o catálogo da sua oficina.
+### 4.5 IA assistiva no orçamento *(planos Pro e Rede)*
 
-**Como usar:**
+A IA sugere serviços e peças com base no sintoma relatado, cruzando com o catálogo da oficina.
 
-1. Dentro de uma OS, clique em **"Adicionar Serviço"** ou **"Lançar Peça"** para abrir o catálogo
-2. No cabeçalho do painel, clique no botão **✦ IA** (roxo)
-3. Descreva o problema no campo que aparece:
-   - Ex: *"motor falhando ao acelerar, barulho na suspensão dianteira"*
-   - Ex: *"freios rangendo, pedal mole"*
-   - Ex: *"luz do motor acesa, consumo alto"*
-4. Clique em **"Sugerir"** ou pressione **Enter**
-5. O sistema retorna até 5 sugestões com nome, motivo e preço estimado
-6. Clique em **"+ Lançar"** para adicionar cada item diretamente na OS
+1. Na O.S., abra o catálogo (**Adicionar Servico** ou **Lançar Peça**)
+2. Clique no botão **✦ IA**
+3. Descreva o problema (ex.: *"freios rangendo, pedal mole"*) e clique em **"Sugerir"**
+4. Clique em **"+ Lançar"** para incluir cada sugestão
 
-> Dica: as sugestões consideram o veículo da OS e os itens já lançados. Use como ponto de partida — revise antes de confirmar com o cliente.
+> As sugestões são um ponto de partida — revise antes de enviar ao cliente.
 
-### 5.4 Reservar peças e gerar Pedido de Compra
+### 4.6 Reclamação, diagnóstico e laudo
 
-Quando a OS estiver com status **APROVADA** ou **AGUARDANDO PEÇAS** e tiver peças lançadas, o botão **"Verificar / Reservar Peças"** fica disponível.
+A O.S. tem três campos de texto, em abas:
 
-**Fluxo de reserva:**
-1. Clique em **"Verificar / Reservar Peças"** (ícone de carrinho, cor âmbar)
-2. O sistema exibe um modal com cada peça e sua disponibilidade em estoque:
-   - **Verde ✓** — peça disponível, será reservada imediatamente
-   - **Vermelho ⚠** — peça faltante, irá gerar pedido de compra
-3. Informe opcionalmente a **data prevista de chegada** das peças faltantes
-4. Clique em **"Confirmar Reserva"**
+| Campo | Para quê | Sai nos documentos |
+|---|---|---|
+| **Reclamação Inicial** | O que o cliente relatou | Entrada, orçamento, O.S. |
+| **Diagnóstico Técnico** | O que o técnico encontrou | Orçamento, O.S. |
+| **Laudo / Solução** | O que foi (ou será) feito | Orçamento, O.S. (duas vias) e termo de entrega |
 
-**O que acontece após a confirmação:**
-- Peças disponíveis: debitadas do estoque imediatamente
-- Peças faltantes: gerado **Pedido de Compra** em PDF
-- Se houver peças faltantes, a OS passa automaticamente para **AGUARDANDO PEÇAS**
+Clique em **Salvar alterações** depois de editar.
 
-**Pedido de Compra (PDF):**
+### 4.7 Reservar peças e gerar Pedido de Compra
 
-O PDF é gerado no mesmo padrão visual da O.S. e contém:
-- Dados completos da oficina (nome, CNPJ, endereço, telefone, e-mail)
-- Número sequencial automático no formato `PC-AAAAMMDD-XXXX`
-- Tabela com: Cód. Interno · Cód. Original (SKU) · Peça/Descrição · Qtd · Unitário · Total · Fornecedor · Nº OS
-- Rodapé com assinatura
+Com a O.S. em **Aprovado** ou **Aguardando Peças** e com peças lançadas, use **"Verificar / Reservar Peças"**:
 
-Use o botão **"Imprimir Pedido de Compra"** no modal para baixar o PDF e enviar ao fornecedor.
+1. O sistema mostra cada peça: **verde ✓** (disponível, será reservada) ou **vermelho ⚠** (faltante, vai para o pedido de compra)
+2. Informe, se quiser, a **data prevista de chegada**
+3. Clique em **"Confirmar Reserva"**
 
-**Cancelar reserva:**
+Peças disponíveis saem do estoque na hora; as faltantes geram o **Pedido de Compra** (número `PC-AAAAMMDD-XXXX`) e a O.S. passa para **Aguardando Peças**. Use **"Imprimir Pedido de Compra"** para baixar o PDF e enviar ao fornecedor.
 
-Perfis MASTER, ADMIN e GERENTE podem cancelar a reserva de uma OS. Ao cancelar:
-- Todas as peças reservadas são devolvidas ao estoque
-- A OS retorna ao status **APROVADA**
+Master, Admin e Gerente podem **cancelar a reserva**: as peças voltam ao estoque e a O.S. retorna a **Aprovado**.
 
-### 5.5 Registrar diagnóstico
+### 4.8 Aprovação do orçamento
 
-1. Clique na aba **"Diagnóstico"** dentro da OS
-2. Descreva o problema encontrado
-3. Adicione fotos se necessário
-4. Salve o diagnóstico
+Com o orçamento pronto, clique em **Enviar para Aprovação**. O sistema gera um **link de aprovação**:
 
-### 5.6 Aprovar orçamento
-
-Com o orçamento pronto, mude o status para **Aguardando Aprovação** (botão *Enviar para Aprovação*). Nesse momento o sistema gera um **link de aprovação** para o cliente:
-
-- Com o WhatsApp conectado, o link é enviado automaticamente junto com a mensagem de orçamento pronto.
-- O PDF do **Orçamento** traz um **QR code** com o mesmo link — o cliente aponta a câmera do celular e abre a página.
-- Na página, o cliente vê os serviços, as peças e o total, e toca em **Aprovar orçamento** ou **Recusar** (pode deixar uma observação).
+- Com o WhatsApp conectado, o link vai junto com a mensagem de orçamento pronto.
+- O PDF do **Orçamento** traz um **QR code** com o link — o cliente aponta a câmera do celular e abre a página.
+- Na página, o cliente vê serviços, peças e total, e toca em **Aprovar orçamento** ou **Recusar** (pode deixar uma observação).
 
 Regras do link:
-- Vale pelo prazo de **validade do orçamento** configurado pela oficina (padrão: 7 dias — veja 15.4).
-- Responde **uma única vez**. Depois da resposta, ou se a oficina já tiver mudado a etapa no balcão, o link apenas informa a situação.
+- Vale pelo prazo de **validade do orçamento** (padrão: 7 dias — seção 24.4).
+- Responde **uma única vez**. Depois da resposta, ou se a oficina já mudou a etapa no balcão, o link só informa a situação.
 
-**Aprovação no balcão:** se o cliente aprovar pessoalmente ou por telefone, use **Marcar como Aprovado**. O efeito é exatamente o mesmo da aprovação pelo link: o orçamento vira O.S. com o mesmo número, as peças pendentes são baixadas do estoque e fica registrado quem aprovou.
+**Aprovação no balcão:** se o cliente aprovar pessoalmente ou por telefone, use **Marcar como Aprovado**. O efeito é o mesmo da aprovação pelo link: vira O.S. com o mesmo número, as peças reservadas saem do estoque e fica registrado quem aprovou.
 
-**Revogar aprovação (MASTER e ADMIN):** se o cliente precisar aprovar de novo (por exemplo, depois de uma revisão do orçamento), use **Revogar Aprovação** na O.S. enquanto ela estiver em *Aprovado* ou *Aguardando Peças*. A O.S. volta a ser orçamento em *Aguardando Aprovação*, com o mesmo número; as peças baixadas na aprovação voltam ao estoque; o link anterior deixa de valer e um **link novo** é gerado (o PDF do orçamento passa a trazer o QR code novo e, com o WhatsApp conectado, o cliente recebe o link). O motivo fica registrado no histórico. Depois que a execução começa, não é possível revogar.
+### 4.9 Revogar uma aprovação *(Master e Admin)*
 
-### 5.7 Finalizar e receber pagamento
+Se o cliente precisar aprovar de novo (por exemplo, depois de uma revisão do orçamento), use **Revogar Aprovação** enquanto a O.S. estiver em **Aprovado** ou **Aguardando Peças**:
 
-Quando os serviços estiverem concluídos:
-1. Mude o status para **Pronto p/ Entrega** (informe a KM de saída, se houver teste de rodagem)
+- A O.S. volta a ser orçamento em **Aguardando Aprovação**, com o mesmo número
+- As peças baixadas na aprovação voltam ao estoque
+- O link anterior deixa de valer e um **link novo** é gerado (o PDF do orçamento passa a trazer o QR code novo; com o WhatsApp conectado, o cliente recebe o link)
+- O motivo fica registrado no histórico
+
+Depois que a execução começa, não é possível revogar.
+
+### 4.10 Finalizar e receber pagamento
+
+1. Mude para **Pronto p/ Entrega** (informe a KM de saída, se houver teste de rodagem)
 2. Registre a **condição de pagamento** na O.S.
-3. Clique em **Registrar Pagamento** — a O.S. passa para **Faturado** e o sistema lança **uma única receita** no Financeiro ("Receita - OS nº"), pelo total da O.S.
+3. Clique em **Registrar Pagamento** — a O.S. passa para **Faturado** e o sistema lança **uma única receita** no Fluxo de Caixa ("Receita - OS nº"), pelo total
 4. Entregue o veículo com o **Termo de Entrega e Garantia** e clique em **Confirmar Entrega**
 
-> A aprovação do orçamento não lança receita. A receita de cada O.S. entra uma vez só, no faturamento — assim o Financeiro, a DRE e os indicadores mostram sempre os mesmos números.
+> A aprovação não lança receita. A receita de cada O.S. entra uma vez só, no faturamento — por isso o Fluxo de Caixa, a DRE e os Indicadores mostram os mesmos números.
 
-### 5.8 Documentos do atendimento (PDF)
+### 4.11 Documentos do atendimento (PDF)
 
-Dentro da O.S., clique em **Documentos**. O menu mostra os documentos disponíveis na etapa atual; todos saem com o número do atendimento, os dados da oficina e, no rodapé de cada folha, *"Emitido em … por …"* e *"Página X de Y"*.
+Dentro da O.S., clique em **Documentos**. O menu mostra os documentos da etapa atual. Todos saem com o número do atendimento, os dados da oficina e, no rodapé de cada folha, *"Emitido em … por …"* e *"Página X de Y"*.
 
 | Documento | Quando aparece | O que contém |
 |---|---|---|
 | **Entrada do veículo** | Sempre | Cliente, veículo, KM, reclamação, vistoria (avarias, acessórios, fotos, combustível), aviso sobre objetos no veículo, assinaturas do cliente e do consultor |
-| **Orçamento** | Sempre | Diagnóstico, serviços e peças (com código), descontos, total, validade, condição de pagamento, texto de autorização e QR code para aprovação |
+| **Orçamento** | Sempre | Diagnóstico, laudo/solução, serviços e peças (com código), descontos, total, validade, condição de pagamento, texto de autorização e QR code para aprovação |
 | **Ordem de Serviço — via do cliente** | Após a aprovação | Itens aprovados com valores, técnico de cada serviço e datas de cada etapa |
-| **Ordem de Serviço — via da oficina** | Após a aprovação | **Sem valores**: reclamações, serviços a executar e peças a aplicar com caixas para marcar, local no estoque, espaço para anotações e assinatura do técnico |
-| **Termo de entrega e garantia** | A partir de *Pronto p/ Entrega* | Serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com a data de vencimento e destino das peças substituídas |
+| **Ordem de Serviço — via da oficina** | Após a aprovação | **Sem valores**: reclamação, diagnóstico, laudo, serviços e peças para marcar como feitos, local no estoque e assinatura do técnico |
+| **Termo de entrega e garantia** | A partir de *Pronto p/ Entrega* | Laudo, serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com vencimento e destino das peças substituídas |
 
-> A via da oficina foi pensada para o chão de oficina: o técnico tem a lista do que fazer sem ver preços.
+### 4.12 Ações de edição
 
-### 5.9 Ações de edição da O.S.
-
-- **Fechar**: retorna para a listagem sem salvar alterações pendentes.
-- **Salvar alterações**: grava os dados da O.S. sem sair da tela.
-- **Atualizar O.S.**: permanece disponível no quadro de totais/resumo para recalcular valores.
+- **Fechar**: volta para a listagem sem salvar alterações pendentes
+- **Salvar alterações**: grava os dados da O.S. sem sair da tela
+- **Atualizar O.S.**: recalcula os valores no quadro de totais
 
 ---
 
-## 6. Kanban de Pátio
+## 5. Vistoria de Entrada e Saída (Checklist)
 
-> Disponível no plano **PRO** e **REDE**.
+> Planos **Pro** e **Rede**.
 
-O Kanban de Pátio é um painel visual que exibe todas as OS em andamento organizadas por status, ideal para ser projetado em uma TV da recepção ou do piso da oficina.
+A vistoria registra o estado do veículo na entrada e na saída, com fotos, e protege a oficina em caso de disputa sobre danos pré-existentes.
 
-### 6.1 Acessar o Kanban
+### 5.1 Vistoria de entrada
 
-1. Clique em **Kanban** no menu lateral
-2. O board exibe colunas para cada status: **Aberta**, **Em Diagnóstico**, **Aguardando Aprovação**, **Em Execução**, **Pronto**, entre outros
-3. Cada cartão mostra: número da OS, veículo, cliente e tempo decorrido
+1. Na O.S., clique no botão **Entrada** (no topo; fica verde quando preenchido)
+2. Informe o **responsável pela vistoria** e o **nível de combustível**
+3. Em **Condição das Áreas**, marque as regiões (para-choques, capô, portas, laterais, teto, vidros, interior e pneus): **OK**, **Risco**, **Amassado**, **Quebrado** ou **Ausente**
+4. Em **Acessórios e Objetos no Veículo**, marque cada item como **Presente** ou **Ausente**: estepe, macaco, chave de roda, triângulo, rádio/multimídia, tapetes, documento do veículo (CRLV) e objetos pessoais (descreva na observação)
+5. Em qualquer item, abra a seta para escrever uma observação e tirar até **3 fotos** (opcionais)
+6. Clique em **Salvar Checklist de Entrada**
 
-### 6.2 Modo TV (Fullscreen)
+O documento **Entrada do veículo** (menu *Documentos*) imprime a vistoria para o cliente assinar.
 
-1. Clique no botão **"Modo TV"** no canto superior direito
-2. O painel entra em tela cheia, ideal para monitores de piso de oficina
-3. Pressione **Esc** para sair do modo TV
+### 5.2 Vistoria de saída
 
-> Dica: atualize automaticamente mantendo a aba aberta. O Kanban reflete o estado atual das OS em tempo real.
+Clique em **Saída** e repita o processo antes de entregar o veículo. Entrada e saída ficam separadas para comparação, e o termo de entrega indica quem fez a vistoria de saída.
 
-### 6.3 Alertas visuais automáticos (SLA por etapa)
+---
 
-O sistema monitora o tempo de permanência de cada OS no status atual e exibe alertas coloridos diretamente nos cartões:
+## 6. Agenda
+
+A Agenda organiza o fluxo diário e semanal a partir do **agendamento** (data e hora) das O.S.
+
+### 6.1 Agendar uma O.S.
+
+- **Na criação:** preencha **"Agendamento (data e hora)"**, abaixo da KM de entrada
+- **Depois:** abra a O.S., altere a seção **Agendamento** e clique em **Salvar alterações**
+
+> O agendamento é independente da etapa da O.S.
+
+### 6.2 Página Agenda
+
+Menu **Agenda** (grupo Atendimento): grade semanal de domingo a sábado com as O.S. agendadas.
+
+- Setas **‹ ›** mudam de semana; **"Hoje"** volta para a semana atual
+- Cada cartão mostra horário, cliente, veículo (ou motor, na retífica) e status
+- Abaixo da grade, uma lista da semana em ordem cronológica
+- **"Nova OS"** cria uma O.S. direto da agenda
+
+> Ao confirmar a visita por telefone, já abra a O.S. com o horário — ela aparece no Painel no dia.
+
+---
+
+## 7. Clientes
+
+### 7.1 Cadastrar um cliente
+
+1. Menu **Clientes** → **"Novo Cliente"**
+2. Preencha **nome** (obrigatório), **CPF/CNPJ**, **telefone** (com DDD — usado pelo WhatsApp), **e-mail** e **endereço**
+3. Clique em **Salvar**
+
+### 7.2 Pesquisar, editar e excluir
+
+Use a busca por nome, CPF ou telefone. Abra o cliente para editar. A exclusão é restrita a Admin e Master.
+
+---
+
+## 8. Veículos
+
+Os veículos são sempre vinculados a um cliente.
+
+### 8.1 Cadastrar um veículo
+
+1. Menu **Veículos** → **"Novo Veículo"**
+2. Preencha **placa** (obrigatória), **marca / modelo / ano**, **cor**, **chassi (VIN)**, **KM atual** e o **cliente**
+3. Opcional: intervalos de revisão para a **Manutenção Preventiva** (seção 12)
+4. Clique em **Salvar**
+
+### 8.2 Histórico
+
+Ao abrir um veículo, você vê todas as O.S. já feitas nele.
+
+---
+
+# Oficina
+
+## 9. Serviços
+
+O catálogo de serviços define a mão de obra que a oficina realiza.
+
+1. Menu **Serviços** → **"Novo Serviço"**
+2. Preencha **nome**, **preço de venda**, **tempo médio (TMO)** em horas e **categoria**
+3. Clique em **Salvar**
+
+Os serviços ficam disponíveis para lançamento em qualquer O.S.
+
+---
+
+## 10. Estoque
+
+### 10.1 Cadastrar uma peça *(Master e Admin)*
+
+1. Menu **Estoque** → **"Nova Peça"**
+2. Preencha **nome**, **código interno / referência**, **quantidade**, **estoque mínimo**, **preço de custo** e **preço de venda**
+3. Clique em **Salvar**
+
+### 10.2 Importar nota fiscal
+
+Use **"Importar NF"** para dar entrada nas peças a partir da nota do fornecedor (arquivo XML ou PDF).
+
+### 10.3 Movimentações
+
+As saídas das peças usadas nas O.S. são automáticas (veja 4.4). Entradas manuais (compras, devoluções) são registradas no próprio estoque.
+
+### 10.4 Estoque baixo
+
+Peças abaixo do mínimo aparecem com alerta. A **Projeção de Pedido de Compra** (seção 19) sugere quanto comprar.
+
+---
+
+## 11. WhatsApp Automático
+
+> Planos **Pro** e **Rede**.
+
+O sistema envia mensagens ao cliente pela **API oficial do WhatsApp (Meta)**, no telefone cadastrado no cliente.
+
+### 11.1 Mensagens automáticas
+
+| Evento | Mensagem |
+|---|---|
+| Aguardando Aprovação | Orçamento pronto, com o **link de aprovação** |
+| Aprovado | Confirmação da aprovação e início dos trabalhos |
+| Pronto p/ Entrega | Aviso de veículo pronto |
+| Entregue | Agradecimento pós-serviço |
+| Cancelado | Comunicado de cancelamento |
+| Dia seguinte à entrega | Pesquisa de satisfação (seção 20) |
+| Revisão vencida | Lembrete de manutenção preventiva (seção 12) |
+
+### 11.2 Configurar
+
+1. Em **Configurações**, preencha **WhatsApp Phone Number ID (Meta)** — o identificador do número da oficina na plataforma WhatsApp Business da Meta — e o **Número exibido no WhatsApp**
+2. Salve
+3. Abra **WhatsApp** no menu e confira se o status está **"WhatsApp Conectado"**
+
+> A ativação do número na Meta (conta WhatsApp Business) é feita uma única vez. Se precisar de ajuda, fale com o suporte.
+
+---
+
+## 12. Manutenção Preventiva
+
+> Planos **Pro** e **Rede**. Depende do WhatsApp configurado.
+
+Todo dia às **8h** o sistema procura veículos com revisão vencida — por **KM** ou por **tempo** desde a última revisão — e envia um lembrete ao cliente pelo WhatsApp.
+
+**Configurar por veículo:** no cadastro do veículo, preencha **KM atual**, **intervalo de revisão (KM)**, **intervalo (meses)** e **data da última revisão**.
+
+**Consultar:** menu **Manutenção Prev.** lista os veículos vencidos e o motivo.
+
+---
+
+# Painéis
+
+## 13. Kanban de Pátio
+
+> Planos **Pro** e **Rede**.
+
+Menu **Kanban de Pátio**: as O.S. em andamento em colunas por etapa. Cada cartão mostra número, veículo, cliente e tempo na etapa.
+
+### 13.1 Modo TV
+
+Clique em **"Modo TV"** para tela cheia; **Esc** para sair.
+
+### 13.2 Alertas de prazo
 
 | Situação | Visual | Critério |
 |---|---|---|
-| Diagnóstico em atenção | Borda **âmbar** + badge de alerta | EM DIAGNÓSTICO há mais de **24h** |
-| Diagnóstico atrasado | Card **vermelho pulsante** | EM DIAGNÓSTICO há mais de **48h** |
-| Execução em atenção | Borda **âmbar** + badge de alerta | EM EXECUÇÃO há mais de **48h** |
-| Execução atrasada | Card **vermelho pulsante** | EM EXECUÇÃO há mais de **72h** |
-| Peças aguardando (sem previsão) | Borda **âmbar** + badge de alerta | AGUARDANDO PEÇAS há mais de **48h** sem data prevista |
-| Chegada de peças atrasada | Card **vermelho pulsante** | AGUARDANDO PEÇAS com data prevista vencida |
+| Diagnóstico em atenção | Borda **âmbar** | Em Diagnóstico há mais de **24h** |
+| Diagnóstico atrasado | Cartão **vermelho pulsante** | Em Diagnóstico há mais de **48h** |
+| Execução em atenção | Borda **âmbar** | Em Execução há mais de **48h** |
+| Execução atrasada | Cartão **vermelho pulsante** | Em Execução há mais de **72h** |
+| Peças sem previsão | Borda **âmbar** | Aguardando Peças há mais de **48h** sem data prevista |
+| Chegada de peças atrasada | Cartão **vermelho pulsante** | Aguardando Peças com data prevista vencida |
 
-Um badge descritivo aparece no topo do cartão com o motivo e o tempo decorrido (ex: *"Diagnóstico atrasado (52h)"*).
-
-Na faixa superior do painel, o contador **"X alertas ativos"** (em vermelho pulsante) mostra o total de OS que requerem atenção imediata.
+O contador **"X alertas ativos"** no topo mostra quantas O.S. pedem atenção.
 
 ---
 
-## 7. Painel de Recepção (Modo TV)
+## 14. Recepção / TV
 
-> Disponível no plano **PRO** e **REDE**.
+> Planos **Pro** e **Rede**.
 
-O Painel de Recepção é uma visão dedicada para **monitores de recepção e TV de piso de oficina**. Diferente do Kanban de gestão, este painel mostra apenas as OS ativas em um layout compacto e escuro, otimizado para leitura à distância.
+Menu **Recepção / TV**: visão compacta e escura das O.S. ativas, feita para monitor de recepção. Atualiza sozinha a cada **60 segundos**.
 
-### 7.1 Acessar o Painel de Recepção
-
-1. Clique em **Painel de Recepção** no menu lateral (ícone de monitor)
-2. O painel exibe os cards de OS agrupados com contadores por fase
-
-### 7.2 Filtros por fase
-
-Use a barra de filtros no topo para focar em um grupo de status:
-
-| Grupo | Status incluídos |
+| Filtro | Etapas |
 |---|---|
 | **Recebendo** | Aberta, Em Diagnóstico |
 | **Orçamento** | Aguardando Aprovação |
-| **Em Serviço** | Aprovada, Em Execução |
+| **Em Serviço** | Aprovado, Em Execução |
 | **Peças** | Aguardando Peças |
-| **Prontos** | Pronto para Entrega |
+| **Prontos** | Pronto p/ Entrega |
 
-Clique em um grupo para filtrar; clique novamente para voltar a **Todos**.
-
-### 7.3 Modo TV (Fullscreen)
-
-1. Clique no botão **"Modo TV"** no canto superior direito
-2. O painel ocupa toda a tela com fonte maior, ideal para TV
-3. Clique em **"Sair do modo TV"** para voltar à visualização normal
-
-### 7.4 Alertas no Painel de Recepção
-
-Os mesmos alertas visuais do Kanban de Pátio (bordas pulsantes e badges) também aparecem neste painel, com a mesma lógica de tempo por status. O contador de alertas ativos fica visível na faixa de filtros.
-
-> O painel atualiza automaticamente a cada **60 segundos**. Deixe-o aberto permanentemente em um monitor dedicado.
+**"Modo TV"** amplia a fonte para leitura à distância. Os alertas de prazo são os mesmos do Kanban.
 
 ---
 
-## 8. Checklist de Entrada e Saída
+# Financeiro
 
-> Disponível no plano **PRO** e **REDE**.
+## 15. Fluxo de Caixa
 
-O Checklist registra o estado do veículo no momento da entrada e da saída, com fotos, protegendo juridicamente a oficina.
+Menu **Fluxo de Caixa**: receitas e despesas da oficina.
 
-### 8.1 Preencher o checklist de entrada
+### 15.1 Lançamentos *(Master, Admin e Financeiro)*
 
-1. Dentro da O.S., clique no botão **Entrada** (no topo da tela; fica verde quando já preenchido)
-2. Informe o **responsável pela vistoria** e o **nível de combustível**
-3. Em **Condição das Áreas**, marque as regiões da carroceria (para-choques, capô, portas, laterais, teto, vidros, interior e pneus): **OK**, **Risco**, **Amassado**, **Quebrado** ou **Ausente**
-4. Em **Acessórios e Objetos no Veículo**, marque cada item como **Presente** ou **Ausente**: estepe, macaco, chave de roda, triângulo, rádio/multimídia, tapetes, documento do veículo (CRLV) e objetos pessoais (descreva-os na observação)
-5. Em qualquer item, abra a seta para escrever uma observação e tirar até **3 fotos** (opcionais, comprimidas automaticamente)
-6. Clique em **Salvar Checklist de Entrada**
+1. Clique em **"Lançar Movimentação"**
+2. Escolha **Receita** ou **Despesa**, informe descrição, valor, data e categoria
+3. Salve
 
-O documento **Entrada do veículo** (menu *Documentos*) imprime a vistoria com as avarias, os acessórios, as fotos e o aviso de responsabilidade por objetos, para o cliente assinar.
+> A receita de cada O.S. é lançada **automaticamente** no faturamento ("Receita - OS nº"), uma única vez, pelo total da O.S. Não lance a O.S. à mão.
 
-### 8.2 Checklist de saída
+### 15.2 Resumo e exportação
 
-Clique no botão **Saída** e repita o processo antes de entregar o veículo. O sistema mantém entrada e saída separadas para comparação, e o termo de entrega indica quem fez a vistoria de saída.
-
-> Dica legal: o checklist com fotos serve como evidência em caso de disputas sobre danos pré-existentes.
+O topo mostra receitas, despesas e saldo. Use **Baixar PDF** (relatório com todos os lançamentos e assinatura do responsável) ou **Exportar CSV** (abre direto no Excel, com acentos e vírgula decimal).
 
 ---
 
-## 9. WhatsApp Automático
+## 16. Comissões
 
-> Disponível no plano **PRO** e **REDE**.
+> Planos **Pro** e **Rede**.
 
-O sistema envia mensagens WhatsApp automaticamente ao cliente em cada etapa importante da OS.
+### 16.1 Como são calculadas
 
-### 9.1 Mensagens enviadas automaticamente
+Ao faturar a O.S., o sistema gera a comissão de cada **executor** vinculado a um serviço. A taxa é a **comissão individual** do colaborador (em Usuários) ou, se vazia, a taxa padrão da função:
 
-| Evento | Mensagem enviada |
+| Função | Taxa padrão |
 |---|---|
-| Orçamento pronto | Link de aprovação enviado ao cliente |
-| OS aprovada | Confirmação de início dos trabalhos |
-| Pronto para entrega | Notificação com valor total |
-| Veículo entregue | Mensagem de agradecimento pós-serviço |
-| OS cancelada | Comunicado de cancelamento |
+| Mecânico, Eletricista, Martelinho de Ouro | 10% |
+| Funileiro, Pintor, Preparador | 8% |
+| Lavador, Embelezador Automotivo | 6% |
+| Chefe de Oficina, Serviços Gerais | 5% |
 
-As mensagens são enviadas para o **telefone cadastrado no cliente**. Certifique-se de que o número está correto e no formato com DDD.
+### 16.2 Consultar e pagar
 
-### 9.2 Configurar a conexão WhatsApp
-
-1. Clique em **WhatsApp** no menu lateral (visível para MASTER e ADMIN)
-2. Clique em **"Conectar WhatsApp"** para gerar o QR Code
-3. No celular, abra o WhatsApp → **Dispositivos conectados** → **Conectar dispositivo**
-4. Aponte a câmera para o QR Code exibido na tela
-5. Aguarde a confirmação de status **"Conectado"**
-
-### 9.3 Verificar o status da conexão
-
-A tela de WhatsApp exibe em tempo real se a conexão está **Ativa** ou **Desconectada**. Se desconectada, gere um novo QR Code.
-
-> Importante: o WhatsApp conectado deve permanecer no celular como um dispositivo vinculado. Não desconecte manualmente pelo celular.
+1. Menu **Comissões**; filtre por status, executor, área e período
+2. Exporte com **Baixar PDF** (com os filtros no cabeçalho), **Exportar CSV** ou **Exportar XLSX**
+3. **Marcar pago** (Master, Admin e Financeiro) muda a comissão de **Pendente** para **Pago**
 
 ---
 
-## 10. Serviços
+## 17. DRE
 
-O catálogo de serviços define os tipos de mão de obra que sua oficina realiza.
+> Planos **Pro** e **Rede**.
 
-### 10.1 Cadastrar um serviço
+Menu **DRE**: Demonstrativo de Resultado do mês.
 
-1. Clique em **Serviços** no menu lateral
-2. Clique em **"Novo Serviço"**
-3. Preencha:
-   - **Nome do serviço**
-   - **Preço de venda**
-   - **Tempo médio de operação (TMO)** — em horas
-   - **Categoria**
-4. Clique em **Salvar**
+- **Seletor de mês e ano** e setas **‹ ›**
+- **Estrutura:** receita bruta, deduções (estimativa de 8%), receita líquida, CMV, margem bruta, despesas operacionais, EBITDA e resultado
+- **Gráfico** dos últimos 6 meses
+- **Baixar PDF** e **Exportar CSV**
 
-> Os serviços cadastrados aqui ficam disponíveis para inclusão em qualquer OS.
+**De onde vêm os números:** a receita é a soma das receitas do Fluxo de Caixa no mês (a de cada O.S. entra uma vez, no faturamento); o **CMV** é o custo de compra das peças das O.S. faturadas no mesmo mês.
+
+> Valores para gestão. Para o DRE contábil oficial, consulte seu contador.
 
 ---
 
-## 11. Estoque
+# Análise
 
-Controle de peças e materiais utilizados nas OS.
+## 18. Indicadores
 
-### 11.1 Cadastrar uma peça
+> Planos **Pro** e **Rede**.
 
-1. Clique em **Estoque** no menu lateral
-2. Clique em **"Nova Peça"**
-3. Preencha:
-   - **Nome**
-   - **Código / referência**
-   - **Quantidade em estoque**
-   - **Preço de custo** e **preço de venda**
-4. Clique em **Salvar**
+Menu **Indicadores**: gestão à vista, para a reunião diária da oficina. Escolha o período no topo (mês, trimestre, semestre, semestre anterior ou anual) e clique em **Atualizar** para recarregar.
 
-### 11.2 Movimentações
+**Temas:**
+- **Financeiro:** receita líquida, CMV, despesas e EBITDA; O.S. faturadas e ticket médio
+- **Comparativo de períodos**
+- **Operação:** funil por etapa, taxa de aprovação, O.S. abertas
+- **Estoque:** itens abaixo do mínimo, valor em estoque, risco de ruptura
+- **Pessoas:** comissões e ranking de executores
 
-Ao adicionar uma peça em uma OS, o estoque é debitado automaticamente. Você também pode registrar entradas manuais (compras, devoluções).
-
-### 11.3 Alerta de estoque baixo
-
-O sistema exibe alertas quando a quantidade de uma peça estiver abaixo do mínimo configurado.
-
----
-
-## 12. Financeiro
-
-Controle de receitas e despesas da oficina.
-
-### 12.1 Lançamentos
-
-1. Clique em **Financeiro** no menu lateral
-2. Clique em **"Novo Lançamento"**
-3. Selecione o tipo: **Receita** ou **Despesa**
-4. Informe:
-   - **Descrição**
-   - **Valor**
-   - **Data**
-   - **Categoria**
-5. Clique em **Salvar**
-
-> Ao registrar o pagamento de uma O.S. (status **Faturado**), o sistema lança automaticamente **uma** receita "Receita - OS nº" pelo total da O.S. A aprovação do orçamento não gera lançamento.
-
-### 12.2 Resumo mensal
-
-O painel financeiro exibe o **total de receitas**, **total de despesas** e o **saldo do mês** com gráficos comparativos.
-
-### 12.3 Exportar relatório
-
-- **Baixar PDF** — relatório com todos os lançamentos, resumo do período e assinatura do responsável financeiro.
-- **Exportar CSV** — os mesmos lançamentos em planilha; abre direto no Excel com acentos e valores em reais (vírgula decimal).
+**Indicadores avançados:**
+- **ELR** — faturamento médio por hora vendida de mão de obra
+- **Retrabalho em 30 dias** — veículos que voltaram em até 30 dias
+- **Conversão de orçamento** — percentual de orçamentos aprovados
+- **Aging de O.S. em aberto** — faixas 0–24h, 24–48h, 48–72h, acima de 72h
+- **SLA de peças** — O.S. aguardando peças dentro do prazo
+- **First Time Fix (estimado)** — O.S. concluídas sem retorno
+- **No-show (estimado)** — faltas em agendamentos vencidos
+- **Agenda por turno** — manhã, tarde e noite
+- **Serviços adicionais** — O.S. com 2 ou mais serviços
 
 ---
 
----
+## 19. Relatórios
 
-## 13. Relatórios Gerenciais
+> Planos **Pro** e **Rede**.
 
-> Disponível no plano **PRO** e **REDE**.
+Menu **Relatórios**: 6 análises, com pré-visualização, **PDF** e **planilha (CSV)**.
 
-O módulo de Relatórios Gerenciais oferece **6 tipos de análise**, com pré-visualização, **PDF** e **planilha (CSV)**. Todos os relatórios seguem o mesmo padrão:
+**Padrão de todos os relatórios:**
+- **Cabeçalho** com logo e dados da oficina, título e os **filtros usados na consulta**
+- **Rodapé em todas as folhas** com a oficina, o título, *"Emitido em dd/mm/aaaa hh:mm por Fulano"* (horário de Brasília) e *"Página X de Y"*
+- Nome de arquivo com o tipo e o período (ex.: `DRE-2026-09.pdf`)
 
-- **Cabeçalho** com logo e dados da oficina, título e os **filtros usados na consulta** (período, status, área).
-- **Rodapé em todas as folhas** com a oficina, o título, *"Emitido em dd/mm/aaaa hh:mm por Fulano"* (horário de Brasília) e *"Página X de Y"*.
-- Nome de arquivo previsível, com o tipo e o período (ex.: `DRE-2026-09.pdf`, `OS-2026-09-01_a_2026-09-27.csv`).
+**Como gerar:**
+1. Escolha o tipo e os filtros
+2. Clique em **"Gerar Relatório"**
+3. **"Visualizar PDF"** para conferir, **"Baixar PDF"** ou **"Exportar CSV"**
 
-### 13.1 Acessar os relatórios
+> O PDF e o CSV descrevem a consulta feita em *Gerar Relatório*. Se mudar um filtro, gere de novo.
 
-1. Clique em **Relatórios** no menu lateral
-2. Selecione o tipo de relatório desejado
-3. Informe o período ou filtros solicitados
-4. Clique em **"Gerar Relatório"**
-5. Use **"Visualizar PDF"** para conferir, **"Baixar PDF"** para salvar/imprimir ou **"Exportar CSV"** para abrir no Excel
-
-> O PDF e o CSV descrevem a consulta feita ao clicar em *Gerar Relatório*. Se você mudar um filtro depois, gere o relatório de novo.
-
-### 13.2 Tipos de relatório disponíveis
-
-#### Relatório de OS por Período
-Visão geral das Ordens de Serviço em um intervalo de datas. Inclui:
-- KPIs: total de OS, faturamento, ticket médio, OS concluídas vs. canceladas
-- Lista completa de OS do período com status e valores
-- Top clientes por faturamento
-- Breakdown por status
-
-#### DRE — Mensal
-Demonstração de Resultado do Exercício de um mês específico. Inclui:
-- Receita bruta (receitas do Financeiro no mês, incluindo a receita das O.S. faturadas), CMV (custo das peças das O.S. faturadas no mês), margem bruta
-- EBITDA e resultado líquido
-- Histórico comparativo dos últimos 6 meses
-- Detalhamento de despesas por categoria
-
-#### DRE — Anual
-Consolidação de todos os 12 meses de um ano. Inclui:
-- Tabela de evolução mensal: receita, despesa, EBITDA e resultado mês a mês
-- KPIs totalizados do ano: receita bruta, receita líquida, margem bruta, EBITDA
-- Despesas por categoria acumuladas no ano
-
-#### Indicadores KPI
-Painel gerencial com múltiplos horizontes temporais em um único relatório. Inclui comparativo entre:
-- **Mês atual** — resultado do mês em curso
-- **Trimestre** — últimos 3 meses
-- **Semestre** — últimos 6 meses
-- **Semestre anterior** — 6 meses anteriores ao semestre atual (análise histórica)
-- **Anual** — ano corrente completo
-
-Para cada período, exibe: Receita Bruta, Receita Líquida, Margem Bruta (%), EBITDA (%), O.S. Faturadas e Ticket Médio.
-
-> **BI:** Os mesmos KPIs financeiros estão disponíveis em tempo real na tela de Indicadores para consulta rápida sem necessidade de gerar relatório.
-
-#### Relatório de Comissões por Período
-Análise das comissões da equipe técnica. Inclui:
-- Ranking de colaboradores por valor de comissão
-- Totais pendentes e pagos por colaborador
-- Filtro por período e área de atuação
-
-#### Projeção de Pedido de Compra
-Análise de giro e necessidade de reposição do estoque. Inclui:
-- Giro de estoque dos últimos 90 dias por item
-- Classificação de urgência: **CRÍTICO** / **URGENTE** / **ATENÇÃO**
-- Quantidade sugerida de compra e custo estimado total
-
----
-
-## 13A. DRE — Página Dedicada
-
-Além do módulo de Relatórios, o sistema possui uma página exclusiva do DRE acessível pelo menu lateral.
-
-### Recursos da página DRE
-
-- **Seletor de mês e ano** via dropdowns — navegue diretamente para qualquer mês/ano sem clicar repetidamente
-- **Botão ‹ ›** para navegar mês a mês rapidamente
-- **Baixar PDF**: gera o DRE completo em A4 com KPIs, tabela estrutural, despesas por categoria e histórico dos últimos 6 meses
-- **Exportar CSV**: as linhas do DRE e as despesas por categoria em planilha
-- **Mesma base do Financeiro**: a receita do DRE é a soma das receitas lançadas no mês (a receita de cada O.S. entra uma vez, no faturamento); o CMV é o custo das peças das O.S. faturadas no mesmo mês
-- **Gráfico de barras** com comparativo dos últimos 6 meses (receita vs. despesa)
-
----
-
-## 13B. KPI's — Gestão à Vista
-
-Nova página gerencial acessível no menu lateral, logo abaixo de **DRE**, com foco em leitura rápida para gestores de concessionárias e autocenters.
-
-### O que a página KPI's mostra
-
-- **Tema 1: Financeiro**
-   - Estrutura do resultado no período selecionado (Receita Líquida, CMV, Despesas e EBITDA)
-- **Tema 2: Comparativo de períodos**
-   - Comparação entre mês atual, trimestre, semestre, semestre anterior e anual
-- **Tema 3: Operações de oficina**
-   - Funil por etapa (Entrada, Orçamento, Execução, Pronto/Entrega)
-   - Taxa de aprovação e volume de OS abertas/entregues
-- **Tema 4: Estoque e suprimentos**
-   - Itens abaixo do mínimo, valor total em estoque e itens com maior risco de ruptura
-- **Tema 5: Pessoas e performance**
-   - Totais de comissões (total, pago, pendente) e ranking de executores
-
-### Indicadores avançados (Fase 1)
-
-Além dos temas principais, a página KPI's já inclui os seguintes indicadores de gestão operacional:
-
-- **ELR (Effective Labor Rate)**
-   - Mostra o faturamento médio por hora vendida de serviços/mão de obra
-   - Ajuda a avaliar precificação, descontos e captura de valor
-
-- **Retrabalho 30 dias (Comeback Rate)**
-   - Quantidade e percentual de veículos que retornaram em até 30 dias
-   - Apoia o controle de qualidade da execução técnica
-
-- **Conversão de Orçamento**
-   - Percentual de orçamentos aprovados dentro do funil de aprovação
-   - Indicador direto da performance comercial do atendimento
-
-- **Aging de OS em aberto**
-   - Distribuição em faixas: 0-24h, 24-48h, 48-72h, acima de 72h
-   - Facilita identificar gargalos de prazo e priorização diária
-
-- **SLA de Peças**
-   - Percentual de OS aguardando peças dentro do prazo
-   - Evidencia OS atrasadas e OS sem previsão de entrega
-
-### Indicadores avançados (Fase 2)
-
-- **First Time Fix Rate (estimado)**
-   - Percentual de OS concluídas sem retorno em curto prazo
-   - Usado para acompanhar qualidade da execução e diagnóstico
-
-- **No-show de agendamento (proxy)**
-   - Estimativa de faltas em agendamentos vencidos
-   - Apoia ajustes de confirmação e remarcação
-
-- **Distribuição da agenda por turno**
-   - Volume de agendamentos por manhã, tarde e noite
-   - Ajuda no balanceamento de equipe e capacidade operacional
-
-- **Penetração de serviços adicionais**
-   - Percentual de OS entregues com 2 ou mais serviços/labores
-   - Indicador de performance comercial técnica (upsell de serviços)
-
-> Observação: enquanto não existir status específico de falta no fluxo de OS, o no-show é exibido como proxy/estimativa.
-
-### Como usar
-
-1. Clique em **KPI's** no menu lateral
-2. Escolha o período no topo (mês, trimestre, semestre, semestre anterior ou anual)
-3. Leia os temas em sequência para identificar gargalos e oportunidades
-4. Clique em **Atualizar** para recarregar dados em tempo real
-
-> Dica: utilize o painel KPI's na reunião diária da oficina para decisões rápidas de produtividade, estoque e margem.
-
----
-
-## 14. Usuários
-
-> Disponível apenas para perfis **MASTER** e **ADMIN**.
-
-### 14.1 Convidar um usuário
-
-1. Clique em **Usuários** no menu lateral
-2. Clique em **"Convidar Usuário"**
-3. Informe o **e-mail** e selecione o **perfil de acesso**
-4. Clique em **Enviar convite**
-
-O usuário receberá um e-mail com um link para criar sua senha e acessar o sistema.
-
-### 14.2 Editar ou desativar
-
-Clique no usuário na lista para editar suas informações ou desativá-lo.
-
----
-
-## 15. Configurações e Assinatura
-
-### 15.1 Dados da oficina
-
-1. Clique em **Configurações** no menu lateral
-2. Na aba **Empresa**, preencha:
-   - Razão social / Nome fantasia
-   - CNPJ / CPF
-   - Endereço completo
-   - Telefone e e-mail
-3. Clique em **Salvar**
-
-### 15.2 Configurações operacionais
-
-- **Valor da hora de mão de obra** — usado como base para cálculo de OS
-- **Horas de diagnóstico** — tempo médio cobrado por diagnóstico
-
-### 15.3 Assinatura e plano
-
-Na aba **Assinatura** você visualiza seu plano atual e pode fazer **upgrade** para um plano superior:
-
-| Ação | Disponibilidade |
+| Relatório | Conteúdo |
 |---|---|
-| **Upgrade** (plano superior) | Disponível imediatamente |
-| **Downgrade** (plano inferior) | Disponível apenas após o vencimento do plano atual |
+| **Ordens de Serviço** | Total de O.S., faturadas, faturamento, ticket médio, lista do período e top clientes |
+| **DRE — Mensal** | Estrutura do resultado, despesas por categoria e histórico de 6 meses |
+| **DRE — Anual** | Evolução mês a mês e totais do ano |
+| **Indicadores KPI** | Mês, trimestre, semestre, semestre anterior e ano: receitas, margem, EBITDA, O.S. faturadas e ticket médio |
+| **Comissões** | Ranking por colaborador, pendente e pago, por período e área |
+| **Pedido de Compra — Projeção** | Giro de 90 dias, urgência (Crítico / Urgente / Atenção), quantidade sugerida e custo |
 
-Para fazer upgrade, clique no plano desejado e você será redirecionado para o checkout online (Mercado Pago).
+---
 
-### 15.4 Documentos do atendimento
+## 20. NPS — Satisfação
 
-Em **Configurações**, seção **Documentos do Atendimento** (edição para MASTER e ADMIN):
+> Planos **Pro** e **Rede**. Depende do WhatsApp configurado.
+
+**Como funciona:** todo dia às **9h** o sistema envia a pesquisa pelo WhatsApp aos clientes cujo veículo foi **entregue no dia anterior**. O cliente dá uma nota de **0 a 10** e pode comentar.
+
+**Painel (menu NPS — Satisfação):**
+- **Score NPS** = % de promotores − % de detratores
+- **Promotores** (9–10), **Neutros** (7–8), **Detratores** (0–6)
+- Respostas com nota, comentário, cliente e data
+- Pesquisas enviadas, respondidas e taxa de resposta
+
+| Score | Situação |
+|---|---|
+| **75 a 100** | Excelente |
+| **50 a 74** | Bom, com espaço para melhorar |
+| **0 a 49** | Atenção — investigar causas |
+| **Abaixo de 0** | Crítico — agir já |
+
+---
+
+# Modo Retífica
+
+## 21. Retífica de Motores
+
+> Planos **Modo Retífica Pro** e **Modo Retífica Rede**.
+
+A retífica tem fluxo próprio, da desmontagem ao teste final, com metrologia em 2 etapas, diagnóstico automático e laudo técnico. O motor pode ser avulso (sem veículo cadastrado).
+
+### 21.1 Etapas
+
+```
+Aberta → Desmontagem → Metrologia → Orçamento Retífica → Aguardando Aprovação
+→ Em Retífica → Montagem → Teste Final → Pronto p/ Entrega → Faturado → Entregue
+```
+
+A aprovação, o faturamento, os documentos e as regras de estoque e financeiro são os mesmos da O.S. comum (seção 4).
+
+### 21.2 Criar uma O.S. de retífica
+
+1. **Ordens de Serviço → Nova OS**, tipo **"Retífica de Motor"**
+2. Informe **cliente**, **marca e modelo do motor**, **número de série** (opcional) e **reclamação**
+3. **Criar OS**
+
+### 21.3 Kanban Retífica e Dashboard Retífica
+
+- **Kanban Retífica:** motores por etapa, com alertas de prazo. O painel **Ações Prioritárias** lista os motores críticos; ao clicar, o Kanban rola até o cartão e o destaca.
+- **Dashboard Retífica:** motores por fase, ações prioritárias, tempo médio por fase e taxa de conclusão no prazo.
+- **Modo Retífica:** página de apresentação do fluxo.
+
+### 21.4 Metrologia em 2 etapas
+
+Acesse pelo rótulo **Metrologia** no andamento da O.S. ou pelo botão **Metrologia** no cartão do Kanban Retífica.
+
+**Etapa 1 — Medições:** cilindros (diâmetro, ovalização, conicidade), virabrequim (munhões e moentes), mancais, bielas, folgas e observações. Clique em **"Próximo → Diagnóstico"**.
+
+**Etapa 2 — Diagnóstico automático:** o sistema aponta o que está fora de especificação e sugere serviços e peças do catálogo. Aceite ou remova cada sugestão e confirme: os itens entram na O.S. e ela avança para **Orçamento Retífica**. O diagnóstico automático é opcional.
+
+### 21.5 Laudo técnico
+
+Ao confirmar a metrologia, o **Laudo Técnico de Retífica** abre para impressão, com dados da oficina e do motor, medições, diagnóstico, serviços e peças e assinaturas. Clique em **"Imprimir / Salvar PDF"**. Para reabrir depois, use o botão **Laudo** dentro da O.S.
+
+### 21.6 Voltar fase *(Master e Admin)*
+
+O botão **"Voltar"** ao lado do status retrocede a O.S. uma etapa, para corrigir um passo. Não vale para O.S. faturadas, entregues ou canceladas.
+
+> O.S. de retífica aparecem só no **Kanban Retífica**, não no Kanban de Pátio.
+
+---
+
+# Administração
+
+## 22. Usuários
+
+> Master e Admin.
+
+### 22.1 Cadastrar um colaborador
+
+1. Menu **Usuários** → **"Novo Usuário"**
+2. Preencha **nome**, **e-mail profissional**, **e-mail de recuperação** e **senha inicial** (mínimo 6 caracteres)
+3. Escolha o **perfil de acesso** (seção 2.2), a **área da oficina** (Mecânica, Elétrica, Funilaria e Pintura, Lavação, Higienização e Embelezamento) e a **função** (usada na comissão padrão)
+4. Opcional: **comissão individual (%)** e **chefe da equipe**
+5. **Confirmar cadastro** e passe o e-mail e a senha ao colaborador
+
+### 22.2 Editar, desativar ou redefinir senha
+
+Abra o usuário para editar os dados, desmarcar **"Usuário ativo"** (bloqueia o acesso sem apagar o histórico) ou definir uma **nova senha**.
+
+---
+
+## 23. LGPD
+
+> Master e Admin.
+
+Menu **LGPD**: registro e atendimento das solicitações de titulares de dados (clientes e usuários), com prazo de resposta controlado.
+
+1. **Nova solicitação:** tipo (**Acesso**, **Correção**, **Eliminação** ou **Portabilidade**), titular (cliente ou usuário), nome e e-mail do solicitante e observações
+2. **Acompanhar:** a lista mostra situação e prazo; solicitações vencidas ficam em destaque
+3. **Exportar dados** do titular (arquivo JSON) para acesso ou portabilidade
+4. **Eliminação:** executada com motivo obrigatório; os dados pessoais são anonimizados e o histórico operacional é preservado
+
+---
+
+## 24. Configurações e Assinatura
+
+### 24.1 Dados da oficina
+
+Menu **Configurações**: razão social / nome fantasia, CNPJ ou CPF, endereço, telefone, e-mail e **logo** (aparece nos documentos e relatórios). Salve.
+
+### 24.2 Configurações operacionais *(Master)*
+
+- **Valor da hora de mão de obra**
+- **Horas de diagnóstico** — tempo padrão cobrado no diagnóstico
+- **Comissão padrão (%)**
+
+### 24.3 Limites de desconto do Gerente *(Master e Admin)*
+
+Desconto máximo (%) que o Gerente pode dar em peças e em serviços. Master e Admin não têm limite.
+
+### 24.4 Documentos do atendimento *(Master e Admin)*
 
 | Campo | Padrão | Onde aparece |
 |---|---|---|
-| **Garantia serviços (dias)** | 90 (mínimo do Código de Defesa do Consumidor) | Termo de entrega, com a data de vencimento |
-| **Garantia peças (dias)** | 90 | Termo de entrega, com a data de vencimento |
+| **Garantia serviços (dias)** | 90 | Termo de entrega, com data de vencimento |
+| **Garantia peças (dias)** | 90 | Termo de entrega, com data de vencimento |
 | **Validade orçamento (dias)** | 7 | Orçamento e prazo do link de aprovação |
 | **Autorização do orçamento** | Texto padrão | Orçamento, acima da assinatura do cliente |
 | **Garantia** | Texto padrão (use `{servicos}` e `{pecas}` para os prazos) | Termo de entrega |
 | **Objetos no veículo** | Texto padrão | Documento de entrada |
 
-Deixe um texto em branco para voltar ao texto padrão do sistema.
+Deixe um texto em branco para voltar ao padrão.
 
----
+### 24.5 WhatsApp
 
-## 16. Perfis de Acesso (Roles)
+**Phone Number ID (Meta)** e **número exibido** — veja a seção 11.2.
 
-O sistema possui diferentes níveis de acesso para proteger informações sensíveis:
+### 24.6 Assinatura e plano
 
-| Perfil | O que pode fazer |
+A aba **Assinatura** mostra o plano atual:
+
+| Ação | Quando |
 |---|---|
-| **MASTER** | Tudo. Único proprietário da conta. Gerencia assinatura e configurações. |
-| **ADMIN** | Gestão operacional completa. Pode convidar usuários (exceto MASTER). |
-| **GERENTE** | Gestão de OS, clientes e veículos. Sem acesso a configurações da empresa. |
-| **SECRETARIA** | Cadastro de clientes, veículos e abertura de OS. |
-| **MECANICO** | Execução de OS: diagnóstico, itens técnicos e fotos. Sem acesso a valores. |
-| **FINANCEIRO** | Fechamento de OS, registro de pagamentos e relatórios financeiros. |
+| **Upgrade** | Imediato — escolha o plano e pague pelo checkout (Mercado Pago) |
+| **Downgrade** | Após o vencimento do plano atual |
 
 ---
 
-## 17. Dúvidas Frequentes
+# Ajuda
+
+## 25. Dúvidas Frequentes
 
 **Esqueci minha senha. O que faço?**  
-Na tela de login, clique em "Esqueci minha senha", informe seu e-mail e siga as instruções enviadas.
+Na tela de login, clique em "Esqueci minha senha" e siga as instruções enviadas ao e-mail. O Admin também pode definir uma nova senha em **Usuários**.
 
-**Posso acessar o sistema pelo celular?**  
-Sim. O sistema é responsivo e funciona em qualquer navegador de celular ou tablet.
-
-**Como faço para adicionar outro mecânico?**  
-Acesse **Usuários → Convidar Usuário**, informe o e-mail e selecione o perfil "Mecânico".
-
-**Por que não consigo criar mais OS este mês?**  
-No plano START, o limite é de 50 OS por mês. Faça upgrade para o plano PRO para ordens ilimitadas.
-
-**O pagamento do cliente foi registrado. Como concluo a O.S.?**  
-Depois de **Registrar Pagamento** a O.S. fica como **Faturado**. Ao entregar o veículo, clique em **Confirmar Entrega** para concluir o ciclo.
+**Um colaborador não vê um botão ou recebe "sem permissão".**  
+Cada perfil só faz as ações da tabela da seção 2.3. Confira o perfil dele em **Usuários**.
 
 **O que significa o número 0000007B/09-2026?**  
-É o número do atendimento: a sequência da sua oficina em hexadecimal, seguida do mês e ano de abertura. O mesmo número vale para o orçamento, a O.S. e o termo de entrega.
+É o número do atendimento: a sequência da oficina em hexadecimal, seguida do mês e ano de abertura. Vale para orçamento, O.S. e termo de entrega.
 
 **O cliente disse que o link de aprovação não funciona.**  
-O link vale pelo prazo de validade do orçamento (Configurações → Documentos do Atendimento) e responde uma única vez. Se venceu, volte o orçamento para *Aguardando Aprovação* depois de revisá-lo, ou aprove no balcão com **Marcar como Aprovado**.
+O link vale pela validade do orçamento e responde uma única vez. Se venceu, revise o orçamento e envie de novo para aprovação, ou aprove no balcão com **Marcar como Aprovado**. Se o cliente precisa aprovar de novo algo já aprovado, use **Revogar Aprovação** (seção 4.9).
 
-**Por que os números do DRE mudaram em setembro/2026?**  
-O DRE passou a usar a mesma base do Financeiro: a receita de cada O.S. entra **uma única vez**, no faturamento. Antes, uma mesma O.S. podia ser somada mais de uma vez (na aprovação, no pagamento e na entrega).
+**Registrei o pagamento. Como concluo a O.S.?**  
+Depois de **Registrar Pagamento** a O.S. fica **Faturado**. Ao entregar o veículo, clique em **Confirmar Entrega**.
 
-**Como cancelo minha assinatura ou faço downgrade?**  
-O downgrade fica disponível automaticamente após o vencimento do plano atual. Para cancelamento, entre em contato com **suporte@sigmaauto.com.br**.
+**Por que os números da DRE mudaram em setembro/2026?**  
+A DRE passou a usar a mesma base do Fluxo de Caixa: a receita de cada O.S. entra **uma única vez**, no faturamento. Antes, uma mesma O.S. podia ser somada mais de uma vez.
 
-**Meus dados estão seguros?**  
-O sistema possui controles técnicos de segurança como autenticação, perfis de acesso e isolamento por tenant. Para transparência completa sobre o que está implementado hoje e o que ainda está em evolução para LGPD, consulte o documento **LGPD_COMPLIANCE_E_SEGURANCA.md** no repositório do projeto.
+**Por que não consigo criar mais O.S. este mês?**  
+No plano Start o limite é de 50 O.S. por mês. O Pro não tem limite.
 
-**O WhatsApp não está enviando mensagens. O que fazer?**  
-Acesse **WhatsApp** no menu lateral e verifique se o status está como **"Conectado"**. Se aparecer desconectado, clique em **"Conectar WhatsApp"**, gere um novo QR Code e leia com o celular.
+**O Kanban de Pátio (ou outro recurso) aparece com cadeado.**  
+O recurso é de um plano superior (seção 2.1). Veja **Configurações → Assinatura**.
 
-**O Kanban de Pátio não aparece no menu. Por quê?**  
-O Kanban está disponível apenas nos planos **PRO** e **REDE**. Acesse **Configurações → Assinatura** para fazer upgrade.
+**O WhatsApp não está enviando mensagens.**  
+Abra **WhatsApp** no menu e confira o status. Se aparecer desconectado, verifique o **Phone Number ID** em Configurações e o telefone do cliente (com DDD). Persistindo, fale com o suporte.
 
-**O Painel de Recepção é diferente do Kanban de Pátio?**  
-Sim. O **Kanban de Pátio** é voltado para a equipe interna (arrastar cards, ver detalhes). O **Painel de Recepção** é otimizado para exibição em TV — layout escuro e compacto, auto-refresh de 60 segundos, filtros por fase e alertas visuais.
+**Qual a diferença entre Kanban de Pátio e Recepção / TV?**  
+O Kanban é para a equipe (detalhes e alertas). A Recepção / TV é compacta, escura, atualiza a cada 60 segundos e é feita para exibir em monitor.
 
 **Como funciona o alerta de peças atrasadas?**  
-Ao reservar peças e informar uma data prevista de chegada, o sistema monitora automaticamente. Se a data for ultrapassada e a OS ainda estiver em AGUARDANDO PEÇAS, o card ficará com borda vermelha pulsante e o badge "Peças atrasadas Xh" tanto no Kanban quanto no Painel de Recepção.
+Ao reservar peças com data prevista de chegada, se a data passar e a O.S. seguir em Aguardando Peças, o cartão fica vermelho pulsante com o aviso "Peças atrasadas".
 
-**O Pedido de Compra reserva o estoque automaticamente?**  
-Sim. As peças que já estão no estoque são reservadas (debitadas) no momento da confirmação. As peças faltantes geram o PDF do Pedido de Compra para envio ao fornecedor. Ao receber as peças, faça uma entrada manual no Estoque.
+**O Pedido de Compra reserva o estoque?**  
+Sim: as peças disponíveis saem do estoque na confirmação; as faltantes vão para o pedido. Ao receber, dê entrada no Estoque (ou use **Importar NF**).
 
-**Posso usar o Checklist sem tirar fotos?**  
-Sim. As fotos são opcionais. Você pode marcar apenas as condições das áreas e os acessórios e salvar sem adicionar imagens.
+**Posso fazer a vistoria sem fotos?**  
+Sim. As fotos são opcionais.
 
----
-
-## 18. Comissões de Mecânicos
-
-> Disponível no plano **PRO** e **REDE**.
-
-O módulo de Comissões calcula e controla automaticamente a remuneração variável de cada técnico com base nos serviços que executou.
-
-### 18.1 Como as comissões são calculadas
-
-Ao faturar uma OS (status FATURADO), o sistema gera automaticamente uma comissão para cada executor vinculado a um item de serviço, com base na sua taxa configurada.
-
-| Função | Taxa padrão |
-|---|---|
-| Mecânico / Eletricista | 10% |
-| Funileiro / Pintor / Preparador | 8% |
-| Lavador / Embelezador | 6% |
-| Aprendiz | 5% |
-
-> As taxas podem ser personalizadas por colaborador em **Usuários → editar → Taxa de Comissão**.
-
-### 18.2 Configurar executor em um item de serviço
-
-1. Ao adicionar um serviço na OS, selecione o **executor responsável** no campo "Executor do Serviço"
-2. O sistema vincula o item ao colaborador e calculará a comissão no faturamento
-
-### 18.3 Visualizar comissões
-
-1. Clique em **Comissões** no menu lateral
-2. Filtre por **período** e/ou **área** (Mecânica, Elétrica, Funilaria, etc.)
-3. Veja o ranking de colaboradores por valor, com totais **Pendente** e **Pago**
-4. Exporte com **Baixar PDF** (relatório com os filtros aplicados no cabeçalho), **Exportar CSV** ou **Exportar XLSX**
-
-### 18.4 Marcar como pago
-
-Clique no botão **"Marcar como pago"** ao lado de cada comissão para registrar o pagamento. O status muda de **PENDENTE** para **PAGO**.
+**Meus dados estão seguros?**  
+Há autenticação, perfis de acesso e isolamento entre oficinas. As solicitações de titulares de dados são atendidas pelo menu **LGPD** (seção 23).
 
 ---
 
-## 19. Manutenção Preventiva Automática
+## 26. Contato e Suporte
 
-> Disponível no plano **PRO** e **REDE**.
-
-O sistema monitora automaticamente os veículos cadastrados e envia lembretes de revisão via **WhatsApp** quando a manutenção estiver vencida.
-
-### 19.1 Como funciona
-
-- Todo dia às **8h**, o sistema verifica veículos com:
-  - **KM atual** acima do intervalo de revisão configurado, **ou**
-  - **Data da última revisão** superior ao intervalo em meses configurado
-- Para os veículos identificados, envia mensagem WhatsApp ao cliente com o lembrete
-
-### 19.2 Configurar intervalo de revisão por veículo
-
-1. Acesse **Veículos** e abra o cadastro do veículo
-2. Preencha:
-   - **KM atual**
-   - **Intervalo de revisão (KM)** — ex: 10.000 km
-   - **Intervalo de revisão (meses)** — ex: 6 meses
-   - **Data da última revisão**
-3. Salve
-
-### 19.3 Consultar veículos com manutenção vencida
-
-1. Clique em **Manutenção Preventiva** no menu lateral
-2. O painel lista todos os veículos com manutenção vencida no momento, com o motivo (KM ou prazo)
-
-> A funcionalidade depende do WhatsApp estar **conectado** e do telefone do cliente estar cadastrado.
-
----
-
-## 20. NPS — Pesquisa de Satisfação
-
-> Disponível no plano **PRO** e **REDE**.
-
-O NPS (Net Promoter Score) mede a satisfação do cliente automaticamente após a entrega do veículo.
-
-### 20.1 Como funciona
-
-- Ao faturar ou entregar uma OS (status FATURADO/ENTREGUE), o sistema envia automaticamente um link de pesquisa via **WhatsApp** para o cliente
-- O cliente acessa o link, dá uma nota de **0 a 10** e pode deixar um comentário
-- As respostas são consolidadas no painel de NPS
-
-### 20.2 Dashboard NPS
-
-1. Clique em **NPS** no menu lateral
-2. O painel exibe:
-   - **Score NPS** calculado (% Promotores − % Detratores)
-   - Distribuição por categoria: **Promotores** (9–10), **Neutros** (7–8), **Detratores** (0–6)
-   - Lista de respostas com nota, comentário, cliente e data
-   - Totais de pesquisas enviadas, respondidas e taxa de resposta
-
-### 20.3 Enviar pesquisa manualmente
-
-1. Dentro de uma OS, clique em **"Enviar NPS"** (disponível após faturamento)
-2. O link de pesquisa é enviado imediatamente via WhatsApp
-
-### 20.4 Interpretação do Score
-
-| Score | Situação |
-|---|---|
-| **75 a 100** | Excelente — clientes muito satisfeitos |
-| **50 a 74** | Bom — mas há espaço para melhorias |
-| **0 a 49** | Atenção — investigar causas de insatisfação |
-| **Abaixo de 0** | Crítico — ação imediata necessária |
-
----
-
-## 21. Módulo Retífica de Motores — Guia Completo
-
-> Disponível para oficinas e retificadoras com plano **PRO** ou **REDE**. Ative o tipo de OS "Retífica de Motor" na criação da ordem.
-
-O módulo de Retífica possui um **fluxo de status próprio**, separado das OS convencionais. Ele cobre desde a desmontagem até o teste final, com metrologia em 2 etapas, diagnóstico automático e emissão de laudo técnico.
-
----
-
-### 21.1 Fluxo de Status da Retífica
-
-```
-ABERTA → DESMONTAGEM → METROLOGIA → ORCAMENTO_RETIFICA
-→ AGUARDANDO_APROVACAO_RETIFICA → EM_RETIFICA
-→ MONTAGEM → TESTE_FINAL → PRONTO_ENTREGA → FATURADO → ENTREGUE
-```
-
-| Status | Descrição |
-|---|---|
-| **ABERTA** | Motor recebido, aguardando desmontagem |
-| **DESMONTAGEM** | Peças sendo separadas e catalogadas |
-| **METROLOGIA** | Medições técnicas sendo realizadas |
-| **ORÇAMENTO RETÍFICA** | Orçamento montado após diagnóstico da metrologia |
-| **AGUARDANDO APROVAÇÃO** | Cliente sendo consultado sobre o orçamento |
-| **EM RETÍFICA** | Trabalho de retífica em execução |
-| **MONTAGEM** | Motor sendo remontado com peças retificadas |
-| **TESTE FINAL** | Motor testado antes da entrega |
-| **PRONTO ENTREGA** | Motor aprovado, aguardando retirada |
-| **FATURADO / ENTREGUE** | Ciclo concluído |
-
----
-
-### 21.2 Criar uma OS de Retífica
-
-1. Clique em **Ordens de Serviço → Nova OS**
-2. No campo **Tipo de O.S.**, selecione **"Retífica de Motor"**
-3. Preencha:
-   - **Cliente**
-   - **Marca do motor** (ex: Cummins, MWM, Perkins)
-   - **Modelo** e **Número de série** (opcional)
-   - **Reclamação** — descreva o problema relatado
-4. Clique em **Criar OS**
-
-> Diferente de uma OS convencional, a OS de retífica não requer um veículo cadastrado — pode ser um motor avulso trazido pelo cliente.
-
----
-
-### 21.3 Kanban de Retífica
-
-1. Clique em **Retífica** no menu lateral (ícone de engrenagem)
-2. O Kanban exibe os motores organizados em colunas por status
-3. Cada card mostra: número da OS, modelo do motor, tempo no status atual e alertas de SLA
-
-**Painel de Ações Prioritárias:**
-
-No topo do Kanban de Retífica, um painel destaca automaticamente os motores em situação crítica de SLA — motores com prazo vencido são listados em vermelho, com link direto para o card no Kanban.
-
-**Deep-link de foco:**
-
-Ao clicar em um motor crítico no painel de prioridades, o Kanban rola automaticamente e destaca o card correspondente com uma borda pulsante.
-
----
-
-### 21.4 Metrologia em 2 Etapas
-
-A metrologia é o coração técnico da retífica. Acesse-a de duas formas:
-
-- Dentro da OS (em qualquer tela): clique no **label "Metrologia"** no andamento da OS
-- No Kanban de Retífica: clique no botão **"Metrologia"** no card do motor
-
-**Etapa 1 — Medições:**
-
-Informe as medições técnicas do motor:
-- **Diâmetro do cilindro** (medição atual vs. especificação)
-- **Ovalização** e **conicidade**
-- **Medição do virabrequim** (munhão e pino de manivela)
-- **Folga lateral e axial**
-- Campo de **observações técnicas** livres
-
-Clique em **"Próximo → Diagnóstico"** para avançar.
-
-**Etapa 2 — Diagnóstico Automático:**
-
-Com base nas medições informadas, o sistema:
-1. Identifica automaticamente quais componentes estão fora da especificação
-2. Sugere serviços de retífica necessários (ex: alargamento de cilindro, retífica de virabrequim)
-3. Sugere peças de reposição do catálogo (ex: jogo de anéis, bronzinas, pistões)
-4. Exibe a lista de sugestões para revisão do técnico
-
-Você pode **aceitar** ou **remover** cada sugestão antes de confirmar. Ao confirmar:
-- Os serviços e peças sugeridos são adicionados automaticamente à OS
-- A OS avança para o status **ORÇAMENTO_RETIFICA**
-
----
-
-### 21.5 Laudo Técnico de Retífica
-
-Ao confirmar a metrologia, o sistema abre automaticamente o **Laudo Técnico** para impressão.
-
-**O laudo contém:**
-- Dados da oficina (nome, CNPJ, endereço)
-- Dados do motor (marca, modelo, série, OS)
-- Tabela completa das medições realizadas vs. especificações
-- Diagnóstico técnico em texto
-- Serviços e peças indicados
-- Campo de assinatura do técnico responsável
-- Data e número da OS
-
-**Imprimir o laudo:**
-
-1. O laudo abre automaticamente em modal após confirmar a metrologia
-2. Clique em **"Imprimir / Salvar PDF"** para baixar o laudo em PDF
-3. Para reimprimir a qualquer momento: dentro da OS, clique no botão **"Laudo"** (ícone de documento)
-
-> O laudo serve como documento técnico formal entregue ao cliente junto com o motor.
-
----
-
-### 21.6 Botão "Voltar Fase" (Admin/Master)
-
-Perfis **MASTER** e **ADMIN** podem retroceder uma OS de Retífica para o status anterior caso seja necessário corrigir um passo.
-
-1. Dentro da OS, clique no botão **"← Voltar fase"** (visível apenas para MASTER/ADMIN)
-2. Confirme a operação
-3. A OS retorna ao status anterior no fluxo
-
-> Este botão não está disponível para OS já finalizadas (FATURADO/ENTREGUE/CANCELADO).
-
----
-
-### 21.7 Dashboard de Retífica
-
-O Dashboard de Retífica oferece uma visão gerencial dos motores em processo.
-
-**Acesse via:** menu lateral → **Dashboard Retífica**
-
-**O que exibe:**
-- Total de motores em cada fase do fluxo
-- **Painel de Ações Prioritárias** — motores críticos com SLA vencido ordenados por urgência
-- Tempo médio por fase
-- Taxa de conclusão no prazo
-
----
-
-### 21.8 Perguntas frequentes sobre Retífica
-
-**Posso usar a OS de Retífica para um motor sem veículo?**
-Sim. Na criação, o campo "Veículo" é opcional. Informe a marca, modelo e número de série do motor diretamente.
-
-**O diagnóstico automático é obrigatório?**
-Não. Você pode ignorar as sugestões e lançar serviços/peças manualmente na OS normalmente.
-
-**Posso reimprimir o laudo depois?**
-Sim. A qualquer momento dentro da OS, clique no botão de laudo para reabrir e reimprimir.
-
-**O fluxo de retífica aparece no Kanban convencional?**
-Não. OS do tipo Retífica aparecem apenas no **Kanban de Retífica** (menu lateral → Retífica). O Kanban convencional exibe apenas OS de veículos.
-
----
-
-## 22. Agenda — Agendamento Interno de OS
-
-O módulo de Agenda permite organizar o fluxo diário e semanal da oficina visualizando todas as OS com data/hora de agendamento marcada.
-
----
-
-### 22.1 Agendar uma OS
-
-**Na criação:**
-1. Ao criar uma nova OS, preencha o campo **"Agendamento (data e hora)"** logo abaixo do KM de entrada
-2. Selecione a data e a hora desejada no seletor de data/hora
-3. Conclua normalmente a criação da OS
-
-**Editando uma OS já criada:**
-1. Abra a OS na listagem
-2. No painel lateral de edição, localize a seção **"Agendamento"**
-3. Preencha ou altere a data/hora
-4. Clique em **"Salvar alterações"**
-
-> Dica: o campo de agendamento é livre e independente do status da OS. Você pode agendar uma OS já em execução para uma data de entrega prevista, por exemplo.
-
----
-
-### 22.2 Painel "Agenda de Hoje" no Dashboard
-
-A tela principal do Dashboard exibe automaticamente um painel **"Agenda de Hoje"** sempre que houver OS agendadas para o dia corrente.
-
-- OS listadas em ordem cronológica de horário
-- Exibe: horário, cliente, veículo e status atual da OS
-- Clique em qualquer OS para ir diretamente para a listagem
-- Clique em **"Ver completa →"** para abrir a página de Agenda semanal
-
----
-
-### 22.3 Página Agenda (/agenda)
-
-A página de Agenda exibe uma **grade semanal com 7 colunas** (domingo a sábado), mostrando todas as OS agendadas distribuídas pelos dias da semana.
-
-**Acessar:**
-1. Clique em **Agenda** no menu lateral (grupo Atendimento)
-
-**Navegação por semana:**
-- Use as setas **‹** e **›** no cabeçalho para navegar entre semanas
-- Clique em **"Hoje"** para voltar à semana atual
-- O dia atual é destacado em azul
-
-**Cards de OS:**
-Cada OS agendada aparece como um card no dia correspondente, exibindo:
-- Horário do agendamento
-- Nome do cliente
-- Veículo (marca, modelo) ou equipamento (Retífica)
-- Badge colorido de status
-
-Clique em qualquer card para ir para a listagem de Ordens de Serviço.
-
-**Lista consolidada:**
-Abaixo da grade semanal, uma lista consolidada exibe todas as OS da semana em ordem cronológica com data, horário, cliente, veículo, status e número da OS.
-
-**Botão "Nova OS":**
-Cria uma nova OS diretamente da página de Agenda para agilizar o cadastro de agendamentos.
-
----
-
-### 22.4 Dicas de uso
-
-- Use o agendamento para **organizar a fila diária** e evitar acumulo de veículos parados
-- Combine com o **Kanban de Pátio** para ter uma visão completa do fluxo: agenda no dashboard mostra o que vai chegar, o Kanban mostra o que já está na oficina
-- Ao telefonar confirmando a visita, já abra a OS e defina o horário — ele aparecerá no painel do dia seguinte
-
----
-
-## Contato e Suporte
-
-| Canal | Contato |
-|---|---|
-| E-mail suporte | suporte@sigmaauto.com.br |
-| E-mail comercial | contato@sigmaauto.com.br |
-| Site | sigmaauto.com.br |
-
----
-
-*SigmaAuto © 2026 — Todos os direitos reservados*
+- **E-mail:** suporte@sigmaauto.com.br
+- **Site:** [sigmaauto.com.br](https://sigmaauto.com.br)

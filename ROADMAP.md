@@ -1,6 +1,6 @@
 # SigmaAuto — Roadmap & Estratégia Comercial
 
-**Última atualização:** 07/07/2026 (auditoria de código real vs. roadmap)
+**Última atualização:** 27/09/2026 (ciclo do atendimento, documentos, financeiro unificado e permissões)
 **Produto:** SigmaAuto — SaaS multi-tenant para gestão de oficinas mecânicas
 **Domínio:** sigmaauto.com.br
 
@@ -47,9 +47,14 @@
 | **MASTER** | Proprietário. Um por tenant. Acesso total. Gerencia assinatura. |
 | **ADMIN** | Gerência operacional. Convida PRODUTIVO/FINANCEIRO. |
 | **GERENTE** | Gerência operacional sem acesso a configurações. |
-| **SECRETARIA** | Atendimento, abertura de OS, cadastro de clientes. |
-| **MECANICO** | Execução técnica. Diagnóstico, itens e fotos. Sem acesso a valores. |
-| **FINANCEIRO** | Fechamento, pagamentos, relatórios financeiros. |
+| **CHEFE_OFICINA** | Chefe técnico. Tudo do Mecânico + abre O.S., cadastra e conduz aprovação, faturamento e entrega. |
+| **SECRETARIA** | Recepção: abre O.S., cadastra cliente/veículo, envia para aprovação, aprova no balcão e confirma entrega. |
+| **MECANICO** | Execução técnica. Diagnóstico, itens e fotos. `PRODUTIVO` é o nome legado, com as mesmas permissões. |
+| **FINANCEIRO** | Fatura/registra pagamento, confirma entrega e lança no Fluxo de Caixa. |
+
+> Desde 27/09/2026 a regra é única: `backend/src/common/roles.ts` (espelho em `frontend/src/lib/roles.ts`)
+> define quem pode levar a O.S. a cada etapa; a tela mostra só as etapas permitidas. Revogar/forçar aprovação:
+> MASTER/ADMIN. Excluir O.S.: MASTER.
 
 ---
 
@@ -58,10 +63,18 @@
 | Componente | Plataforma | URL |
 |---|---|---|
 | Frontend | Vercel | https://sigmaauto.com.br |
-| Backend API | Railway | https://sygmaauto-api-production.up.railway.app |
-| Banco de Dados | Railway PostgreSQL | Provisionado automaticamente |
-| WhatsApp | Meta Cloud API (oficial) | `WHATSAPP_PROVIDER=META_CLOUD` — Evolution API foi removida do sistema por segurança |
+| Backend API | Railway (projeto `sygmaauto`, renomeado de `distinguished-strength` em 13/09/2026) | https://sygmaauto-api-production.up.railway.app |
+| Banco de Dados | Railway PostgreSQL (`Postgres-geEZ`, região `us-east4` — mesma região das Functions Vercel) | Interno, sem proxy público |
+| WhatsApp | Meta Cloud API (oficial) | `WHATSAPP_PROVIDER=META_CLOUD` — Evolution API foi removida do código do sistema por segurança |
 | CI/CD | GitHub Actions | Push master → deploy automático |
+
+> **Nota de infra (13/09/2026):** o projeto Railway tinha um segundo Postgres legado (região antiga,
+> `asia-southeast1`) e um Redis (`Redis-KM-s`) sem nenhum consumidor — o Redis foi confirmado órfão
+> (`DBSIZE=0`, zero tráfego em 7 dias) e removido. O Postgres legado foi mantido de propósito: ainda
+> guarda os schemas usados pela instância standalone do Evolution API (`sygmaauto-wa-region-b`), que
+> segue como serviço à parte, fora do código deste app. Quatro variáveis de ambiente mortas
+> (`DATABASE_CONNECTION_URI`, `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE`) também
+> foram removidas do serviço `sygmaauto-api` por não terem nenhuma referência no código.
 
 ---
 
@@ -211,6 +224,47 @@
 - [x] **IA — segundo provedor (Gemini)** — além do OpenAI GPT-4o-mini no orçamento assistivo, `import-nf.service.ts` usa Google Gemini para interpretar PDF de nota fiscal de fornecedor na importação de estoque.
 - [x] **Rebranding Oficina360 → Sigma Auto** — logo SVG/PNG, wordmark, substituição em todas as telas (login, marketing, splash, PDFs).
 - [x] **Redesenho de tema: dark premium dourado → claro verde-água (padrão)** — ver `DESIGN_STATUS.md` para o histórico completo. Tema escuro selecionável foi removido em 07/07/2026 (fixado apenas em Login/Register); grades estilo ERP aplicadas a Clientes/Veículos/Serviços/Estoque/Usuários/Livro Caixa; dashboard distilado de 9 para 5 KPIs.
+
+---
+
+### ✅ Sprint 3.6 — Descontos, Identidade Visual e Refinamentos de UI *(concluído, não documentado até 13/09/2026)*
+
+> Esta seção documenta retroativamente os commits entre 08/07/2026 e 06/09/2026 que não haviam sido
+> incorporados a este roadmap — dois períodos de trabalho separados por hiatos de atividade (16 dias
+> em julho, 34 dias entre agosto e setembro).
+
+- [x] **Redesign da Landing Page** *(08–18/07/2026)* — nova hero orbital (`OrbitalHero.tsx`) inspirada em sigmadiagnostics.com.br, com 3 anéis animados; é um restyle visual da `LandingPage.tsx` existente, não o replatform/CMS do Sprint 3.1 (que segue greenfield)
+- [x] **Compactação do modal "Nova OS"** *(08–18/07/2026, 5 commits)* — layout landscape, largura reduzida, paddings/botões compactados para melhor aproveitamento de tela
+- [x] **CI/CD** — removido job duplicado "Deploy Frontend → Vercel" do GitHub Actions; a integração Git nativa da Vercel (Root Directory=frontend) já era o único caminho real de deploy do frontend, o Actions rodava em paralelo desde 04/07 sem impacto em produção
+- [x] **Acessibilidade** — `type="button"` adicionado aos 175 `<button>` restantes (34 arquivos) sem o atributo
+- [x] **Sistema de desconto em O.S.** *(03/08/2026)*
+  - Desconto percentual em peças e em serviços, aplicável na própria O.S. (`discountPartsPercent`/`discountServicesPercent` no schema)
+  - Teto de desconto por role — GERENTE tem limite configurável pelo tenant; roles superiores sem teto
+  - Resumo da O.S. detalha total geral e valor de desconto separadamente
+  - Fixes de contraste: cor de texto forçada e `color-scheme` corrigido nos campos de desconto (tema claro deixava texto ilegível)
+- [x] **Logo da oficina e dados do veículo** *(06/09/2026)*
+  - Upload de logo por tenant, usado em telas do sistema
+  - Reorganização do campo VIN/Chassi nos formulários de veículo
+  - Chassi/VIN exibido no card de dados do veículo dentro da O.S.
+  - Fix: `customerId` removido do payload de atualização de veículo (campo não deveria ser alterável nesse fluxo)
+
+---
+
+### ✅ Sprint 3.7 — Ciclo do Atendimento, Documentos e Financeiro Unificado *(27/09/2026)*
+
+> Detalhes e decisões do dono em `MELHORIAS_RELATORIOS_E_OS.md` (seções 2.x).
+
+- [x] **PDFs e relatórios** — fuso de Brasília, escape de HTML, status por extenso, paginação; base única de PDF com rodapé "emitido por" e exportação CSV
+- [x] **Numeração da O.S.** — contador por oficina em hexadecimal + mês-ano (`0000007B/09-2026`); o orçamento aprovado vira O.S. com o mesmo número
+- [x] **Configurações → Documentos do Atendimento** — garantia (90 dias serviço / 90 dias peça, configurável), validade do orçamento e textos
+- [x] **Vistoria** — acessórios fixos (presente/ausente) e fotos opcionais
+- [x] **Documentos do atendimento** — entrada, orçamento com QR code, O.S. via do cliente e via da oficina (sem valores), termo de entrega e garantia; Laudo / Solução impressos
+- [x] **Aprovação por link** — página pública `/aprovacao/:token` + `/public/approval/:token` (antes o link do WhatsApp não funcionava); revogar aprovação para o cliente aprovar de novo
+- [x] **Financeiro unificado** — balcão e link com o mesmo efeito; receita da O.S. = um lançamento no faturamento; Financeiro, DRE e indicadores leem o mesmo livro-caixa; acerto dos dados antigos (`unifyOrderRevenue`)
+- [x] **Permissões por perfil** — regra única por etapa de destino (ver "Roles e Permissões")
+- [x] **Deploy** — schema aplicado antes de subir a API; acertos de dados rodam na subida
+- [x] **Manual do Usuário 3.0** — reorganizado na ordem do menu lateral
+- [ ] **Conferir em produção** — gerar cada documento de uma O.S. real, aprovar um orçamento pelo link e testar os perfis Recepção, Financeiro e Mecânico
 
 ---
 
