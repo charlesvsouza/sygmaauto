@@ -311,7 +311,7 @@ ${photosHtml}`;
     const consultant = ck?.completedBy || issuerName;
     return `
 ${this.clientVehicle(ctx)}
-${this.textSection('Reclamação do cliente', order.complaint || null, 3)}
+${this.textSection('Reclamação inicial', order.complaint || null, 3)}
 ${order.scheduledDate ? `<table class="kv"><tr><td>Agendamento</td><td>${formatDateTimeBR(order.scheduledDate)}</td></tr></table>` : ''}
 <div class="sec">Vistoria de entrada</div>
 ${vistoria}
@@ -339,8 +339,9 @@ ${this.signatures([
     }
     return `
 ${this.clientVehicle(ctx)}
-${this.textSection('Reclamação do cliente', order.complaint)}
-${this.textSection('Diagnóstico', order.diagnosis)}
+${this.textSection('Reclamação inicial', order.complaint)}
+${this.textSection('Diagnóstico técnico', order.diagnosis)}
+${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.valuedItems(order, false)}
 ${this.totals(order)}
 <table class="kv"><tr><td>Validade do orçamento</td><td>${formatDateBR(validUntil)}</td><td>Condição de pagamento</td><td>${e(order.paymentMethod || 'A combinar')}</td></tr></table>
@@ -361,11 +362,11 @@ ${this.signatures([
     return `
 ${this.clientVehicle(ctx)}
 ${this.stageDates(order)}
-${this.textSection('Reclamação do cliente', order.complaint)}
-${this.textSection('Diagnóstico', order.diagnosis)}
+${this.textSection('Reclamação inicial', order.complaint)}
+${this.textSection('Diagnóstico técnico', order.diagnosis)}
 ${this.valuedItems(order, true)}
 ${this.totals(order)}
-${this.textSection('Laudo técnico', order.technicalReport)}
+${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.textSection('Observações', order.observations)}
 ${this.signatures([
   { role: 'Técnico responsável', name: techs.join(', ') || order.mechanic?.name },
@@ -389,8 +390,9 @@ ${this.signatures([
     return `
 ${this.clientVehicle(ctx)}
 ${order.scheduledDate ? `<table class="kv"><tr><td>Agendamento</td><td>${formatDateTimeBR(order.scheduledDate)}</td></tr></table>` : ''}
-${this.textSection('Reclamação do cliente', order.complaint || null, 2)}
-${this.textSection('Diagnóstico', order.diagnosis)}
+${this.textSection('Reclamação inicial', order.complaint || null, 2)}
+${this.textSection('Diagnóstico técnico', order.diagnosis)}
+${this.textSection('Laudo / Solução', order.technicalReport)}
 ${servicesHtml}
 ${partsHtml}
 ${this.textSection('Observações', order.observations)}
@@ -416,6 +418,7 @@ ${this.signatures(
     return `
 ${this.clientVehicle(ctx, { kmSaida: true })}
 ${this.stageDates(order)}
+${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.valuedItems(order, true)}
 ${this.totals(order, [['Valor pago', paid], ['Saldo a pagar', balance]])}
 <table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr></table>
