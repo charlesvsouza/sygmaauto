@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 2.1 — Maio/2026  
+**Versão:** 2.2 — Setembro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -60,7 +60,7 @@ O Dashboard é a tela inicial após o login. Ele exibe:
 
 | Indicador | Descrição |
 |---|---|
-| **Faturamento** | Total recebido no mês atual (OS concluídas e pagas) |
+| **Faturamento** | Total recebido no mês atual (O.S. faturadas) |
 | **OS em Aberto** | Ordens de serviço ainda não finalizadas |
 | **Gráfico de Faturamento** | Receita dos últimos 6 meses |
 | **Agenda de Hoje** | Lista das OS agendadas para hoje ordenadas por horário |
@@ -119,6 +119,17 @@ Ao abrir um veículo, você visualiza todas as Ordens de Serviço já realizadas
 
 A OS é o coração do sistema. Ela registra todo o trabalho realizado em um veículo.
 
+### 5.0 Ciclo do atendimento
+
+Todo atendimento segue o mesmo caminho:
+
+1. **Entrada** — o veículo chega, você registra a reclamação do cliente e faz a vistoria (checklist de entrada).
+2. **Orçamento** — após o diagnóstico, os serviços e peças são lançados e o orçamento é enviado ao cliente.
+3. **Ordem de Serviço** — quando o cliente aprova, o orçamento **vira O.S. com o mesmo número**, e segue para execução.
+4. **Entrega** — serviço pronto, pagamento registrado (faturamento) e veículo entregue com o termo de garantia.
+
+**Número do atendimento:** cada oficina tem sua própria sequência, exibida em hexadecimal seguida do mês e ano da abertura — por exemplo, **0000007B/09-2026**. O número é o mesmo na entrada, no orçamento, na O.S. e no termo de entrega, e pode ser usado na busca da listagem de O.S.
+
 ### 5.1 Criar uma OS
 
 1. Clique em **Ordens de Serviço** → **"Nova OS"**
@@ -132,15 +143,18 @@ A OS é o coração do sistema. Ela registra todo o trabalho realizado em um ve�
 
 | Status | Descrição |
 |---|---|
-| **ABERTA** | OS criada, aguardando diagnóstico |
-| **EM DIAGNÓSTICO** | Técnico avaliando o veículo |
-| **AGUARDANDO APROVAÇÃO** | Orçamento enviado ao cliente |
-| **APROVADA** | Cliente aprovou o orçamento |
-| **EM EXECUÇÃO** | Serviços sendo realizados |
-| **AGUARDANDO PEÇAS** | Serviço pausado por falta de peça |
-| **PRONTO** | Serviços concluídos, aguardando pagamento |
-| **ENTREGUE** | Veículo entregue ao cliente |
-| **CANCELADA** | OS cancelada |
+| **Aberta** | Atendimento criado, aguardando diagnóstico |
+| **Em Diagnóstico** | Técnico avaliando o veículo |
+| **Orçamento Pronto** | Serviços e peças lançados, orçamento pronto para enviar |
+| **Aguardando Aprovação** | Orçamento enviado ao cliente (o link de aprovação é gerado nesta etapa) |
+| **Aprovado** | Cliente aprovou — o orçamento passa a ser **Ordem de Serviço** e as peças saem do estoque |
+| **Reprovado** | Cliente recusou — peças já baixadas voltam ao estoque |
+| **Aguardando Peças** | Serviço pausado por falta de peça |
+| **Em Execução** | Serviços sendo realizados |
+| **Pronto p/ Entrega** | Serviços concluídos, aguardando pagamento |
+| **Faturado** | Pagamento registrado — a receita da O.S. entra no Financeiro |
+| **Entregue** | Veículo entregue ao cliente |
+| **Cancelado** | Atendimento cancelado |
 
 **Onde alterar o status:**
 - Dentro da O.S., no quadro **Dados do Veículo** (badge de status no topo do card).
@@ -196,7 +210,7 @@ O PDF é gerado no mesmo padrão visual da O.S. e contém:
 - Tabela com: Cód. Interno · Cód. Original (SKU) · Peça/Descrição · Qtd · Unitário · Total · Fornecedor · Nº OS
 - Rodapé com assinatura
 
-Use o botão **"Imprimir"** no modal para enviar ao fornecedor.
+Use o botão **"Imprimir Pedido de Compra"** no modal para baixar o PDF e enviar ao fornecedor.
 
 **Cancelar reserva:**
 
@@ -213,19 +227,41 @@ Perfis MASTER, ADMIN e GERENTE podem cancelar a reserva de uma OS. Ao cancelar:
 
 ### 5.6 Aprovar orçamento
 
-Após o diagnóstico, clique em **"Solicitar Aprovação"** para enviar o orçamento ao cliente. O cliente pode aprovar via link.
+Com o orçamento pronto, mude o status para **Aguardando Aprovação** (botão *Enviar para Aprovação*). Nesse momento o sistema gera um **link de aprovação** para o cliente:
+
+- Com o WhatsApp conectado, o link é enviado automaticamente junto com a mensagem de orçamento pronto.
+- O PDF do **Orçamento** traz um **QR code** com o mesmo link — o cliente aponta a câmera do celular e abre a página.
+- Na página, o cliente vê os serviços, as peças e o total, e toca em **Aprovar orçamento** ou **Recusar** (pode deixar uma observação).
+
+Regras do link:
+- Vale pelo prazo de **validade do orçamento** configurado pela oficina (padrão: 7 dias — veja 15.4).
+- Responde **uma única vez**. Depois da resposta, ou se a oficina já tiver mudado a etapa no balcão, o link apenas informa a situação.
+
+**Aprovação no balcão:** se o cliente aprovar pessoalmente ou por telefone, use **Marcar como Aprovado**. O efeito é exatamente o mesmo da aprovação pelo link: o orçamento vira O.S. com o mesmo número, as peças pendentes são baixadas do estoque e fica registrado quem aprovou.
 
 ### 5.7 Finalizar e receber pagamento
 
 Quando os serviços estiverem concluídos:
-1. Mude o status para **"Pronto"**
-2. Registre a forma de pagamento
-3. Confirme o recebimento
-4. Entregue o veículo e marque como **"Entregue"**
+1. Mude o status para **Pronto p/ Entrega** (informe a KM de saída, se houver teste de rodagem)
+2. Registre a **condição de pagamento** na O.S.
+3. Clique em **Registrar Pagamento** — a O.S. passa para **Faturado** e o sistema lança **uma única receita** no Financeiro ("Receita - OS nº"), pelo total da O.S.
+4. Entregue o veículo com o **Termo de Entrega e Garantia** e clique em **Confirmar Entrega**
 
-### 5.8 Imprimir OS
+> A aprovação do orçamento não lança receita. A receita de cada O.S. entra uma vez só, no faturamento — assim o Financeiro, a DRE e os indicadores mostram sempre os mesmos números.
 
-Use o botão **"Imprimir"** dentro da OS para gerar uma versão para impressão.
+### 5.8 Documentos do atendimento (PDF)
+
+Dentro da O.S., clique em **Documentos**. O menu mostra os documentos disponíveis na etapa atual; todos saem com o número do atendimento, os dados da oficina e, no rodapé de cada folha, *"Emitido em … por …"* e *"Página X de Y"*.
+
+| Documento | Quando aparece | O que contém |
+|---|---|---|
+| **Entrada do veículo** | Sempre | Cliente, veículo, KM, reclamação, vistoria (avarias, acessórios, fotos, combustível), aviso sobre objetos no veículo, assinaturas do cliente e do consultor |
+| **Orçamento** | Sempre | Diagnóstico, serviços e peças (com código), descontos, total, validade, condição de pagamento, texto de autorização e QR code para aprovação |
+| **Ordem de Serviço — via do cliente** | Após a aprovação | Itens aprovados com valores, técnico de cada serviço e datas de cada etapa |
+| **Ordem de Serviço — via da oficina** | Após a aprovação | **Sem valores**: reclamações, serviços a executar e peças a aplicar com caixas para marcar, local no estoque, espaço para anotações e assinatura do técnico |
+| **Termo de entrega e garantia** | A partir de *Pronto p/ Entrega* | Serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com a data de vencimento e destino das peças substituídas |
+
+> A via da oficina foi pensada para o chão de oficina: o técnico tem a lista do que fazer sem ver preços.
 
 ### 5.9 Ações de edição da O.S.
 
@@ -321,16 +357,18 @@ O Checklist registra o estado do veículo no momento da entrada e da saída, com
 
 ### 8.1 Preencher o checklist de entrada
 
-1. Dentro de uma OS, clique na aba **"Checklist"**
-2. Para cada uma das **15 áreas** do veículo (para-choque, lataria, vidros, pneus etc.), selecione a condição:
-   - Bom • Regular • Ruim • Danificado • N/A
-3. Adicione **fotos** clicando na câmera de cada item (comprimidas automaticamente)
-4. Informe o **nível de combustível** (0 a 8 traços)
-5. Clique em **Salvar Checklist**
+1. Dentro da O.S., clique no botão **Entrada** (no topo da tela; fica verde quando já preenchido)
+2. Informe o **responsável pela vistoria** e o **nível de combustível**
+3. Em **Condição das Áreas**, marque as regiões da carroceria (para-choques, capô, portas, laterais, teto, vidros, interior e pneus): **OK**, **Risco**, **Amassado**, **Quebrado** ou **Ausente**
+4. Em **Acessórios e Objetos no Veículo**, marque cada item como **Presente** ou **Ausente**: estepe, macaco, chave de roda, triângulo, rádio/multimídia, tapetes, documento do veículo (CRLV) e objetos pessoais (descreva-os na observação)
+5. Em qualquer item, abra a seta para escrever uma observação e tirar até **3 fotos** (opcionais, comprimidas automaticamente)
+6. Clique em **Salvar Checklist de Entrada**
+
+O documento **Entrada do veículo** (menu *Documentos*) imprime a vistoria com as avarias, os acessórios, as fotos e o aviso de responsabilidade por objetos, para o cliente assinar.
 
 ### 8.2 Checklist de saída
 
-Repita o processo antes de entregar o veículo ao cliente. O sistema mantém o histórico de entrada e saída separados para comparação.
+Clique no botão **Saída** e repita o processo antes de entregar o veículo. O sistema mantém entrada e saída separadas para comparação, e o termo de entrega indica quem fez a vistoria de saída.
 
 > Dica legal: o checklist com fotos serve como evidência em caso de disputas sobre danos pré-existentes.
 
@@ -430,7 +468,7 @@ Controle de receitas e despesas da oficina.
    - **Categoria**
 5. Clique em **Salvar**
 
-> Pagamentos registrados em OS são lançados automaticamente como receita.
+> Ao registrar o pagamento de uma O.S. (status **Faturado**), o sistema lança automaticamente **uma** receita "Receita - OS nº" pelo total da O.S. A aprovação do orçamento não gera lançamento.
 
 ### 12.2 Resumo mensal
 
@@ -438,7 +476,8 @@ O painel financeiro exibe o **total de receitas**, **total de despesas** e o **s
 
 ### 12.3 Exportar relatório
 
-Use o botão **"Imprimir"** para gerar um relatório financeiro do período selecionado.
+- **Baixar PDF** — relatório com todos os lançamentos, resumo do período e assinatura do responsável financeiro.
+- **Exportar CSV** — os mesmos lançamentos em planilha; abre direto no Excel com acentos e valores em reais (vírgula decimal).
 
 ---
 
@@ -448,7 +487,11 @@ Use o botão **"Imprimir"** para gerar um relatório financeiro do período sele
 
 > Disponível no plano **PRO** e **REDE**.
 
-O módulo de Relatórios Gerenciais oferece **6 tipos de análise** com pré-visualização em PDF (modal A4) e impressão direta via navegador. Todos os relatórios incluem cabeçalho com dados da oficina e rodapé com assinatura.
+O módulo de Relatórios Gerenciais oferece **6 tipos de análise**, com pré-visualização, **PDF** e **planilha (CSV)**. Todos os relatórios seguem o mesmo padrão:
+
+- **Cabeçalho** com logo e dados da oficina, título e os **filtros usados na consulta** (período, status, área).
+- **Rodapé em todas as folhas** com a oficina, o título, *"Emitido em dd/mm/aaaa hh:mm por Fulano"* (horário de Brasília) e *"Página X de Y"*.
+- Nome de arquivo previsível, com o tipo e o período (ex.: `DRE-2026-09.pdf`, `OS-2026-09-01_a_2026-09-27.csv`).
 
 ### 13.1 Acessar os relatórios
 
@@ -456,7 +499,9 @@ O módulo de Relatórios Gerenciais oferece **6 tipos de análise** com pré-vis
 2. Selecione o tipo de relatório desejado
 3. Informe o período ou filtros solicitados
 4. Clique em **"Gerar Relatório"**
-5. Revise na pré-visualização e clique em **"Imprimir"** para enviar à impressora ou salvar como PDF
+5. Use **"Visualizar PDF"** para conferir, **"Baixar PDF"** para salvar/imprimir ou **"Exportar CSV"** para abrir no Excel
+
+> O PDF e o CSV descrevem a consulta feita ao clicar em *Gerar Relatório*. Se você mudar um filtro depois, gere o relatório de novo.
 
 ### 13.2 Tipos de relatório disponíveis
 
@@ -469,7 +514,7 @@ Visão geral das Ordens de Serviço em um intervalo de datas. Inclui:
 
 #### DRE — Mensal
 Demonstração de Resultado do Exercício de um mês específico. Inclui:
-- Receita bruta, CMV (custo das mercadorias vendidas), margem bruta
+- Receita bruta (receitas do Financeiro no mês, incluindo a receita das O.S. faturadas), CMV (custo das peças das O.S. faturadas no mês), margem bruta
 - EBITDA e resultado líquido
 - Histórico comparativo dos últimos 6 meses
 - Detalhamento de despesas por categoria
@@ -488,7 +533,7 @@ Painel gerencial com múltiplos horizontes temporais em um único relatório. In
 - **Semestre anterior** — 6 meses anteriores ao semestre atual (análise histórica)
 - **Anual** — ano corrente completo
 
-Para cada período, exibe: Receita Bruta, Receita Líquida, Margem Bruta (%), EBITDA (%), OS Entregues e Ticket Médio.
+Para cada período, exibe: Receita Bruta, Receita Líquida, Margem Bruta (%), EBITDA (%), O.S. Faturadas e Ticket Médio.
 
 > **BI:** Os mesmos KPIs financeiros estão disponíveis em tempo real na tela de Indicadores para consulta rápida sem necessidade de gerar relatório.
 
@@ -514,7 +559,9 @@ Além do módulo de Relatórios, o sistema possui uma página exclusiva do DRE a
 
 - **Seletor de mês e ano** via dropdowns — navegue diretamente para qualquer mês/ano sem clicar repetidamente
 - **Botão ‹ ›** para navegar mês a mês rapidamente
-- **Impressão direta**: botão "Imprimir" gera o DRE completo em formato A4 incluindo KPIs, tabela estrutural, despesas por categoria e histórico dos últimos 6 meses
+- **Baixar PDF**: gera o DRE completo em A4 com KPIs, tabela estrutural, despesas por categoria e histórico dos últimos 6 meses
+- **Exportar CSV**: as linhas do DRE e as despesas por categoria em planilha
+- **Mesma base do Financeiro**: a receita do DRE é a soma das receitas lançadas no mês (a receita de cada O.S. entra uma vez, no faturamento); o CMV é o custo das peças das O.S. faturadas no mesmo mês
 - **Gráfico de barras** com comparativo dos últimos 6 meses (receita vs. despesa)
 
 ---
@@ -639,6 +686,21 @@ Na aba **Assinatura** você visualiza seu plano atual e pode fazer **upgrade** p
 
 Para fazer upgrade, clique no plano desejado e você será redirecionado para o checkout online (Mercado Pago).
 
+### 15.4 Documentos do atendimento
+
+Em **Configurações**, seção **Documentos do Atendimento** (edição para MASTER e ADMIN):
+
+| Campo | Padrão | Onde aparece |
+|---|---|---|
+| **Garantia serviços (dias)** | 90 (mínimo do Código de Defesa do Consumidor) | Termo de entrega, com a data de vencimento |
+| **Garantia peças (dias)** | 90 | Termo de entrega, com a data de vencimento |
+| **Validade orçamento (dias)** | 7 | Orçamento e prazo do link de aprovação |
+| **Autorização do orçamento** | Texto padrão | Orçamento, acima da assinatura do cliente |
+| **Garantia** | Texto padrão (use `{servicos}` e `{pecas}` para os prazos) | Termo de entrega |
+| **Objetos no veículo** | Texto padrão | Documento de entrada |
+
+Deixe um texto em branco para voltar ao texto padrão do sistema.
+
 ---
 
 ## 16. Perfis de Acesso (Roles)
@@ -670,8 +732,17 @@ Acesse **Usuários → Convidar Usuário**, informe o e-mail e selecione o perfi
 **Por que não consigo criar mais OS este mês?**  
 No plano START, o limite é de 50 OS por mês. Faça upgrade para o plano PRO para ordens ilimitadas.
 
-**O pagamento do cliente foi registrado mas a OS ainda aparece como "Pronto". O que fazer?**  
-Após registrar o pagamento, altere o status da OS para **"Entregue"** para concluir o ciclo.
+**O pagamento do cliente foi registrado. Como concluo a O.S.?**  
+Depois de **Registrar Pagamento** a O.S. fica como **Faturado**. Ao entregar o veículo, clique em **Confirmar Entrega** para concluir o ciclo.
+
+**O que significa o número 0000007B/09-2026?**  
+É o número do atendimento: a sequência da sua oficina em hexadecimal, seguida do mês e ano de abertura. O mesmo número vale para o orçamento, a O.S. e o termo de entrega.
+
+**O cliente disse que o link de aprovação não funciona.**  
+O link vale pelo prazo de validade do orçamento (Configurações → Documentos do Atendimento) e responde uma única vez. Se venceu, volte o orçamento para *Aguardando Aprovação* depois de revisá-lo, ou aprove no balcão com **Marcar como Aprovado**.
+
+**Por que os números do DRE mudaram em setembro/2026?**  
+O DRE passou a usar a mesma base do Financeiro: a receita de cada O.S. entra **uma única vez**, no faturamento. Antes, uma mesma O.S. podia ser somada mais de uma vez (na aprovação, no pagamento e na entrega).
 
 **Como cancelo minha assinatura ou faço downgrade?**  
 O downgrade fica disponível automaticamente após o vencimento do plano atual. Para cancelamento, entre em contato com **suporte@sigmaauto.com.br**.
@@ -695,7 +766,7 @@ Ao reservar peças e informar uma data prevista de chegada, o sistema monitora a
 Sim. As peças que já estão no estoque são reservadas (debitadas) no momento da confirmação. As peças faltantes geram o PDF do Pedido de Compra para envio ao fornecedor. Ao receber as peças, faça uma entrada manual no Estoque.
 
 **Posso usar o Checklist sem tirar fotos?**  
-Sim. As fotos são opcionais. Você pode preencher apenas as condições de cada área do veículo e salvar sem adicionar imagens.
+Sim. As fotos são opcionais. Você pode marcar apenas as condições das áreas e os acessórios e salvar sem adicionar imagens.
 
 ---
 
@@ -728,6 +799,7 @@ Ao faturar uma OS (status FATURADO), o sistema gera automaticamente uma comissã
 1. Clique em **Comissões** no menu lateral
 2. Filtre por **período** e/ou **área** (Mecânica, Elétrica, Funilaria, etc.)
 3. Veja o ranking de colaboradores por valor, com totais **Pendente** e **Pago**
+4. Exporte com **Baixar PDF** (relatório com os filtros aplicados no cabeçalho), **Exportar CSV** ou **Exportar XLSX**
 
 ### 18.4 Marcar como pago
 
@@ -914,7 +986,7 @@ Ao confirmar a metrologia, o sistema abre automaticamente o **Laudo Técnico** p
 **Imprimir o laudo:**
 
 1. O laudo abre automaticamente em modal após confirmar a metrologia
-2. Clique em **"Imprimir Laudo"** para enviar à impressora ou salvar como PDF
+2. Clique em **"Imprimir / Salvar PDF"** para baixar o laudo em PDF
 3. Para reimprimir a qualquer momento: dentro da OS, clique no botão **"Laudo"** (ícone de documento)
 
 > O laudo serve como documento técnico formal entregue ao cliente junto com o motor.
