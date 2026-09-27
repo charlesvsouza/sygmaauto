@@ -27,6 +27,8 @@ import { PdfModule } from './pdf/pdf.module';
 import { ComplianceModule } from './compliance/compliance.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
+import { DataBackfillsService } from './common/data-backfills.service';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -65,7 +67,7 @@ import { TenantMiddleware } from './common/middleware/tenant.middleware';
     PdfModule,
     ComplianceModule,
   ],
-  providers: [TenantMiddleware],
+  providers: [TenantMiddleware, DataBackfillsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
