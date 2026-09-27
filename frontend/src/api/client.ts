@@ -150,6 +150,8 @@ export const serviceOrdersApi = {
   getById: (id: string) => api.get(`/service-orders/${id}`),
   downloadPdf: (id: string) =>
     api.get(`/service-orders/${id}/pdf`, { responseType: 'blob' }),
+  downloadDocument: (id: string, kind: string) =>
+    api.get(`/service-orders/${id}/documents/${kind}`, { responseType: 'blob' }),
   create: (data: any) => api.post('/service-orders', data),
   update: (id: string, data: any) => api.patch(`/service-orders/${id}`, data),
   delete: (id: string, reason?: string) => api.delete(`/service-orders/${id}`, { data: { reason } }),
@@ -276,6 +278,13 @@ export const aiApi = {
     vehicleYear?: number;
     existingItems?: string[];
   }) => api.post('/ai/suggest', data),
+};
+
+// Link público de aprovação do orçamento (sem login).
+export const approvalApi = {
+  get: (token: string) => axios.get(`${API_URL}/public/approval/${token}`),
+  decide: (token: string, data: { approved: boolean; notes?: string }) =>
+    axios.post(`${API_URL}/public/approval/${token}`, data),
 };
 
 export const npsApi = {

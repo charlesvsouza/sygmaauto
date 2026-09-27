@@ -3,6 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ServiceOrdersService } from './service-orders.service';
 import { ImportService } from './import.service';
+import { OrderDocumentsService, OrderDocumentKind } from './order-documents.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -17,6 +18,7 @@ export class ServiceOrdersController {
   constructor(
     private serviceOrdersService: ServiceOrdersService,
     private importService: ImportService,
+    private orderDocuments: OrderDocumentsService,
   ) {}
 
   @Post('import-pdf')
@@ -269,35 +271,34 @@ export class ServiceOrdersController {
   }
 
   @Get(':id/pdf')
-  @ApiOperation({ summary: 'Gerar PDF da OS (padrão: Puppeteer)' })
+  @ApiOperation({ summary: 'PDF do atendimento na fase atual (orçamento ou O.S.)' })
   async generatePdfDefault(
     @Tenant() tenant: { tenantId: string },
     @CurrentUser() user: { userId?: string },
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id, user?.userId);
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${generated.fileName}"`,
-      'Content-Length': generated.buffer.length,
-    });
-    res.end(generated.buffer);
+    const order = await this.serviceOrdersService.findById(tenant.tenantId, id);
+    const kind: OrderDocumentKind = order.orderType === 'ORCAMENTO' ? 'orcamento' : 'os';
+    return this.sendDocument(res, await this.orderDocuments.generate(tenant.tenantId, id, kind, user?.userId));
   }
 
-  @Get(':id/pdf/puppeteer')
-  @ApiOperation({ summary: 'Gerar PDF com Puppeteer (teste)' })
-  async generatePdfPuppeteer(
+  @Get(':id/documents/:kind')
+  @ApiOperation({ summary: 'Documento do atendimento: entrada | orcamento | os | oficina | entrega' })
+  async generateDocument(
     @Tenant() tenant: { tenantId: string },
     @CurrentUser() user: { userId?: string },
     @Param('id') id: string,
+    @Param('kind') kind: OrderDocumentKind,
     @Res() res: any,
   ) {
-    const generated = await this.serviceOrdersService.generateOsPdf(tenant.tenantId, id, user?.userId);
-    const fileName = generated.fileName.replace(/\.pdf$/i, '-puppeteer.pdf');
+    return this.sendDocument(res, await this.orderDocuments.generate(tenant.tenantId, id, kind, user?.userId));
+  }
+
+  private sendDocument(res: any, generated: { buffer: Buffer; fileName: string }) {
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Content-Disposition': `attachment; filename="${generated.fileName}"`,
       'Content-Length': generated.buffer.length,
     });
     res.end(generated.buffer);

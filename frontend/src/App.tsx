@@ -49,6 +49,7 @@ import { RetificaMotoresPage } from './pages/RetificaMotoresPage';
 import { MaintenancePage } from './pages/MaintenancePage';
 import { NpsPage } from './pages/NpsPage';
 import { NpsAnswerPage } from './pages/NpsAnswerPage';
+import { BudgetApprovalPage } from './pages/BudgetApprovalPage';
 import { AgendaPage } from './pages/AgendaPage';
 import { ImpersonationBanner } from './components/ImpersonationBanner';
 import { SessionSecurity } from './components/SessionSecurity';
@@ -85,6 +86,7 @@ export default function App() {
 
         {/* Pesquisa NPS pública — sem autenticação */}
         <Route path="/nps/:token" element={<NpsAnswerPage />} />
+        <Route path="/aprovacao/:token" element={<BudgetApprovalPage />} />
 
         
         <Route element={<PublicOnlyRoute />}>

@@ -4,16 +4,9 @@ import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateSt
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
-import { PdfService } from '../pdf/pdf.service';
-import * as path from 'path';
-import { escapeHtml, formatDateBR, pdfIssuedLine, serviceOrderStatusLabel } from '../common/pdf-format';
-import { formatOrderCode, nextOrderNumber, orderFileName } from '../common/order-number';
+import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { resolveDocumentSettings } from '../common/document-settings';
 
-type GeneratedOrderPdf = {
-  buffer: Buffer;
-  fileName: string;
-};
 
 @Injectable()
 export class ServiceOrdersService {
@@ -21,7 +14,6 @@ export class ServiceOrdersService {
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
     private commissions: CommissionsService,
-    private pdf: PdfService,
   ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
@@ -512,6 +504,51 @@ export class ServiceOrdersService {
     };
   }
 
+  // Resumo público do orçamento para a página de aprovação (sem dados internos).
+  async getApprovalSummary(approvalToken: string) {
+    const order = await this.prisma.serviceOrder.findFirst({
+      where: { approvalToken },
+      include: {
+        tenant: { select: { name: true, tradeName: true, logo: true, phone: true, email: true } },
+        customer: { select: { name: true } },
+        vehicle: { select: { brand: true, model: true, plate: true, year: true } },
+        items: { select: { description: true, type: true, quantity: true, unitPrice: true, discount: true, totalPrice: true }, orderBy: { createdAt: 'asc' } },
+      },
+    });
+    if (!order) throw new NotFoundException('Orçamento não encontrado');
+
+    const expired = Boolean(order.approvalTokenExpires && new Date() > order.approvalTokenExpires);
+    const state = order.approvalStatus === 'APPROVED' ? 'APPROVED'
+      : order.approvalStatus === 'REJECTED' ? 'REJECTED'
+      : order.status !== 'AGUARDANDO_APROVACAO' ? 'CLOSED'
+      : expired ? 'EXPIRED' : 'PENDING';
+
+    return {
+      state,
+      code: formatOrderCode(order),
+      workshop: {
+        name: order.tenant.name || order.tenant.tradeName,
+        logo: order.tenant.logo,
+        phone: order.tenant.phone,
+        email: order.tenant.email,
+      },
+      customerName: order.customer.name,
+      vehicle: order.vehicle,
+      equipment: [order.equipmentBrand, order.equipmentModel].filter(Boolean).join(' ') || null,
+      complaint: order.complaint,
+      diagnosis: order.diagnosis,
+      items: order.items,
+      totals: {
+        services: order.totalServices + order.totalLabor,
+        parts: order.totalParts,
+        discount: order.totalDiscount,
+        total: order.totalCost,
+      },
+      validUntil: order.approvalTokenExpires,
+      approvedAt: order.approvedAt,
+    };
+  }
+
   async approveOrcamento(approvalToken: string, dto: AprovarOrcamentoDto) {
     const order = await this.prisma.serviceOrder.findFirst({
       where: { approvalToken },
@@ -526,10 +563,16 @@ export class ServiceOrdersService {
       throw new BadRequestException('Token expirado');
     }
 
+    // O link só decide uma vez: uma segunda resposta duplicaria a receita no financeiro
+    // e a baixa de estoque. Também não decide se a oficina já mudou a fase no balcão.
+    if (order.approvalStatus || order.status !== 'AGUARDANDO_APROVACAO') {
+      throw new BadRequestException('Este orçamento já foi respondido ou não está aguardando aprovação');
+    }
+
     if (!dto.approved) {
       await this.prisma.serviceOrder.update({
         where: { id: order.id },
-        data: { status: 'REPROVADO' },
+        data: { status: 'REPROVADO', approvalStatus: 'REJECTED', statusChangedAt: new Date() },
       });
 
       // Reverte estoque caso peças já tenham sido debitadas
@@ -570,6 +613,7 @@ export class ServiceOrdersService {
         statusChangedAt: new Date(),
         approvedAt: new Date(),
         approvalStatus: 'APPROVED',
+        approvedBy: 'Cliente (link de aprovação)',
         totalDiscount,
         totalCost: (order.totalParts + order.totalServices + order.totalLabor) - totalDiscount,
       },
@@ -652,6 +696,25 @@ export class ServiceOrdersService {
     }
 
     // Eventos de transição
+    // Aguardando aprovação: garante um link de aprovação válido (WhatsApp e QR code do PDF).
+    if (newStatus === 'AGUARDANDO_APROVACAO' && !order.approvalStatus
+      && (!order.approvalToken || (order.approvalTokenExpires && order.approvalTokenExpires < new Date()))) {
+      const tenantDocs = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { budgetValidityDays: true } });
+      const expires = new Date();
+      expires.setDate(expires.getDate() + resolveDocumentSettings(tenantDocs).budgetValidityDays);
+      updateData.approvalToken = uuidv4();
+      updateData.approvalTokenExpires = expires;
+    }
+
+    // Aprovado no balcão: o orçamento vira O.S. com o mesmo número (como na aprovação por link).
+    if (newStatus === 'APROVADO' && order.orderType === 'ORCAMENTO') {
+      const actor = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+      updateData.orderType = 'ORDEM_SERVICO';
+      updateData.approvedAt = order.approvedAt ?? new Date();
+      updateData.approvalStatus = 'APPROVED';
+      updateData.approvedBy = actor?.name ? `${actor.name} (balcão)` : 'Balcão';
+    }
+
     if (newStatus === 'EM_EXECUCAO' && !order.startedAt) {
       updateData.startedAt = new Date();
     }
@@ -1426,156 +1489,5 @@ export class ServiceOrdersService {
         data: { applied: false },
       });
     }
-  }
-
-  // ===== PDF GENERATION =====
-
-  private formatCurrency(value: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  }
-
-  private formatDate(date: Date): string {
-    return formatDateBR(date);
-  }
-
-  private getDocumentTitle(orderType?: string | null): string {
-    if (orderType === 'ORCAMENTO') {
-      return 'ORÇAMENTO';
-    }
-
-    return 'ORDEM DE SERVIÇO';
-  }
-
-  async generateOsPdf(tenantId: string, osId: string, userId?: string): Promise<GeneratedOrderPdf> {
-    // Buscar OS com todos os dados
-    const order = await this.prisma.serviceOrder.findFirst({
-      where: { id: osId, tenantId },
-      include: {
-        customer: true,
-        vehicle: true,
-        items: {
-          include: {
-            service: true,
-            part: true,
-          },
-        },
-        tenant: true,
-      },
-    });
-
-    if (!order) {
-      throw new NotFoundException('Ordem de Serviço não encontrada');
-    }
-
-    // Preparar dados para template
-    const servicesItems = order.items.filter((i) => i.type === 'service');
-    const productsItems = order.items.filter((i) => i.type === 'part');
-
-    const servicesRows = servicesItems
-      .map(
-        (item, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(item.service?.name || item.description)}</td>
-        <td class="col-qty">${item.quantity}</td>
-        <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
-        <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
-      </tr>
-    `,
-      )
-      .join('');
-
-    const productsRows = productsItems
-      .map(
-        (item, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(item.part?.name || item.description)}</td>
-        <td class="col-qty">${item.quantity}</td>
-        <td class="col-price">${this.formatCurrency(item.unitPrice)}</td>
-        <td class="col-total">${this.formatCurrency(item.totalPrice)}</td>
-      </tr>
-    `,
-      )
-      .join('');
-
-    const totalServices = servicesItems.reduce(
-      (sum, item) => sum + item.totalPrice,
-      0,
-    );
-    const totalProducts = productsItems.reduce(
-      (sum, item) => sum + item.totalPrice,
-      0,
-    );
-    const subtotal = order.totalParts + order.totalServices + order.totalLabor;
-    const total = subtotal - order.totalDiscount;
-    const documentNumber = formatOrderCode(order);
-    const documentTitle = this.getDocumentTitle(order.orderType);
-
-    const templateData = {
-      companyName:
-        order.tenant.name ||
-        order.tenant.tradeName ||
-        order.tenant.legalName ||
-        'SygmaAuto',
-      companyLogo: order.tenant.logo || '',
-      companyAddress: order.tenant.address || 'Endereço não configurado',
-      companyPhone: order.tenant.phone || '',
-      companyEmail: order.tenant.email || '',
-      companyCNPJ: order.tenant.taxId || order.tenant.document || '',
-      
-      customerName: order.customer.name,
-      customerDocument: order.customer.document || 'Não informado',
-      customerPhone: order.customer.phone || 'Não informado',
-      customerAddress: order.customer.address || 'Não informado',
-      
-      documentTitle,
-      documentTypeLine: `${documentTitle} #${documentNumber}`,
-      osNumber: documentNumber,
-      osDate: this.formatDate(order.createdAt),
-      osStatus: serviceOrderStatusLabel(order.status),
-      
-      vehicleBrand: order.vehicle?.brand || order.equipmentBrand || 'N/A',
-      vehicleModel: order.vehicle?.model || order.equipmentModel || 'N/A',
-      vehicleYear: order.vehicle?.year || '',
-      vehiclePlate: order.vehicle?.plate || 'N/A',
-      vehicleVIN: order.vehicle?.vin || 'N/A',
-      vehicleKM: order.vehicle?.km || order.kmEntrada || '0',
-      
-      complaint: order.complaint || 'Não informado',
-      diagnosis: order.diagnosis || 'Não informado',
-      technicalReport: order.technicalReport || '',
-      observations: order.observations || '',
-      
-      servicesRows,
-      productsRows,
-      totalServices: this.formatCurrency(totalServices),
-      totalProducts: this.formatCurrency(totalProducts),
-      subtotal: this.formatCurrency(subtotal),
-      totalDiscount: this.formatCurrency(order.totalDiscount),
-      total: this.formatCurrency(total),
-    };
-
-    // Gerar PDF usando Puppeteer
-    const templatePath = path.join(
-      __dirname,
-      'templates',
-      'os-template.html',
-    );
-    const issuer = userId
-      ? await this.prisma.user.findFirst({ where: { id: userId, tenantId }, select: { name: true } })
-      : null;
-    const buffer = await this.pdf.renderTemplate(templatePath, templateData, {
-      footerLabel: `${templateData.companyName} · ${documentTitle} #${documentNumber}`,
-      footerIssued: pdfIssuedLine(issuer?.name),
-    });
-
-    return {
-      buffer,
-      fileName: orderFileName(order.orderType === 'ORCAMENTO' ? 'ORCAMENTO' : 'OS', order, order.vehicle?.plate),
-    };
   }
 }

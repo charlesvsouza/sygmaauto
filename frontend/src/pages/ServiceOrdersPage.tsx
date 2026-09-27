@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import { orderCode, orderShortCode } from '../lib/orderCode';
+import { availableDocuments, type OrderDocumentKind } from '../lib/orderDocuments';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -143,81 +144,6 @@ const RETIFICA_FLOW_PHASES = [
   { key: 'ENTREGA', label: 'Entrega', statuses: ['ENTREGUE'] },
 ];
 
-const DOC_STYLES = `
-.os-doc {
-  font-family: Arial, sans-serif;
-  font-size: 9pt; color: #111; width: 100%;
-}
-.os-doc table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
-.os-doc td, .os-doc th {
-  border: 0.5pt solid #aaa; padding: 3px 6px; font-size: 8.5pt; vertical-align: top;
-}
-.os-doc th { font-weight: 800; background: #f0f2f5; text-align: left; font-size: 8pt; }
-.os-doc .hdr td, .os-doc .hdr th {
-  background: #1e293b !important; color: #fff !important;
-  border-color: #1e293b !important; font-weight: 900;
-  text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.08em;
-  padding: 4px 8px;
-}
-.os-doc .subtotal-row td { background: #f8fafc; font-weight: 700; }
-.os-doc .total-final td {
-  font-weight: 900; font-size: 11pt;
-  background: #1e293b !important; color: #fff !important;
-  border-color: #1e293b !important;
-}
-.os-doc .nb td, .os-doc .nb th { border-color: transparent; padding: 0; }
-.os-doc .no-border { border: none; }
-.os-doc .tr { text-align: right; }
-.os-doc .tc { text-align: center; }
-.os-doc .print-header-table { margin-bottom: 6px; }
-.os-doc .print-header-left { border: none; padding-left: 0; vertical-align: top; width: 62%; }
-.os-doc .print-company-name { font-size: 15pt; font-weight: 900; line-height: 1.1; }
-.os-doc .print-company-meta { font-size: 8.5pt; margin-top: 2px; }
-.os-doc .print-company-address { font-size: 8.5pt; }
-.os-doc .print-company-contact { font-size: 8.5pt; }
-.os-doc .print-header-right { border: 2px solid #1e293b; padding: 8px 14px; text-align: right; vertical-align: top; min-width: 155px; }
-.os-doc .print-observations-col { width: 55%; padding-right: 10px; }
-.os-doc .print-totals-col { vertical-align: top; }
-.os-doc .print-discount-label { color: #b91c1c; }
-.os-doc .print-discount-value { color: #b91c1c; }
-.os-doc .print-doc-type { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #666; }
-.os-doc .print-doc-number { font-size: 19pt; font-weight: 900; font-family: monospace; letter-spacing: 2px; line-height: 1.1; }
-.os-doc .print-doc-meta { font-size: 8.5pt; color: #444; margin-top: 3px; }
-.os-doc .print-doc-meta-muted { font-size: 8.5pt; color: #444; }
-.os-doc .print-plate { font-family: monospace; font-weight: 900; }
-.os-doc .print-pre-wrap { min-height: 22px; white-space: pre-wrap; }
-.os-doc .print-col-28 { width: 28px; }
-.os-doc .print-col-60 { width: 60px; }
-.os-doc .print-col-90 { width: 90px; }
-.os-doc .print-col-95 { width: 95px; }
-.os-doc .print-col-80 { width: 80px; }
-.os-doc .print-col-50 { width: 50px; }
-.os-doc .print-col-110 { width: 110px; }
-.os-doc .print-serial-cell { color: #888; font-size: 7.5pt; }
-.os-doc .print-part-cell { font-size: 7.5pt; color: #555; font-family: monospace; }
-.os-doc .print-observations { min-height: 38px; font-size: 8.5pt; white-space: pre-wrap; }
-.os-doc .print-sign-authorize { margin-top: 14px; font-size: 8pt; color: #333; line-height: 1.5; }
-.os-doc .print-sign-table { margin-top: 16px; }
-.os-doc .print-sign-cell { border: none; text-align: center; padding-top: 36px; width: 50%; }
-.os-doc .print-sign-line { border-top: 1px solid #666; display: inline-block; width: 210px; margin-bottom: 3px; }
-.os-doc .print-sign-label { font-size: 9pt; font-weight: 700; }
-.os-doc .print-sign-sub { font-size: 8pt; color: #555; }
-.os-doc .print-footer { margin-top: 10px; padding-top: 5px; border-top: 1px solid #ddd; font-size: 7pt; color: #aaa; text-align: center; }
-.os-doc hr { border: none; border-top: 1px solid #bbb; margin: 5px 0; }
-.os-doc thead { display: table-row-group; }
-`;
-
-const PRINT_STYLE = `
-@media screen { #os-print-doc { display: none; } }
-@media print {
-  body * { visibility: hidden; }
-  #os-print-doc, #os-print-doc * { visibility: visible; }
-  #os-print-doc { position: absolute; left: 0; top: 0; width: 100%; background: white; }
-  @page { size: A4; margin: 8mm 10mm; }
-}
-${DOC_STYLES}
-`;
-
 function fmtBR(v: number | string | undefined, dec = 2) {
   return Number(v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
@@ -246,7 +172,6 @@ export function ServiceOrdersPage() {
   const canChangeStatus = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA'].includes(userRole);
   const canAssignExecutor = canManageItems;
   const CLOSED_STATUSES = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
-  const printContentRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -296,6 +221,7 @@ export function ServiceOrdersPage() {
   const [importTargetOrderId, setImportTargetOrderId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
+  const [showDocsMenu, setShowDocsMenu] = useState(false);
   const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
   const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
   const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
@@ -624,10 +550,11 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const viewOrderPdf = async () => {
+  const openOrderDocument = async (kind: OrderDocumentKind) => {
     if (!selectedOrder) return;
+    setShowDocsMenu(false);
     try {
-      const response = await serviceOrdersApi.downloadPdf(selectedOrder.id);
+      const response = await serviceOrdersApi.downloadDocument(selectedOrder.id, kind);
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const opened = window.open(url, '_blank', 'noopener,noreferrer');
       if (!opened) {
@@ -637,7 +564,7 @@ export function ServiceOrdersPage() {
       }
       window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch {
-      alert('Erro ao gerar PDF da O.S.');
+      alert('Erro ao gerar o documento.');
     }
   };
 
@@ -918,263 +845,6 @@ export function ServiceOrdersPage() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] gap-6 overflow-hidden">
-      <style>{PRINT_STYLE}</style>
-
-      {/* PRINT DOCUMENT */}
-      <div id="os-print-doc">
-        {selectedOrder && (
-          <div ref={printContentRef} className="os-doc">
-            {/* Cabecalho: empresa (esq) + tipo/numero do documento (dir) */}
-            <table className="print-header-table">
-              <tbody>
-                <tr>
-                  <td className="print-header-left">
-                    <div className="print-company-name">
-                      {tenantFullData?.name || tenantFullData?.tradeName || tenantFullData?.legalName || ''}
-                    </div>
-                    {(tenantFullData?.taxId || tenantFullData?.document) && (
-                      <div className="print-company-meta">
-                        {tenantFullData?.companyType ?? 'CNPJ'}: {tenantFullData?.taxId || tenantFullData?.document}
-                      </div>
-                    )}
-                    {tenantFullData?.address && (
-                      <div className="print-company-address">{tenantFullData.address}</div>
-                    )}
-                    <div className="print-company-contact">
-                      {tenantFullData?.phone && `Tel: ${tenantFullData.phone}`}
-                      {tenantFullData?.phone && tenantFullData?.email && '  -  '}
-                      {tenantFullData?.email}
-                    </div>
-                  </td>
-                  <td className="print-header-right">
-                    <div className="print-doc-type">
-                      {selectedOrder.orderType === 'ORCAMENTO' ? 'Orcamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retifica de Motor' : 'Ordem de Servico'}
-                    </div>
-                    <div className="print-doc-number">
-                      {orderCode(selectedOrder)}
-                    </div>
-                    <div className="print-doc-meta">
-                      Abertura: {new Date(selectedOrder.createdAt).toLocaleDateString('pt-BR')}
-                    </div>
-                    {selectedOrder.scheduledDate && (
-                      <div className="print-doc-meta-muted">
-                        Agendamento: {new Date(selectedOrder.scheduledDate).toLocaleDateString('pt-BR')}
-                      </div>
-                    )}
-                    <div className="print-doc-meta-muted">
-                      Tipo O.S.: {selectedOrder.orderType === 'ORCAMENTO' ? 'Orcamento' : selectedOrder.orderType === 'RETIFICA_MOTOR' ? 'Retifica de Motor' : 'OS'}
-                    </div>
-                    {(selectedOrder.paymentMethod || edit.paymentMethod) && (
-                      <div className="print-doc-meta-muted">
-                        Cond. Pgto: {selectedOrder.paymentMethod || edit.paymentMethod}
-                      </div>
-                    )}
-                    {selectedOrder.kmEntrada != null && (
-                      <div className="print-doc-meta-muted">
-                        KM Entrada: {Number(selectedOrder.kmEntrada).toLocaleString('pt-BR')}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <hr />
-
-            {/* Dados do Cliente */}
-            <table>
-              <tbody>
-                <tr className="hdr"><td colSpan={4}>DADOS DO CLIENTE</td></tr>
-                <tr>
-                  <td colSpan={2}><strong>Nome do Cliente:</strong> {selectedOrder.customer?.name}</td>
-                  <td><strong>CPF / CNPJ:</strong> {selectedOrder.customer?.document || '-'}</td>
-                  <td><strong>Telefone:</strong> {selectedOrder.customer?.phone || '-'}</td>
-                </tr>
-                {(selectedOrder.customer?.address || selectedOrder.customer?.email) && (
-                  <tr>
-                    <td colSpan={3}><strong>Endereco:</strong> {selectedOrder.customer?.address || '-'}</td>
-                    <td><strong>E-mail:</strong> {selectedOrder.customer?.email || '-'}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            {/* Dados do Veiculo */}
-            <table>
-              <tbody>
-                <tr className="hdr"><td colSpan={6}>DADOS DO VEICULO</td></tr>
-                <tr>
-                  <td colSpan={2}><strong>Marca / Modelo:</strong> {selectedOrder.vehicle?.brand} {selectedOrder.vehicle?.model}</td>
-                  <td colSpan={2}><strong>Placa:</strong> <span className="print-plate">{selectedOrder.vehicle?.plate || '-'}</span></td>
-                  <td colSpan={2}><strong>Chassi / VIN:</strong> {selectedOrder.vehicle?.vin || '-'}</td>
-                </tr>
-                <tr>
-                  <td colSpan={2}><strong>Ano:</strong> {selectedOrder.vehicle?.year || '-'}</td>
-                  <td colSpan={2}><strong>Cor:</strong> {selectedOrder.vehicle?.color || '-'}</td>
-                  <td colSpan={2}><strong>KM:</strong> {selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* Queixa / Diagnostico / Laudo */}
-            {(selectedOrder.complaint || selectedOrder.diagnosis || selectedOrder.technicalReport) && (
-              <table>
-                <tbody>
-                  {selectedOrder.complaint && <>
-                    <tr className="hdr"><td>RECLAMACAO DO CLIENTE</td></tr>
-                    <tr><td className="print-pre-wrap">{selectedOrder.complaint}</td></tr>
-                  </>}
-                  {selectedOrder.diagnosis && <>
-                    <tr className="hdr"><td>DIAGNOSTICO TECNICO</td></tr>
-                    <tr><td className="print-pre-wrap">{selectedOrder.diagnosis}</td></tr>
-                  </>}
-                  {selectedOrder.technicalReport && <>
-                    <tr className="hdr"><td>LAUDO / SOLUCAO APLICADA</td></tr>
-                    <tr><td className="print-pre-wrap">{selectedOrder.technicalReport}</td></tr>
-                  </>}
-                </tbody>
-              </table>
-            )}
-
-            {/* Servicos */}
-            {serviceItems.length > 0 && (
-              <table>
-                <thead>
-                  <tr className="hdr"><td colSpan={5}>SERVICOS / MAO DE OBRA</td></tr>
-                  <tr>
-                    <th className="tc print-col-28">#</th>
-                    <th>Descricao</th>
-                    <th className="tc print-col-60">Qtd/Hrs</th>
-                    <th className="tr print-col-90">Vl. Unit.</th>
-                    <th className="tr print-col-95">Vl. Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviceItems.map((item: any, idx: number) => (
-                    <tr key={item.id}>
-                      <td className="tc print-serial-cell">{idx + 1}</td>
-                      <td>{item.description}</td>
-                      <td className="tc">{Number(item.quantity).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</td>
-                      <td className="tr">R$ {fmtBR(item.unitPrice)}</td>
-                      <td className="tr">R$ {fmtBR(item.totalPrice ?? item.unitPrice * item.quantity)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* Pecas e Materiais */}
-            {partItems.length > 0 && (
-              <table>
-                <thead>
-                  <tr className="hdr"><td colSpan={6}>PECAS E MATERIAIS</td></tr>
-                  <tr>
-                    <th className="tc print-col-28">#</th>
-                    <th className="print-col-80">Referencia</th>
-                    <th>Descricao</th>
-                    <th className="tc print-col-50">Qtd</th>
-                    <th className="tr print-col-90">Vl. Unit.</th>
-                    <th className="tr print-col-95">Vl. Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {partItems.map((item: any, idx: number) => (
-                    <tr key={item.id}>
-                      <td className="tc print-serial-cell">{idx + 1}</td>
-                      <td className="print-part-cell">{item.part?.internalCode || item.internalCode || '-'}</td>
-                      <td>{item.description}</td>
-                      <td className="tc">{Number(item.quantity).toLocaleString('pt-BR')}</td>
-                      <td className="tr">R$ {fmtBR(item.unitPrice)}</td>
-                      <td className="tr">R$ {fmtBR(item.totalPrice ?? item.unitPrice * item.quantity)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* Observacoes + Totais lado a lado */}
-            <table>
-              <tbody>
-                <tr className="nb">
-                  {/* Esquerda: observacoes */}
-                  <td className="no-border print-header-left print-observations-col">
-                    <table>
-                      <tbody>
-                        <tr className="hdr"><td>OBSERVACOES</td></tr>
-                        <tr>
-                          <td className="print-observations">
-                            {selectedOrder.observations || ''}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-
-                  {/* Direita: totais */}
-                  <td className="no-border print-totals-col">
-                    <table>
-                      <tbody>
-                        <tr className="subtotal-row">
-                          <td className="tr">Total Servicos</td>
-                          <td className="tr print-col-110">R$ {fmtBR(selectedOrder.totalServices)}</td>
-                        </tr>
-                        <tr className="subtotal-row">
-                          <td className="tr">Total Produtos</td>
-                          <td className="tr">R$ {fmtBR(selectedOrder.totalParts)}</td>
-                        </tr>
-                        {Number(selectedOrder.totalLabor) > 0 && (
-                          <tr className="subtotal-row">
-                            <td className="tr">Mao de Obra</td>
-                            <td className="tr">R$ {fmtBR(selectedOrder.totalLabor)}</td>
-                          </tr>
-                        )}
-                        {Number(selectedOrder.totalDiscount) > 0 && (
-                          <tr>
-                            <td className="tr print-discount-label">Desconto</td>
-                            <td className="tr print-discount-value">- R$ {fmtBR(selectedOrder.totalDiscount)}</td>
-                          </tr>
-                        )}
-                        <tr className="total-final">
-                          <td className="tr">TOTAL GERAL</td>
-                          <td className="tr">R$ {fmtBR(selectedOrder.totalCost)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* Autorizacao + Assinatura */}
-            <div className="print-sign-authorize">
-              Autorizo os servicos e a substituicao das pecas deste{' '}
-              {selectedOrder.orderType === 'ORCAMENTO' ? 'ORCAMENTO' : 'documento'}, e o necessario
-              teste de rua com o veiculo. Estou ciente que a empresa nao se responsabiliza pela perda
-              ou roubo de qualquer objeto que se encontra no interior do veiculo.
-            </div>
-            <table className="print-sign-table">
-              <tbody>
-                <tr>
-                  <td className="print-sign-cell">
-                    <div className="print-sign-line" />
-                    <br /><span className="print-sign-label">Assinatura do Cliente</span>
-                    <br /><span className="print-sign-sub">Data: _____ / _____ / ____________</span>
-                  </td>
-                  <td className="print-sign-cell">
-                    <div className="print-sign-line" />
-                    <br /><span className="print-sign-label">Consultor Tecnico</span>
-                    <br /><span className="print-sign-sub">Nome: _________________________________</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div className="print-footer">
-              Documento gerado em {new Date().toLocaleString('pt-BR')} - Sigma Auto - Sistema de Gestao para Oficinas Automotivas
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* LISTA DE OS */}
       <div className="w-80 flex flex-col bg-surface-950 border border-surface-800 rounded-xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-surface-800/60 bg-surface-900/50">
@@ -1288,13 +958,32 @@ export function ServiceOrdersPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button type="button"
-                  onClick={viewOrderPdf}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all shadow-sm"
-                  title="Visualizar O.S. em PDF"
-                >
-                  <FileText size={15} /> Visualizar O.S.
-                </button>
+                <div className="relative">
+                  <button type="button"
+                    onClick={() => setShowDocsMenu((v) => !v)}
+                    className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all shadow-sm"
+                    title="Documentos do atendimento em PDF"
+                    aria-expanded={showDocsMenu}
+                  >
+                    <FileText size={15} /> Documentos
+                  </button>
+                  {showDocsMenu && (
+                    <>
+                      <div className="fixed inset-0 z-20" onClick={() => setShowDocsMenu(false)} />
+                      <div className="absolute right-0 mt-2 w-72 z-30 bg-surface-900 border border-line rounded-xl shadow-xl py-1">
+                        {availableDocuments(selectedOrder).map((d) => (
+                          <button type="button" key={d.kind}
+                            onClick={() => openOrderDocument(d.kind)}
+                            className="w-full text-left px-4 py-2 hover:bg-ink/5 transition"
+                          >
+                            <div className="text-xs font-bold text-surface-100">{d.label}</div>
+                            <div className="text-[10px] text-surface-500">{d.hint}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
                 {/* Botões de Checklist - verde quando ja preenchido */}
                 <button type="button"
                   onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}

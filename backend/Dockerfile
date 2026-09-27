@@ -9,7 +9,6 @@ COPY backend/. .
 ARG RAILWAY_GIT_COMMIT_SHA=local
 RUN echo "prisma-gen: ${RAILWAY_GIT_COMMIT_SHA}" && npx prisma generate
 RUN npm run build
-RUN mkdir -p dist/service-orders/templates && cp src/service-orders/templates/os-template.html dist/service-orders/templates/
 
 # Production stage
 FROM node:20-alpine
