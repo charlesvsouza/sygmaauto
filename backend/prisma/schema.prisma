@@ -380,6 +380,8 @@ model ServiceOrder {
   // Informações
   notes        String?
   paymentMethod String?
+  // Plano de pagamento/parcelamento (ver service-orders/payment-plan.ts)
+  paymentPlan   Json?
   mechanicId  String?
   mechanic   User?             @relation(fields: [mechanicId], references: [id])
   createdAt   DateTime          @default(now())

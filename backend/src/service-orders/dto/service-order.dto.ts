@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, IsNumber, IsBoolean, IsInt } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, IsNumber, IsBoolean, IsInt, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
@@ -211,6 +211,11 @@ export class UpdateOrcamentoDto {
   @IsOptional()
   @IsString()
   paymentMethod?: string;
+
+  @ApiProperty({ required: false, nullable: true, description: 'Plano de pagamento: { split, groups: [{ scope, method, installments, downPayment, intervalDays }] }. null remove o plano.' })
+  @IsOptional()
+  @IsObject()
+  paymentPlan?: Record<string, any> | null;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,6 +8,7 @@ import { CommissionsService } from '../commissions/commissions.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { resolveDocumentSettings } from '../common/document-settings';
 import { canMoveToStatus } from '../common/roles';
+import { describePaymentPlan, parsePaymentPlan, PaymentPlanError, planHasInstallments } from './payment-plan';
 
 // Status em que o orçamento espera a resposta do cliente (oficina e retífica).
 const AWAITING_APPROVAL = ['AGUARDANDO_APROVACAO', 'AGUARDANDO_APROVACAO_RETIFICA'];
@@ -365,7 +367,18 @@ export class ServiceOrdersService {
       throw new BadRequestException('Não é possível editar uma OS finalizada ou cancelada');
     }
 
-    const effectivePaymentMethod = dto.paymentMethod !== undefined ? dto.paymentMethod : order.paymentMethod;
+    // Plano de pagamento: undefined mantém o atual, null remove, objeto substitui.
+    let newPaymentPlan: ReturnType<typeof parsePaymentPlan> | undefined;
+    try {
+      newPaymentPlan = dto.paymentPlan === undefined ? undefined : parsePaymentPlan(dto.paymentPlan);
+    } catch (err) {
+      if (err instanceof PaymentPlanError) throw new BadRequestException(err.message);
+      throw err;
+    }
+    const effectivePaymentPlan = newPaymentPlan !== undefined ? newPaymentPlan : parsePaymentPlanSafe(order.paymentPlan);
+    // Com plano, o texto da forma de pagamento é derivado dele (fonte única).
+    const newPaymentMethod = newPaymentPlan ? describePaymentPlan(newPaymentPlan) : dto.paymentMethod;
+    const effectivePaymentMethod = newPaymentMethod !== undefined ? newPaymentMethod : order.paymentMethod;
     const finalDiscountPartsPercent = dto.discountPartsPercent !== undefined ? dto.discountPartsPercent : (order.discountPartsPercent || 0);
     const finalDiscountServicesPercent = dto.discountServicesPercent !== undefined ? dto.discountServicesPercent : (order.discountServicesPercent || 0);
     // Só considera "tocado" se o valor enviado realmente difere do que já está salvo — evita
@@ -375,7 +388,8 @@ export class ServiceOrdersService {
       (dto.discountPartsPercent !== undefined && dto.discountPartsPercent !== (order.discountPartsPercent || 0)) ||
       (dto.discountServicesPercent !== undefined && dto.discountServicesPercent !== (order.discountServicesPercent || 0));
 
-    if ((finalDiscountPartsPercent > 0 || finalDiscountServicesPercent > 0) && effectivePaymentMethod === 'A Prazo / Parcelado') {
+    const isInstallment = planHasInstallments(effectivePaymentPlan) || effectivePaymentMethod === 'A Prazo / Parcelado';
+    if ((finalDiscountPartsPercent > 0 || finalDiscountServicesPercent > 0) && isInstallment) {
       throw new BadRequestException('Desconto não é válido para pagamento a prazo parcelado.');
     }
 
@@ -392,8 +406,12 @@ export class ServiceOrdersService {
       equipmentModel: dto.equipmentModel,
       serialNumber: dto.serialNumber,
       notes: dto.notes,
-      paymentMethod: dto.paymentMethod,
+      paymentMethod: newPaymentMethod,
     };
+
+    if (newPaymentPlan !== undefined) {
+      updateData.paymentPlan = newPaymentPlan ?? Prisma.DbNull;
+    }
 
     if (typeof dto.reserveStock === 'boolean') {
       updateData.reserveStock = dto.reserveStock;
@@ -1541,5 +1559,14 @@ export class ServiceOrdersService {
         data: { applied: false },
       });
     }
+  }
+}
+
+// Plano já gravado: se estiver corrompido, trata como sem plano em vez de travar a edição.
+function parsePaymentPlanSafe(raw: unknown) {
+  try {
+    return parsePaymentPlan(raw);
+  } catch {
+    return null;
   }
 }

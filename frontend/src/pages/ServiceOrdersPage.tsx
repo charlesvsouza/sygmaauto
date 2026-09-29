@@ -19,6 +19,8 @@ import { ImportOSModal } from '../components/ImportOSModal';
 import { ChecklistModal } from '../components/ChecklistModal';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
+import { PaymentPlanEditor, initialPaymentPlan } from '../components/PaymentPlanEditor';
+import { planHasInstallments, type PaymentPlan } from '../lib/paymentPlan';
 import { canAccessFeature, canAccessRetificaMode } from '../lib/planAccess';
 
 const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' | 'positive' | 'negative' }> = {
@@ -61,11 +63,6 @@ const statusIndicator = (tone?: keyof typeof STATUS_CHIPS) => {
   };
   return map[tone ?? 'neutral'];
 };
-
-const PAYMENT_METHODS = [
-  'Dinheiro', 'PIX', 'Cartao de Debito', 'Cartao de Credito',
-  'Transferencia Bancaria', 'Boleto', 'Cheque', 'A Prazo / Parcelado',
-];
 
 // Fluxo de status permitidos (espelha o backend exato)
 // ABERTA -> EM_DIAGNOSTICO -> ORCAMENTO_PRONTO -> AGUARDANDO_APROVACAO
@@ -203,7 +200,12 @@ export function ServiceOrdersPage() {
     complaint: '', diagnosis: '', technicalReport: '',
     observations: '', notes: '', paymentMethod: '', reserveStock: false,
     scheduledDate: '', discountPartsPercent: 0, discountServicesPercent: 0,
+    paymentPlan: null as PaymentPlan | null,
   });
+  // Qualquer parcela depois do ato bloqueia desconto (mesma regra do backend).
+  const isInstallmentPayment = edit.paymentPlan
+    ? planHasInstallments(edit.paymentPlan)
+    : edit.paymentMethod === 'A Prazo / Parcelado';
 
   // Catalog state
   const [catalogMode, setCatalogMode] = useState<'service' | 'part' | null>(null);
@@ -342,6 +344,7 @@ export function ServiceOrdersPage() {
         scheduledDate: o.scheduledDate ? new Date(o.scheduledDate).toISOString().slice(0, 16) : '',
         discountPartsPercent: Number(o.discountPartsPercent || 0),
         discountServicesPercent: Number(o.discountServicesPercent || 0),
+        paymentPlan: initialPaymentPlan(o),
       });
       setPendingQtyByItem({});
           // Carrega status dos checklists
@@ -1600,29 +1603,19 @@ export function ServiceOrdersPage() {
                 {/* Forma de pagamento */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Forma de Pagamento</h4>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {PAYMENT_METHODS.map((pm) => (
-                      <button
-                        key={pm}
-                        type="button"
-                        onClick={() => setEdit({ ...edit, paymentMethod: pm })}
-                        className={cn(
-                          'px-2.5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-wide transition-all border text-left leading-tight',
-                          edit.paymentMethod === pm
-                            ? 'bg-accent text-white border-accent shadow-lg'
-                            : 'bg-white border-surface-800 text-surface-400 hover:border-surface-600'
-                        )}
-                      >
-                        {pm}
-                      </button>
-                    ))}
-                  </div>
+                  <PaymentPlanEditor
+                    plan={edit.paymentPlan}
+                    onChange={(paymentPlan) => setEdit({ ...edit, paymentPlan })}
+                    order={selectedOrder}
+                    legacyMethod={edit.paymentMethod}
+                    disabled={isClosed}
+                  />
                 </div>
 
                 {/* Desconto */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Desconto</h4>
-                  {edit.paymentMethod === 'A Prazo / Parcelado' && (
+                  {isInstallmentPayment && (
                     <p className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
                       Desconto não é válido para pagamento a prazo parcelado.
                     </p>
@@ -1636,13 +1629,13 @@ export function ServiceOrdersPage() {
                       <input
                         aria-label="Desconto percentual em peças"
                         type="number" min="0" max="100" step="1"
-                        disabled={isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado'}
+                        disabled={isClosed || !canGrantOrderDiscount || isInstallmentPayment}
                         value={edit.discountPartsPercent}
                         onChange={(e) => setEdit({ ...edit, discountPartsPercent: Number(e.target.value) })}
-                        style={{ color: (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado') ? undefined : '#0f172a' }}
+                        style={{ color: (isClosed || !canGrantOrderDiscount || isInstallmentPayment) ? undefined : '#0f172a' }}
                         className={cn(
                           'w-full px-3 py-2 rounded-xl border text-xs font-bold text-center transition-all',
-                          (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado')
+                          (isClosed || !canGrantOrderDiscount || isInstallmentPayment)
                             ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
                             : 'bg-white border-surface-800'
                         )}
@@ -1653,13 +1646,13 @@ export function ServiceOrdersPage() {
                       <input
                         aria-label="Desconto percentual em serviços"
                         type="number" min="0" max="100" step="1"
-                        disabled={isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado'}
+                        disabled={isClosed || !canGrantOrderDiscount || isInstallmentPayment}
                         value={edit.discountServicesPercent}
                         onChange={(e) => setEdit({ ...edit, discountServicesPercent: Number(e.target.value) })}
-                        style={{ color: (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado') ? undefined : '#0f172a' }}
+                        style={{ color: (isClosed || !canGrantOrderDiscount || isInstallmentPayment) ? undefined : '#0f172a' }}
                         className={cn(
                           'w-full px-3 py-2 rounded-xl border text-xs font-bold text-center transition-all',
-                          (isClosed || !canGrantOrderDiscount || edit.paymentMethod === 'A Prazo / Parcelado')
+                          (isClosed || !canGrantOrderDiscount || isInstallmentPayment)
                             ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
                             : 'bg-white border-surface-800'
                         )}

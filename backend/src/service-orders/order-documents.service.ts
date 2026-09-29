@@ -17,6 +17,7 @@ import {
   CHECKLIST_CONDITION_LABEL,
   FUEL_LEVEL_LABEL,
 } from '../common/checklist-labels';
+import { buildInstallments, parsePaymentPlan, PAYMENT_PLAN_METHODS, PAYMENT_PLAN_SCOPE_LABEL, settledAtBilling } from './payment-plan';
 
 // Documentos do atendimento. Todo atendimento começa pela ENTRADA (vistoria), segue para
 // o ORÇAMENTO e, aprovado, vira O.S. com o mesmo número; a O.S. tem a via do cliente
@@ -261,6 +262,30 @@ export class OrderDocumentsService {
     return `<table class="totals">${rows.map(([k, v, cls]) => `<tr${cls ? ` class="${cls}"` : ''}><td>${e(k)}</td><td class="r">${v}</td></tr>`).join('')}</table>`;
   }
 
+  // Parcelas do plano de pagamento. Antes do faturamento, prazos relativos ("no ato",
+  // "30 dias"); depois, datas contadas a partir do faturamento.
+  private paymentSchedule(order: any): string {
+    let plan: ReturnType<typeof parsePaymentPlan>;
+    try {
+      plan = parsePaymentPlan(order.paymentPlan);
+    } catch {
+      return '';
+    }
+    if (!plan) return '';
+    const base = order.paidAt ? new Date(order.paidAt) : new Date();
+    const list = buildInstallments(plan, order, base);
+    if (list.length <= 1 && list.every((i) => i.upfront)) return '';
+    const dayMs = 86_400_000;
+    const due = (d: Date, upfront: boolean) => {
+      if (upfront) return order.paidAt ? `${formatDateBR(d)} (no ato)` : 'No ato';
+      if (order.paidAt) return formatDateBR(d);
+      return `${Math.round((d.getTime() - base.getTime()) / dayMs)} dias após o faturamento`;
+    };
+    return `<div class="sec">Parcelamento</div>
+<table><thead><tr>${plan.split ? '<th style="width:14%">Parte</th>' : ''}<th class="c" style="width:10%">Parcela</th><th>Forma</th><th>Vencimento</th><th class="r" style="width:16%">Valor</th></tr></thead>
+<tbody>${list.map((i) => `<tr>${plan.split ? `<td>${e(PAYMENT_PLAN_SCOPE_LABEL[i.scope])}</td>` : ''}<td class="c">${i.number}/${i.of}</td><td>${e(PAYMENT_PLAN_METHODS[i.method])}</td><td>${due(i.dueDate, i.upfront)}</td><td class="r">${money(i.amount)}</td></tr>`).join('')}</tbody></table>`;
+  }
+
   private stageDates(order: any): string {
     const d = (x?: Date | null) => (x ? formatDateTimeBR(x) : '—');
     return `<table class="kv"><tr><td>Abertura</td><td>${d(order.createdAt)}</td><td>Aprovação</td><td>${d(order.approvedAt)}</td></tr>
@@ -345,6 +370,7 @@ ${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.valuedItems(order, false)}
 ${this.totals(order)}
 <table class="kv"><tr><td>Validade do orçamento</td><td>${formatDateBR(validUntil)}</td><td>Condição de pagamento</td><td>${e(order.paymentMethod || 'A combinar')}</td></tr></table>
+${this.paymentSchedule(order)}
 ${this.textSection('Observações', order.observations)}
 ${approval}
 <div class="legal">${e(settings.authorizationText)}</div>
@@ -366,6 +392,8 @@ ${this.textSection('Reclamação inicial', order.complaint)}
 ${this.textSection('Diagnóstico técnico', order.diagnosis)}
 ${this.valuedItems(order, true)}
 ${this.totals(order)}
+${order.paymentMethod ? `<table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod)}</td></tr></table>` : ''}
+${this.paymentSchedule(order)}
 ${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.textSection('Observações', order.observations)}
 ${this.signatures([
@@ -406,9 +434,12 @@ ${this.signatures(
 
   private async entrega(ctx: Ctx): Promise<string> {
     const { order, settings } = ctx;
-    // A O.S. faturada está paga pelo total: o faturamento lança a receita única da O.S.
+    // A O.S. faturada está paga pelo total, salvo parcelas a vencer do plano de pagamento
+    // (cartão de crédito conta como pago: quem parcela é o cliente com a operadora).
     const total = Number(order.totalCost || 0);
-    const paid = order.paidAt ? total : 0;
+    let plan: ReturnType<typeof parsePaymentPlan> = null;
+    try { plan = parsePaymentPlan(order.paymentPlan); } catch { plan = null; }
+    const paid = !order.paidAt ? 0 : plan ? settledAtBilling(buildInstallments(plan, order, new Date(order.paidAt))) : total;
     const balance = Math.max(0, total - paid);
     const deliveredAt: Date = order.deliveredAt ? new Date(order.deliveredAt) : new Date();
     const warrantyServices = addDays(deliveredAt, settings.warrantyDaysServices);
@@ -422,6 +453,7 @@ ${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.valuedItems(order, true)}
 ${this.totals(order, [['Valor pago', paid], ['Saldo a pagar', balance]])}
 <table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr></table>
+${this.paymentSchedule(order)}
 <div class="sec">Garantia</div>
 <table class="kv">
   <tr><td>Serviços</td><td>${settings.warrantyDaysServices} dias — até <b>${formatDateBR(warrantyServices)}</b></td></tr>
