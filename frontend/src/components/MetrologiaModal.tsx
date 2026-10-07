@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Loader2, Ruler, CheckCircle2, ChevronDown, ChevronRight, Wrench, Package, AlertTriangle, ChevronLeft, FlaskConical } from 'lucide-react';
 
+import { NumberInput } from './ui';
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
 /** Medidas de um cilindro */
@@ -238,7 +239,7 @@ function Section({ title, color = 'blue', open, onToggle, children }: {
 
 function NInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <input type="number" step="0.001" min="0" value={value} onChange={(e) => onChange(e.target.value)} placeholder="—"
+    <NumberInput aria-label="Medida em milímetros" step="0.001" min="0" value={value} onChange={(e) => onChange(e.target.value)} placeholder="—"
       className="w-24 bg-surface-800 border border-line rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
   );
 }
@@ -452,16 +453,16 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               <Section title="Empenamentos" open={open.emp} onToggle={() => toggle('emp')}>
                 <div className="grid grid-cols-2 gap-4 mt-1">
                   <div>
-                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do cabeçote (mm)</label>
-                    <input type="number" step="0.001" min="0" value={empCab} onChange={(e) => setEmpCab(e.target.value)} placeholder="ex: 0.050"
+                    <label htmlFor="fld-metrologiamodal-1" className="block text-sm font-semibold text-muted mb-1.5">Empenamento — Face do cabeçote (mm)</label>
+                    <NumberInput id="fld-metrologiamodal-1" step="0.001" min="0" value={empCab} onChange={(e) => setEmpCab(e.target.value)} placeholder="ex: 0.050"
                       className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
-                    <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
+                    <p className="text-surface-300 text-[11px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                   <div>
-                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Empenamento — Face do bloco (mm)</label>
-                    <input type="number" step="0.001" min="0" value={empBlo} onChange={(e) => setEmpBlo(e.target.value)} placeholder="ex: 0.050"
+                    <label htmlFor="fld-metrologiamodal-2" className="block text-sm font-semibold text-muted mb-1.5">Empenamento — Face do bloco (mm)</label>
+                    <NumberInput id="fld-metrologiamodal-2" step="0.001" min="0" value={empBlo} onChange={(e) => setEmpBlo(e.target.value)} placeholder="ex: 0.050"
                       className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 placeholder:text-surface-300" />
-                    <p className="text-surface-300 text-[10px] mt-1">Limite típico: 0,05 mm</p>
+                    <p className="text-surface-300 text-[11px] mt-1">Limite típico: 0,05 mm</p>
                   </div>
                 </div>
               </Section>
@@ -503,7 +504,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-surface-500 text-xs font-semibold">Quantidade:</span>
                   <NumStepper value={numMun} onChange={(n) => { setNumMun(n); setMunhoes((p) => adjustArr(p, n, EMPTY_JOURNAL)); }} />
-                  <span className="text-surface-300 text-[10px]">(geralmente cilindros + 1)</span>
+                  <span className="text-surface-300 text-[11px]">(geralmente cilindros + 1)</span>
                 </div>
                 <JournalTable rows={munhoes} update={updJou(setMunhoes)} dotColor="amber" />
               </Section>
@@ -539,13 +540,13 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               <Section title="Técnico & Observações" open={open.fin} onToggle={() => toggle('fin')}>
                 <div className="grid grid-cols-2 gap-4 mt-1">
                   <div>
-                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Técnico responsável</label>
-                    <input value={tecnico} onChange={(e) => setTecnico(e.target.value)} placeholder="Nome do técnico"
+                    <label htmlFor="fld-metrologiamodal-3" className="block text-sm font-semibold text-muted mb-1.5">Técnico responsável</label>
+                    <input id="fld-metrologiamodal-3" value={tecnico} onChange={(e) => setTecnico(e.target.value)} placeholder="Nome do técnico"
                       className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors" />
                   </div>
                   <div>
-                    <label className="text-surface-500 text-xs font-semibold block mb-1.5">Observações técnicas</label>
-                    <textarea value={obs} onChange={(e) => setObs(e.target.value)}
+                    <label htmlFor="fld-metrologiamodal-4" className="block text-sm font-semibold text-muted mb-1.5">Observações técnicas</label>
+                    <textarea id="fld-metrologiamodal-4" value={obs} onChange={(e) => setObs(e.target.value)}
                       placeholder="Desgaste irregular, trincas, recomendações..." rows={2}
                       className="w-full bg-surface-800 border border-line rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500/60 transition-colors resize-none" />
                   </div>
@@ -577,7 +578,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                       <Wrench size={12} /> Serviços
                     </h3>
                     <button type="button" onClick={() => addCustomItem('service')}
-                      className="text-[10px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 transition-colors">
+                      className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 transition-colors">
                       <Plus size={10} /> Adicionar
                     </button>
                   </div>
@@ -590,7 +591,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           className="mt-0.5 accent-blue-500 w-3.5 h-3.5 shrink-0" />
                         <div className="min-w-0">
                           <p className="text-white text-xs font-semibold leading-snug">{it.description}</p>
-                          <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
+                          <p className="text-surface-400 text-[11px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                       </label>
                     ))}
@@ -606,7 +607,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                       <Package size={12} /> Peças
                     </h3>
                     <button type="button" onClick={() => addCustomItem('part')}
-                      className="text-[10px] text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1 transition-colors">
+                      className="text-[11px] text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1 transition-colors">
                       <Plus size={10} /> Adicionar
                     </button>
                   </div>
@@ -619,10 +620,10 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
                           className="mt-0.5 accent-amber-500 w-3.5 h-3.5 shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-white text-xs font-semibold leading-snug">{it.description}</p>
-                          <p className="text-surface-400 text-[10px] mt-0.5 leading-snug">{it.reason}</p>
+                          <p className="text-surface-400 text-[11px] mt-0.5 leading-snug">{it.reason}</p>
                         </div>
                         {it.quantity > 1 && (
-                          <span className="text-[10px] text-amber-600 font-bold shrink-0 mt-0.5">× {it.quantity}</span>
+                          <span className="text-[11px] text-amber-600 font-bold shrink-0 mt-0.5">× {it.quantity}</span>
                         )}
                       </label>
                     ))}

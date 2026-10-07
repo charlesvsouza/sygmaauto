@@ -96,7 +96,7 @@ export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', 
         <span className="block font-black text-xl tracking-tight" style={wordStyle}>
           Sigma<span style={accentStyle}>Auto</span>
         </span>
-        <span className="block text-[10px] font-medium tracking-widest uppercase mt-0.5" style={{ color: secondaryText }}>
+        <span className="block text-[11px] font-medium tracking-widest uppercase mt-0.5" style={{ color: secondaryText }}>
           Gestão de Oficina
         </span>
       </div>

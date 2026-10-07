@@ -137,7 +137,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
         <div className="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center lg:items-start gap-1">
             <SigmaAutoLogo variant="compact" size={28} tone="light" />
-            <span className="text-[11px] text-[#9aa9ba] mt-1">Sistema para Oficina Mecânica · ERP Automotivo</span>
+            <span className="text-[12px] text-[#9aa9ba] mt-1">Sistema para Oficina Mecânica · ERP Automotivo</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
             </a>
           </div>
 
-          <div className="text-[11px] text-[#9aa9ba] text-center lg:text-right">
+          <div className="text-[12px] text-[#9aa9ba] text-center lg:text-right">
             <p>© {new Date().getFullYear()} SigmaAuto · sigmaauto.com.br</p>
             <div className="mt-1 flex items-center justify-center lg:justify-end gap-2">
               <Link to="/compliance" className="hover:text-[#8ce2e7] transition-colors">

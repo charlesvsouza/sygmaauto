@@ -357,9 +357,9 @@ export function CommissionsPage() {
             {leadership.slice(0, 8).map((p: any) => (
               <div key={p.userId} className="rounded-xl border border-line bg-surface-950/40 p-3">
                 <p className="text-xs font-bold text-surface-50">{p.name}</p>
-                <p className="text-[10px] text-surface-400 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
+                <p className="text-[11px] text-surface-400 mt-0.5">{p.workshopArea || 'SEM_AREA'}</p>
                 <p className="text-sm font-bold text-surface-50 mt-2">{money(p.total)}</p>
-                <p className="text-[11px] text-surface-400">{p.count} comissões</p>
+                <p className="text-[12px] text-surface-400">{p.count} comissões</p>
               </div>
             ))}
           </div>
@@ -398,7 +398,7 @@ export function CommissionsPage() {
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-surface-950/40 text-surface-400 uppercase text-[10px] tracking-wide">
+            <thead className="bg-surface-950/40 text-surface-400 uppercase text-[11px] tracking-wide">
               <tr>
                 <th className="px-4 py-3 text-left">Executor</th>
                 <th className="px-4 py-3 text-left">Área</th>
@@ -423,11 +423,11 @@ export function CommissionsPage() {
                   <td className="px-4 py-3 text-right font-bold text-surface-50">{money(row.commissionValue)}</td>
                   <td className="px-4 py-3">
                     {row.status === 'PAGO' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 px-2 py-1 text-[11px] font-bold uppercase tracking-wider">
                         <CheckCircle2 size={12} /> Pago
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-700 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 text-amber-700 px-2 py-1 text-[11px] font-bold uppercase tracking-wider">
                         <DollarSign size={12} /> Pendente
                       </span>
                     )}

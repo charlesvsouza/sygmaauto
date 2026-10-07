@@ -14,8 +14,11 @@ import {
   Wrench
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast, useConfirm, NumberInput } from '../components/ui';
 
 export function VehiclesPage() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,13 +133,14 @@ export function VehiclesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este veículo?')) {
-      try {
-        await vehiclesApi.delete(id);
-        loadData();
-      } catch (error) {
-        console.error('Falha ao excluir veículo:', error);
-      }
+    if (!(await confirm({ title: 'Excluir veículo', message: 'Excluir este veículo? Essa ação não pode ser desfeita.', confirmLabel: 'Excluir', danger: true }))) return;
+    try {
+      await vehiclesApi.delete(id);
+      loadData();
+      toast.success('Veículo excluído.');
+    } catch (error: any) {
+      console.error('Falha ao excluir veículo:', error);
+      toast.error(error?.response?.data?.message || 'Não foi possível excluir o veículo. Verifique se ele tem O.S. vinculadas.');
     }
   };
 
@@ -196,7 +200,7 @@ export function VehiclesPage() {
       <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-          <input
+          <input aria-label="Buscar por placa, marca ou modelo..."
             type="text"
             placeholder="Buscar por placa, marca ou modelo..."
             value={search}
@@ -322,8 +326,8 @@ export function VehiclesPage() {
               </div>
               <form onSubmit={handleSubmit} className="p-8 space-y-5 overflow-y-auto">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Proprietário (Cliente) *</label>
-                  <select
+                  <label htmlFor="fld-vehiclespage-1" className="block text-sm font-semibold text-muted">Proprietário (Cliente) *</label>
+                  <select id="fld-vehiclespage-1"
                     value={formData.customerId}
                     onChange={(e) =>
                       setFormData({ ...formData, customerId: e.target.value })
@@ -341,8 +345,8 @@ export function VehiclesPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Placa *</label>
-                    <input
+                    <label htmlFor="fld-vehiclespage-2" className="block text-sm font-semibold text-muted">Placa *</label>
+                    <input id="fld-vehiclespage-2"
                       type="text"
                       value={formData.plate}
                       onChange={(e) =>
@@ -354,8 +358,8 @@ export function VehiclesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Chassi (VIN)</label>
-                    <input
+                    <label htmlFor="fld-vehiclespage-3" className="block text-sm font-semibold text-muted">Chassi (VIN)</label>
+                    <input id="fld-vehiclespage-3"
                       type="text"
                       value={formData.vin}
                       onChange={(e) =>
@@ -369,9 +373,8 @@ export function VehiclesPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Ano</label>
-                    <input
-                      type="number"
+                    <label htmlFor="fld-vehiclespage-4" className="block text-sm font-semibold text-muted">Ano</label>
+                    <NumberInput id="fld-vehiclespage-4"
                       value={formData.year}
                       onChange={(e) =>
                         setFormData({ ...formData, year: e.target.value })
@@ -382,8 +385,8 @@ export function VehiclesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Marca *</label>
-                    <input
+                    <label htmlFor="fld-vehiclespage-5" className="block text-sm font-semibold text-muted">Marca *</label>
+                    <input id="fld-vehiclespage-5"
                       type="text"
                       value={formData.brand}
                       onChange={(e) =>
@@ -397,8 +400,8 @@ export function VehiclesPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Modelo *</label>
-                    <input
+                    <label htmlFor="fld-vehiclespage-6" className="block text-sm font-semibold text-muted">Modelo *</label>
+                    <input id="fld-vehiclespage-6"
                       type="text"
                       value={formData.model}
                       onChange={(e) =>
@@ -410,8 +413,8 @@ export function VehiclesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Cor</label>
-                    <input
+                    <label htmlFor="fld-vehiclespage-7" className="block text-sm font-semibold text-muted">Cor</label>
+                    <input id="fld-vehiclespage-7"
                       type="text"
                       value={formData.color}
                       onChange={(e) =>
@@ -422,9 +425,8 @@ export function VehiclesPage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">KM Atual</label>
-                  <input
-                    type="number"
+                  <label htmlFor="fld-vehiclespage-8" className="block text-sm font-semibold text-muted">KM Atual</label>
+                  <NumberInput id="fld-vehiclespage-8"
                     value={formData.km}
                     onChange={(e) =>
                       setFormData({ ...formData, km: e.target.value })
@@ -440,9 +442,8 @@ export function VehiclesPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">KM na Última Revisão</label>
-                      <input
-                        type="number"
+                      <label htmlFor="fld-vehiclespage-9" className="block text-sm font-semibold text-muted">KM na Última Revisão</label>
+                      <NumberInput id="fld-vehiclespage-9"
                         value={formData.lastMaintenanceKm}
                         onChange={(e) => setFormData({ ...formData, lastMaintenanceKm: e.target.value })}
                         placeholder="Ex: 45000"
@@ -450,8 +451,8 @@ export function VehiclesPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Data da Última Revisão</label>
-                      <input
+                      <label htmlFor="fld-vehiclespage-10" className="block text-sm font-semibold text-muted">Data da Última Revisão</label>
+                      <input id="fld-vehiclespage-10"
                         type="date"
                         value={formData.lastMaintenanceDate}
                         onChange={(e) => setFormData({ ...formData, lastMaintenanceDate: e.target.value })}
@@ -459,9 +460,8 @@ export function VehiclesPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Intervalo (km)</label>
-                      <input
-                        type="number"
+                      <label htmlFor="fld-vehiclespage-11" className="block text-sm font-semibold text-muted">Intervalo (km)</label>
+                      <NumberInput id="fld-vehiclespage-11"
                         value={formData.maintenanceIntervalKm}
                         onChange={(e) => setFormData({ ...formData, maintenanceIntervalKm: e.target.value })}
                         placeholder="Ex: 10000"
@@ -469,9 +469,8 @@ export function VehiclesPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Intervalo (dias)</label>
-                      <input
-                        type="number"
+                      <label htmlFor="fld-vehiclespage-12" className="block text-sm font-semibold text-muted">Intervalo (dias)</label>
+                      <NumberInput id="fld-vehiclespage-12"
                         value={formData.maintenanceIntervalDays}
                         onChange={(e) => setFormData({ ...formData, maintenanceIntervalDays: e.target.value })}
                         placeholder="Ex: 180"

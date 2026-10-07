@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { serviceOrdersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
+import { useConfirm } from '../components/ui';
 import { useBoardViewport } from '../hooks/useBoardViewport';
 import {
   RefreshCw, Maximize2, Minimize2, Loader2,
@@ -101,6 +102,7 @@ function RetificaCard({
   focused?: boolean;
   canRollback?: boolean;
 }) {
+  const confirm = useConfirm();
   const next = NEXT_STATUS[os.status];
   const prev = PREV_STATUS[os.status];
   const isAdv = advancing === os.id;
@@ -134,7 +136,7 @@ function RetificaCard({
       className={`bg-panel border-2 ${focused ? 'border-cyan-300 shadow-[0_0_0_3px_rgba(34,211,238,0.25)]' : alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'} ${level === 'danger' ? 'animate-pulse' : ''}`}
     >
       {focused && (
-        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold bg-cyan-500/15 text-cyan-700">
+        <div className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-bold bg-cyan-500/15 text-cyan-700">
           <Timer size={11} className="shrink-0" />
           Foco vindo do Dashboard
         </div>
@@ -142,7 +144,7 @@ function RetificaCard({
 
       {/* Alerta */}
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0" /> : <Timer size={11} className="shrink-0" />}
@@ -185,12 +187,12 @@ function RetificaCard({
       {/* Badges */}
       <div className="flex flex-wrap gap-1">
         {isMotorAvulso && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600">
+          <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-600">
             <Package size={9} /> Motor avulso
           </span>
         )}
         {hasMetrologia && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+          <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-600">
             <Ruler size={9} /> Metrologia OK
           </span>
         )}
@@ -200,13 +202,13 @@ function RetificaCard({
       <div className={`flex gap-1.5 mt-1 ${prev && canRollback ? 'grid grid-cols-[auto_1fr]' : ''}`}>
         {prev && canRollback && (
           <button type="button"
-            onClick={() => {
-              if (!confirm('Retroceder para a fase anterior? Use apenas para corrigir o fluxo.')) return;
+            onClick={async () => {
+              if (!(await confirm({ title: 'Voltar fase', message: 'Voltar para a fase anterior? Use só para corrigir o fluxo.', confirmLabel: 'Voltar fase' }))) return;
               onRollback(os.id, prev);
             }}
             disabled={isAdv}
             title="Retroceder fase"
-            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-bold transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[10px]"
+            className="px-2 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-bold transition-all flex items-center justify-center gap-1 disabled:opacity-40 text-[11px]"
           >
             ←
           </button>
@@ -226,7 +228,7 @@ function RetificaCard({
       {hasMetrologia && (
         <button type="button"
           onClick={() => onLaudo(os)}
-          className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-semibold transition-all flex items-center justify-center gap-1.5 text-[10px]"
+          className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 hover:text-amber-700 font-semibold transition-all flex items-center justify-center gap-1.5 text-[11px]"
         >
           <FileText size={10} /> Laudo PDF
         </button>
@@ -396,7 +398,7 @@ export function KanbanRetificaPage() {
               {tenant?.name} · {totalActive} motor{totalActive !== 1 ? 'es' : ''} em fluxo · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
-              <p className="text-red-700 text-[11px] font-bold mt-0.5 animate-pulse">
+              <p className="text-red-700 text-[12px] font-bold mt-0.5 animate-pulse">
                 {activeAlerts} alerta{activeAlerts !== 1 ? 's' : ''} de SLA ativo{activeAlerts !== 1 ? 's' : ''}
               </p>
             )}

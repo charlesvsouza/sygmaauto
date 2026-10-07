@@ -158,7 +158,7 @@ export default function BlogPage() {
               </div>
 
               <span
-                className="inline-block self-start text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
+                className="inline-block self-start text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3"
                 style={{ background: post.tagColor + '18', color: post.tagColor, border: `1px solid ${post.tagColor}35` }}
               >
                 {post.tag}
@@ -167,7 +167,7 @@ export default function BlogPage() {
                 {post.title}
               </h3>
               <p className="text-surface-400 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
-              <div className="flex items-center gap-3 text-surface-300 text-[11px] pt-4 border-t border-line">
+              <div className="flex items-center gap-3 text-surface-300 text-[12px] pt-4 border-t border-line">
                 <span>{post.date}</span>
                 <span>·</span>
                 <span className="flex items-center gap-1"><Clock size={10} /> {post.readTime} de leitura</span>
@@ -181,7 +181,7 @@ export default function BlogPage() {
           <h3 className="text-2xl font-bold text-white mb-2">Receba novos artigos no seu e-mail</h3>
           <p className="text-surface-400 text-sm mb-6">Conteúdo semanal sobre gestão de oficinas. Sem spam.</p>
           <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input
+            <input aria-label="seu@email.com.br"
               type="email"
               placeholder="seu@email.com.br"
               required

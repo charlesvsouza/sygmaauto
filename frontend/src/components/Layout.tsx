@@ -208,7 +208,7 @@ export function Layout() {
         >
           <item.icon className="w-4 h-4 shrink-0" />
           <span className={cn('leading-tight', rail && 'lg:hidden')}>{item.label}</span>
-          <span className={cn('ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/80', rail && 'lg:hidden')}>{badge}</span>
+          <span className={cn('ml-auto text-[11px] px-1.5 py-0.5 rounded bg-white/10 text-white/80', rail && 'lg:hidden')}>{badge}</span>
         </button>
       );
     }
@@ -244,7 +244,7 @@ export function Layout() {
               type="button"
               onClick={() => toggleCategory(group.label!)}
               className={cn(
-                'flex w-full items-center justify-between px-2.5 mb-1 text-[8px] font-bold uppercase tracking-wide text-white/45 hover:text-white/70 transition-colors',
+                'flex w-full items-center justify-between px-2.5 mb-1 text-[11px] font-semibold uppercase tracking-wide text-white/75 hover:text-white transition-colors',
                 opts.rail && 'lg:hidden',
               )}
             >
@@ -380,7 +380,7 @@ export function Layout() {
             >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
               <span className="flex-1">Buscar...</span>
-              <kbd className="hidden xl:inline rounded border border-line px-1.5 py-0.5 font-mono text-[10px] text-surface-500">Ctrl K</kbd>
+              <kbd className="hidden xl:inline rounded border border-line px-1.5 py-0.5 font-mono text-[11px] text-surface-500">Ctrl K</kbd>
             </button>
 
             {/* Notifications */}
@@ -413,14 +413,14 @@ export function Layout() {
                 </div>
                 <div className="text-left hidden xl:block">
                   <p className="text-xs font-semibold text-surface-100 leading-tight truncate max-w-[140px]">{user?.name}</p>
-                  <p className="text-[10px] text-surface-500 leading-tight truncate max-w-[140px]">{user?.email}</p>
+                  <p className="text-[11px] text-surface-500 leading-tight truncate max-w-[140px]">{user?.email}</p>
                 </div>
               </button>
               {/* Dropdown on hover */}
               <div className="absolute right-0 top-full mt-1 w-52 bg-surface-900 rounded-xl shadow-card-hover border border-line py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="px-3 py-2 border-b border-line">
                   <p className="text-xs font-semibold text-surface-100 truncate">{user?.name}</p>
-                  <p className="text-[10px] text-surface-500 truncate">{user?.email}</p>
+                  <p className="text-[11px] text-surface-500 truncate">{user?.email}</p>
                 </div>
                 <button
                   type="button"

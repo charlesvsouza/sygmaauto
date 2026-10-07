@@ -53,7 +53,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     (message: string, type: ToastType = 'info') => {
       const id = Date.now() + Math.random();
       setItems((prev) => [...prev, { id, type, message }]);
-      setTimeout(() => remove(id), 4000);
+      // Erros ficam mais tempo na tela: o operador precisa conseguir ler o que fazer.
+      setTimeout(() => remove(id), type === 'error' ? 8000 : 4000);
     },
     [remove],
   );
@@ -76,7 +77,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             return (
               <div
                 key={t.id}
-                className="flex items-start gap-3 rounded-md border border-line border-l-2 border-l-accent bg-surface-900 px-4 py-3 shadow-card-hover animate-slide-in"
+                role={t.type === 'error' ? 'alert' : 'status'}
+                className="flex items-start gap-3 rounded-md border border-line bg-surface-900 px-4 py-3 shadow-card-hover animate-slide-in"
               >
                 <Icon size={18} className={cn('mt-0.5 shrink-0', accentMap[t.type])} />
                 <p className="flex-1 text-sm text-surface-100">{t.message}</p>

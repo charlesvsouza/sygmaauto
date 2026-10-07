@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { serviceOrdersApi, customersApi, vehiclesApi } from '../api/client';
 import { cn } from '../lib/utils';
 
+import { NumberInput } from './ui';
 interface ImportOSModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -265,24 +266,24 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Nome Completo</label>
-                      <input 
+                      <label htmlFor="fld-importosmodal-1" className="block text-sm font-semibold text-muted mb-1">Nome Completo</label>
+                      <input id="fld-importosmodal-1" 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-accent transition-all"
                         value={data.customer.name}
                         onChange={(e) => updateCustomerField('name', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">CPF / CNPJ</label>
-                      <input 
+                      <label htmlFor="fld-importosmodal-2" className="block text-sm font-semibold text-muted mb-1">CPF / CNPJ</label>
+                      <input id="fld-importosmodal-2" 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.document}
                         onChange={(e) => updateCustomerField('document', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Telefone</label>
-                      <input 
+                      <label htmlFor="fld-importosmodal-3" className="block text-sm font-semibold text-muted mb-1">Telefone</label>
+                      <input id="fld-importosmodal-3" 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                         value={data.customer.phone}
                         onChange={(e) => updateCustomerField('phone', e.target.value)}
@@ -299,15 +300,15 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Marca / Modelo</label>
+                      <label htmlFor="fld-importosmodal-b305" className="block text-sm font-semibold text-muted mb-1">Marca / Modelo</label>
                       <div className="flex gap-2">
-                        <input 
+                        <input id="fld-importosmodal-b305" 
                           className="w-1/3 bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                           placeholder="Marca"
                           value={data.vehicle.brand}
                           onChange={(e) => updateVehicleField('brand', e.target.value)}
                         />
-                        <input 
+                        <input aria-label="Modelo" 
                           className="w-2/3 bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
                           placeholder="Modelo"
                           value={data.vehicle.model}
@@ -316,18 +317,17 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">Placa</label>
-                      <input 
+                      <label htmlFor="fld-importosmodal-4" className="block text-sm font-semibold text-muted mb-1">Placa</label>
+                      <input id="fld-importosmodal-4" 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold uppercase font-mono"
                         value={data.vehicle.plate}
                         onChange={(e) => updateVehicleField('plate', e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-surface-500 uppercase mb-1 block">KM Atual</label>
-                      <input 
+                      <label htmlFor="fld-importosmodal-5" className="block text-sm font-semibold text-muted mb-1">KM Atual</label>
+                      <NumberInput id="fld-importosmodal-5" 
                         className="w-full bg-surface-900 border border-line rounded-xl px-3 py-2 text-sm font-bold"
-                        type="number"
                         value={data.vehicle.km}
                         onChange={(e) => updateVehicleField('km', e.target.value)}
                       />
@@ -345,15 +345,15 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               {/* Observações do PDF */}
               {(data.observations || data._warnings) && (
                 <div className="p-5 bg-amber-500/10 rounded-xl border border-amber-500/30">
-                  <label className="text-[10px] font-bold text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
-                  <textarea
+                  <label htmlFor="fld-importosmodal-6" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
+                  <textarea id="fld-importosmodal-6"
                     className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
                     rows={3}
                     value={data.observations || ''}
                     onChange={(e) => setData({ ...data, observations: e.target.value })}
                   />
                   {data._warnings && (
-                    <p className="text-[10px] text-amber-600 font-bold mt-1">{data._warnings.join(' ')}</p>
+                    <p className="text-[11px] text-amber-600 font-bold mt-1">{data._warnings.join(' ')}</p>
                   )}
                 </div>
               )}
@@ -363,20 +363,20 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                 <table className="w-full text-left">
                   <thead className="bg-accent text-white">
                     <tr>
-                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500">Tipo</th>
-                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500">Código / Descrição</th>
-                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-center w-24">Qtd</th>
-                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-right w-32">Unitário</th>
-                      <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-wide text-surface-500 text-right w-16"></th>
+                      <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wide text-surface-500">Tipo</th>
+                      <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wide text-surface-500">Código / Descrição</th>
+                      <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wide text-surface-500 text-center w-24">Qtd</th>
+                      <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wide text-surface-500 text-right w-32">Unitário</th>
+                      <th className="px-6 py-4 text-[11px] font-semibold uppercase tracking-wide text-surface-500 text-right w-16"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line">
                     {data.items.map((item: any, idx: number) => (
                       <tr key={idx} className="group hover:bg-ink/5 transition-colors">
                         <td className="px-6 py-4">
-                          <select 
+                          <select aria-label="Tipo do item" 
                             className={cn(
-                              "text-[10px] font-bold uppercase px-2 py-1 rounded border-none focus:ring-0 cursor-pointer",
+                              "text-[11px] font-bold uppercase px-2 py-1 rounded border-none focus:ring-0 cursor-pointer",
                               item.type === 'part' ? "bg-amber-500/15 text-amber-700" : "bg-blue-500/15 text-blue-700"
                             )}
                             value={item.type}
@@ -388,13 +388,13 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
-                            <input 
-                              className="text-[10px] font-bold text-surface-500 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-surface-600"
+                            <input aria-label="Código de fábrica" 
+                              className="text-[11px] font-bold text-surface-500 uppercase bg-transparent border-none p-0 focus:ring-0 placeholder:text-surface-600"
                               placeholder="Código de fábrica"
                               value={item.internalCode || ''}
                               onChange={(e) => updateItemField(idx, 'internalCode', e.target.value)}
                             />
-                            <input 
+                            <input aria-label="Descrição do item" 
                               className="text-sm font-bold text-surface-200 bg-transparent border-none p-0 focus:ring-0 w-full"
                               value={item.description}
                               onChange={(e) => updateItemField(idx, 'description', e.target.value)}
@@ -402,8 +402,7 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <input 
-                            type="number"
+                          <NumberInput aria-label="Quantidade"
                             className="w-full bg-surface-800 border-none rounded-lg px-2 py-1 text-sm font-bold text-center focus:ring-2 focus:ring-accent"
                             value={item.quantity}
                             onChange={(e) => updateItemField(idx, 'quantity', e.target.value)}
@@ -411,9 +410,8 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
                         </td>
                         <td className="px-6 py-4">
                           <div className="relative">
-                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-surface-500">R$</span>
-                            <input 
-                              type="number"
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[11px] font-bold text-surface-500">R$</span>
+                            <NumberInput aria-label="Valor unitário"
                               className="w-full bg-surface-800 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-bold text-right focus:ring-2 focus:ring-accent"
                               value={item.unitPrice}
                               onChange={(e) => updateItemField(idx, 'unitPrice', e.target.value)}

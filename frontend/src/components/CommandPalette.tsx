@@ -85,7 +85,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
       >
         <div className="flex items-center gap-2.5 border-b border-line px-4 py-3">
           <Search size={16} className="text-surface-500 shrink-0" />
-          <input
+          <input aria-label="Buscar telas..."
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -93,7 +93,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
             placeholder="Buscar telas..."
             className="flex-1 bg-transparent text-sm text-surface-100 placeholder-surface-500 focus:outline-none"
           />
-          <kbd className="hidden sm:inline rounded border border-line px-1.5 py-0.5 font-mono text-[10px] text-surface-500">
+          <kbd className="hidden sm:inline rounded border border-line px-1.5 py-0.5 font-mono text-[11px] text-surface-500">
             Esc
           </kbd>
         </div>
@@ -113,7 +113,7 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
                 )}
               >
                 <span>{item.label}</span>
-                <span className="text-[10px] uppercase tracking-wide text-surface-500">{item.group}</span>
+                <span className="text-[11px] uppercase tracking-wide text-surface-500">{item.group}</span>
               </button>
             ))
           )}

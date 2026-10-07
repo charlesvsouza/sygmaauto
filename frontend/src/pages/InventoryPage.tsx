@@ -9,7 +9,7 @@ import {
   Truck, CheckCircle, FileSpreadsheet,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useToast } from '../components/ui';
+import { useToast, NumberInput } from '../components/ui';
 import { ImportNFModal } from '../components/ImportNFModal';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -132,7 +132,7 @@ function SupplierCombobox({ suppliers, value, onChange }: {
             <div className="p-2 border-b border-line">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                <input
+                <input aria-label="Buscar fornecedor..."
                   autoFocus
                   type="text"
                   value={q}
@@ -208,28 +208,28 @@ function SupplierModal({ onClose, onSaved }: { onClose: () => void; onSaved: () 
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 space-y-1.5">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Razão Social / Nome *</label>
-              <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+              <label htmlFor="fld-inventorypage-1" className="block text-sm font-semibold text-muted">Razão Social / Nome *</label>
+              <input id="fld-inventorypage-1" required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-line text-sm font-bold focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">CNPJ / CPF</label>
-              <input value={form.document} onChange={e => setForm({...form, document: e.target.value})}
+              <label htmlFor="fld-inventorypage-2" className="block text-sm font-semibold text-muted">CNPJ / CPF</label>
+              <input id="fld-inventorypage-2" value={form.document} onChange={e => setForm({...form, document: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Telefone</label>
-              <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
+              <label htmlFor="fld-inventorypage-3" className="block text-sm font-semibold text-muted">Telefone</label>
+              <input id="fld-inventorypage-3" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Email</label>
-              <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
+              <label htmlFor="fld-inventorypage-4" className="block text-sm font-semibold text-muted">Email</label>
+              <input id="fld-inventorypage-4" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Contato</label>
-              <input value={form.contactName} onChange={e => setForm({...form, contactName: e.target.value})}
+              <label htmlFor="fld-inventorypage-5" className="block text-sm font-semibold text-muted">Contato</label>
+              <input id="fld-inventorypage-5" value={form.contactName} onChange={e => setForm({...form, contactName: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
             </div>
           </div>
@@ -432,11 +432,11 @@ export function InventoryPage() {
       <div className="flex flex-col sm:flex-row gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
         <div className="flex-1 relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-          <input type="text" placeholder="Buscar por nome, código interno ou SKU..."
+          <input aria-label="Buscar por nome, código interno ou SKU..." type="text" placeholder="Buscar por nome, código interno ou SKU..."
             value={search} onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-md border border-line bg-panel text-sm text-ink placeholder-faint focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-colors" />
         </div>
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
+        <select aria-label="Filtrar por categoria" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
           className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25">
           <option value="">Todas as categorias</option>
           {CATEGORIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
@@ -477,9 +477,9 @@ export function InventoryPage() {
                         <p className="font-semibold text-ink">{part.name}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           {part.internalCode && (
-                            <span className="text-[10px] font-mono bg-panel-2 text-muted px-1.5 py-0.5 rounded">{part.internalCode}</span>
+                            <span className="text-[11px] font-mono bg-panel-2 text-muted px-1.5 py-0.5 rounded">{part.internalCode}</span>
                           )}
-                          {part.sku && <span className="text-[10px] text-faint">{part.sku}</span>}
+                          {part.sku && <span className="text-[11px] text-faint">{part.sku}</span>}
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -546,8 +546,8 @@ export function InventoryPage() {
               <form onSubmit={handleSubmit} className="p-8 space-y-5 overflow-y-auto">
                 {/* Nome */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Nome da Peça *</label>
-                  <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
+                  <label htmlFor="fld-inventorypage-6" className="block text-sm font-semibold text-muted">Nome da Peça *</label>
+                  <input id="fld-inventorypage-6" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
                     placeholder="Ex: Pastilha de Freio Dianteira"
                     className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                 </div>
@@ -555,8 +555,8 @@ export function InventoryPage() {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Categoria */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Categoria / Área</label>
-                    <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
+                    <label htmlFor="fld-inventorypage-7" className="block text-sm font-semibold text-muted">Categoria / Área</label>
+                    <select id="fld-inventorypage-7" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold">
                       <option value="">Selecionar...</option>
                       {CATEGORIES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
@@ -565,8 +565,8 @@ export function InventoryPage() {
 
                   {/* Unidade */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Tipo / Unidade</label>
-                    <select value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}
+                    <label htmlFor="fld-inventorypage-8" className="block text-sm font-semibold text-muted">Tipo / Unidade</label>
+                    <select id="fld-inventorypage-8" value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold">
                       {UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
                     </select>
@@ -577,21 +577,21 @@ export function InventoryPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Código Interno</label>
+                      <label htmlFor="fld-inventorypage-b588" className="block text-sm font-semibold text-muted">Código Interno</label>
                       <button type="button" onClick={handleAutoCode}
                         disabled={!formData.category || !formData.name.trim()}
                         title={!formData.name.trim() ? 'Informe o nome da peça' : !formData.category ? 'Selecione a área/categoria' : 'Gerar código'}
-                        className="flex items-center gap-1 text-[10px] font-bold text-accent-ink hover:text-accent-hover disabled:text-faint disabled:cursor-not-allowed transition-colors">
+                        className="flex items-center gap-1 text-[11px] font-bold text-accent-ink hover:text-accent-hover disabled:text-faint disabled:cursor-not-allowed transition-colors">
                         <RefreshCw className="w-3 h-3" /> Gerar
                       </button>
                     </div>
-                    <input value={formData.internalCode} onChange={e => setFormData({...formData, internalCode: e.target.value})}
+                    <input id="fld-inventorypage-b588" value={formData.internalCode} onChange={e => setFormData({...formData, internalCode: e.target.value})}
                       placeholder="Ex: CCOM-MOT0A22"
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-mono font-bold" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">SKU / Ref. Fabricante</label>
-                    <input value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})}
+                    <label htmlFor="fld-inventorypage-9" className="block text-sm font-semibold text-muted">SKU / Ref. Fabricante</label>
+                    <input id="fld-inventorypage-9" value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})}
                       placeholder="Ex: TRW-GDB1535"
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
@@ -600,14 +600,14 @@ export function InventoryPage() {
                 {/* Preços */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Preço de Venda (R$) *</label>
-                    <input required type="number" step="0.01" min="0" value={formData.unitPrice}
+                    <label htmlFor="fld-inventorypage-10" className="block text-sm font-semibold text-muted">Preço de Venda (R$) *</label>
+                    <NumberInput id="fld-inventorypage-10" required step="0.01" min="0" value={formData.unitPrice}
                       onChange={e => setFormData({...formData, unitPrice: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Custo / Preço de Compra (R$)</label>
-                    <input type="number" step="0.01" min="0" value={formData.costPrice}
+                    <label htmlFor="fld-inventorypage-11" className="block text-sm font-semibold text-muted">Custo / Preço de Compra (R$)</label>
+                    <NumberInput id="fld-inventorypage-11" step="0.01" min="0" value={formData.costPrice}
                       onChange={e => setFormData({...formData, costPrice: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
@@ -616,20 +616,20 @@ export function InventoryPage() {
                 {/* Estoque mínimo + localização */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Estoque Mínimo</label>
-                    <input type="number" min="0" value={formData.minStock}
+                    <label htmlFor="fld-inventorypage-12" className="block text-sm font-semibold text-muted">Estoque Mínimo</label>
+                    <NumberInput id="fld-inventorypage-12" min="0" value={formData.minStock}
                       onChange={e => setFormData({...formData, minStock: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Quantidade em Estoque</label>
-                    <input type="number" min="0" value={formData.currentStock}
+                    <label htmlFor="fld-inventorypage-13" className="block text-sm font-semibold text-muted">Quantidade em Estoque</label>
+                    <NumberInput id="fld-inventorypage-13" min="0" value={formData.currentStock}
                       onChange={e => setFormData({...formData, currentStock: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Localização</label>
-                    <input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}
+                    <label htmlFor="fld-inventorypage-14" className="block text-sm font-semibold text-muted">Localização</label>
+                    <input id="fld-inventorypage-14" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}
                       placeholder="Ex: Prateleira A2"
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>
@@ -638,9 +638,9 @@ export function InventoryPage() {
                 {/* Fornecedor */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Fornecedor</label>
+                    <label className="block text-sm font-semibold text-muted">Fornecedor</label>
                     <button type="button" onClick={() => setShowSupplierModal(true)}
-                      className="flex items-center gap-1 text-[10px] font-bold text-primary-600 hover:text-primary-800 transition-colors">
+                      className="flex items-center gap-1 text-[11px] font-bold text-primary-600 hover:text-primary-800 transition-colors">
                       <Plus className="w-3 h-3" /> Novo Fornecedor
                     </button>
                   </div>
@@ -650,8 +650,8 @@ export function InventoryPage() {
 
                 {/* Descrição */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Observações / Compatibilidade</label>
-                  <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
+                  <label htmlFor="fld-inventorypage-15" className="block text-sm font-semibold text-muted">Observações / Compatibilidade</label>
+                  <textarea id="fld-inventorypage-15" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
                     placeholder="Veículos compatíveis, especificações técnicas, etc."
                     className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[70px] resize-none" />
                 </div>
@@ -706,8 +706,8 @@ export function InventoryPage() {
                   ))}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Quantidade</label>
-                  <input type="number" min="1" value={movQty} onChange={e => setMovQty(Number(e.target.value))}
+                  <label htmlFor="fld-inventorypage-16" className="block text-sm font-semibold text-muted">Quantidade</label>
+                  <NumberInput id="fld-inventorypage-16" min="1" value={movQty} onChange={e => setMovQty(Number(e.target.value))}
                     className="w-full px-4 py-3 rounded-lg border border-line text-xl font-bold text-center focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
                   <p className="text-xs text-surface-500 text-center">
                     Estoque atual: <strong>{showMovModal.currentStock || 0} {showMovModal.unit}</strong>
@@ -716,8 +716,8 @@ export function InventoryPage() {
                   </p>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">Observação</label>
-                  <input value={movNote} onChange={e => setMovNote(e.target.value)} placeholder="Nota fiscal, motivo, etc."
+                  <label htmlFor="fld-inventorypage-17" className="block text-sm font-semibold text-muted">Observação</label>
+                  <input id="fld-inventorypage-17" value={movNote} onChange={e => setMovNote(e.target.value)} placeholder="Nota fiscal, motivo, etc."
                     className="w-full px-4 py-3 rounded-lg border border-line text-sm focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all" />
                 </div>
                 {movError && (

@@ -61,8 +61,8 @@ function BarMini({ label, receita, despesa, resultado }: { label: string; receit
           title={`Despesa: ${fmt(despesa)}`}
         />
       </div>
-      <span className="text-[10px] text-surface-400 font-medium">{label}</span>
-      <span className={`text-[10px] font-bold ${resultado >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+      <span className="text-[11px] text-surface-400 font-medium">{label}</span>
+      <span className={`text-[11px] font-bold ${resultado >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
         {resultado >= 0 ? '+' : ''}{fmt(resultado)}
       </span>
     </div>
@@ -263,6 +263,7 @@ export function DREPage() {
               <ChevronLeft className="w-4 h-4 text-surface-300" />
             </button>
             <select
+              aria-label="Mês"
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
               className="text-sm font-bold text-surface-100 bg-transparent border-none outline-none cursor-pointer"
@@ -275,6 +276,7 @@ export function DREPage() {
               ))}
             </select>
             <select
+              aria-label="Ano"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
               className="text-sm font-bold text-surface-100 bg-transparent border-none outline-none cursor-pointer"

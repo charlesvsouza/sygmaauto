@@ -105,11 +105,11 @@ export function ActivateTenantPage() {
           {invite && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5">
               <div className="bg-ink/5 rounded-xl p-3 border border-line">
-                <p className="text-surface-400 text-[11px] uppercase tracking-wider">Plano</p>
+                <p className="text-surface-400 text-[12px] uppercase tracking-wider">Plano</p>
                 <p className="font-bold text-white text-sm mt-0.5">{invite.tenant?.plan?.name || 'START'}</p>
               </div>
               <div className="bg-ink/5 rounded-xl p-3 border border-line">
-                <p className="text-surface-400 text-[11px] uppercase tracking-wider">Expira em</p>
+                <p className="text-surface-400 text-[12px] uppercase tracking-wider">Expira em</p>
                 <p className="font-bold text-white text-sm mt-0.5">{new Date(invite.expiresAt).toLocaleString('pt-BR')}</p>
               </div>
             </div>
@@ -124,47 +124,47 @@ export function ActivateTenantPage() {
 
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Nome da Empresa</label>
+                  <label htmlFor="fld-activatetenantpage-b130" className="block text-sm font-semibold text-white/80">Nome da Empresa</label>
                   <div className="relative">
                     <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                    <input value={tenantName} onChange={(e) => setTenantName(e.target.value)} className="input-dark h-11 pl-10" required />
+                    <input id="fld-activatetenantpage-b130" value={tenantName} onChange={(e) => setTenantName(e.target.value)} className="input-dark h-11 pl-10" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Nome MASTER</label>
+                    <label htmlFor="fld-activatetenantpage-b139" className="block text-sm font-semibold text-white/80">Nome MASTER</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                      <input value={masterName} onChange={(e) => setMasterName(e.target.value)} className="input-dark h-11 pl-10" required />
+                      <input id="fld-activatetenantpage-b139" value={masterName} onChange={(e) => setMasterName(e.target.value)} className="input-dark h-11 pl-10" required />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Email MASTER</label>
+                    <label htmlFor="fld-activatetenantpage-b146" className="block text-sm font-semibold text-white/80">Email MASTER</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                      <input type="email" value={masterEmail} onChange={(e) => setMasterEmail(e.target.value)} className="input-dark h-11 pl-10" required />
+                      <input id="fld-activatetenantpage-b146" type="email" value={masterEmail} onChange={(e) => setMasterEmail(e.target.value)} className="input-dark h-11 pl-10" required />
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Email Recuperação</label>
+                    <label htmlFor="fld-activatetenantpage-b156" className="block text-sm font-semibold text-white/80">Email Recuperação</label>
                     <div className="relative">
                       <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                      <input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} className="input-dark h-11 pl-10" placeholder="Opcional" />
+                      <input id="fld-activatetenantpage-b156" type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} className="input-dark h-11 pl-10" placeholder="Opcional" />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Documento</label>
-                    <input value={taxId} onChange={(e) => setTaxId(formatCpfCnpj(e.target.value))} className="input-dark h-11" placeholder="CPF/CNPJ" />
+                    <label htmlFor="fld-activatetenantpage-1" className="block text-sm font-semibold text-white/80">Documento</label>
+                    <input id="fld-activatetenantpage-1" value={taxId} onChange={(e) => setTaxId(formatCpfCnpj(e.target.value))} className="input-dark h-11" placeholder="CPF/CNPJ" />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Tipo de Documento</label>
-                  <select value={companyType} onChange={(e) => setCompanyType(e.target.value)} className="input-dark h-11">
+                  <label htmlFor="fld-activatetenantpage-2" className="block text-sm font-semibold text-white/80">Tipo de Documento</label>
+                  <select id="fld-activatetenantpage-2" value={companyType} onChange={(e) => setCompanyType(e.target.value)} className="input-dark h-11">
                     <option value="CNPJ">CNPJ</option>
                     <option value="MEI">MEI</option>
                     <option value="CPF">CPF</option>
@@ -173,10 +173,10 @@ export function ActivateTenantPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Senha</label>
+                    <label htmlFor="fld-activatetenantpage-b179" className="block text-sm font-semibold text-white/80">Senha</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                      <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" placeholder="Mínimo 6 caracteres" required minLength={6} />
+                      <input id="fld-activatetenantpage-b179" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" placeholder="Mínimo 6 caracteres" required minLength={6} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-200">
                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
@@ -184,10 +184,10 @@ export function ActivateTenantPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-surface-200 uppercase tracking-wider ml-1">Confirmar Senha</label>
+                    <label htmlFor="fld-activatetenantpage-b190" className="block text-sm font-semibold text-white/80">Confirmar Senha</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                      <input type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" required minLength={6} />
+                      <input id="fld-activatetenantpage-b190" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="input-dark h-11 pl-10 pr-12" required minLength={6} />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-200">
                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>

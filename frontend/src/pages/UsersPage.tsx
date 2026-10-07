@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { usersApi } from '../api/client';
 import { useAuthStore } from '../store/authStore';
-import { useToast } from '../components/ui';
+import { useToast, useConfirm, NumberInput } from '../components/ui';
 import {
   Users,
   Plus,
@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function UsersPage() {
   const { user } = useAuthStore();
   const toast = useToast();
+  const confirm = useConfirm();
   const canManageUsers = ['MASTER', 'ADMIN'].includes(user?.role ?? '');
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -147,13 +148,14 @@ export function UsersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Deseja realmente remover este usuário?')) {
-      try {
-        await usersApi.delete(id);
-        loadUsers();
-      } catch (error) {
-        console.error('Failed to delete user:', error);
-      }
+    if (!(await confirm({ title: 'Remover usuário', message: 'Remover este usuário? Ele perde o acesso ao sistema.', confirmLabel: 'Remover', danger: true }))) return;
+    try {
+      await usersApi.delete(id);
+      loadUsers();
+      toast.success('Usuário removido.');
+    } catch (error: any) {
+      console.error('Failed to delete user:', error);
+      toast.error(error?.response?.data?.message || 'Não foi possível remover o usuário.');
     }
   };
 
@@ -205,21 +207,21 @@ export function UsersPage() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'MASTER':
-        return <span className="badge bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide"><Star size={12} fill="currentColor" /> Master</span>;
+        return <span className="badge bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wide"><Star size={12} fill="currentColor" /> Master</span>;
       case 'ADMIN':
-        return <span className="badge bg-purple-500/10 text-purple-600 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide"><Shield size={12} /> Admin</span>;
+        return <span className="badge bg-purple-500/10 text-purple-600 border border-purple-500/20 px-3 py-1 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wide"><Shield size={12} /> Admin</span>;
       case 'GERENTE':
-        return <span className="badge bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Gerente</span>;
+        return <span className="badge bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 font-bold text-[11px] uppercase tracking-wide">Gerente</span>;
       case 'CHEFE_OFICINA':
-        return <span className="badge bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Chefe Oficina</span>;
+        return <span className="badge bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-1 font-bold text-[11px] uppercase tracking-wide">Chefe Oficina</span>;
       case 'FINANCEIRO':
-        return <span className="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Financeiro</span>;
+        return <span className="badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 font-bold text-[11px] uppercase tracking-wide">Financeiro</span>;
       case 'SECRETARIA':
-        return <span className="badge bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Secretaria</span>;
+        return <span className="badge bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 px-3 py-1 font-bold text-[11px] uppercase tracking-wide">Secretaria</span>;
       case 'MECANICO':
-        return <span className="badge bg-orange-500/10 text-orange-500 border border-orange-500/20 px-3 py-1 font-bold text-[10px] uppercase tracking-wide">Mecânico</span>;
+        return <span className="badge bg-orange-500/10 text-orange-500 border border-orange-500/20 px-3 py-1 font-bold text-[11px] uppercase tracking-wide">Mecânico</span>;
       default:
-        return <span className="badge bg-surface-500/10 text-surface-500 border border-line px-3 py-1 font-bold text-[10px] uppercase tracking-wide">{role}</span>;
+        return <span className="badge bg-surface-500/10 text-surface-500 border border-line px-3 py-1 font-bold text-[11px] uppercase tracking-wide">{role}</span>;
     }
   };
 
@@ -255,7 +257,7 @@ export function UsersPage() {
       <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-          <input
+          <input aria-label="Buscar por nome ou email..."
             type="text"
             placeholder="Buscar por nome ou email..."
             value={search}
@@ -316,7 +318,7 @@ export function UsersPage() {
                             {user.email}
                           </div>
                           {user.recoveryEmail && (
-                            <div className="text-[10px] text-faint mt-0.5">Recuperação: {user.recoveryEmail}</div>
+                            <div className="text-[11px] text-faint mt-0.5">Recuperação: {user.recoveryEmail}</div>
                           )}
                         </div>
                       </div>
@@ -328,7 +330,7 @@ export function UsersPage() {
                       <div className="text-xs font-medium text-ink">
                         {workshopAreas.find((a) => a.value === user.workshopArea)?.label || '—'}
                       </div>
-                      <div className="text-[10px] text-muted mt-0.5">
+                      <div className="text-[11px] text-muted mt-0.5">
                         {jobFunctions.find((f) => f.value === user.jobFunction)?.label || '—'}
                       </div>
                     </td>
@@ -337,7 +339,7 @@ export function UsersPage() {
                         {user.commissionPercent != null ? `${Number(user.commissionPercent).toFixed(1)}%` : 'Padrão Global'}
                       </span>
                       {user.chief?.name && (
-                        <div className="text-[10px] text-muted mt-0.5">Chefe: {user.chief.name}</div>
+                        <div className="text-[11px] text-muted mt-0.5">Chefe: {user.chief.name}</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -410,8 +412,8 @@ export function UsersPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Nome Completo</label>
-                  <input
+                  <label htmlFor="fld-userspage-1" className="block text-sm font-semibold text-muted">Nome Completo</label>
+                  <input id="fld-userspage-1"
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -421,8 +423,8 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Email Profissional</label>
-                  <input
+                  <label htmlFor="fld-userspage-2" className="block text-sm font-semibold text-muted">Email Profissional</label>
+                  <input id="fld-userspage-2"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -433,8 +435,8 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Email Recuperacao</label>
-                  <input
+                  <label htmlFor="fld-userspage-3" className="block text-sm font-semibold text-muted">Email Recuperacao</label>
+                  <input id="fld-userspage-3"
                     type="email"
                     value={formData.recoveryEmail}
                     onChange={(e) => setFormData({ ...formData, recoveryEmail: e.target.value })}
@@ -444,9 +446,9 @@ export function UsersPage() {
                 </div>
                 {!editingUser && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Senha Inicial</label>
+                    <label htmlFor="fld-userspage-b451" className="block text-sm font-semibold text-muted">Senha Inicial</label>
                     <div className="relative">
-                      <input
+                      <input id="fld-userspage-b451"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -466,8 +468,8 @@ export function UsersPage() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Perfil de Acesso</label>
-                  <select
+                  <label htmlFor="fld-userspage-4" className="block text-sm font-semibold text-muted">Perfil de Acesso</label>
+                  <select id="fld-userspage-4"
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     className="input h-14 bg-surface-950/40 border-line font-bold"
@@ -481,8 +483,8 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Área da Oficina</label>
-                  <select
+                  <label htmlFor="fld-userspage-5" className="block text-sm font-semibold text-muted">Área da Oficina</label>
+                  <select id="fld-userspage-5"
                     value={formData.workshopArea}
                     onChange={(e) => setFormData({ ...formData, workshopArea: e.target.value })}
                     className="input h-14 bg-surface-950/40 border-line font-bold"
@@ -494,8 +496,8 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Função na Oficina</label>
-                  <select
+                  <label htmlFor="fld-userspage-6" className="block text-sm font-semibold text-muted">Função na Oficina</label>
+                  <select id="fld-userspage-6"
                     value={formData.jobFunction}
                     onChange={(e) => setFormData({ ...formData, jobFunction: e.target.value })}
                     className="input h-14 bg-surface-950/40 border-line font-bold"
@@ -507,9 +509,8 @@ export function UsersPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Comissão Individual (%)</label>
-                  <input
-                    type="number"
+                  <label htmlFor="fld-userspage-7" className="block text-sm font-semibold text-muted">Comissão Individual (%)</label>
+                  <NumberInput id="fld-userspage-7"
                     min="0"
                     step="0.1"
                     value={formData.commissionPercent}
@@ -519,8 +520,8 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Chefe da Equipe</label>
-                  <select
+                  <label htmlFor="fld-userspage-8" className="block text-sm font-semibold text-muted">Chefe da Equipe</label>
+                  <select id="fld-userspage-8"
                     value={formData.chiefId}
                     onChange={(e) => setFormData({ ...formData, chiefId: e.target.value })}
                     className="input h-14 bg-surface-950/40 border-line font-bold"
@@ -595,9 +596,9 @@ export function UsersPage() {
               </p>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">Nova Senha</label>
+                <label htmlFor="fld-userspage-b601" className="block text-sm font-semibold text-muted">Nova Senha</label>
                 <div className="relative">
-                  <input
+                  <input id="fld-userspage-b601"
                     type={showResetPassword ? 'text' : 'password'}
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}

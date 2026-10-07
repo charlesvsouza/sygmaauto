@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
-import { useToast } from '../components/ui';
+import { useToast, NumberInput } from '../components/ui';
 import {
   formatCpfCnpj,
   formatPhone,
@@ -448,12 +448,12 @@ export function SettingsPage() {
 
                 {/* 1º campo: CPF / CNPJ com lookup automático */}
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-surface-200 mb-1">
+                  <label htmlFor="fld-settingspage-b456" className="block text-sm font-medium text-surface-200 mb-1">
                     CPF / CNPJ
                     <span className="ml-2 text-xs text-surface-500 font-normal">(preencha primeiro — CNPJ busca dados automaticamente)</span>
                   </label>
                   <div className="relative">
-                    <input
+                    <input id="fld-settingspage-b456"
                       type="text"
                       inputMode="numeric"
                       placeholder={tenantData.legalNature === 'PF' ? '000.000.000-00' : '00.000.000/0000-00'}
@@ -475,8 +475,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Natureza Jurídica</label>
-                  <select
+                  <label htmlFor="fld-settingspage-1" className="block text-sm font-medium text-surface-200 mb-1">Natureza Jurídica</label>
+                  <select id="fld-settingspage-1"
                     value={tenantData.legalNature}
                     onChange={(e) => setTenantData({ ...tenantData, legalNature: e.target.value })}
                     className="w-full rounded-lg border border-line px-3 py-2 text-sm focus:ring-2 focus:ring-accent transition-all"
@@ -487,8 +487,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Nome Fantasia</label>
-                  <input
+                  <label htmlFor="fld-settingspage-2" className="block text-sm font-medium text-surface-200 mb-1">Nome Fantasia</label>
+                  <input id="fld-settingspage-2"
                     type="text"
                     value={tenantData.name}
                     onChange={(e) => setTenantData({ ...tenantData, name: e.target.value })}
@@ -508,8 +508,8 @@ export function SettingsPage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Razão Social / Nome Civil</label>
-                  <input
+                  <label htmlFor="fld-settingspage-3" className="block text-sm font-medium text-surface-200 mb-1">Razão Social / Nome Civil</label>
+                  <input id="fld-settingspage-3"
                     type="text"
                     value={tenantData.legalName}
                     onChange={(e) => setTenantData({ ...tenantData, legalName: e.target.value })}
@@ -518,8 +518,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">WhatsApp Phone Number ID (Meta)</label>
-                  <input
+                  <label htmlFor="fld-settingspage-4" className="block text-sm font-medium text-surface-200 mb-1">WhatsApp Phone Number ID (Meta)</label>
+                  <input id="fld-settingspage-4"
                     type="text"
                     value={tenantData.whatsappMetaPhoneNumberId}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappMetaPhoneNumberId: e.target.value })}
@@ -529,8 +529,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Número exibido no WhatsApp</label>
-                  <input
+                  <label htmlFor="fld-settingspage-5" className="block text-sm font-medium text-surface-200 mb-1">Número exibido no WhatsApp</label>
+                  <input id="fld-settingspage-5"
                     type="text"
                     value={tenantData.whatsappDisplayNumber}
                     onChange={(e) => setTenantData({ ...tenantData, whatsappDisplayNumber: e.target.value })}
@@ -540,8 +540,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Inscrição Estadual</label>
-                  <input
+                  <label htmlFor="fld-settingspage-6" className="block text-sm font-medium text-surface-200 mb-1">Inscrição Estadual</label>
+                  <input id="fld-settingspage-6"
                     type="text"
                     value={tenantData.stateRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, stateRegistration: e.target.value })}
@@ -550,8 +550,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Inscrição Municipal</label>
-                  <input
+                  <label htmlFor="fld-settingspage-7" className="block text-sm font-medium text-surface-200 mb-1">Inscrição Municipal</label>
+                  <input id="fld-settingspage-7"
                     type="text"
                     value={tenantData.municipalRegistration}
                     onChange={(e) => setTenantData({ ...tenantData, municipalRegistration: e.target.value })}
@@ -560,8 +560,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Telefone</label>
-                  <input
+                  <label htmlFor="fld-settingspage-8" className="block text-sm font-medium text-surface-200 mb-1">Telefone</label>
+                  <input id="fld-settingspage-8"
                     type="text"
                     inputMode="numeric"
                     placeholder="(00) 00000-0000"
@@ -572,8 +572,8 @@ export function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-200 mb-1">E-mail</label>
-                  <input
+                  <label htmlFor="fld-settingspage-9" className="block text-sm font-medium text-surface-200 mb-1">E-mail</label>
+                  <input id="fld-settingspage-9"
                     type="email"
                     inputMode="email"
                     placeholder="contato@suaoficina.com.br"
@@ -584,8 +584,8 @@ export function SettingsPage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-surface-200 mb-1">Endereço</label>
-                  <input
+                  <label htmlFor="fld-settingspage-10" className="block text-sm font-medium text-surface-200 mb-1">Endereço</label>
+                  <input id="fld-settingspage-10"
                     type="text"
                     value={tenantData.address}
                     onChange={(e) => setTenantData({ ...tenantData, address: e.target.value })}
@@ -629,7 +629,7 @@ export function SettingsPage() {
                 <Wrench className="w-5 h-5" /> Operações
               </h2>
               {!isMaster && (
-                <div className="flex items-center gap-1 text-[10px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
+                <div className="flex items-center gap-1 text-[11px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
                   <Lock className="w-3 h-3" /> Admin
                 </div>
               )}
@@ -637,16 +637,15 @@ export function SettingsPage() {
             <form onSubmit={handleSaveOps} className="p-5 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">
+                  <label htmlFor="fld-settingspage-b648" className="block text-sm font-semibold text-muted">
                     Mão de Obra (R$/h)
                   </label>
-                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
+                  <p className="text-[12px] text-surface-500 ml-1 mb-1">
                     Base de cálculo para mão de obra.
                   </p>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">R$</span>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-settingspage-b648"
                       step="0.01"
                       min="0"
                       value={opsData.laborHourlyRate}
@@ -664,11 +663,11 @@ export function SettingsPage() {
 
                 {/* Preview do cálculo */}
                 <div className="p-3 bg-surface-950/40 rounded-lg border border-line space-y-2">
-                  <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide">Exemplos</p>
+                  <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide">Exemplos</p>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {[0.5, 1.0, 2.0].map((h) => (
                       <div key={h} className="bg-surface-900 rounded-lg p-2 border border-line">
-                        <p className="text-[10px] text-surface-500 font-bold">{h === 0.5 ? '30m' : h === 1.0 ? '1h' : '2h'}</p>
+                        <p className="text-[11px] text-surface-500 font-bold">{h === 0.5 ? '30m' : h === 1.0 ? '1h' : '2h'}</p>
                         <p className="text-xs font-bold text-surface-50 mt-0.5">
                           R$ {(opsData.laborHourlyRate * h).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
@@ -679,14 +678,13 @@ export function SettingsPage() {
 
                 {/* Campo: Horas de Diagnóstico */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Diagnóstico (h)</label>
-                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
+                  <label htmlFor="fld-settingspage-b687" className="block text-sm font-semibold text-muted">Diagnóstico (h)</label>
+                  <p className="text-[12px] text-surface-500 ml-1 mb-1">
                     Tempo padrão para diagnóstico.
                   </p>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">h</span>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-settingspage-b687"
                       step="0.5"
                       min="0"
                       value={opsData.diagnosticHours}
@@ -700,20 +698,19 @@ export function SettingsPage() {
                       )}
                     />
                   </div>
-                  <p className="text-[10px] text-surface-500 ml-1 mt-1">
+                  <p className="text-[11px] text-surface-500 ml-1 mt-1">
                     ≈ R$ {(opsData.laborHourlyRate * opsData.diagnosticHours).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Comissão Global (%)</label>
-                  <p className="text-[11px] text-surface-500 ml-1 mb-1">
+                  <label htmlFor="fld-settingspage-b713" className="block text-sm font-semibold text-muted">Comissão Global (%)</label>
+                  <p className="text-[12px] text-surface-500 ml-1 mb-1">
                     Valor padrão quando não há comissão individual.
                   </p>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-settingspage-b713"
                       step="0.1"
                       min="0"
                       value={opsData.defaultCommissionPercent}
@@ -757,22 +754,21 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-surface-50 uppercase tracking-wide">Limites de Desconto (Gerente)</h3>
                 {!canConfigureDiscounts && (
-                  <div className="flex items-center gap-1 text-[10px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
+                  <div className="flex items-center gap-1 text-[11px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
                     <Lock className="w-3 h-3" /> Admin
                   </div>
                 )}
               </div>
-              <p className="text-[11px] text-surface-500">
+              <p className="text-[12px] text-surface-500">
                 Define o desconto máximo que o perfil Gerente pode aplicar ao lançar itens em Ordens de Serviço. MASTER e ADMIN não têm limite.
               </p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Desconto Máx. Peças</label>
+                  <label htmlFor="fld-settingspage-b771" className="block text-sm font-semibold text-muted">Desconto Máx. Peças</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-settingspage-b771"
                       step="1"
                       min="0"
                       max="100"
@@ -791,11 +787,10 @@ export function SettingsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">Desconto Máx. Serviços</label>
+                  <label htmlFor="fld-settingspage-b793" className="block text-sm font-semibold text-muted">Desconto Máx. Serviços</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">%</span>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-settingspage-b793"
                       step="1"
                       min="0"
                       max="100"
@@ -887,15 +882,15 @@ export function SettingsPage() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="font-bold text-surface-50 text-xs truncate">{u.name}</p>
-                            {isMe && <span className="text-[8px] px-1 py-0.5 bg-primary-100 text-primary-700 rounded font-bold">Você</span>}
+                            {isMe && <span className="text-[11px] px-1 py-0.5 bg-primary-100 text-primary-700 rounded font-bold">Você</span>}
                           </div>
                         </div>
-                        <p className="text-[10px] text-surface-400 truncate mb-2">{u.email}</p>
+                        <p className="text-[11px] text-surface-400 truncate mb-2">{u.email}</p>
                         <div className="flex items-center justify-between">
-                          <span className={cn('text-[8px] px-2 py-1 rounded font-bold', roleCfg.color)}>
+                          <span className={cn('text-[11px] px-2 py-1 rounded font-bold', roleCfg.color)}>
                             {roleCfg.label}
                           </span>
-                          {!u.isActive && <span className="text-[8px] px-1.5 py-0.5 bg-red-500/15 text-red-600 rounded font-bold">Inativo</span>}
+                          {!u.isActive && <span className="text-[11px] px-1.5 py-0.5 bg-red-500/15 text-red-600 rounded font-bold">Inativo</span>}
                         </div>
                       </div>
                     );
@@ -919,16 +914,16 @@ export function SettingsPage() {
               </h2>
 
               <div className="mb-6 p-4 bg-ink/5 rounded-lg border border-line backdrop-blur-md">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wider mb-1">Plano Atual</p>
                 <div className="flex items-center gap-2">
                   <h3 className="text-2xl font-bold text-ink">{getPlanLabel(currentPlan)}</h3>
-                  <div className="px-2 py-0.5 bg-accent text-white rounded text-[8px] font-bold uppercase">Ativo</div>
+                  <div className="px-2 py-0.5 bg-accent text-white rounded text-[11px] font-bold uppercase">Ativo</div>
                 </div>
                 <p className="text-xs text-surface-500 mt-1 font-medium">Renovação automática em breve.</p>
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wider ml-1">Mudar de Plano</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wider ml-1">Mudar de Plano</p>
                 {plans.map((plan) => (
                   <div
                     key={plan.id}
@@ -947,7 +942,7 @@ export function SettingsPage() {
                         </div>
                         <p className="text-lg font-bold mt-0.5">
                           R$ {Number(plan.price).toLocaleString('pt-BR')}
-                          <span className="text-[10px] font-bold text-surface-500 ml-1">/mês</span>
+                          <span className="text-[11px] font-bold text-surface-500 ml-1">/mês</span>
                         </p>
                       </div>
                       {currentPlan === plan.name
@@ -960,13 +955,13 @@ export function SettingsPage() {
                       {isDowngrade(plan.name) ? (
                         <div className="h-8 rounded-lg bg-ink/5 border border-line flex items-center justify-center gap-1.5 px-3">
                           <Lock size={10} className="text-surface-400" />
-                          <span className="text-[9px] font-bold uppercase tracking-tight text-surface-400">Após vencimento</span>
+                          <span className="text-[11px] font-bold uppercase tracking-tight text-surface-400">Após vencimento</span>
                         </div>
                       ) : (
                         <button type="button"
                           onClick={() => currentPlan !== plan.name && handleCheckoutPlan(plan.name)}
                           disabled={currentPlan === plan.name || checkoutLoadingPlan === plan.name}
-                          className="h-8 rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-1.5"
+                          className="h-8 rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-1.5"
                         >
                           {checkoutLoadingPlan === plan.name ? <Loader2 size={12} className="animate-spin" /> : null}
                           {isUpgrade(plan.name) ? 'Upgrade' : 'Atual'}

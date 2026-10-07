@@ -122,7 +122,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
     >
       {/* Alerta */}
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-bold ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0 animate-pulse" /> : <Timer size={11} className="shrink-0" />}
@@ -187,7 +187,7 @@ function ReceptionCard({ os, tvMode }: { os: any; tvMode: boolean }) {
         <div className="flex items-start mt-1.5">
           {PROGRESS_STEPS.map((step, i) => (
             <div key={step.status} className="flex-1 last:flex-none min-w-0 text-center">
-              <span className={`text-[8px] leading-none block truncate ${
+              <span className={`text-[11px] leading-none block truncate ${
                 i === idx ? `font-bold ${meta.text}` :
                 i < idx ? 'text-emerald-600' :
                 'text-surface-500'

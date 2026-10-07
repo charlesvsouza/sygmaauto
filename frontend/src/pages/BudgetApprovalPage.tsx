@@ -166,7 +166,7 @@ export function BudgetApprovalPage() {
             <p className="text-sm font-medium text-surface-200">
               {confirming === 'approve' ? 'Confirma a aprovação deste orçamento?' : 'Confirma a recusa deste orçamento?'}
             </p>
-            <textarea
+            <textarea aria-label="Observação para a oficina (opcional)"
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

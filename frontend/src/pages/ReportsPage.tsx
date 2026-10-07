@@ -596,7 +596,7 @@ const ICON_BG: Record<string, string> = {
               { label: 'Ticket Médio', value: `R$ ${fmtBR(summary.ticketMedio, 0)}`, icon: TrendingUp, color: 'blue' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
                 <p className="text-2xl font-bold text-surface-50">{k.value}</p>
               </div>
             ))}
@@ -607,7 +607,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[11px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Abertura</th>
                   <th className="px-6 py-4 text-left">Cliente</th>
                   <th className="px-6 py-4 text-left">Veículo</th>
@@ -621,7 +621,7 @@ const ICON_BG: Record<string, string> = {
                       <td className="px-6 py-3 font-bold text-surface-50">{o.customer?.name ?? '—'}</td>
                       <td className="px-6 py-3 text-surface-400">{o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model}` : '—'}</td>
                       <td className="px-6 py-3">
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-surface-800 text-surface-400">
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase bg-surface-800 text-surface-400">
                           {STATUS_LABEL[o.status] ?? o.status}
                         </span>
                       </td>
@@ -689,7 +689,7 @@ const ICON_BG: Record<string, string> = {
           </div>
           <div className="space-y-4">
             <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-              <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-3">Detalhes</p>
+              <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-3">Detalhes</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-surface-400">O.S. faturadas</span><span className="font-bold">{detalhes.osEntregues}</span></div>
                 <div className="flex justify-between"><span className="text-surface-400">Receita de OS</span><span className="font-bold text-emerald-600">R$ {fmtBR(detalhes.receitaBrutaOS)}</span></div>
@@ -698,7 +698,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             {historico.length > 0 && (
               <div className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-3">Histórico 6 meses</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-3">Histórico 6 meses</p>
                 <div className="space-y-2">
                   {historico.map((h: any, i: number) => (
                     <div key={i} className="flex items-center justify-between text-xs">
@@ -732,7 +732,7 @@ const ICON_BG: Record<string, string> = {
               { label: 'Resultado Líquido', value: fmt(dre.resultadoLiquido) },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
                 <p className="text-2xl font-bold text-surface-50">{k.value}</p>
               </div>
             ))}
@@ -743,7 +743,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[11px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Mês</th>
                   <th className="px-6 py-4 text-right">Receita</th>
                   <th className="px-6 py-4 text-right">Despesa</th>
@@ -789,7 +789,7 @@ const ICON_BG: Record<string, string> = {
                     { label: 'Ticket Médio', value: fmt(p.ticketMedio) },
                   ].map((k) => (
                     <div key={k.label} className="p-4">
-                      <p className="text-[9px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
+                      <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
                       <p className="text-sm font-bold text-surface-50">{k.value}</p>
                     </div>
                   ))}
@@ -812,7 +812,7 @@ const ICON_BG: Record<string, string> = {
               { label: 'Pago', value: `R$ ${fmtBR(totals.paid)}`, color: 'text-emerald-600' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm text-center">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-1">{k.label}</p>
                 <p className={cn('text-2xl font-bold', k.color)}>{k.value}</p>
               </div>
             ))}
@@ -857,7 +857,7 @@ const ICON_BG: Record<string, string> = {
               { label: 'Custo Estimado', value: `R$ ${fmtBR(summary.totalEstimatedCost, 0)}`, color: 'text-surface-50' },
             ].map((k) => (
               <div key={k.label} className="bg-surface-900 rounded-lg border border-line p-5 shadow-sm">
-                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
+                <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-2">{k.label}</p>
                 <p className={cn('text-2xl font-bold', k.color)}>{k.value}</p>
               </div>
             ))}
@@ -868,7 +868,7 @@ const ICON_BG: Record<string, string> = {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-surface-950/40 text-surface-500 text-[9px] font-semibold uppercase tracking-wide border-b border-line">
+                <thead><tr className="bg-surface-950/40 text-surface-500 text-[11px] font-semibold uppercase tracking-wide border-b border-line">
                   <th className="px-6 py-4 text-left">Prioridade</th>
                   <th className="px-6 py-4 text-left">Peça</th>
                   <th className="px-6 py-4 text-center">Atual</th>
@@ -881,7 +881,7 @@ const ICON_BG: Record<string, string> = {
                   {items.map((p: any) => (
                     <tr key={p.id} className="hover:bg-ink/5 transition-colors">
                       <td className="px-6 py-3">
-                        <span className={cn('px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border', urgencyBadge[p.urgency] ?? 'bg-surface-800 text-surface-400')}>
+                        <span className={cn('px-2 py-0.5 rounded-full text-[11px] font-bold uppercase border', urgencyBadge[p.urgency] ?? 'bg-surface-800 text-surface-400')}>
                           {urgencyLabel[p.urgency] ?? p.urgency}
                         </span>
                       </td>
@@ -936,7 +936,7 @@ const ICON_BG: Record<string, string> = {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-primary-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-2">
+          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-[0.3em] mb-2">
             <Activity size={14} /> Inteligência Gerencial
           </div>
           <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">
@@ -975,7 +975,7 @@ const ICON_BG: Record<string, string> = {
 
       {/* Filters */}
       <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm">
-        <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-5 flex items-center gap-2">
+        <h3 className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-5 flex items-center gap-2">
           <Calendar size={14} /> Parâmetros — {selectedReport.label}
         </h3>
 
@@ -983,18 +983,18 @@ const ICON_BG: Record<string, string> = {
           {type === 'os' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Inicial</label>
-                <input type="date" value={osStart} onChange={(e) => setOsStart(e.target.value)}
+                <label htmlFor="fld-reportspage-1" className="block text-sm font-semibold text-muted">Data Inicial</label>
+                <input id="fld-reportspage-1" type="date" value={osStart} onChange={(e) => setOsStart(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Final</label>
-                <input type="date" value={osEnd} onChange={(e) => setOsEnd(e.target.value)}
+                <label htmlFor="fld-reportspage-2" className="block text-sm font-semibold text-muted">Data Final</label>
+                <input id="fld-reportspage-2" type="date" value={osEnd} onChange={(e) => setOsEnd(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Status</label>
-                <select value={osStatus} onChange={(e) => setOsStatus(e.target.value)}
+                <label htmlFor="fld-reportspage-3" className="block text-sm font-semibold text-muted">Status</label>
+                <select id="fld-reportspage-3" value={osStatus} onChange={(e) => setOsStatus(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todos</option>
                   {Object.entries(STATUS_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
@@ -1006,16 +1006,16 @@ const ICON_BG: Record<string, string> = {
           {type === 'dre' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Mês</label>
-                <select value={dreMonth} onChange={(e) => setDreMonth(Number(e.target.value))}
+                <label htmlFor="fld-reportspage-4" className="block text-sm font-semibold text-muted">Mês</label>
+                <select id="fld-reportspage-4" value={dreMonth} onChange={(e) => setDreMonth(Number(e.target.value))}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
                     .map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Ano</label>
-                <select value={dreYear} onChange={(e) => setDreYear(Number(e.target.value))}
+                <label htmlFor="fld-reportspage-5" className="block text-sm font-semibold text-muted">Ano</label>
+                <select id="fld-reportspage-5" value={dreYear} onChange={(e) => setDreYear(Number(e.target.value))}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
                 </select>
@@ -1025,8 +1025,8 @@ const ICON_BG: Record<string, string> = {
 
           {type === 'dre-anual' && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Ano</label>
-              <select value={dreAnualYear} onChange={(e) => setDreAnualYear(Number(e.target.value))}
+              <label htmlFor="fld-reportspage-6" className="block text-sm font-semibold text-muted">Ano</label>
+              <select id="fld-reportspage-6" value={dreAnualYear} onChange={(e) => setDreAnualYear(Number(e.target.value))}
                 className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                 {[now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()].map((y) => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -1042,18 +1042,18 @@ const ICON_BG: Record<string, string> = {
           {type === 'commissions' && (
             <>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Inicial</label>
-                <input type="date" value={commStart} onChange={(e) => setCommStart(e.target.value)}
+                <label htmlFor="fld-reportspage-7" className="block text-sm font-semibold text-muted">Data Inicial</label>
+                <input id="fld-reportspage-7" type="date" value={commStart} onChange={(e) => setCommStart(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Data Final</label>
-                <input type="date" value={commEnd} onChange={(e) => setCommEnd(e.target.value)}
+                <label htmlFor="fld-reportspage-8" className="block text-sm font-semibold text-muted">Data Final</label>
+                <input id="fld-reportspage-8" type="date" value={commEnd} onChange={(e) => setCommEnd(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Área</label>
-                <select value={commArea} onChange={(e) => setCommArea(e.target.value)}
+                <label htmlFor="fld-reportspage-9" className="block text-sm font-semibold text-muted">Área</label>
+                <select id="fld-reportspage-9" value={commArea} onChange={(e) => setCommArea(e.target.value)}
                   className="h-11 px-4 rounded-xl border border-line bg-surface-950/40 text-sm font-bold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none">
                   <option value="">Todas</option>
                   <option value="MECANICA">Mecânica</option>
@@ -1112,7 +1112,7 @@ const ICON_BG: Record<string, string> = {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-4 bg-surface-900 rounded-xl border border-line shadow-sm">
             <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-            <p className="text-surface-400 font-semibold uppercase tracking-wide text-[10px]">Processando Dados...</p>
+            <p className="text-surface-400 font-semibold uppercase tracking-wide text-[11px]">Processando Dados...</p>
           </motion.div>
         )}
         {!loading && reportData && (

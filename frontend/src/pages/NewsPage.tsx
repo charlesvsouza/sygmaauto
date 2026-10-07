@@ -32,10 +32,10 @@ export function NewsPage() {
             className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6 flex flex-col"
           >
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-semibold uppercase tracking-wide bg-[#ff7b2f]/15 text-[#ff7b2f] px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-semibold uppercase tracking-wide bg-[#ff7b2f]/15 text-[#ff7b2f] px-2 py-0.5 rounded-full">
                 {item.tag}
               </span>
-              <span className="text-[11px] text-white/30">{item.date}</span>
+              <span className="text-[12px] text-white/30">{item.date}</span>
             </div>
             <h2 className="font-bold text-lg text-white leading-snug">{item.title}</h2>
             <p className="mt-3 text-sm text-white/55 leading-relaxed flex-1">{item.excerpt}</p>

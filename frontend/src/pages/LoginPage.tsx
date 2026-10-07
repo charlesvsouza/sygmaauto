@@ -165,10 +165,10 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Email</label>
+              <label htmlFor="fld-loginpage-b171" className="block text-sm font-semibold text-muted">Email</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-                <input
+                <input id="fld-loginpage-b171"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -181,12 +181,12 @@ export function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest">Senha</label>
-                <Link to="/forgot-password" className="text-[10px] font-bold text-accent-ink hover:text-accent-ink uppercase tracking-tighter">Esqueceu a senha?</Link>
+                <label htmlFor="fld-loginpage-b189" className="block text-sm font-semibold text-muted">Senha</label>
+                <Link to="/forgot-password" className="text-[11px] font-bold text-accent-ink hover:text-accent-ink uppercase tracking-tighter">Esqueceu a senha?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-                <input
+                <input id="fld-loginpage-b189"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

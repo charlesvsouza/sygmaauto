@@ -14,11 +14,12 @@ import {
   Zap,
   DollarSign
 } from 'lucide-react';
-import { useToast } from '../components/ui';
+import { useToast, useConfirm, NumberInput } from '../components/ui';
 
 export function ServicesPage() {
   const { user } = useAuthStore();
   const toast = useToast();
+  const confirm = useConfirm();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -97,15 +98,15 @@ export function ServicesPage() {
 
   const handleDelete = async (id: string) => {
     if (!canManageServices) {
-      toast.error('Voce nao tem permissao para excluir servicos.');
+      toast.error('Você não tem permissão para excluir serviços.');
       return;
     }
-    if (confirm('Tem certeza que deseja excluir este serviço?')) {
+    if (await confirm({ title: 'Excluir serviço', message: 'Excluir este serviço do catálogo?', confirmLabel: 'Excluir', danger: true })) {
       try {
         await servicesApi.delete(id);
         loadServices();
       } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Falha ao excluir servico.');
+        toast.error(error?.response?.data?.message || 'Falha ao excluir serviço.');
         console.error('Falha ao excluir serviço:', error);
       }
     }
@@ -179,7 +180,7 @@ export function ServicesPage() {
       <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-          <input
+          <input aria-label="Buscar por nome ou seção/categoria..."
             type="text"
             placeholder="Buscar por nome ou seção/categoria..."
             value={search}
@@ -190,6 +191,7 @@ export function ServicesPage() {
         <div className="flex items-center gap-2 w-full md:w-auto">
           <span className="text-xs font-medium text-muted">Ordenar</span>
           <select
+            aria-label="Ordenar serviços"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
             className="px-3 py-2.5 rounded-md border border-line bg-panel text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/25"
@@ -308,8 +310,8 @@ export function ServicesPage() {
               </div>
               <form onSubmit={handleSubmit} className="p-8 space-y-6">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Nome do Serviço *</label>
-                  <input
+                  <label htmlFor="fld-servicespage-1" className="block text-sm font-semibold text-muted">Nome do Serviço *</label>
+                  <input id="fld-servicespage-1"
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -321,11 +323,10 @@ export function ServicesPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
-                    <label className="text-[10px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
+                    <label htmlFor="fld-servicespage-2" className="text-[11px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                       <DollarSign size={10} /> Valor Hora (VH)
                     </label>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-servicespage-2"
                       step="0.01"
                       value={formData.hourlyRate}
                       onChange={(e) => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
@@ -334,11 +335,10 @@ export function ServicesPage() {
                     />
                   </div>
                   <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
-                    <label className="text-[10px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
+                    <label htmlFor="fld-servicespage-3" className="text-[11px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                       <Clock size={10} /> Tempo (TMO)
                     </label>
-                    <input
-                      type="number"
+                    <NumberInput id="fld-servicespage-3"
                       step="0.01"
                       value={formData.tmo}
                       onChange={(e) => setFormData({ ...formData, tmo: Number(e.target.value) })}
@@ -350,9 +350,8 @@ export function ServicesPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Preço Fixo (Base)</label>
-                    <input
-                      type="number"
+                    <label htmlFor="fld-servicespage-4" className="block text-sm font-semibold text-muted">Preço Fixo (Base)</label>
+                    <NumberInput id="fld-servicespage-4"
                       step="0.01"
                       value={formData.basePrice}
                       onChange={(e) => setFormData({ ...formData, basePrice: Number(e.target.value) })}
@@ -360,9 +359,8 @@ export function ServicesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Duração Est. (min)</label>
-                    <input
-                      type="number"
+                    <label htmlFor="fld-servicespage-5" className="block text-sm font-semibold text-muted">Duração Est. (min)</label>
+                    <NumberInput id="fld-servicespage-5"
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
@@ -371,8 +369,8 @@ export function ServicesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Categoria / Grupo</label>
-                  <input
+                  <label htmlFor="fld-servicespage-6" className="block text-sm font-semibold text-muted">Categoria / Grupo</label>
+                  <input id="fld-servicespage-6"
                     type="text"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -382,8 +380,8 @@ export function ServicesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Descrição</label>
-                  <textarea
+                  <label htmlFor="fld-servicespage-7" className="block text-sm font-semibold text-muted">Descrição</label>
+                  <textarea id="fld-servicespage-7"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[100px]"

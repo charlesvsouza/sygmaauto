@@ -76,8 +76,8 @@ export function ContactPage() {
         ) : (
           <form onSubmit={handleSubmit} className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6 space-y-4">
             <div>
-              <label className="block text-xs text-white/50 mb-2 font-medium">Seu nome</label>
-              <input
+              <label htmlFor="fld-contactpage-1" className="block text-xs text-white/50 mb-2 font-medium">Seu nome</label>
+              <input id="fld-contactpage-1"
                 type="text"
                 required
                 value={contactForm.name}
@@ -87,8 +87,8 @@ export function ContactPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-2 font-medium">E-mail</label>
-              <input
+              <label htmlFor="fld-contactpage-2" className="block text-xs text-white/50 mb-2 font-medium">E-mail</label>
+              <input id="fld-contactpage-2"
                 type="email"
                 required
                 value={contactForm.email}
@@ -98,8 +98,8 @@ export function ContactPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-2 font-medium">Mensagem</label>
-              <textarea
+              <label htmlFor="fld-contactpage-3" className="block text-xs text-white/50 mb-2 font-medium">Mensagem</label>
+              <textarea id="fld-contactpage-3"
                 required
                 rows={6}
                 value={contactForm.message}

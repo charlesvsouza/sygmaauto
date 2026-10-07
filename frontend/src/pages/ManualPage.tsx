@@ -82,7 +82,7 @@ export default function ManualPage() {
               <BookOpenText size={14} className="text-amber-600" />
               Manual do Usuário
             </span>
-            <span className="hidden sm:inline text-[11px] text-surface-500 bg-surface-800/60 px-2 py-0.5 rounded-full font-medium">
+            <span className="hidden sm:inline text-[12px] text-surface-500 bg-surface-800/60 px-2 py-0.5 rounded-full font-medium">
               v2.1 · Maio/2026
             </span>
           </div>
@@ -114,7 +114,7 @@ export default function ManualPage() {
             {/* Search */}
             <div className="relative">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-500" />
-              <input
+              <input aria-label="Buscar capítulo..."
                 type="text"
                 placeholder="Buscar capítulo..."
                 value={search}
@@ -152,12 +152,12 @@ export default function ManualPage() {
             {/* Support box */}
             <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.05] p-4 mt-4">
               <p className="text-xs font-bold text-amber-600 mb-1">Precisa de ajuda?</p>
-              <p className="text-[11px] text-surface-400 leading-relaxed mb-3">
+              <p className="text-[12px] text-surface-400 leading-relaxed mb-3">
                 Nosso suporte responde em até 4h úteis.
               </p>
               <a
                 href="mailto:suporte@sigmaauto.com.br"
-                className="text-[11px] text-amber-600 font-semibold hover:underline block"
+                className="text-[12px] text-amber-600 font-semibold hover:underline block"
               >
                 suporte@sigmaauto.com.br →
               </a>

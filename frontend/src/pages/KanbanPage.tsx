@@ -114,7 +114,7 @@ function KanbanCard({
       className={`bg-panel border-2 ${alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
     >
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0 animate-pulse" /> : <Timer size={11} className="shrink-0" />}
@@ -257,7 +257,7 @@ export function KanbanPage() {
               {tenant?.name} · {totalActive} OS ativas · atualizado {lastRefresh.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             {activeAlerts > 0 && (
-              <p className="text-red-700 text-[11px] font-bold mt-0.5 animate-pulse">
+              <p className="text-red-700 text-[12px] font-bold mt-0.5 animate-pulse">
                 {activeAlerts} alerta{activeAlerts !== 1 ? 's' : ''} de prazo ativo{activeAlerts !== 1 ? 's' : ''}
               </p>
             )}

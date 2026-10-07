@@ -73,12 +73,12 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
     return `${Math.round((d.getTime() - base.getTime()) / DAY_MS)} dias`;
   };
 
-  const fieldCls = 'w-full px-2 py-1.5 rounded-lg border border-surface-800 bg-white text-[10px] font-bold text-surface-300 disabled:bg-surface-900 disabled:cursor-not-allowed';
+  const fieldCls = 'w-full px-2 py-1.5 rounded-lg border border-surface-800 bg-white text-[11px] font-bold text-surface-300 disabled:bg-surface-900 disabled:cursor-not-allowed';
 
   return (
     <div className="space-y-3">
       {!plan && legacyMethod && (
-        <p className="text-[10px] font-bold text-surface-500">Registrado: {legacyMethod}. Escolha abaixo para montar o plano.</p>
+        <p className="text-[11px] font-bold text-surface-500">Registrado: {legacyMethod}. Escolha abaixo para montar o plano.</p>
       )}
 
       <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-surface-900" role="group" aria-label="Dividir pagamento">
@@ -93,7 +93,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
             aria-pressed={!!plan && plan.split === opt.split}
             onClick={() => setSplit(opt.split)}
             className={cn(
-              'px-2 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wide transition-all disabled:cursor-not-allowed',
+              'px-2 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all disabled:cursor-not-allowed',
               plan && plan.split === opt.split ? 'bg-white text-surface-100 shadow' : 'text-surface-500 hover:text-surface-300',
             )}
           >
@@ -107,7 +107,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
         return (
           <div key={g.scope} className={cn('space-y-2', plan?.split && 'rounded-xl border border-surface-800 p-2.5')}>
             {plan?.split && (
-              <div className="flex justify-between text-[10px] font-bold uppercase tracking-wide text-surface-400">
+              <div className="flex justify-between text-[11px] font-bold uppercase tracking-wide text-surface-400">
                 <span>{PAYMENT_PLAN_SCOPE_LABEL[g.scope]}</span>
                 <span>{brl(amountOf[g.scope])}</span>
               </div>
@@ -120,7 +120,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
                   disabled={disabled}
                   onClick={() => updateGroup(g.scope, { method: m })}
                   className={cn(
-                    'px-2.5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-wide transition-all border text-left leading-tight disabled:cursor-not-allowed',
+                    'px-2.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all border text-left leading-tight disabled:cursor-not-allowed',
                     active && g.method === m
                       ? 'bg-accent text-white border-accent shadow-lg'
                       : 'bg-white border-surface-800 text-surface-400 hover:border-surface-600',
@@ -135,7 +135,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
               <>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="space-y-1">
-                    <span className="text-[9px] font-bold text-surface-500 uppercase">Parcelas</span>
+                    <span className="text-[11px] font-bold text-surface-500 uppercase">Parcelas</span>
                     <select
                       disabled={disabled}
                       value={g.installments}
@@ -148,7 +148,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
                     </select>
                   </label>
                   <label className="space-y-1">
-                    <span className="text-[9px] font-bold text-surface-500 uppercase">Intervalo</span>
+                    <span className="text-[11px] font-bold text-surface-500 uppercase">Intervalo</span>
                     <select
                       disabled={disabled || (g.installments === 1 && g.downPayment)}
                       value={g.intervalDays}
@@ -161,7 +161,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
                     </select>
                   </label>
                 </div>
-                <label className="flex items-center gap-2 text-[10px] font-bold text-surface-400 cursor-pointer">
+                <label className="block text-sm font-semibold text-muted">
                   <input
                     type="checkbox"
                     disabled={disabled}
@@ -179,7 +179,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
 
       {schedule.length > 1 || schedule.some((i) => !i.upfront) ? (
         <div className="rounded-xl border border-surface-800 bg-white overflow-hidden">
-          <table className="w-full text-[10px]">
+          <table className="w-full text-[11px]">
             <thead className="bg-surface-900 text-surface-500 uppercase">
               <tr>
                 <th className="px-2 py-1.5 text-left font-bold">Parcela</th>
@@ -193,7 +193,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
                   <td className="px-2 py-1.5">
                     {plan?.split && <span className="text-surface-500">{PAYMENT_PLAN_SCOPE_LABEL[i.scope]} </span>}
                     {i.number}/{i.of}
-                    <span className="block text-[9px] font-medium text-surface-500">{PAYMENT_PLAN_METHODS[i.method]}</span>
+                    <span className="block text-[11px] font-medium text-surface-500">{PAYMENT_PLAN_METHODS[i.method]}</span>
                   </td>
                   <td className="px-2 py-1.5">{dueLabel(i.dueDate, i.upfront)}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums">{brl(i.amount)}</td>
@@ -202,7 +202,7 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
             </tbody>
           </table>
           {!order.paidAt && (
-            <p className="px-2 py-1.5 text-[9px] text-surface-500 border-t border-surface-900">Prazos contados a partir do faturamento.</p>
+            <p className="px-2 py-1.5 text-[11px] text-surface-500 border-t border-surface-900">Prazos contados a partir do faturamento.</p>
           )}
         </div>
       ) : null}

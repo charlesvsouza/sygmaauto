@@ -163,7 +163,7 @@ export function PlansCheckoutPage() {
                         : 'border-line bg-ink/5 hover:border-line'
                     }`}
                   >
-                    <p className="text-[11px] uppercase tracking-wide text-white/45">{plan.name}</p>
+                    <p className="text-[12px] uppercase tracking-wide text-white/45">{plan.name}</p>
                     <p className="mt-1 text-lg font-bold">{plan.label}</p>
                     <p className="mt-1 text-sm text-white/70">{formatBrl(plan.monthlyPrice)}/mes</p>
                   </button>
@@ -191,7 +191,7 @@ export function PlansCheckoutPage() {
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">{cycle.label}</p>
                       {cycle.badge && (
-                        <span className="text-[10px] font-semibold uppercase tracking-wide bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 rounded-full px-2 py-1">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 rounded-full px-2 py-1">
                           {cycle.badge}
                         </span>
                       )}

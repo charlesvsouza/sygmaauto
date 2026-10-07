@@ -132,10 +132,10 @@ export function NpsAnswerPage() {
         {/* Comentário */}
         {score !== null && (
           <div>
-            <label className="block text-sm font-medium text-surface-200 mb-1">
+            <label htmlFor="fld-npsanswerpage-1" className="block text-sm font-medium text-surface-200 mb-1">
               Conte-nos um pouco mais (opcional)
             </label>
-            <textarea
+            <textarea id="fld-npsanswerpage-1"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}

@@ -22,8 +22,11 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCpfCnpj, formatCep, formatPhone, onlyDigits } from '../lib/masks';
+import { useToast, useConfirm } from '../components/ui';
 
 export function CustomersPage() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -132,13 +135,14 @@ export function CustomersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este cliente?')) {
-      try {
-        await customersApi.delete(id);
-        loadCustomers();
-      } catch (err) {
-        console.error('Failed to delete customer:', err);
-      }
+    if (!(await confirm({ title: 'Excluir cliente', message: 'Excluir este cliente? Essa ação não pode ser desfeita.', confirmLabel: 'Excluir', danger: true }))) return;
+    try {
+      await customersApi.delete(id);
+      loadCustomers();
+      toast.success('Cliente excluído.');
+    } catch (err: any) {
+      console.error('Failed to delete customer:', err);
+      toast.error(err?.response?.data?.message || 'Não foi possível excluir o cliente. Verifique se ele tem O.S. ou veículos vinculados.');
     }
   };
 
@@ -195,7 +199,7 @@ export function CustomersPage() {
       <div className="flex flex-col md:flex-row items-center gap-3 rounded-lg border border-line bg-panel p-3 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" />
-          <input
+          <input aria-label="Buscar por nome ou CPF/CNPJ..."
             type="text"
             placeholder="Buscar por nome ou CPF/CNPJ..."
             value={search}
@@ -349,8 +353,8 @@ export function CustomersPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                       <div className="lg:col-span-2 space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Nome Completo *</label>
-                        <input
+                        <label htmlFor="fld-customerspage-1" className="block text-sm font-semibold text-muted">Nome Completo *</label>
+                        <input id="fld-customerspage-1"
                           type="text"
                           required
                           value={formData.name}
@@ -359,8 +363,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">CPF/CNPJ</label>
-                        <input
+                        <label htmlFor="fld-customerspage-2" className="block text-sm font-semibold text-muted">CPF/CNPJ</label>
+                        <input id="fld-customerspage-2"
                           type="text"
                           value={formData.document}
                           onChange={(e) => setFormData({ ...formData, document: formatCpfCnpj(e.target.value) })}
@@ -369,8 +373,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">RG</label>
-                        <input
+                        <label htmlFor="fld-customerspage-3" className="block text-sm font-semibold text-muted">RG</label>
+                        <input id="fld-customerspage-3"
                           type="text"
                           value={formData.rg}
                           onChange={(e) => setFormData({ ...formData, rg: e.target.value })}
@@ -378,8 +382,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Email</label>
-                        <input
+                        <label htmlFor="fld-customerspage-4" className="block text-sm font-semibold text-muted">Email</label>
+                        <input id="fld-customerspage-4"
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -388,8 +392,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Telefone</label>
-                        <input
+                        <label htmlFor="fld-customerspage-5" className="block text-sm font-semibold text-muted">Telefone</label>
+                        <input id="fld-customerspage-5"
                           type="text"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
@@ -401,8 +405,8 @@ export function CustomersPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Nacionalidade</label>
-                        <input
+                        <label htmlFor="fld-customerspage-6" className="block text-sm font-semibold text-muted">Nacionalidade</label>
+                        <input id="fld-customerspage-6"
                           type="text"
                           value={formData.nacionalidade}
                           onChange={(e) => setFormData({ ...formData, nacionalidade: e.target.value })}
@@ -410,8 +414,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Estado Civil</label>
-                        <select
+                        <label htmlFor="fld-customerspage-7" className="block text-sm font-semibold text-muted">Estado Civil</label>
+                        <select id="fld-customerspage-7"
                           value={formData.estado_civil}
                           onChange={(e) => setFormData({ ...formData, estado_civil: e.target.value })}
                           className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm"
@@ -425,8 +429,8 @@ export function CustomersPage() {
                         </select>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Profissão</label>
-                        <input
+                        <label htmlFor="fld-customerspage-8" className="block text-sm font-semibold text-muted">Profissão</label>
+                        <input id="fld-customerspage-8"
                           type="text"
                           value={formData.profissao}
                           onChange={(e) => setFormData({ ...formData, profissao: e.target.value })}
@@ -444,8 +448,8 @@ export function CustomersPage() {
                     
                     <div className="flex flex-col sm:flex-row gap-5 items-end">
                       <div className="flex-1 space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">CEP</label>
-                        <input
+                        <label htmlFor="fld-customerspage-9" className="block text-sm font-semibold text-muted">CEP</label>
+                        <input id="fld-customerspage-9"
                           type="text"
                           value={formData.cep}
                           onChange={(e) => setFormData({ ...formData, cep: formatCep(e.target.value) })}
@@ -466,8 +470,8 @@ export function CustomersPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="space-y-1.5 md:col-span-2">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Logradouro / Endereço</label>
-                        <input
+                        <label htmlFor="fld-customerspage-10" className="block text-sm font-semibold text-muted">Logradouro / Endereço</label>
+                        <input id="fld-customerspage-10"
                           type="text"
                           value={formData.address}
                           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -475,8 +479,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Cidade</label>
-                        <input
+                        <label htmlFor="fld-customerspage-11" className="block text-sm font-semibold text-muted">Cidade</label>
+                        <input id="fld-customerspage-11"
                           type="text"
                           value={formData.cidade}
                           onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
@@ -484,8 +488,8 @@ export function CustomersPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-400 uppercase tracking-wider ml-1">Estado (UF)</label>
-                        <input
+                        <label htmlFor="fld-customerspage-12" className="block text-sm font-semibold text-muted">Estado (UF)</label>
+                        <input id="fld-customerspage-12"
                           type="text"
                           maxLength={2}
                           value={formData.estado}
@@ -501,7 +505,7 @@ export function CustomersPage() {
                     <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-line pb-3">
                       <FileText size={16} className="text-surface-500" /> Observações Internas
                     </div>
-                    <textarea
+                    <textarea aria-label="Alguma nota importante sobre este cliente?"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       placeholder="Alguma nota importante sobre este cliente?"

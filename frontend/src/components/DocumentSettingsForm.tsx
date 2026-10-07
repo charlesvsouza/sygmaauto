@@ -3,6 +3,7 @@ import { AlertCircle, Loader2, Lock } from 'lucide-react';
 import { tenantsApi } from '../api/client';
 import { cn } from '../lib/utils';
 
+import { NumberInput } from './ui';
 type Settings = {
   warrantyDaysServices: number;
   warrantyDaysParts: number;
@@ -78,9 +79,8 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
 
   const numberField = (key: 'warrantyDaysServices' | 'warrantyDaysParts' | 'budgetValidityDays', label: string) => (
     <div className="space-y-1">
-      <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">{label}</label>
-      <input
-        type="number"
+      <label htmlFor="fld-documentsettingsform-1" className="block text-sm font-semibold text-muted">{label}</label>
+      <NumberInput id="fld-documentsettingsform-1"
         min={key === 'budgetValidityDays' ? 1 : 0}
         step="1"
         value={data?.[key] ?? ''}
@@ -96,12 +96,12 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-bold text-surface-50 uppercase tracking-wide">Documentos do Atendimento</h3>
         {!canEdit && (
-          <div className="flex items-center gap-1 text-[10px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
+          <div className="flex items-center gap-1 text-[11px] font-bold text-surface-500 bg-surface-800 px-2 py-1 rounded">
             <Lock className="w-3 h-3" /> Admin
           </div>
         )}
       </div>
-      <p className="text-[11px] text-surface-500">
+      <p className="text-[12px] text-surface-500">
         Prazos e textos usados no orçamento, na entrada do veículo e no termo de entrega. O link de aprovação enviado ao cliente vale pelo prazo de validade do orçamento.
       </p>
 
@@ -117,8 +117,8 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
 
           {TEXTS.map((t) => (
             <div key={t.key} className="space-y-1">
-              <label className="text-xs font-bold text-surface-500 uppercase tracking-wide ml-1">{t.label}</label>
-              <textarea
+              <label htmlFor="fld-documentsettingsform-2" className="block text-sm font-semibold text-muted">{t.label}</label>
+              <textarea id="fld-documentsettingsform-2"
                 rows={3}
                 value={data[t.key]}
                 placeholder={defaults?.[t.key]}
@@ -126,7 +126,7 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
                 disabled={!canEdit}
                 className={cn(inputClass(canEdit), 'font-normal text-sm resize-y')}
               />
-              <p className="text-[10px] text-surface-500 ml-1">{t.hint} Deixe em branco para usar o texto padrão.</p>
+              <p className="text-[11px] text-surface-500 ml-1">{t.hint} Deixe em branco para usar o texto padrão.</p>
             </div>
           ))}
         </>

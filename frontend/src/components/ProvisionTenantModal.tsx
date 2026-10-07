@@ -97,35 +97,35 @@ export function ProvisionTenantModal({ onClose, onCreated }: { onClose: () => vo
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-surface-200 uppercase tracking-wide">Nome do Tenant</label>
+                  <label htmlFor="fld-provisiontenantmodal-b103" className="block text-sm font-semibold text-muted">Nome do Tenant</label>
                   <div className="relative">
                     <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                    <input value={tenantName} onChange={(e) => setTenantName(e.target.value)} required className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="Oficina Exemplo" />
+                    <input id="fld-provisiontenantmodal-b103" value={tenantName} onChange={(e) => setTenantName(e.target.value)} required className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="Oficina Exemplo" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-surface-200 uppercase tracking-wide">Email de Ativação</label>
+                  <label htmlFor="fld-provisiontenantmodal-b110" className="block text-sm font-semibold text-muted">Email de Ativação</label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                    <input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="cliente@email.com" />
+                    <input id="fld-provisiontenantmodal-b110" type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="cliente@email.com" />
                   </div>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-surface-200 uppercase tracking-wide">Plano</label>
+                  <label htmlFor="fld-provisiontenantmodal-b120" className="block text-sm font-semibold text-muted">Plano</label>
                   <div className="relative">
                     <Package2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                    <select value={planName} onChange={(e) => setPlanName(e.target.value)} disabled={loadingPlans} className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40">
+                    <select id="fld-provisiontenantmodal-b120" value={planName} onChange={(e) => setPlanName(e.target.value)} disabled={loadingPlans} className="w-full bg-surface-950/60 border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40">
                       {plans.map((plan) => <option key={plan.id} value={plan.name}>{getPlanLabel(plan.name)} · R$ {Number(plan.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</option>)}
                       {!plans.length && <option value="START">START</option>}
                     </select>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-surface-200 uppercase tracking-wide">Documento Inicial</label>
-                  <input value={document} onChange={(e) => setDocument(e.target.value)} className="w-full bg-surface-950/60 border border-line rounded-xl py-3 px-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="Opcional" />
+                  <label htmlFor="fld-provisiontenantmodal-1" className="block text-sm font-semibold text-muted">Documento Inicial</label>
+                  <input id="fld-provisiontenantmodal-1" value={document} onChange={(e) => setDocument(e.target.value)} className="w-full bg-surface-950/60 border border-line rounded-xl py-3 px-4 text-ink text-sm outline-none focus:ring-2 focus:ring-blue-500/40" placeholder="Opcional" />
                 </div>
               </div>
 

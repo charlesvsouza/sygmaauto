@@ -90,7 +90,7 @@ export function InitialSplash() {
             travelDuration={3.6}
             pointProgress={progress}
           />
-          <p className="text-[10px] text-white/35 uppercase tracking-[0.16em] text-center mb-4"></p>
+          <p className="text-[11px] text-white/35 uppercase tracking-[0.16em] text-center mb-4"></p>
 
           {/* Step atual */}
           <div className="h-5 flex items-center justify-center">
@@ -108,7 +108,7 @@ export function InitialSplash() {
                     return (
                       <>
                         <StepIcon size={12} className="text-[#ff7b2f]" />
-                        <span className="text-[10px] uppercase tracking-widest">{steps[currentStep].text}</span>
+                        <span className="text-[11px] uppercase tracking-widest">{steps[currentStep].text}</span>
                       </>
                     );
                   })()}
@@ -117,7 +117,7 @@ export function InitialSplash() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 text-emerald-600/80 text-[10px] uppercase tracking-widest"
+                  className="flex items-center gap-2 text-emerald-600/80 text-[11px] uppercase tracking-widest"
                 >
                   <Shield size={12} /> Pronto
                 </motion.div>
@@ -129,7 +129,7 @@ export function InitialSplash() {
 
       {/* Rodapé */}
       <div className="absolute bottom-8 flex flex-col items-center gap-1">
-        <p className="text-[9px] text-white/15 uppercase tracking-widest">© 2026 SigmaAuto · sigmaauto.com.br</p>
+        <p className="text-[11px] text-white/15 uppercase tracking-widest">© 2026 SigmaAuto · sigmaauto.com.br</p>
       </div>
     </div>
   );

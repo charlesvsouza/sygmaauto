@@ -348,7 +348,7 @@ export function DashboardPage() {
             </div>
             <p className="text-xs font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
             <h3 className="text-2xl font-bold text-surface-50 mt-1">{kpi.value}</h3>
-            <p className="mt-2 text-[11px] font-medium text-surface-500">{kpi.trend}</p>
+            <p className="mt-2 text-[12px] font-medium text-surface-500">{kpi.trend}</p>
           </motion.div>
         ))}
       </div>
@@ -356,7 +356,7 @@ export function DashboardPage() {
       {/* KPIs de Oficina */}
       <div className="bg-surface-900 rounded-xl border border-line p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-bold text-surface-400 uppercase tracking-wide">Período de Análise</span>
+          <span className="text-[12px] font-bold text-surface-400 uppercase tracking-wide">Período de Análise</span>
           {[7, 30, 90].map((days) => (
             <button type="button"
               key={days}
@@ -373,8 +373,9 @@ export function DashboardPage() {
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold text-surface-400 uppercase tracking-wide">Área</span>
+          <span className="text-[12px] font-bold text-surface-400 uppercase tracking-wide">Área</span>
           <select
+            aria-label="Área da oficina"
             value={selectedWorkshopArea}
             onChange={(e) => setSelectedWorkshopArea(e.target.value)}
             className="h-9 rounded-lg border border-line bg-surface-950/40 px-3 text-xs font-bold"
@@ -435,23 +436,23 @@ export function DashboardPage() {
           <div className="space-y-3">
             {productivityData.topByFunction.map((row: any) => (
               <div key={row.functionKey} className="rounded-lg border border-line bg-surface-950/40 px-4 py-3">
-                <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide">{row.functionLabel}</p>
+                <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide">{row.functionLabel}</p>
                 <p className="text-sm font-bold text-surface-50 mt-1">{row.professional}</p>
-                <p className="text-[11px] text-surface-400 mt-1">
+                <p className="text-[12px] text-surface-400 mt-1">
                   {row.totalItems} itens • R$ {Number(row.totalValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-line">
-            <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-2">Produção por Área</p>
+            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Produção por Área</p>
             <div className="space-y-2">
               {productivityData.areaBreakdown.length === 0 && (
                 <p className="text-xs text-surface-500">Sem dados no período selecionado.</p>
               )}
               {productivityData.areaBreakdown.slice(0, 5).map((a: any) => (
                 <div key={a.area}>
-                  <div className="flex items-center justify-between text-[11px] mb-0.5">
+                  <div className="flex items-center justify-between text-[12px] mb-0.5">
                     <span className="font-bold text-surface-200">{a.areaLabel}</span>
                     <span className="font-bold text-surface-50">R$ {a.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
@@ -668,7 +669,7 @@ export function DashboardPage() {
                   <Calendar size={14} className="text-blue-500" />
                   <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">Agenda de Hoje</p>
                 </div>
-                <button type="button" onClick={() => navigate('/agenda')} className="text-[10px] font-bold text-blue-500 hover:underline">
+                <button type="button" onClick={() => navigate('/agenda')} className="text-[11px] font-bold text-blue-500 hover:underline">
                   Ver completa →
                 </button>
               </div>
@@ -678,22 +679,22 @@ export function DashboardPage() {
                     onClick={() => navigate('/service-orders')}
                     className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-blue-500/15/50 transition-colors"
                   >
-                    <span className="text-[11px] font-bold text-blue-700 w-11 shrink-0">
+                    <span className="text-[12px] font-bold text-blue-700 w-11 shrink-0">
                       {new Date(o.scheduledDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-surface-100 truncate">{o.customer?.name || 'Cliente'}</p>
-                      <p className="text-[10px] text-surface-400 truncate">
+                      <p className="text-[11px] text-surface-400 truncate">
                         {o.vehicle ? `${o.vehicle.brand} ${o.vehicle.model} — ${o.vehicle.plate}` : (o.equipmentBrand || 'Sem veículo')}
                       </p>
                     </div>
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-200 text-blue-700">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-200 text-blue-700">
                       #{o.id.slice(-5).toUpperCase()}
                     </span>
                   </div>
                 ))}
                 {agendaHoje.length > 5 && (
-                  <p className="px-4 py-2 text-[10px] text-blue-500 font-bold">+{agendaHoje.length - 5} mais agendados hoje</p>
+                  <p className="px-4 py-2 text-[11px] text-blue-500 font-bold">+{agendaHoje.length - 5} mais agendados hoje</p>
                 )}
               </div>
             </motion.div>

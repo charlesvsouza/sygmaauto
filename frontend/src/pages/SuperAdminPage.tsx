@@ -375,7 +375,7 @@ export function SuperAdminPage() {
                       )}
                       {selectedTenant.setupInviteToken && (
                         <div className="flex gap-2 mt-2">
-                          <input readOnly value={`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`}
+                          <input readOnly aria-label="Link de ativação" value={`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`}
                             className="flex-1 bg-surface-950 border border-line rounded-xl text-xs text-ink px-3 py-2 outline-none min-w-0" />
                           <button type="button" onClick={() => copyToClipboard(`${frontendAppUrl}/activate/${selectedTenant.setupInviteToken}`)}
                             className="px-3 py-2 bg-ink/5 hover:bg-ink/10 rounded-xl text-xs text-ink flex items-center gap-1.5 font-bold transition-all whitespace-nowrap">
@@ -527,6 +527,7 @@ export function SuperAdminPage() {
 
               <input
                 type="text"
+                aria-label="Texto de confirmação da exclusão"
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder={pendingDelete.name}

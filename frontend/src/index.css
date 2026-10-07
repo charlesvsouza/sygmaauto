@@ -122,7 +122,30 @@ a[role='button'],
 input,
 select,
 textarea {
-  min-height: 38px;
+  min-height: 40px;
+}
+
+/* Tablet no pátio, mão suja: em tela de toque o alvo mínimo é 44px (WCAG / PRODUCT.md) */
+@media (pointer: coarse) {
+  button,
+  a[role='button'],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+/* Respeita quem pede menos movimento: sem animações nem transições longas */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Scrollbar discreta */

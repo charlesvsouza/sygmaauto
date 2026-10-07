@@ -121,10 +121,10 @@ export function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Nome MASTER</label>
+                <label htmlFor="fld-registerpage-b127" className="block text-sm font-semibold text-muted">Nome MASTER</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                  <input
+                  <input id="fld-registerpage-b127"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -135,10 +135,10 @@ export function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Oficina</label>
+                <label htmlFor="fld-registerpage-b141" className="block text-sm font-semibold text-muted">Oficina</label>
                 <div className="relative">
                   <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                  <input
+                  <input id="fld-registerpage-b141"
                     type="text"
                     value={tenantName}
                     onChange={(e) => setTenantName(e.target.value)}
@@ -152,8 +152,8 @@ export function RegisterPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Natureza</label>
-                <select 
+                <label htmlFor="fld-registerpage-1" className="block text-sm font-semibold text-muted">Natureza</label>
+                <select id="fld-registerpage-1" 
                   value={(companyType === 'CPF' ? 'PF' : 'PJ')} 
                   onChange={(e) => {
                     const val = e.target.value;
@@ -167,8 +167,8 @@ export function RegisterPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Tipo Doc.</label>
-                <select 
+                <label htmlFor="fld-registerpage-2" className="block text-sm font-semibold text-muted">Tipo Doc.</label>
+                <select id="fld-registerpage-2" 
                   value={companyType} 
                   onChange={(e) => setCompanyType(e.target.value)}
                   className="input-dark"
@@ -184,8 +184,8 @@ export function RegisterPage() {
                 </select>
               </div>
               <div className="space-y-1.5 col-span-1 md:col-span-1">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Documento</label>
-                <input
+                <label htmlFor="fld-registerpage-3" className="block text-sm font-semibold text-muted">Documento</label>
+                <input id="fld-registerpage-3"
                   type="text"
                   inputMode="numeric"
                   value={taxId}
@@ -201,10 +201,10 @@ export function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Email MASTER</label>
+              <label htmlFor="fld-registerpage-b207" className="block text-sm font-semibold text-muted">Email MASTER</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                <input
+                <input id="fld-registerpage-b207"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -216,10 +216,10 @@ export function RegisterPage() {
             </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Email de Recuperação</label>
+                <label htmlFor="fld-registerpage-b222" className="block text-sm font-semibold text-muted">Email de Recuperação</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                  <input
+                  <input id="fld-registerpage-b222"
                     type="email"
                     value={recoveryEmail}
                     onChange={(e) => setRecoveryEmail(e.target.value)}
@@ -230,10 +230,10 @@ export function RegisterPage() {
               </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-surface-300 uppercase tracking-wider ml-1">Senha</label>
+              <label htmlFor="fld-registerpage-b236" className="block text-sm font-semibold text-muted">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-                <input
+                <input id="fld-registerpage-b236"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

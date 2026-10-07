@@ -96,7 +96,7 @@ export function CompliancePage() {
         >
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[#ff7b2f]/15 blur-3xl" />
           <div className="max-w-4xl relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#ffb182]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 px-4 py-2 text-[12px] font-black uppercase tracking-[0.22em] text-[#ffb182]">
               <ShieldCheck size={14} />
               Publicacao provisoria de compliance
             </div>
@@ -130,7 +130,7 @@ export function CompliancePage() {
               transition={{ delay: index * 0.08 }}
               className="rounded-xl border border-line bg-ink/5 p-6"
             >
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/35 font-bold">{item.title}</p>
+              <p className="text-[12px] uppercase tracking-[0.22em] text-white/35 font-bold">{item.title}</p>
               <p className="mt-3 text-3xl font-black text-white">{item.value}</p>
               <p className="mt-3 text-sm leading-relaxed text-white/55">{item.detail}</p>
             </motion.article>

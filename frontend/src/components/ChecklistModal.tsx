@@ -232,7 +232,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
                 key={c.key}
                 onClick={() => setCondition(area.key, item.condition === c.key ? '' : c.key)}
                 className={cn(
-                  'text-[10px] font-bold px-2 py-0.5 rounded-lg border transition',
+                  'text-[11px] font-bold px-2 py-0.5 rounded-lg border transition',
                   item.condition === c.key
                     ? c.color + ' shadow-sm'
                     : 'bg-surface-900 text-surface-500 border-line hover:bg-ink/5',
@@ -257,7 +257,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
         {/* Expanded: notes + photos */}
         {item.expanded && (
           <div className="px-3 py-2 border-t border-line space-y-2 bg-surface-900">
-            <input
+            <input aria-label="Observação sobre esta área (opcional)"
               className="w-full border border-line rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-accent/40"
               placeholder="Observação sobre esta área (opcional)"
               value={item.notes}
@@ -283,7 +283,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
               {item.photos.length < 3 && (
                 <button type="button"
                   onClick={() => openCamera(area.key)}
-                  className="w-16 h-16 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center text-surface-500 hover:border-line hover:bg-ink/5 transition text-[10px] gap-1"
+                  className="w-16 h-16 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center text-surface-500 hover:border-line hover:bg-ink/5 transition text-[11px] gap-1"
                 >
                   <Camera size={16} />
                   <span>Foto</span>
@@ -320,10 +320,10 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
           <div className="p-6 space-y-6 overflow-y-auto">
             {/* Responsável */}
             <div>
-              <label className="block text-xs font-semibold text-surface-300 mb-1">
+              <label htmlFor="fld-checklistmodal-1" className="block text-sm font-semibold text-muted mb-1">
                 Responsável pela vistoria
               </label>
-              <input
+              <input id="fld-checklistmodal-1"
                 className="w-full border border-line rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
                 placeholder="Nome do mecânico / recepcionista"
                 value={completedBy}
@@ -333,7 +333,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
             {/* Nível de combustível */}
             <div>
-              <label className="block text-xs font-semibold text-surface-300 mb-2">
+              <label className="block text-sm font-semibold text-muted mb-2">
                 Nível de Combustível
               </label>
               <div className="flex items-center gap-1">
@@ -359,7 +359,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
             {/* Itens por área */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-surface-300">
+                <label className="block text-sm font-semibold text-muted">
                   Condição das Áreas
                 </label>
                 <span className="text-xs text-surface-500">
@@ -374,7 +374,7 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
             {/* Acessórios e objetos */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-surface-300">
+                <label className="block text-sm font-semibold text-muted">
                   Acessórios e Objetos no Veículo
                 </label>
                 <span className="text-xs text-surface-500">
@@ -388,10 +388,10 @@ export function ChecklistModal({ serviceOrderId, orderNumber, type, onClose, onS
 
             {/* Observações gerais */}
             <div>
-              <label className="block text-xs font-semibold text-surface-300 mb-1">
+              <label htmlFor="fld-checklistmodal-2" className="block text-sm font-semibold text-muted mb-1">
                 Observações Gerais
               </label>
-              <textarea
+              <textarea id="fld-checklistmodal-2"
                 rows={3}
                 className="w-full border border-line rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
                 placeholder="Detalhes adicionais sobre a vistoria…"

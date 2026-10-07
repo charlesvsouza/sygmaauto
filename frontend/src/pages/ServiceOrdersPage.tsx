@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { cn } from '../lib/utils';
+import { useToast, useConfirm, StatusChip, STATUS_CHIP_CLASS, NumberInput } from '../components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
@@ -46,12 +47,7 @@ const statusConfig: Record<string, { label: string; tone: 'neutral' | 'golden' |
   TESTE_FINAL:          { label: 'Teste Final',          tone: 'positive' },
 };
 
-const STATUS_CHIPS: Record<string, string> = {
-  neutral: 'bg-surface-900 text-surface-300 border border-surface-800',
-  golden: 'bg-accent text-white border border-transparent',
-  positive: 'bg-accent/10 text-accent-ink border border-accent/40',
-  negative: 'bg-red-50 text-red-700 border border-red-200',
-};
+const STATUS_CHIPS: Record<string, string> = STATUS_CHIP_CLASS;
 
 const statusChip = (tone?: keyof typeof STATUS_CHIPS) => STATUS_CHIPS[tone ?? 'neutral'];
 const statusIndicator = (tone?: keyof typeof STATUS_CHIPS) => {
@@ -102,12 +98,12 @@ const RETIFICA_STATUS_FLOW_UI: Record<string, string[]> = {
 
 // Labels de acao para cada transicao (mais descritivos do que o nome do status)
 const STATUS_ACTION_LABEL: Record<string, string> = {
-  EM_DIAGNOSTICO:       'Iniciar Diagnostico',
+  EM_DIAGNOSTICO:       'Iniciar Diagnóstico',
   ORCAMENTO_PRONTO:     'Orçamento Pronto',
-  AGUARDANDO_APROVACAO: 'Enviar para Aprovacao',
+  AGUARDANDO_APROVACAO: 'Enviar para Aprovação',
   APROVADO:             'Marcar como Aprovado',
   REPROVADO:            'Marcar como Reprovado',
-  AGUARDANDO_PECAS:     'Aguardar Pecas',
+  AGUARDANDO_PECAS:     'Aguardar Peças',
   EM_EXECUCAO:          'Iniciar Execucao',
   PRONTO_ENTREGA:       'Marcar Pronto p/ Entrega',
   FATURADO:             'Registrar Pagamento',
@@ -115,8 +111,8 @@ const STATUS_ACTION_LABEL: Record<string, string> = {
   CANCELADO:            'Cancelar O.S.',
   DESMONTAGEM:          'Iniciar Desmontagem',
   METROLOGIA:           'Enviar para Metrologia',
-  ORCAMENTO_RETIFICA:   'Gerar Orcamento Tecnico',
-  AGUARDANDO_APROVACAO_RETIFICA: 'Enviar para Aprovacao',
+  ORCAMENTO_RETIFICA:   'Gerar Orçamento Tecnico',
+  AGUARDANDO_APROVACAO_RETIFICA: 'Enviar para Aprovação',
   EM_RETIFICA:          'Iniciar Retifica',
   MONTAGEM:             'Iniciar Montagem',
   TESTE_FINAL:          'Executar Teste Final',
@@ -124,8 +120,8 @@ const STATUS_ACTION_LABEL: Record<string, string> = {
 
 const FLOW_PHASES = [
   { key: 'ABERTURA',    label: 'Abertura',    statuses: ['ABERTA', 'ORCAMENTO'] },
-  { key: 'DIAGNOSTICO', label: 'Diagnostico', statuses: ['EM_DIAGNOSTICO'] },
-  { key: 'ORCAMENTO',   label: 'Orcamento',   statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'] },
+  { key: 'DIAGNOSTICO', label: 'Diagnóstico', statuses: ['EM_DIAGNOSTICO'] },
+  { key: 'ORCAMENTO',   label: 'Orçamento',   statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'] },
   { key: 'APROVACAO',   label: 'Aprovacao',   statuses: ['APROVADO', 'REPROVADO'] },
   { key: 'EXECUCAO',    label: 'Execucao',    statuses: ['AGUARDANDO_PECAS', 'EM_EXECUCAO'] },
   { key: 'FINALIZACAO', label: 'Faturamento', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
@@ -136,7 +132,7 @@ const RETIFICA_FLOW_PHASES = [
   { key: 'ABERTURA', label: 'Abertura', statuses: ['ABERTA'] },
   { key: 'DESMONTAGEM', label: 'Desmontagem', statuses: ['DESMONTAGEM'] },
   { key: 'ANALISE', label: 'Metrologia', statuses: ['METROLOGIA'] },
-  { key: 'ORCAMENTO', label: 'Orcamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
+  { key: 'ORCAMENTO', label: 'Orçamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
   { key: 'EXECUCAO', label: 'Retifica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
   { key: 'FINALIZACAO', label: 'Finalizacao', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA', label: 'Entrega', statuses: ['ENTREGUE'] },
@@ -153,6 +149,8 @@ function itemDiscountPercent(item: any): number {
 }
 
 export function ServiceOrdersPage() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const { user, tenant } = useAuthStore();
   const navigate = useNavigate();
   const userRole = String(user?.role ?? '').toUpperCase();
@@ -227,6 +225,7 @@ export function ServiceOrdersPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [checklistModal, setChecklistModal] = useState<'ENTRADA' | 'SAIDA' | null>(null);
   const [showDocsMenu, setShowDocsMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
   const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
   const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
@@ -246,7 +245,7 @@ export function ServiceOrdersPage() {
 
   const getOrderAssetLabel = (order: any) => {
     if (order?.vehicle) {
-      return `${order.vehicle.plate || 'Sem placa'} - ${order.vehicle.model || 'Veiculo'}`;
+      return `${order.vehicle.plate || 'Sem placa'} - ${order.vehicle.model || 'Veículo'}`;
     }
     return `${order?.equipmentBrand || 'Motor'} ${order?.equipmentModel || 'Avulso'}${order?.serialNumber ? ` - Serie ${order.serialNumber}` : ''}`.trim();
   };
@@ -367,7 +366,7 @@ export function ServiceOrdersPage() {
   const createDiagnosticOrder = async () => {
     if (!selectedOrder) return;
     if (!canCreateDiagnostic) {
-      alert('Seu perfil nao possui permissao para criar O.S. de diagnostico.');
+      toast.warning('Seu perfil não possui permissão para criar O.S. de diagnóstico.');
       return;
     }
     setCreatingDiagOrder(true);
@@ -377,7 +376,7 @@ export function ServiceOrdersPage() {
       await loadOrders();
       await selectOrder(res.data);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao criar OS de diagnostico');
+      toast.error(err.response?.data?.message || 'Erro ao criar OS de diagnóstico');
     } finally {
       setCreatingDiagOrder(false);
     }
@@ -386,7 +385,7 @@ export function ServiceOrdersPage() {
   const saveDetails = async (closeAfterSave = false) => {
     if (!selectedOrder) return;
     if (!canEditOrderDetails) {
-      alert('Seu perfil nao possui permissao para editar os dados da O.S.');
+      toast.warning('Seu perfil não possui permissão para editar os dados da O.S.');
       return;
     }
     try {
@@ -397,16 +396,16 @@ export function ServiceOrdersPage() {
       if (closeAfterSave) {
         setSelectedOrder(null);
       }
-      alert('Salvo com sucesso!');
+      toast.success('Salvo com sucesso!');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao salvar. Verifique o status da OS.');
+      toast.error(err.response?.data?.message || 'Erro ao salvar. Verifique o status da OS.');
     }
   };
 
   const recalculateTotals = async () => {
     if (!selectedOrder) return;
     if (!canSyncOrder) {
-      alert('Seu perfil nao possui permissao para atualizar esta O.S.');
+      toast.warning('Seu perfil não possui permissão para atualizar esta O.S.');
       return;
     }
 
@@ -434,7 +433,7 @@ export function ServiceOrdersPage() {
     });
 
     if (hasPartChangeWithoutPermission) {
-      alert('Seu perfil nao possui permissao para alterar quantidade/desconto de pecas.');
+      toast.warning('Seu perfil não possui permissão para alterar quantidade/desconto de peças.');
       return;
     }
 
@@ -475,7 +474,7 @@ export function ServiceOrdersPage() {
       setTenantFullData(tRes.data);
       loadOrders();
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Erro ao atualizar a O.S.');
+      toast.error(err?.response?.data?.message || 'Erro ao atualizar a O.S.');
     } finally {
       setSyncingTotals(false);
     }
@@ -503,7 +502,7 @@ export function ServiceOrdersPage() {
       setSelectedOrder(null);
       loadOrders();
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Erro ao excluir a O.S.');
+      toast.error(err?.response?.data?.message || 'Erro ao excluir a O.S.');
     } finally {
       setDeleting(false);
     }
@@ -511,7 +510,7 @@ export function ServiceOrdersPage() {
 
   const createQuickVehicle = async () => {
     if (!newOrder.customerId) {
-      alert('Selecione um cliente antes de cadastrar o veiculo.');
+      toast.warning('Selecione um cliente antes de cadastrar o veículo.');
       return;
     }
 
@@ -521,7 +520,7 @@ export function ServiceOrdersPage() {
     const model = quickVehicle.model.trim();
 
     if (!plate || !brand || !model) {
-      alert('Preencha placa, marca e modelo para cadastrar o veiculo.');
+      toast.warning('Preencha placa, marca e modelo para cadastrar o veículo.');
       return;
     }
 
@@ -550,7 +549,7 @@ export function ServiceOrdersPage() {
       setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
       setShowQuickVehicleForm(false);
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Erro ao cadastrar veiculo.');
+      toast.error(err?.response?.data?.message || 'Erro ao cadastrar veículo.');
     } finally {
       setCreatingQuickVehicle(false);
     }
@@ -565,12 +564,12 @@ export function ServiceOrdersPage() {
       const opened = window.open(url, '_blank', 'noopener,noreferrer');
       if (!opened) {
         window.URL.revokeObjectURL(url);
-        alert('Nao foi possivel abrir a visualizacao. Verifique o bloqueador de pop-ups.');
+        toast.warning('Não foi possivel abrir a visualização. Verifique o bloqueador de pop-ups.');
         return;
       }
       window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch {
-      alert('Erro ao gerar o documento.');
+      toast.error('Erro ao gerar o documento.');
     }
   };
 
@@ -593,7 +592,7 @@ export function ServiceOrdersPage() {
       setSelectedOrder(updated.data);
       loadOrders();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao reservar pecas');
+      toast.error(err.response?.data?.message || 'Erro ao reservar peças');
     } finally {
       setReserveLoading(false);
     }
@@ -623,11 +622,11 @@ export function ServiceOrdersPage() {
       .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
       .company-name { font-size: 15pt; font-weight: 900; }
       .doc-box { border: 2px solid #1e293b; padding: 8px 14px; text-align: right; min-width: 160px; }
-      .doc-box .doc-type { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #666; }
+      .doc-box .doc-type { font-size: 7.5pt; font-weight: 700; text-transform:; letter-spacing: 1.5px; color: #666; }
       .doc-box .doc-num { font-size: 16pt; font-weight: 900; font-family: monospace; letter-spacing: 2px; }
       hr { border: none; border-top: 1px solid #ccc; margin: 8px 0; }
       table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      th { background: #1e293b; color: #fff; font-size: 7.5pt; text-transform: uppercase; letter-spacing: .5px; padding: 4px 6px; text-align: left; }
+      th { background: #1e293b; color: #fff; font-size: 7.5pt; text-transform:; letter-spacing: .5px; padding: 4px 6px; text-align: left; }
       td { padding: 4px 6px; font-size: 8.5pt; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
       tr:nth-child(even) td { background: #f8fafc; }
       .total-row td { font-weight: 900; border-top: 2px solid #1e293b; border-bottom: none; }
@@ -662,7 +661,7 @@ export function ServiceOrdersPage() {
         <thead><tr>
           <th style="width:80px">Cod. Interno</th>
           <th style="width:80px">Cod. Original</th>
-          <th>Peca / Descricao</th>
+          <th>Peça / Descricao</th>
           <th style="width:50px;text-align:center">Qtd</th>
           <th style="width:80px;text-align:right">Unitario</th>
           <th style="width:90px;text-align:right">Total</th>
@@ -676,7 +675,7 @@ export function ServiceOrdersPage() {
           <td colspan="2"></td>
         </tr></tfoot>
       </table>
-      <div class="sig">Assinatura / Aprovacao: _________________________________  &nbsp;&nbsp;&nbsp; Data: ___________</div>
+      <div class="sig">Assinatura / Aprovação: _________________________________  &nbsp;&nbsp;&nbsp; Data: ___________</div>
       <div class="doc-footer">Documento Pedido de Compra #${result.purchaseOrderNumber || '-'} gerado em ${new Date().toLocaleString('pt-BR')} via SigmaAuto ERP para oficinas.</div>
       <div class="preview-label" style="text-align:center;margin-top:8px">Gerado em ${now} - SigmaAuto</div>
     </body></html>`;
@@ -691,7 +690,7 @@ export function ServiceOrdersPage() {
         fileName: reserveResult.purchaseOrderNumber || 'Pedido-compra',
       });
     } catch {
-      alert('Erro ao gerar PDF do pedido de compra.');
+      toast.error('Erro ao gerar PDF do pedido de compra.');
     }
   };
 
@@ -704,7 +703,7 @@ export function ServiceOrdersPage() {
       setShowDiagBanner(res.data.status === 'REPROVADO');
       loadOrders();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao alterar status');
+      toast.error(err.response?.data?.message || 'Erro ao alterar status');
     }
   };
 
@@ -723,9 +722,9 @@ export function ServiceOrdersPage() {
       setSelectedOrder(fresh.data);
       loadOrders();
       const returned = Number(res.data?.partsReturned || 0);
-      alert(`Aprovação revogada. Envie o orçamento (Documentos → Orçamento) ou o link ao cliente.${returned ? `\n${returned} peça(s) devolvida(s) ao estoque.` : ''}`);
+      toast.success(`Aprovação revogada. Envie o orçamento (Documentos → Orçamento) ou o link ao cliente.${returned ? `\n${returned} peça(s) devolvida(s) ao estoque.` : ''}`);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao revogar a aprovação');
+      toast.error(err.response?.data?.message || 'Erro ao revogar a aprovação');
     }
   };
 
@@ -749,11 +748,11 @@ export function ServiceOrdersPage() {
   const addItem = async (itemData: any) => {
     if (!selectedOrder) return;
     if (!canManageItems) {
-      alert('Seu perfil nao possui permissao para adicionar itens nesta O.S.');
+      toast.warning('Seu perfil não possui permissão para adicionar itens nesta O.S.');
       return;
     }
     if (itemData?.type === 'part' && !canManageStock) {
-      alert('Seu perfil nao possui permissao para alterar estoque de pecas.');
+      toast.warning('Seu perfil não possui permissão para alterar estoque de peças.');
       return;
     }
     try {
@@ -763,15 +762,15 @@ export function ServiceOrdersPage() {
       loadOrders();
       setCatalogMode(null);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao adicionar item. Verifique o estoque disponivel.');
+      toast.error(err.response?.data?.message || 'Erro ao adicionar item. Verifique o estoque disponível.');
     }
   };
 
   const quickAddItem = async () => {
     const price = parseFloat(quickAdd.unitPrice.replace(',', '.'));
     const qty = parseFloat(quickAdd.quantity) || 1;
-    if (!quickAdd.description.trim()) { alert('Informe a descricao.'); return; }
-    if (!price || price <= 0) { alert('Informe um preco valido.'); return; }
+    if (!quickAdd.description.trim()) { toast.warning('Informe a descrição.'); return; }
+    if (!price || price <= 0) { toast.warning('Informe um preço válido.'); return; }
     const discountPct = Math.min(100, Math.max(0, parseFloat(quickAdd.discountPercent) || 0));
     const discountValue = (price * qty) * (discountPct / 100);
     await addItem({
@@ -809,12 +808,12 @@ export function ServiceOrdersPage() {
   const updateItem = async (itemId: string, data: any) => {
     if (!selectedOrder) return;
     if (!canManageItems) {
-      alert('Seu perfil nao possui permissao para editar itens nesta O.S.');
+      toast.warning('Seu perfil não possui permissão para editar itens nesta O.S.');
       return;
     }
     const current = selectedOrder.items?.find((i: any) => i.id === itemId);
     if (current?.type?.toLowerCase() === 'part' && !canManageStock) {
-      alert('Seu perfil nao possui permissao para alterar estoque de pecas.');
+      toast.warning('Seu perfil não possui permissão para alterar estoque de peças.');
       return;
     }
     try {
@@ -823,21 +822,22 @@ export function ServiceOrdersPage() {
       setSelectedOrder(res.data);
       loadOrders();
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Erro ao atualizar item.');
+      toast.error(err?.response?.data?.message || 'Erro ao atualizar item.');
     }
   };
 
   const removeItem = async (itemId: string) => {
-    if (!selectedOrder || !confirm('Remover este item? O estoque sera estornado.')) return;
+    if (!selectedOrder) return;
     if (!canManageItems) {
-      alert('Seu perfil nao possui permissao para remover itens nesta O.S.');
+      toast.warning('Seu perfil não possui permissão para remover itens nesta O.S.');
       return;
     }
     const current = selectedOrder.items?.find((i: any) => i.id === itemId);
     if (current?.type?.toLowerCase() === 'part' && !canManageStock) {
-      alert('Seu perfil nao possui permissao para alterar estoque de pecas.');
+      toast.warning('Seu perfil não possui permissão para alterar estoque de peças.');
       return;
     }
+    if (!(await confirm({ title: 'Remover item', message: 'Remover este item? O estoque será estornado.', confirmLabel: 'Remover', danger: true }))) return;
     try {
       await serviceOrdersApi.removeItem(selectedOrder.id, itemId);
       const res = await serviceOrdersApi.getById(selectedOrder.id);
@@ -846,7 +846,7 @@ export function ServiceOrdersPage() {
     } catch (err) { console.error(err); }
   };
 
-  // Normalise type to lowercase for filtering (seed uses uppercase)
+  // Normalise type to lowercase for filtering (seed uses)
   const itemsOf = (type: string) =>
     (selectedOrder?.items ?? []).filter((i: any) => i.type?.toLowerCase() === type);
 
@@ -873,13 +873,13 @@ export function ServiceOrdersPage() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-120px)] gap-6 overflow-hidden">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-120px)] gap-6 lg:overflow-hidden">
       {/* LISTA DE OS */}
-      <div className="w-80 flex flex-col bg-surface-950 border border-surface-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="w-full lg:w-80 max-h-[22rem] lg:max-h-none shrink-0 flex flex-col bg-surface-950 border border-surface-800 rounded-xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-surface-800/60 bg-surface-900/50">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-surface-100 flex items-center gap-2 uppercase text-xs tracking-tight">
-              <ClipboardList size={16} /> Ordens de Servico
+            <h2 className="font-bold text-surface-100 flex items-center gap-2 text-sm">
+              <ClipboardList size={16} /> Ordens de Serviço
             </h2>
             <div className="flex gap-2">
               <button
@@ -890,7 +890,7 @@ export function ServiceOrdersPage() {
                   setShowImportModal(true);
                 }}
                 className="p-1.5 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
-                title="Importar de Orcamento PDF"
+                title="Importar orçamento em PDF"
               >
                 <FileUp size={18} />
               </button>
@@ -936,17 +936,15 @@ export function ServiceOrdersPage() {
                 )}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-[10px] font-mono font-bold text-surface-500">{'#' + orderCode(order)}</span>
+                  <span className="text-[11px] font-mono font-bold text-surface-500">{'#' + orderCode(order)}</span>
                   <span className={cn('mt-1 h-2 w-2 rounded-full', statusIndicator(statusConfig[order.status]?.tone))} />
                 </div>
                 <p className="font-bold text-surface-100 text-sm truncate leading-none mb-1">{order.customer?.name}</p>
-                <p className="text-[10px] text-surface-500 font-bold uppercase tracking-wider mb-2">
+                <p className="text-xs text-surface-500 font-semibold mb-2">
                   {getOrderAssetLabel(order)}
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className={cn('text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md', statusChip(statusConfig[order.status]?.tone))}>
-                    {st.label}
-                  </span>
+                  <StatusChip tone={statusConfig[order.status]?.tone}>{st.label}</StatusChip>
                   <span className="text-xs font-bold text-surface-100">
                     R$ {fmtBR(order.totalCost)}
                   </span>
@@ -955,8 +953,8 @@ export function ServiceOrdersPage() {
             );
           })}
           {filteredOrders.length === 0 && !loading && (
-            <p className="p-10 text-center text-xs font-bold uppercase tracking-wide text-surface-600">
-              Nenhuma OS encontrada
+            <p className="p-10 text-center text-sm font-semibold text-surface-600">
+              Nenhuma O.S. encontrada
             </p>
           )}
         </div>
@@ -967,121 +965,128 @@ export function ServiceOrdersPage() {
         {!selectedOrder ? (
           <div className="flex-1 flex flex-col items-center justify-center text-surface-700 opacity-50">
             <Layout size={64} className="mb-4 stroke-[1px]" />
-            <p className="font-bold uppercase tracking-wide text-xs">Selecione uma Ordem de Servico</p>
+            <p className="font-semibold text-sm">Selecione uma ordem de serviço</p>
           </div>
         ) : (
           <>
-            {/* Top bar */}
-            <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-white shadow-lg">
+            {/* Top bar: uma ação principal (Salvar); o resto em dois menus */}
+            <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-white shrink-0">
                   <FileText size={24} />
                 </div>
-                <div>
-                  <div className="mb-0.5">
-                    <span className="text-[10px] font-bold text-surface-600 uppercase tracking-wide">OS</span>
-                  </div>
-                  <h1 className="text-xl font-bold text-surface-100 tracking-tight uppercase">
-                    #{orderCode(selectedOrder)}
-                  </h1>
-                </div>
+                <h1 className="text-xl font-bold text-surface-100 tracking-tight truncate">
+                  O.S. #{orderCode(selectedOrder)}
+                </h1>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <div className="relative">
                   <button type="button"
-                    onClick={() => setShowDocsMenu((v) => !v)}
-                    className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all shadow-sm"
-                    title="Documentos do atendimento em PDF"
+                    onClick={() => { setShowDocsMenu((v) => !v); setShowMoreMenu(false); }}
+                    className="h-11 px-4 rounded-lg text-sm font-semibold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-colors"
+                    aria-haspopup="menu"
                     aria-expanded={showDocsMenu}
                   >
-                    <FileText size={15} /> Documentos
+                    <FileText size={16} /> Documentos <ChevronDown size={14} />
                   </button>
                   {showDocsMenu && (
                     <>
                       <div className="fixed inset-0 z-20" onClick={() => setShowDocsMenu(false)} />
-                      <div className="absolute right-0 mt-2 w-72 z-30 bg-surface-900 border border-line rounded-xl shadow-xl py-1">
+                      <div role="menu" className="absolute right-0 mt-2 w-72 z-30 bg-surface-900 border border-line rounded-lg shadow-xl py-1">
                         {availableDocuments(selectedOrder).map((d) => (
-                          <button type="button" key={d.kind}
-                            onClick={() => openOrderDocument(d.kind)}
-                            className="w-full text-left px-4 py-2 hover:bg-ink/5 transition"
+                          <button type="button" role="menuitem" key={d.kind}
+                            onClick={() => { setShowDocsMenu(false); openOrderDocument(d.kind); }}
+                            className="w-full text-left px-4 py-2.5 hover:bg-ink/5 transition-colors"
                           >
-                            <div className="text-xs font-bold text-surface-100">{d.label}</div>
-                            <div className="text-[10px] text-surface-500">{d.hint}</div>
+                            <div className="text-sm font-semibold text-surface-100">{d.label}</div>
+                            <div className="text-xs text-surface-500">{d.hint}</div>
                           </button>
                         ))}
                       </div>
                     </>
                   )}
                 </div>
-                {/* Botões de Checklist - verde quando ja preenchido */}
-                <button type="button"
-                  onClick={() => canUseChecklist && setChecklistModal('ENTRADA')}
-                  disabled={!canUseChecklist}
-                  className={cn(
-                    'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
-                    !canUseChecklist
-                      ? 'border-surface-800 bg-surface-900 text-surface-600 cursor-not-allowed'
-                      : checklistFlags.ENTRADA
-                      ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : 'border-surface-800 bg-surface-950 text-surface-100 hover:bg-surface-900',
+
+                <div className="relative">
+                  <button type="button"
+                    onClick={() => { setShowMoreMenu((v) => !v); setShowDocsMenu(false); }}
+                    className="h-11 px-4 rounded-lg text-sm font-semibold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-colors"
+                    aria-haspopup="menu"
+                    aria-expanded={showMoreMenu}
+                  >
+                    Mais ações <ChevronDown size={14} />
+                  </button>
+                  {showMoreMenu && (
+                    <>
+                      <div className="fixed inset-0 z-20" onClick={() => setShowMoreMenu(false)} />
+                      <div role="menu" className="absolute right-0 mt-2 w-80 z-30 bg-surface-900 border border-line rounded-lg shadow-xl py-1">
+                        {(['ENTRADA', 'SAIDA'] as const).map((kind) => {
+                          const label = kind === 'ENTRADA' ? 'Checklist de entrada' : 'Checklist de saída';
+                          const filled = checklistFlags[kind];
+                          return (
+                            <button type="button" role="menuitem" key={kind}
+                              disabled={!canUseChecklist}
+                              onClick={() => { setShowMoreMenu(false); setChecklistModal(kind); }}
+                              className="w-full text-left px-4 py-2.5 hover:bg-ink/5 transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                            >
+                              <div className={cn('flex items-center gap-2 text-sm font-semibold', canUseChecklist ? 'text-surface-100' : 'text-surface-500')}>
+                                <ClipboardCheck size={16} /> {label}
+                                {canUseChecklist && filled && <span className="ml-auto text-xs font-semibold text-accent-ink">Preenchido</span>}
+                              </div>
+                              {!canUseChecklist && <div className="text-xs text-surface-500 pl-6">Disponível nos planos PRO e REDE.</div>}
+                            </button>
+                          );
+                        })}
+                        <button type="button" role="menuitem"
+                          disabled={isClosed || !canManageItems}
+                          onClick={() => {
+                            setShowMoreMenu(false);
+                            setImportTargetOrderId(selectedOrder.id);
+                            setShowImportModal(true);
+                          }}
+                          className="w-full text-left px-4 py-2.5 hover:bg-ink/5 transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                        >
+                          <div className={cn('flex items-center gap-2 text-sm font-semibold', isClosed || !canManageItems ? 'text-surface-500' : 'text-surface-100')}>
+                            <FileUp size={16} /> Importar orçamento externo
+                          </div>
+                          {(isClosed || !canManageItems) && (
+                            <div className="text-xs text-surface-500 pl-6">
+                              {isClosed ? 'O.S. finalizada não recebe importação.' : 'Seu perfil não pode importar itens nesta O.S.'}
+                            </div>
+                          )}
+                        </button>
+                        {canDelete && (
+                          <button type="button" role="menuitem"
+                            onClick={() => { setShowMoreMenu(false); openDeleteModal(); }}
+                            className="w-full text-left px-4 py-2.5 border-t border-line hover:bg-red-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-sm font-semibold text-red-700">
+                              <Trash2 size={16} /> Excluir O.S.
+                            </div>
+                            <div className="text-xs text-surface-500 pl-6">Remove de vez. Só o MASTER pode.</div>
+                          </button>
+                        )}
+                      </div>
+                    </>
                   )}
-                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.ENTRADA ? 'Checklist de entrada preenchido - clique para editar' : 'Preencher checklist de entrada'}
-                >
-                  <ClipboardCheck size={15} />
-                  Entrada
-                  {canUseChecklist && checklistFlags.ENTRADA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
-                </button>
-                <button type="button"
-                  onClick={() => canUseChecklist && setChecklistModal('SAIDA')}
-                  disabled={!canUseChecklist}
-                  className={cn(
-                    'h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all',
-                    !canUseChecklist
-                      ? 'border-surface-800 bg-surface-900 text-surface-600 cursor-not-allowed'
-                      : checklistFlags.SAIDA
-                      ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : 'border-surface-800 bg-surface-950 text-surface-100 hover:bg-surface-900',
-                  )}
-                  title={!canUseChecklist ? 'Disponível no plano PRO e REDE' : checklistFlags.SAIDA ? 'Checklist de saida preenchido - clique para editar' : 'Preencher checklist de saida'}
-                >
-                  <ClipboardCheck size={15} />
-                  Saída
-                  {canUseChecklist && checklistFlags.SAIDA && <span className="w-2 h-2 rounded-full bg-emerald-500 ml-0.5 shrink-0" />}
-                </button>
-                <button type="button"
-                  onClick={() => {
-                    setImportTargetOrderId(selectedOrder.id);
-                    setShowImportModal(true);
-                  }}
-                  disabled={isClosed || !canManageItems}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white text-surface-100 hover:bg-surface-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  title={isClosed ? 'OS finalizada nao pode receber importacao de orçamento' : !canManageItems ? 'Sem permissao para importar itens na O.S.' : 'Importar orçamento externo nesta O.S.'}
-                >
-                  <FileUp size={15} /> Importar Orcamento Externo
-                </button>
-                <button type="button"
-                  onClick={() => navigate('/service-orders')}
-                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-surface-800 bg-white hover:bg-surface-950 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <X size={15} /> Fechar
-                </button>
+                </div>
+
                 <button type="button"
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
-                  className="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
-                  title={isClosed ? 'OS finalizada nao pode ser editada' : !canEditOrderDetails ? 'Sem permissao para editar O.S.' : undefined}
+                  className="h-11 px-5 rounded-lg text-sm font-semibold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={isClosed ? 'O.S. finalizada não pode ser editada.' : !canEditOrderDetails ? 'Seu perfil não pode editar esta O.S.' : undefined}
                 >
-                  <Save size={15} /> Salvar alterações
+                  <Save size={16} /> Salvar alterações
                 </button>
-                {canDelete && (
-                  <button type="button"
-                    onClick={openDeleteModal}
-                    className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-all"
-                    title="Excluir O.S. permanentemente (somente MASTER)"
-                  >
-                    <Trash2 size={15} /> Excluir O.S.
-                  </button>
-                )}
+                <button type="button"
+                  onClick={() => navigate('/service-orders')}
+                  className="h-11 w-11 rounded-lg flex items-center justify-center border border-surface-800 bg-white text-surface-300 hover:bg-surface-950 transition-colors"
+                  aria-label="Fechar O.S."
+                  title="Fechar"
+                >
+                  <X size={18} />
+                </button>
               </div>
             </div>
 
@@ -1089,11 +1094,11 @@ export function ServiceOrdersPage() {
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
               <div className="mx-6 mt-4 p-4 bg-accent-soft border border-accent/40 rounded-lg flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl text-accent-ink">!</span>
+                  <AlertTriangle size={22} className="mt-0.5 shrink-0 text-accent-ink" aria-hidden />
                   <div>
-                    <p className="text-sm font-bold text-ink">Orcamento reprovado pelo cliente</p>
+                    <p className="text-sm font-bold text-ink">Orçamento reprovado pelo cliente</p>
                     <p className="text-xs text-muted mt-0.5">
-                      Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnostico</strong>?
+                      Deseja abrir uma nova O.S. para cobrança da <strong>Taxa de Diagnóstico</strong>?
                       O valor e o tempo serão preenchidos automaticamente conforme as configurações da oficina.
                     </p>
                   </div>
@@ -1102,15 +1107,15 @@ export function ServiceOrdersPage() {
                   <button type="button"
                     onClick={createDiagnosticOrder}
                     disabled={creatingDiagOrder}
-                    className="px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
+                    className="min-h-[44px] px-4 py-2 bg-accent text-white rounded-lg text-sm font-semibold hover:bg-accent-hover transition-colors flex items-center gap-1.5 whitespace-nowrap disabled:opacity-60"
                   >
-                    {creatingDiagOrder ? <Loader2 size={12} className="animate-spin" /> : 'OK'} Sim, criar nova O.S.
+                    {creatingDiagOrder ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />} Sim, criar nova O.S.
                   </button>
                   <button type="button"
                     onClick={() => setShowDiagBanner(false)}
-                    className="px-4 py-2 bg-panel border border-line text-muted rounded-xl text-xs font-bold hover:bg-panel-2 transition-all whitespace-nowrap"
+                    className="min-h-[44px] px-4 py-2 bg-panel border border-line text-muted rounded-lg text-sm font-semibold hover:bg-panel-2 transition-colors whitespace-nowrap"
                   >
-                    Nao, obrigado
+                    Não, obrigado
                   </button>
                 </div>
               </div>
@@ -1122,8 +1127,8 @@ export function ServiceOrdersPage() {
               {/* Andamento da O.S. */}
               <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-5">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Andamento da O.S.</h3>
-                  <span className="text-[10px] font-bold text-surface-300 uppercase tracking-wide">
+                  <h3 className="text-[11px] font-bold text-surface-500">Andamento da O.S.</h3>
+                  <span className="text-[11px] font-bold text-surface-300">
                     Fase atual: {activeFlowPhases[getCurrentPhaseIndex(selectedOrder.status)]?.label || 'Abertura'}
                   </span>
                 </div>
@@ -1137,10 +1142,10 @@ export function ServiceOrdersPage() {
                       selectedOrder.status === 'DESMONTAGEM' || selectedOrder.status === 'METROLOGIA'
                     );
                     const inner = (
-                      <p className="text-[9px] font-bold uppercase tracking-wider leading-snug">
+                      <p className="text-[11px] font-bold leading-snug">
                         {phase.label}
                         {canOpenMetrologia && (
-                          <span className="block text-[8px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
+                          <span className="block text-[11px] font-semibold normal-case tracking-normal mt-0.5 opacity-75">
                             {selectedOrder.status === 'METROLOGIA' ? 'ver / editar' : 'iniciar'}
                           </span>
                         )}
@@ -1177,20 +1182,20 @@ export function ServiceOrdersPage() {
               {/* Cliente + Veiculo */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-surface-950 rounded-lg p-5 border border-surface-800">
-                  <h3 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide mb-4 flex items-center gap-2">
+                  <h3 className="text-[11px] font-bold text-surface-500 mb-4 flex items-center gap-2">
                     <User size={13} className="text-surface-100" /> Dados do Cliente
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Nome do Cliente</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">Nome do Cliente</p>
                       <p className="font-bold text-surface-100">{selectedOrder.customer?.name}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Telefone</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">Telefone</p>
                       <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.phone || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-500 font-bold uppercase mb-1">Documento</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">Documento</p>
                       <p className="font-bold text-surface-300 text-sm">{selectedOrder.customer?.document || '-'}</p>
                     </div>
                   </div>
@@ -1198,7 +1203,7 @@ export function ServiceOrdersPage() {
 
                 <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h3 className="text-[10px] font-bold text-white uppercase tracking-wide flex items-center gap-2">
+                    <h3 className="text-[11px] font-bold text-white flex items-center gap-2">
                       <Car size={13} /> Dados do Veiculo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
@@ -1213,11 +1218,11 @@ export function ServiceOrdersPage() {
                         return (
                           <button type="button"
                             onClick={async () => {
-                              if (!confirm(`Retroceder para "${prevPhase.label}"? Esta ação e para correção de fluxo.`)) return;
+                              if (!(await confirm({ title: 'Voltar etapa', message: `Voltar a O.S. para "${prevPhase.label}"? Use só para corrigir o fluxo.`, confirmLabel: 'Voltar etapa' }))) return;
                               await changeStatus(prevStatus, true);
                             }}
                             title={`Retroceder para: ${prevPhase.label}`}
-                            className="mr-1.5 text-[9px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 bg-amber-500/15 text-amber-600 hover:bg-amber-500/25 transition-all"
+                            className="mr-1.5 text-[11px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 bg-amber-500/15 text-amber-600 hover:bg-amber-500/25 transition-all"
                           >
                             Voltar
                           </button>
@@ -1228,7 +1233,7 @@ export function ServiceOrdersPage() {
                           onClick={() => setShowStatusDropdown((v) => !v)}
                           title="Clique para alterar o status"
                           className={cn(
-                            'text-[9px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-700 cursor-pointer',
+                            'text-[11px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-surface-700 cursor-pointer',
                             statusChip(statusConfig[selectedOrder.status]?.tone)
                           )}
                         >
@@ -1236,14 +1241,14 @@ export function ServiceOrdersPage() {
                           <ChevronDown size={9} className={cn('transition-transform', showStatusDropdown && 'rotate-180')} />
                         </button>
                       ) : (
-                        <span className={cn('text-[9px] px-2 py-0.5 rounded-md font-bold', statusChip(statusConfig[selectedOrder.status]?.tone))}>
+                        <span className={cn('text-[11px] px-2 py-0.5 rounded-md font-bold', statusChip(statusConfig[selectedOrder.status]?.tone))}>
                           {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}
                         </span>
                       )}
 
                       {showStatusDropdown && (
                         <div className="absolute top-full right-0 mt-1.5 z-50 bg-white border border-surface-800 rounded-lg shadow-2xl p-1.5 min-w-[210px]">
-                          <p className="text-[9px] font-bold text-surface-600 uppercase tracking-wide px-3 py-1.5 border-b border-surface-900 mb-1">
+                          <p className="text-[11px] font-bold text-surface-600 px-3 py-1.5 border-b border-surface-900 mb-1">
                             Alterar Status
                           </p>
                           {Object.entries(statusConfig)
@@ -1255,7 +1260,7 @@ export function ServiceOrdersPage() {
                                   key={key}
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
-                                    if (isNegative && !confirm(`Confirmar mudança para: ${cfg.label}?`)) return;
+                                    if (isNegative && !(await confirm({ title: 'Mudar status', message: `Mudar a O.S. para "${cfg.label}"?`, confirmLabel: 'Mudar status', danger: true }))) return;
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
@@ -1274,29 +1279,29 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[10px] text-white font-bold uppercase mb-1">Veiculo</p>
+                      <p className="text-[11px] text-white font-bold mb-1">Veículo</p>
                       <p className="font-bold text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
+                      <p className="text-[11px] text-white font-bold mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
                       <p className="font-mono font-bold text-white">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
                     {selectedOrder.vehicle && (
                       <div>
-                        <p className="text-[10px] text-white font-bold uppercase mb-1">Chassi / VIN</p>
+                        <p className="text-[11px] text-white font-bold mb-1">Chassi / VIN</p>
                         <p className="font-mono font-bold text-white text-sm">{selectedOrder.vehicle?.vin || '-'}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-[10px] text-white font-bold uppercase mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
+                      <p className="text-[11px] text-white font-bold mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white font-bold uppercase mb-1">KM Atual</p>
+                      <p className="text-[11px] text-white font-bold mb-1">KM Atual</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white font-bold uppercase mb-1">KM Entrada</p>
+                      <p className="text-[11px] text-white font-bold mb-1">KM Entrada</p>
                       <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                   </div>
@@ -1307,11 +1312,11 @@ export function ServiceOrdersPage() {
               <div className="grid grid-cols-1 gap-4">
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide ml-1">
-                      {['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
+                    <label htmlFor="fld-serviceorderspage-1" className="block text-sm font-semibold text-muted">
+                      {['Reclamacao Inicial', 'Diagnóstico Tecnico', 'Laudo / Solução'][i]}
                     </label>
-                    <textarea
-                      aria-label={['Reclamacao Inicial', 'Diagnostico Tecnico', 'Laudo / Solução'][i]}
+                    <textarea id="fld-serviceorderspage-1"
+                      aria-label={['Reclamacao Inicial', 'Diagnóstico Tecnico', 'Laudo / Solução'][i]}
                       value={edit[field]}
                       ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = `${el.scrollHeight}px`; } }}
                       onChange={(e) => {
@@ -1328,9 +1333,9 @@ export function ServiceOrdersPage() {
 
               <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-4 flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Reserva de Pecas no Orcamento</p>
+                  <p className="text-[11px] font-bold text-surface-500">Reserva de Peças no Orçamento</p>
                   <p className="text-xs text-surface-400 mt-1">
-                    Quando marcado, sinaliza a reserva das pecas para esta O.S. Na aprovacao do orcamento, todas as pecas pendentes serão debitadas do estoque automaticamente.
+                    Quando marcado, sinaliza a reserva das peças para esta O.S. Na aprovação do orçamento, todas as peças pendentes serão debitadas do estoque automaticamente.
                   </p>
                 </div>
                 <label className="inline-flex items-center gap-2 cursor-pointer shrink-0">
@@ -1347,21 +1352,21 @@ export function ServiceOrdersPage() {
               {/* Servicos */}
               <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
                 <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-bold text-surface-100 uppercase tracking-wide flex items-center gap-2">
-                    <Wrench size={14} /> Servicos Realizados
-                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{serviceItems.length}</span>
+                  <h3 className="text-[11px] font-bold text-surface-100 flex items-center gap-2">
+                    <Wrench size={14} /> Serviços realizados
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[11px] font-bold">{serviceItems.length}</span>
                   </h3>
                   <button type="button"
                     onClick={() => openCatalog('service')}
                     disabled={!canManageItems}
-                    className="text-[9px] font-semibold uppercase tracking-wide bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-1"
-                    title={!canManageItems ? 'Sem permissao para adicionar itens' : undefined}
+                    className="text-[11px] font-semibold bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-1"
+                    title={!canManageItems ? 'Sem permissão para adicionar itens' : undefined}
                   >
-                    <Plus size={12} /> Adicionar Servico
+                    <Plus size={12} /> Adicionar serviço
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-950/60 text-surface-500 font-bold uppercase text-[10px]">
+                  <thead className="bg-surface-950/60 text-surface-500 font-bold text-[11px]">
                     <tr>
                       <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-56">Executor</th>
@@ -1387,7 +1392,7 @@ export function ServiceOrdersPage() {
                             }}
                             disabled={isClosed || !canAssignExecutor}
                             className={cn(
-                              'w-full rounded-lg border px-2 py-1.5 text-[11px] font-bold',
+                              'w-full rounded-lg border px-2 py-1.5 text-[12px] font-bold',
                               isClosed || !canAssignExecutor
                                 ? 'bg-surface-900 border-surface-900 text-surface-600 cursor-not-allowed'
                                 : 'bg-white border-surface-800'
@@ -1400,18 +1405,16 @@ export function ServiceOrdersPage() {
                           </select>
                         </td>
                         <td className="px-5 py-3">
-                          <input
-                            aria-label={`Quantidade do serviço ${item.description}`}
-                            type="number" step="0.5" min="0.5"
+                          <NumberInput
+                            aria-label={`Quantidade do serviço ${item.description}`} step="0.5" min="0.5"
                             className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-bold text-xs"
                             value={pendingQtyByItem[item.id] ?? item.quantity}
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
                           />
                         </td>
                         <td className="px-5 py-3">
-                          <input
-                            aria-label={`Desconto percentual do serviço ${item.description}`}
-                            type="number" step="1" min="0" max="100"
+                          <NumberInput
+                            aria-label={`Desconto percentual do serviço ${item.description}`} step="1" min="0" max="100"
                             disabled={isClosed || !canManageItems}
                             className={cn(
                               'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
@@ -1437,7 +1440,7 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {serviceItems.length === 0 && (
-                      <tr><td colSpan={7} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhum servico lançado</td></tr>
+                      <tr><td colSpan={7} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhum serviço lançado</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1446,23 +1449,23 @@ export function ServiceOrdersPage() {
               {/* Pecas */}
               <div className="bg-white border border-surface-800 rounded-lg overflow-hidden">
                 <div className="px-5 py-3 bg-surface-950 border-b border-surface-800/70 flex items-center justify-between">
-                  <h3 className="text-[10px] font-bold text-surface-100 uppercase tracking-wide flex items-center gap-2">
-                    <Package size={14} /> Pecas e Materiais
-                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[9px] font-bold">{partItems.length}</span>
+                  <h3 className="text-[11px] font-bold text-surface-100 flex items-center gap-2">
+                    <Package size={14} /> Peças e materiais
+                    <span className="bg-surface-800 text-surface-300 rounded-md px-1.5 py-0.5 text-[11px] font-bold">{partItems.length}</span>
                   </h3>
                   <button type="button"
                     onClick={() => openCatalog('part')}
                     className={cn(
-                      'text-[9px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
+                      'text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1',
                       canManageStock ? 'bg-accent text-white hover:bg-accent-hover' : 'bg-panel-2 text-muted'
                     )}
-                    title={canManageStock ? 'Lancar peca' : 'Sem permissao para alterar estoque'}
+                    title={canManageStock ? 'Lançar peça' : 'Sem permissão para alterar estoque'}
                   >
-                    <Plus size={12} /> Lancar Peca
+                    <Plus size={12} /> Lançar peça
                   </button>
                 </div>
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-950/60 text-surface-500 font-bold uppercase text-[10px]">
+                  <thead className="bg-surface-950/60 text-surface-500 font-bold text-[11px]">
                     <tr>
                       <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd</th>
@@ -1477,15 +1480,14 @@ export function ServiceOrdersPage() {
                       <tr key={item.id} className="hover:bg-surface-950/60">
                         <td className="px-5 py-3 font-bold text-surface-100">
                           <div>{item.description}</div>
-                          <div className="mt-1 text-[10px] text-surface-500 font-bold">
+                          <div className="mt-1 text-[11px] text-surface-500 font-bold">
                             Estoque atual: <span className={cn('font-bold', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
                             {' - '}Status: {item.applied ? 'Baixada' : 'Pendente'}
                           </div>
                         </td>
                         <td className="px-5 py-3">
-                          <input
-                            aria-label={`Quantidade da peça ${item.description}`}
-                            type="number" min="1"
+                          <NumberInput
+                            aria-label={`Quantidade da peça ${item.description}`} min="1"
                             disabled={isClosed || !canManageStock}
                             className={cn(
                               'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
@@ -1496,9 +1498,8 @@ export function ServiceOrdersPage() {
                           />
                         </td>
                         <td className="px-5 py-3">
-                          <input
-                            aria-label={`Desconto percentual da peça ${item.description}`}
-                            type="number" step="1" min="0" max="100"
+                          <NumberInput
+                            aria-label={`Desconto percentual da peça ${item.description}`} step="1" min="0" max="100"
                             disabled={isClosed || !canManageStock}
                             className={cn(
                               'w-16 border border-transparent rounded-md px-2 py-1 text-center font-bold text-xs',
@@ -1524,7 +1525,7 @@ export function ServiceOrdersPage() {
                       </tr>
                     ))}
                     {partItems.length === 0 && (
-                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhuma peca lançada</td></tr>
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-surface-600 text-xs">Nenhuma peça lançada</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1535,10 +1536,10 @@ export function ServiceOrdersPage() {
 
                 {/* Avançar status */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Avançar Status</h4>
+                  <h4 className="text-[11px] font-bold text-surface-500">Avançar Status</h4>
                   <div className="flex flex-col gap-1.5">
                     {nextStatuses.length === 0 && (
-                      <p className="text-[10px] font-bold text-surface-600">Fluxo encerrado para este status.</p>
+                      <p className="text-[11px] font-bold text-surface-600">Fluxo encerrado para este status.</p>
                     )}
                     {nextStatuses.map((status) => {
                       const isCancel = status === 'CANCELADO';
@@ -1547,12 +1548,12 @@ export function ServiceOrdersPage() {
                       return (
                         <button type="button"
                           key={status}
-                          onClick={() => {
-                            if (isNegative && !confirm(`Confirmar: ${STATUS_ACTION_LABEL[status] || status}?`)) return;
+                          onClick={async () => {
+                            if (isNegative && !(await confirm({ title: 'Confirmar ação', message: `${STATUS_ACTION_LABEL[status] || status}?`, confirmLabel: 'Confirmar', danger: true }))) return;
                             changeStatus(status);
                           }}
                           className={cn(
-                            'w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left',
+                            'w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left',
                             isNegative
                               ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
                               : 'bg-accent text-white hover:bg-accent-hover shadow-sm'
@@ -1568,7 +1569,7 @@ export function ServiceOrdersPage() {
                       && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && (
                       <button type="button"
                         onClick={revokeApproval}
-                        className="w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                        className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
                         title="Volta a orçamento aguardando aprovação, com link novo para o cliente"
                       >
                         Revogar Aprovação
@@ -1579,10 +1580,10 @@ export function ServiceOrdersPage() {
                     {canReserveParts && ['APROVADO', 'AGUARDANDO_PECAS'].includes(selectedOrder?.status) && partItems.length > 0 && (
                       <button type="button"
                         onClick={() => { setReserveResult(null); setExpectedPartsDate(''); setShowReserveParts(true); }}
-                        className="w-full px-3 py-2 rounded-xl text-[10px] font-bold tracking-wide transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
+                        className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left bg-amber-500 text-white hover:bg-amber-600 shadow-sm flex items-center gap-1.5"
                       >
                         <ShoppingCart size={12} />
-                        {selectedOrder?.partsReserved ? 'Rever Pedido de Pecas' : 'Verificar / Reservar Pecas'}
+                        {selectedOrder?.partsReserved ? 'Rever Pedido de Peças' : 'Verificar / Reservar Peças'}
                       </button>
                     )}
                   </div>
@@ -1590,7 +1591,7 @@ export function ServiceOrdersPage() {
 
                 {/* Agendamento */}
                 <div className="space-y-2">
-                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Agendamento</h4>
+                  <h4 className="text-[11px] font-bold text-surface-500">Agendamento</h4>
                   <input
                     aria-label="Data e hora do agendamento"
                     type="datetime-local"
@@ -1602,7 +1603,7 @@ export function ServiceOrdersPage() {
 
                 {/* Forma de pagamento */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Forma de Pagamento</h4>
+                  <h4 className="text-[11px] font-bold text-surface-500">Forma de Pagamento</h4>
                   <PaymentPlanEditor
                     plan={edit.paymentPlan}
                     onChange={(paymentPlan) => setEdit({ ...edit, paymentPlan })}
@@ -1614,21 +1615,20 @@ export function ServiceOrdersPage() {
 
                 {/* Desconto */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Desconto</h4>
+                  <h4 className="text-[11px] font-bold text-surface-500">Desconto</h4>
                   {isInstallmentPayment && (
-                    <p className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
+                    <p className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
                       Desconto não é válido para pagamento a prazo parcelado.
                     </p>
                   )}
                   {!canGrantOrderDiscount && (
-                    <p className="text-[10px] font-bold text-surface-500">Seu perfil não pode conceder desconto.</p>
+                    <p className="text-[11px] font-bold text-surface-500">Seu perfil não pode conceder desconto.</p>
                   )}
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-surface-500 uppercase">Peças (%)</label>
-                      <input
-                        aria-label="Desconto percentual em peças"
-                        type="number" min="0" max="100" step="1"
+                      <label htmlFor="fld-serviceorderspage-2" className="block text-sm font-semibold text-muted">Peças (%)</label>
+                      <NumberInput id="fld-serviceorderspage-2"
+                        aria-label="Desconto percentual em peças" min="0" max="100" step="1"
                         disabled={isClosed || !canGrantOrderDiscount || isInstallmentPayment}
                         value={edit.discountPartsPercent}
                         onChange={(e) => setEdit({ ...edit, discountPartsPercent: Number(e.target.value) })}
@@ -1642,10 +1642,9 @@ export function ServiceOrdersPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-surface-500 uppercase">Serviços (%)</label>
-                      <input
-                        aria-label="Desconto percentual em serviços"
-                        type="number" min="0" max="100" step="1"
+                      <label htmlFor="fld-serviceorderspage-3" className="block text-sm font-semibold text-muted">Serviços (%)</label>
+                      <NumberInput id="fld-serviceorderspage-3"
+                        aria-label="Desconto percentual em serviços" min="0" max="100" step="1"
                         disabled={isClosed || !canGrantOrderDiscount || isInstallmentPayment}
                         value={edit.discountServicesPercent}
                         onChange={(e) => setEdit({ ...edit, discountServicesPercent: Number(e.target.value) })}
@@ -1660,12 +1659,12 @@ export function ServiceOrdersPage() {
                     </div>
                   </div>
                   {userRole === 'GERENTE' && (
-                    <p className="text-[9px] text-surface-500">
+                    <p className="text-[11px] text-surface-500">
                       Seu limite: {Number(tenantFullData?.maxDiscountPercentParts ?? 0)}% em peças, {Number(tenantFullData?.maxDiscountPercentServices ?? 0)}% em serviços.
                     </p>
                   )}
                   {canGrantOrderDiscount && (
-                    <p className="text-[9px] text-surface-600">Clique em "Salvar alterações" para aplicar o desconto.</p>
+                    <p className="text-[11px] text-surface-600">Clique em "Salvar alterações" para aplicar o desconto.</p>
                   )}
                 </div>
 
@@ -1674,18 +1673,18 @@ export function ServiceOrdersPage() {
                   <button type="button"
                     onClick={recalculateTotals}
                     disabled={syncingTotals || !canSyncOrder}
-                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-accent-hover disabled:opacity-60"
-                    title={!canSyncOrder ? 'Sem permissao para atualizar O.S.' : undefined}
+                    className="mb-2 inline-flex items-center justify-center gap-2 rounded-lg border border-accent bg-accent-hover px-4 py-2 text-[12px] font-bold text-white transition-all hover:bg-accent-hover disabled:opacity-60"
+                    title={!canSyncOrder ? 'Sem permissão para atualizar O.S.' : undefined}
                   >
                     {syncingTotals ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                     Atualizar O.S.
                   </button>
                   {[
-                    { label: 'Servicos', val: selectedOrder.totalServices },
-                    { label: 'Pecas', val: selectedOrder.totalParts },
+                    { label: 'Serviços', val: selectedOrder.totalServices },
+                    { label: 'Peças', val: selectedOrder.totalParts },
                     ...(Number(selectedOrder.totalLabor) > 0 ? [{ label: 'Mao de Obra', val: selectedOrder.totalLabor }] : []),
                   ].map(({ label, val }) => (
-                    <div key={label} className="flex justify-between text-[10px] font-bold text-white uppercase tracking-wider">
+                    <div key={label} className="flex justify-between text-[11px] font-bold text-white">
                       <span>{label}</span>
                       <span>R$ {fmtBR(val)}</span>
                     </div>
@@ -1696,19 +1695,19 @@ export function ServiceOrdersPage() {
                     const discountServicesValue = (Number(selectedOrder.totalServices) + Number(selectedOrder.totalLabor)) * (Number(selectedOrder.discountServicesPercent || 0) / 100);
                     return (
                       <>
-                        <div className="pt-3 mt-1 border-t border-white/25 flex justify-between text-[10px] font-bold text-white/90 uppercase tracking-wider">
+                        <div className="pt-3 mt-1 border-t border-white/25 flex justify-between text-[11px] font-bold text-white/90">
                           <span>Total Geral</span>
                           <span>R$ {fmtBR(totalGeral)}</span>
                         </div>
                         {discountPartsValue > 0 && (
-                          <div className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
-                            <span>Desconto Pecas ({fmtBR(selectedOrder.discountPartsPercent, 0)}%)</span>
+                          <div className="flex justify-between text-[11px] font-bold text-white/80">
+                            <span>Desconto em peças ({fmtBR(selectedOrder.discountPartsPercent, 0)}%)</span>
                             <span>- R$ {fmtBR(discountPartsValue)}</span>
                           </div>
                         )}
                         {discountServicesValue > 0 && (
-                          <div className="flex justify-between text-[10px] font-bold text-white/80 uppercase tracking-wider">
-                            <span>Desconto Servicos ({fmtBR(selectedOrder.discountServicesPercent, 0)}%)</span>
+                          <div className="flex justify-between text-[11px] font-bold text-white/80">
+                            <span>Desconto em serviços ({fmtBR(selectedOrder.discountServicesPercent, 0)}%)</span>
                             <span>- R$ {fmtBR(discountServicesValue)}</span>
                           </div>
                         )}
@@ -1716,7 +1715,7 @@ export function ServiceOrdersPage() {
                     );
                   })()}
                   <div className="pt-3 border-t border-accent">
-                    <p className="text-[10px] font-bold text-white uppercase tracking-wide mb-1">Total Geral com Desconto</p>
+                    <p className="text-[11px] font-bold text-white mb-1">Total Geral com Desconto</p>
                     <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
                   </div>
                 </div>
@@ -1740,8 +1739,8 @@ export function ServiceOrdersPage() {
                     <ShoppingCart size={18} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-white text-sm uppercase tracking-wide">Reserva de Pecas</h3>
-                    <p className="text-[10px] text-white font-semibold">OS {orderCode(selectedOrder)} - {partItems.length} peca(s) na OS</p>
+                    <h3 className="font-bold text-white text-sm">Reserva de Peças</h3>
+                    <p className="text-[11px] text-white font-semibold">OS {orderCode(selectedOrder)} - {partItems.length} peca(s) na OS</p>
                   </div>
                 </div>
                 <button type="button" aria-label="Fechar modal de reserva de peças" onClick={() => { if (!reserveLoading) setShowReserveParts(false); }} className="text-white/80 hover:text-white transition-colors">
@@ -1754,7 +1753,7 @@ export function ServiceOrdersPage() {
                   <>
                     {/* Lista de pecas */}
                     <div className="space-y-2">
-                      <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Pecas desta OS</p>
+                      <p className="text-[11px] font-bold text-surface-500">Peças desta OS</p>
                       {partItems.map((item: any) => {
                         const stock = Number(item.part?.currentStock ?? 0);
                         const needed = Math.ceil(Number(item.quantity));
@@ -1765,12 +1764,12 @@ export function ServiceOrdersPage() {
                               {ok ? <CheckCircle2 size={14} className="text-accent-ink shrink-0" /> : <AlertTriangle size={14} className="text-red-500 shrink-0" />}
                               <div>
                                 <p className="font-bold text-surface-100 leading-tight">{item.description}</p>
-                                {item.part?.internalCode && <p className="text-surface-500 text-[10px]">Cod: {item.part.internalCode}</p>}
+                                {item.part?.internalCode && <p className="text-surface-500 text-[11px]">Cod: {item.part.internalCode}</p>}
                               </div>
                             </div>
                             <div className="text-right shrink-0">
                               <p className="font-bold text-surface-300">Nec: {needed}</p>
-                              <p className={cn('text-[10px] font-bold', ok ? 'text-accent-ink' : 'text-red-600')}>Estoque: {stock}</p>
+                              <p className={cn('text-[11px] font-bold', ok ? 'text-accent-ink' : 'text-red-600')}>Estoque: {stock}</p>
                             </div>
                           </div>
                         );
@@ -1779,10 +1778,10 @@ export function ServiceOrdersPage() {
 
                     {/* Data prevista chegada */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-surface-500 uppercase tracking-wide flex items-center gap-1.5">
+                      <label htmlFor="fld-serviceorderspage-4" className="block text-sm font-semibold text-muted">
                         <Calendar size={11} /> Data prevista de chegada (para pecas faltantes)
                       </label>
-                      <input
+                      <input id="fld-serviceorderspage-4"
                         aria-label="Data prevista de chegada"
                         type="date"
                         value={expectedPartsDate}
@@ -1790,13 +1789,13 @@ export function ServiceOrdersPage() {
                         onChange={(e) => setExpectedPartsDate(e.target.value)}
                         className="w-full border border-surface-800 rounded-xl px-3 py-2 text-sm text-surface-300 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                       />
-                      <p className="text-[10px] text-surface-500">Opcional. Pecas disponíveis serão reservadas imediatamente. Pecas faltantes gerarão um Pedido de Compra.</p>
+                      <p className="text-[11px] text-surface-500">Opcional. Peças disponíveis serão reservadas imediatamente. Peças faltantes gerarão um Pedido de Compra.</p>
                     </div>
 
                     <button type="button"
                       onClick={handleReserveParts}
                       disabled={reserveLoading}
-                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent-hover text-white font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                      className="w-full py-3 rounded-lg bg-accent hover:bg-accent-hover text-white font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                     >
                       {reserveLoading ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
                       {reserveLoading ? 'Processando...' : 'Confirmar Reserva'}
@@ -1809,13 +1808,13 @@ export function ServiceOrdersPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-accent-soft border border-accent/40 rounded-lg p-4 text-center">
                         <p className="text-2xl font-bold text-accent-ink">{reserveResult.reserved}</p>
-                        <p className="text-[10px] font-bold text-accent-ink uppercase tracking-wide">Reservadas</p>
-                        <p className="text-[9px] text-accent-ink/80 mt-0.5">Baixadas do estoque</p>
+                        <p className="text-[11px] font-bold text-accent-ink">Reservadas</p>
+                        <p className="text-[11px] text-accent-ink/80 mt-0.5">Baixadas do estoque</p>
                       </div>
                       <div className={cn('border rounded-lg p-4 text-center', reserveResult.missing > 0 ? 'bg-red-50 border-red-200' : 'bg-surface-950 border-surface-800 text-surface-500')}>
                         <p className={cn('text-2xl font-bold', reserveResult.missing > 0 ? 'text-red-600' : 'text-surface-300')}>{reserveResult.missing}</p>
-                        <p className={cn('text-[10px] font-bold uppercase tracking-wide', reserveResult.missing > 0 ? 'text-red-700' : 'text-surface-500')}>Faltantes</p>
-                        <p className="text-[9px] text-surface-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo disponivel'}</p>
+                        <p className={cn('text-[11px] font-bold', reserveResult.missing > 0 ? 'text-red-700' : 'text-surface-500')}>Faltantes</p>
+                        <p className="text-[11px] text-surface-500 mt-0.5">{reserveResult.missing > 0 ? 'Pedido gerado' : 'Tudo disponível'}</p>
                       </div>
                     </div>
 
@@ -1823,25 +1822,25 @@ export function ServiceOrdersPage() {
                     {reserveResult.missingItems?.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">Pedido de Compra</p>
-                          <span className="bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
+                          <p className="text-[11px] font-bold text-surface-500">Pedido de Compra</p>
+                          <span className="bg-accent text-white text-[11px] font-bold px-2 py-0.5 rounded-full">{reserveResult.purchaseOrderNumber}</span>
                         </div>
                         {reserveResult.missingItems.map((item: any, i: number) => (
                           <div key={i} className="flex items-start justify-between rounded-xl px-3 py-2 bg-red-50 border border-red-200 text-xs">
                             <div>
                               <p className="font-bold text-surface-100">{item.description}</p>
-                              <p className="text-surface-500 text-[10px]">Cod: {item.internalCode || '-'} - Orig: {item.sku || '-'} - Fornec: {item.supplierName || '-'}</p>
+                              <p className="text-surface-500 text-[11px]">Cod: {item.internalCode || '-'} - Orig: {item.sku || '-'} - Fornec: {item.supplierName || '-'}</p>
                             </div>
                             <div className="text-right shrink-0 ml-2">
                               <p className="font-bold text-red-700">Falta: {item.lacking}</p>
-                              <p className="text-[10px] text-surface-500">Estoque: {item.inStock}</p>
+                              <p className="text-[11px] text-surface-500">Estoque: {item.inStock}</p>
                             </div>
                           </div>
                         ))}
 
                         <button type="button"
                           onClick={downloadPurchaseOrderPdf}
-                          className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
+                          className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-accent-hover transition-all"
                         >
                           <Printer size={14} /> Imprimir Pedido de Compra
                         </button>
@@ -1850,7 +1849,7 @@ export function ServiceOrdersPage() {
 
                     <button type="button"
                       onClick={() => setShowReserveParts(false)}
-                      className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-bold text-xs tracking-wide hover:bg-surface-800 transition-all"
+                      className="w-full py-2.5 rounded-xl bg-surface-900 text-surface-300 font-bold text-xs hover:bg-surface-800 transition-all"
                     >
                       Fechar
                     </button>
@@ -1876,11 +1875,11 @@ export function ServiceOrdersPage() {
                     {catalogMode === 'service' ? <Wrench size={20} /> : <Package size={20} />}
                   </div>
                   <div>
-                    <h3 className="font-bold text-surface-100 uppercase text-sm tracking-wide">
-                      {catalogMode === 'service' ? 'Adicionar Servico' : 'Lancar Peca'}
+                    <h3 className="font-bold text-surface-100 text-sm">
+                      {catalogMode === 'service' ? 'Adicionar Serviço' : 'Lançar Peça'}
                     </h3>
-                    <p className="text-[10px] text-surface-500 font-bold uppercase">
-                      {catalogMode === 'service' ? 'Catálogo ou lançamento avulso' : 'Catálogo ou peca avulsa'}
+                    <p className="text-[11px] text-surface-500 font-bold">
+                      {catalogMode === 'service' ? 'Catálogo ou lançamento avulso' : 'Catálogo ou peça avulsa'}
                     </p>
                   </div>
                 </div>
@@ -1888,7 +1887,7 @@ export function ServiceOrdersPage() {
                   <button type="button"
                     onClick={() => { setShowAiPanel((v) => !v); setAiSuggestions([]); setAiDescription(''); }}
                     className={cn(
-                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-all',
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all',
                       showAiPanel
                         ? 'bg-accent text-white shadow-md'
                         : 'bg-surface-900 text-surface-300 hover:bg-surface-800'
@@ -1914,7 +1913,7 @@ export function ServiceOrdersPage() {
                     className="overflow-hidden border-b border-surface-800 bg-surface-950/70"
                   >
                     <div className="p-4 space-y-3">
-                      <p className="text-[9px] font-bold text-surface-300 uppercase tracking-wide flex items-center gap-1">
+                      <p className="text-[11px] font-bold text-surface-300 flex items-center gap-1">
                         <Sparkles size={11} />
                         IA Assistiva - descreva o problema e receba sugestoes
                       </p>
@@ -1931,7 +1930,7 @@ export function ServiceOrdersPage() {
                         <button type="button"
                           onClick={handleAiSuggest}
                           disabled={aiLoading || !aiDescription.trim()}
-                          className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 disabled:opacity-50"
+                          className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[11px] font-semibold transition-all shadow flex items-center gap-1 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                           Sugerir
@@ -1943,16 +1942,16 @@ export function ServiceOrdersPage() {
                             <div key={i} className="flex items-center justify-between bg-white border border-surface-800 rounded-lg px-3 py-2.5 gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                  <span className={cn('text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-black/50 text-surface-300')}>
-                                    {s.type === 'service' ? 'Servico' : 'Peca'}
+                                  <span className={cn('text-[11px] font-bold px-1.5 py-0.5 rounded-full', s.type === 'service' ? 'bg-surface-900 text-surface-300' : 'bg-black/50 text-surface-300')}>
+                                    {s.type === 'service' ? 'Serviço' : 'Peça'}
                                   </span>
-                                  <span className="text-[10px] font-bold text-surface-200 truncate">{s.description}</span>
+                                  <span className="text-[11px] font-bold text-surface-200 truncate">{s.description}</span>
                                 </div>
-                                <p className="text-[9px] text-surface-500 truncate">{s.reason}</p>
+                                <p className="text-[11px] text-surface-500 truncate">{s.reason}</p>
                               </div>
                               <div className="text-right shrink-0">
                                 {s.estimatedPrice > 0 && (
-                                  <p className="text-[10px] font-bold text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
+                                  <p className="text-[11px] font-bold text-surface-300">R$ {Number(s.estimatedPrice).toFixed(2).replace('.', ',')}</p>
                                 )}
                                 <button type="button"
                                   onClick={() => addItem({
@@ -1963,9 +1962,9 @@ export function ServiceOrdersPage() {
                                     unitPrice: s.estimatedPrice ?? 0,
                                   })}
                                   disabled={isClosed}
-                                  className="mt-0.5 text-[9px] font-bold text-accent-ink hover:text-accent-ink uppercase tracking-wider disabled:opacity-40"
+                                  className="mt-0.5 text-[11px] font-bold text-accent-ink hover:text-accent-ink disabled:opacity-40"
                                 >
-                                  + Lancar
+                                  + Lançar
                                 </button>
                               </div>
                             </div>
@@ -1973,7 +1972,7 @@ export function ServiceOrdersPage() {
                         </div>
                       )}
                       {!aiLoading && aiSuggestions.length === 0 && aiDescription.trim() && (
-                        <p className="text-[10px] text-surface-600 text-center py-1">Nenhuma sugestao encontrada. Tente descrever com mais detalhes.</p>
+                        <p className="text-[11px] text-surface-600 text-center py-1">Nenhuma sugestao encontrada. Tente descrever com mais detalhes.</p>
                       )}
                     </div>
                   </motion.div>
@@ -1982,14 +1981,14 @@ export function ServiceOrdersPage() {
 
               {/* Quick Add */}
               <div className="p-4 border-b border-surface-800/70 bg-surface-950">
-                <p className="text-[9px] font-bold text-surface-300 uppercase tracking-wide mb-2 flex items-center gap-1">
+                <p className="text-[11px] font-bold text-surface-300 mb-2 flex items-center gap-1">
                   <Zap size={11} />
-                  {catalogMode === 'service' ? 'Servico avulso (nao cadastrado)' : 'Peca avulsa (nao cadastrada)'}
+                  {catalogMode === 'service' ? 'Serviço avulso (não cadastrado)' : 'Peça avulsa (não cadastrada)'}
                 </p>
                 <div className="flex items-end gap-2">
                   <div className="flex-1 space-y-1">
-                    <label className="text-[9px] font-bold text-surface-500 uppercase">Descricao *</label>
-                    <input
+                    <label htmlFor="fld-serviceorderspage-5" className="block text-sm font-semibold text-muted">Descricao *</label>
+                    <input id="fld-serviceorderspage-5"
                       aria-label="Descrição do item rápido"
                       type="text"
                       placeholder={catalogMode === 'service' ? 'Ex: Limpeza de bicos injetores' : 'Ex: Correia auxiliar Fiat Uno'}
@@ -1999,8 +1998,8 @@ export function ServiceOrdersPage() {
                     />
                   </div>
                   <div className="w-28 space-y-1">
-                    <label className="text-[9px] font-bold text-surface-500 uppercase">R$ *</label>
-                    <input
+                    <label htmlFor="fld-serviceorderspage-6" className="block text-sm font-semibold text-muted">R$ *</label>
+                    <input id="fld-serviceorderspage-6"
                       aria-label="Preço unitário do item rápido"
                       type="text"
                       inputMode="decimal"
@@ -2011,10 +2010,9 @@ export function ServiceOrdersPage() {
                     />
                   </div>
                   <div className="w-20 space-y-1">
-                    <label className="text-[9px] font-bold text-surface-500 uppercase">{catalogMode === 'service' ? 'Qtd/Hrs' : 'Qtd'}</label>
-                    <input
+                    <label htmlFor="fld-serviceorderspage-7" className="block text-sm font-semibold text-muted">{catalogMode === 'service' ? 'Qtd/Hrs' : 'Qtd'}</label>
+                    <NumberInput id="fld-serviceorderspage-7"
                       aria-label="Quantidade do item rápido"
-                      type="number"
                       min="0.5"
                       step={catalogMode === 'service' ? '0.5' : '1'}
                       value={quickAdd.quantity}
@@ -2023,10 +2021,9 @@ export function ServiceOrdersPage() {
                     />
                   </div>
                   <div className="w-20 space-y-1">
-                    <label className="text-[9px] font-bold text-surface-500 uppercase">Desc. %</label>
-                    <input
+                    <label htmlFor="fld-serviceorderspage-8" className="block text-sm font-semibold text-muted">Desc. %</label>
+                    <NumberInput id="fld-serviceorderspage-8"
                       aria-label="Desconto percentual do item rápido"
-                      type="number"
                       min="0"
                       max="100"
                       step="1"
@@ -2037,15 +2034,15 @@ export function ServiceOrdersPage() {
                   </div>
                   <button type="button"
                     onClick={quickAddItem}
-                    className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[9px] font-semibold uppercase tracking-wide transition-all shadow flex items-center gap-1 whitespace-nowrap"
+                    className="h-9 px-4 bg-accent hover:bg-accent-hover text-white rounded-xl text-[11px] font-semibold transition-all shadow flex items-center gap-1 whitespace-nowrap"
                   >
-                    <Plus size={13} /> Lancar
+                    <Plus size={13} /> Lançar
                   </button>
                 </div>
                 {catalogMode === 'service' && (
                   <div className="mt-2">
-                    <label className="text-[9px] font-bold text-surface-500 uppercase">Executor do Servico</label>
-                    <select
+                    <label htmlFor="fld-serviceorderspage-9" className="block text-sm font-semibold text-muted">Executor do Serviço</label>
+                    <select id="fld-serviceorderspage-9"
                       aria-label="Executor do serviço rápido"
                       value={quickAssignedUserId}
                       onChange={(e) => setQuickAssignedUserId(e.target.value)}
@@ -2067,7 +2064,7 @@ export function ServiceOrdersPage() {
                   <input
                     aria-label="Pesquisar no catálogo"
                     type="text"
-                    placeholder={`Pesquisar no catalogo de ${catalogMode === 'service' ? 'servicos' : 'pecas'}...`}
+                    placeholder={`Pesquisar no catálogo de ${catalogMode === 'service' ? 'serviços' : 'peças'}...`}
                     className="w-full bg-surface-950 border border-surface-800 rounded-xl py-2.5 pl-9 text-sm font-bold focus:bg-white transition-all"
                     value={catalogSearch}
                     onChange={(e) => setCatalogSearch(e.target.value)}
@@ -2097,7 +2094,7 @@ export function ServiceOrdersPage() {
                         >
                           <div>
                             <p className="font-bold text-surface-100 text-sm">{s.name}</p>
-                            <p className="text-[10px] text-surface-500 font-bold mt-0.5">
+                            <p className="text-[11px] text-surface-500 font-bold mt-0.5">
                               {s.tmo ? `TMO: ${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
                               {s.category && ` - ${s.category}`}
                             </p>
@@ -2109,7 +2106,7 @@ export function ServiceOrdersPage() {
                       ))
                     }
                     {catalogItems.services.filter((s) => s.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-surface-600 text-xs py-8">Nenhum servico encontrado no catalogo</p>
+                      <p className="text-center text-surface-600 text-xs py-8">Nenhum serviço encontrado no catálogo</p>
                     )}
                   </>
                 )}
@@ -2131,10 +2128,10 @@ export function ServiceOrdersPage() {
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-bold text-surface-100 text-sm truncate">{p.name}</p>
                                 {p.currentStock <= (p.minStock || 0) && (
-                                  <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 bg-red-100 text-red-600 rounded shrink-0">Estoque Baixo</span>
+                                  <span className="text-[11px] font-bold px-1.5 py-0.5 bg-red-100 text-red-600 rounded shrink-0">Estoque Baixo</span>
                                 )}
                               </div>
-                              <p className="text-[10px] text-surface-500 font-bold mt-0.5">
+                              <p className="text-[11px] text-surface-500 font-bold mt-0.5">
                                 {p.internalCode && `${p.internalCode} - `}
                                 Estoque: <span className={cn('font-bold', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
                                 {' - Minimo: '}<span className="font-bold text-surface-300">{p.minStock || 0}</span>
@@ -2150,7 +2147,7 @@ export function ServiceOrdersPage() {
                               <button type="button"
                                 onClick={() => addItem({ type: 'part', partId: p.id, description: p.name, quantity: qty, unitPrice: p.unitPrice })}
                                 disabled={isClosed || !canManageStock || notEnoughStock}
-                                title={isClosed ? 'OS finalizada nao pode ser editada' : !canManageStock ? 'Somente MASTER/ADMIN podem alterar estoque' : notEnoughStock ? 'Quantidade maior que estoque disponivel' : 'Adicionar peca'}
+                                title={isClosed ? 'O.S. finalizada não pode ser editada' : !canManageStock ? 'Somente MASTER/ADMIN podem alterar estoque' : notEnoughStock ? 'Quantidade maior que estoque disponível' : 'Adicionar peça'}
                                 className={cn(
                                   'w-10 h-10 rounded-xl flex items-center justify-center shadow transition-all',
                                   !canManageStock || notEnoughStock
@@ -2166,12 +2163,12 @@ export function ServiceOrdersPage() {
                       })
                     }
                     {!canManageStock && (
-                      <p className="text-center text-surface-300 bg-surface-950 border border-surface-800 rounded-xl p-2 text-[11px] font-bold">
+                      <p className="text-center text-surface-300 bg-surface-950 border border-surface-800 rounded-xl p-2 text-[12px] font-bold">
                         Apenas MASTER e ADMIN podem adicionar/remover pecas (altera estoque).
                       </p>
                     )}
                     {catalogItems.parts.filter((p) => p.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
-                      <p className="text-center text-surface-600 text-xs py-8">Nenhuma peca encontrada no catalogo</p>
+                      <p className="text-center text-surface-600 text-xs py-8">Nenhuma peça encontrada no catálogo</p>
                     )}
                   </>
                 )}
@@ -2188,7 +2185,7 @@ export function ServiceOrdersPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl shadow-2xl w-full max-w-[50%] max-h-[90vh] overflow-hidden p-3 md:p-4">
               <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-lg md:text-xl font-bold text-surface-100 uppercase tracking-tight">Nova OS</h2>
+                <h2 className="text-lg md:text-xl font-bold text-surface-100 tracking-tight">Nova OS</h2>
                 <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
               </div>
               <div className="grid gap-2">
@@ -2209,13 +2206,13 @@ export function ServiceOrdersPage() {
                   setNewOrder({ customerId: '', vehicleId: '', complaint: '', kmEntrada: 0, reserveStock: false, orderType: 'ORCAMENTO', equipmentBrand: '', equipmentModel: '', serialNumber: '', scheduledDate: '' });
                   loadOrders();
                   selectOrder(res.data);
-                } catch (err: any) { alert('Erro ao criar OS: ' + (err?.response?.data?.message || err?.message || 'Verifique os dados.')); }
+                } catch (err: any) { toast.error('Erro ao criar OS: ' + (err?.response?.data?.message || err?.message || 'Verifique os dados.')); }
               }}>
                 {/* Tipo de documento */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
-                    { value: 'ORCAMENTO', label: 'Orcamento', desc: 'Aguarda aprovacao do cliente' },
-                    { value: 'ORDEM_SERVICO', label: 'Ordem de Servico', desc: 'Servico ja autorizado' },
+                    { value: 'ORCAMENTO', label: 'Orçamento', desc: 'Aguarda aprovação do cliente' },
+                    { value: 'ORDEM_SERVICO', label: 'Ordem de Serviço', desc: 'Serviço já autorizado' },
                     ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'Retifica', desc: 'Motor avulso ou fluxo tecnico especializado' }] : []),
                   ].map(({ value, label, desc }) => (
                     <button
@@ -2230,14 +2227,14 @@ export function ServiceOrdersPage() {
                       )}
                     >
                       <span className="text-xs font-bold">{label}</span>
-                      <span className={cn('text-[10px] mt-0.5', newOrder.orderType === value ? 'text-surface-700' : 'text-surface-500')}>{desc}</span>
+                      <span className={cn('text-[11px] mt-0.5', newOrder.orderType === value ? 'text-surface-700' : 'text-surface-500')}>{desc}</span>
                     </button>
                   ))}
                 </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Cliente *</label>
-                    <select aria-label="Cliente da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
+                    <label htmlFor="fld-serviceorderspage-10" className="block text-sm font-semibold text-muted">Cliente *</label>
+                    <select id="fld-serviceorderspage-10" aria-label="Cliente da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
                       setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
                       setShowQuickVehicleForm(false);
                       setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
@@ -2248,31 +2245,31 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
-                      <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Veiculo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
+                      <label className="block text-sm font-semibold text-muted">Veiculo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
                       {newOrder.customerId && (
                         <button
                           type="button"
                           onClick={() => setShowQuickVehicleForm((prev) => !prev)}
-                          className="text-[10px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
+                          className="text-[11px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
                         >
-                          <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veiculo'}
+                          <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veículo'}
                         </button>
                       )}
                     </div>
                     <select aria-label="Veículo da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
-                      <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veiculo' : 'Selecione um veiculo...'}</option>
+                      <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veículo' : 'Selecione um veículo...'}</option>
                       {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
                     </select>
 
                     {newOrder.customerId && vehiclesOfSelectedCustomer.length === 0 && !showQuickVehicleForm && (
                       <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium">
-                        Este cliente ainda nao possui veiculo cadastrado. Clique em Incluir veiculo para cadastrar agora.
+                        Este cliente ainda não possui veículo cadastrado. Clique em Incluir veículo para cadastrar agora.
                       </div>
                     )}
 
                     {newOrder.customerId && showQuickVehicleForm && (
                       <div className="rounded-lg border border-surface-800 bg-surface-950 p-2 space-y-2">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-surface-500">Cadastro rapido de veiculo</p>
+                        <p className="text-[11px] font-semibold text-surface-500">Cadastro rapido de veículo</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                           <input
                             aria-label="Placa do veículo"
@@ -2283,7 +2280,7 @@ export function ServiceOrdersPage() {
                           />
                           <input
                             aria-label="Chassi (VIN) do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold uppercase"
+                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
                             placeholder="Chassi / VIN (opcional)"
                             maxLength={17}
                             value={quickVehicle.vin}
@@ -2310,9 +2307,8 @@ export function ServiceOrdersPage() {
                             value={quickVehicle.color}
                             onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
                           />
-                          <input
+                          <NumberInput
                             aria-label="Ano do veículo"
-                            type="number"
                             className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
                             placeholder="Ano (opcional)"
                             value={quickVehicle.year}
@@ -2331,7 +2327,7 @@ export function ServiceOrdersPage() {
                                 : 'bg-accent text-white hover:bg-accent-hover'
                             )}
                           >
-                            {creatingQuickVehicle ? 'Salvando...' : 'Salvar veiculo'}
+                            {creatingQuickVehicle ? 'Salvando...' : 'Salvar veículo'}
                           </button>
                         </div>
                       </div>
@@ -2351,7 +2347,7 @@ export function ServiceOrdersPage() {
                               <span key={o.id} className="ml-1 font-mono font-bold">#{orderCode(o)}</span>
                             ))}
                           </p>
-                          <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veiculo. Verifique se nao e duplicata.</p>
+                          <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veículo. Verifique se não e duplicata.</p>
                         </div>
                       );
                     })()}
@@ -2360,39 +2356,39 @@ export function ServiceOrdersPage() {
                 {newOrder.orderType === 'RETIFICA_MOTOR' && !newOrder.vehicleId && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Marca do motor</label>
-                      <input aria-label="Marca do motor" value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
+                      <label htmlFor="fld-serviceorderspage-11" className="block text-sm font-semibold text-muted">Marca do motor</label>
+                      <input id="fld-serviceorderspage-11" aria-label="Marca do motor" value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">Modelo / família</label>
-                      <input aria-label="Modelo do motor" value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
+                      <label htmlFor="fld-serviceorderspage-12" className="block text-sm font-semibold text-muted">Modelo / família</label>
+                      <input id="fld-serviceorderspage-12" aria-label="Modelo do motor" value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-surface-500 uppercase tracking-wider ml-1">N. de serie</label>
-                      <input aria-label="Número de série" value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
+                      <label htmlFor="fld-serviceorderspage-13" className="block text-sm font-semibold text-muted">N. de serie</label>
+                      <input id="fld-serviceorderspage-13" aria-label="Número de série" value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
                     </div>
                   </div>
                 )}
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">KM Entrada</label>
-                  <input aria-label="KM de entrada" type="number" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
+                  <label htmlFor="fld-serviceorderspage-14" className="block text-sm font-semibold text-muted">KM Entrada</label>
+                  <NumberInput id="fld-serviceorderspage-14" aria-label="KM de entrada" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Data / Hora do Agendamento</label>
-                  <input aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
+                  <label htmlFor="fld-serviceorderspage-15" className="block text-sm font-semibold text-muted">Data / Hora do Agendamento</label>
+                  <input id="fld-serviceorderspage-15" aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Reclamacao Principal</label>
-                  <textarea aria-label="Reclamação principal da nova ordem" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-16 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
+                  <label htmlFor="fld-serviceorderspage-16" className="block text-sm font-semibold text-muted">Reclamacao Principal</label>
+                  <textarea id="fld-serviceorderspage-16" aria-label="Reclamação principal da nova ordem" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-16 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
-                <label className="flex items-center gap-2 rounded-md border border-surface-800 bg-surface-950 px-2 py-1 text-xs font-semibold text-surface-300">
+                <label className="block text-sm font-semibold text-muted">
                   <input
                     type="checkbox"
                     checked={Boolean(newOrder.reserveStock)}
                     onChange={(e) => setNewOrder({ ...newOrder, reserveStock: e.target.checked })}
                     className="h-4 w-4 rounded border-surface-700 text-surface-100 focus:ring-surface-600"
                   />
-                  Reservar pecas para debitar automaticamente na aprovacao
+                  Reservar peças para debitar automaticamente na aprovação
                 </label>
                 <div className="flex justify-end gap-2 pt-2">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="px-2 py-1 rounded-md text-xs font-semibold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
@@ -2416,9 +2412,9 @@ export function ServiceOrdersPage() {
             if (importTargetOrderId) {
               const updated = await serviceOrdersApi.getById(importTargetOrderId);
               setSelectedOrder(updated.data);
-              alert('Orcamento externo importado na O.S. com sucesso!');
+              toast.success('Orçamento externo importado na O.S. com sucesso!');
             } else {
-              alert('OS Importada com sucesso!');
+              toast.success('OS Importada com sucesso!');
             }
           }} 
         />
@@ -2468,7 +2464,7 @@ export function ServiceOrdersPage() {
                 <Trash2 size={22} className="text-red-600" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-surface-100 uppercase tracking-tight">Excluir O.S.</h2>
+                <h2 className="text-lg font-bold text-surface-100 tracking-tight">Excluir O.S.</h2>
                 <p className="text-xs text-surface-500 font-medium">Esta ação e irreversível</p>
               </div>
             </div>
@@ -2480,23 +2476,23 @@ export function ServiceOrdersPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">
+              <label htmlFor="fld-serviceorderspage-17" className="block text-sm font-semibold text-muted">
                 Motivo da exclusão (opcional)
               </label>
-              <textarea
+              <textarea id="fld-serviceorderspage-17"
                 aria-label="Motivo da exclusão"
                 value={deleteReason}
                 onChange={(e) => setDeleteReason(e.target.value)}
-                placeholder="Ex: Orcamento duplicado, erro de cadastro..."
+                placeholder="Ex: Orçamento duplicado, erro de cadastro..."
                 className="w-full px-4 py-3 rounded-xl border border-surface-800 text-sm text-surface-300 resize-none h-16 focus:outline-none focus:ring-2 focus:ring-red-300"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold text-surface-400 uppercase tracking-wider">
+              <label htmlFor="fld-serviceorderspage-18" className="block text-sm font-semibold text-muted">
                 Digite o numero da O.S. para confirmar:
                 <span className="ml-2 font-mono text-surface-100">{orderShortCode(selectedOrder)}</span>
               </label>
-              <input
+              <input id="fld-serviceorderspage-18"
                 aria-label="Confirmação da exclusão"
                 type="text"
                 value={deleteConfirmInput}

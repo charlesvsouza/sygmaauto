@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FileUp, Loader2, X, FileSpreadsheet, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { inventoryApi } from '../api/client';
 
+import { NumberInput } from './ui';
 type ImportNFModalProps = {
   onClose: () => void;
   onSuccess: () => void;
@@ -213,8 +214,8 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Fornecedor</label>
-                  <input
+                  <label htmlFor="fld-importnfmodal-1" className="block text-sm font-semibold text-muted">Fornecedor</label>
+                  <input id="fld-importnfmodal-1"
                     value={data.supplier?.name || ''}
                     onChange={(e) => updateSupplierField('name', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-line text-sm font-bold"
@@ -222,8 +223,8 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Documento</label>
-                  <input
+                  <label htmlFor="fld-importnfmodal-2" className="block text-sm font-semibold text-muted">Documento</label>
+                  <input id="fld-importnfmodal-2"
                     value={data.supplier?.document || ''}
                     onChange={(e) => updateSupplierField('document', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-line text-sm"
@@ -231,8 +232,8 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Numero NF</label>
-                  <input
+                  <label htmlFor="fld-importnfmodal-3" className="block text-sm font-semibold text-muted">Numero NF</label>
+                  <input id="fld-importnfmodal-3"
                     value={data.invoice?.number || ''}
                     onChange={(e) => updateInvoiceField('number', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-line text-sm"
@@ -240,8 +241,8 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Data Emissao</label>
-                  <input
+                  <label htmlFor="fld-importnfmodal-4" className="block text-sm font-semibold text-muted">Data Emissao</label>
+                  <input id="fld-importnfmodal-4"
                     value={data.invoice?.issueDate || ''}
                     onChange={(e) => updateInvoiceField('issueDate', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-line text-sm"
@@ -254,58 +255,57 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 <table className="w-full min-w-[980px]">
                   <thead className="bg-surface-950/40 border-b border-line">
                     <tr>
-                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Codigo Original</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Descricao</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Origem</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">Tipo</th>
-                      <th className="px-3 py-3 text-left text-[10px] font-bold text-surface-500 uppercase tracking-wide">NCM</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-bold text-surface-500 uppercase tracking-wide">Qtd</th>
-                      <th className="px-3 py-3 text-right text-[10px] font-bold text-surface-500 uppercase tracking-wide">Vlr Unit.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-bold text-surface-500 uppercase tracking-wide">Un.</th>
-                      <th className="px-3 py-3 text-center text-[10px] font-bold text-surface-500 uppercase tracking-wide">Acao</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Codigo Original</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Descricao</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Origem</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Tipo</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">NCM</th>
+                      <th className="px-3 py-3 text-right text-[11px] font-bold text-surface-500 uppercase tracking-wide">Qtd</th>
+                      <th className="px-3 py-3 text-right text-[11px] font-bold text-surface-500 uppercase tracking-wide">Vlr Unit.</th>
+                      <th className="px-3 py-3 text-center text-[11px] font-bold text-surface-500 uppercase tracking-wide">Un.</th>
+                      <th className="px-3 py-3 text-center text-[11px] font-bold text-surface-500 uppercase tracking-wide">Acao</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line">
                     {data.items.map((item, idx) => (
                       <tr key={idx}>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="Código original"
                             value={item.originalCode || ''}
                             onChange={(e) => updateItemField(idx, 'originalCode', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="Descrição do item"
                             value={item.description}
                             onChange={(e) => updateItemField(idx, 'description', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="Origem"
                             value={item.origin || ''}
                             onChange={(e) => updateItemField(idx, 'origin', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="Tipo do item"
                             value={item.type || ''}
                             onChange={(e) => updateItemField(idx, 'type', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="NCM"
                             value={item.ncm || ''}
                             onChange={(e) => updateItemField(idx, 'ncm', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs"
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
-                            type="number"
+                          <NumberInput aria-label="Quantidade"
                             min={0}
                             step="0.001"
                             value={item.quantity}
@@ -314,8 +314,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
-                            type="number"
+                          <NumberInput aria-label="Valor unitário"
                             min={0}
                             step="0.01"
                             value={item.unitPrice}
@@ -324,7 +323,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <input aria-label="Unidade"
                             value={item.unit || 'un'}
                             onChange={(e) => updateItemField(idx, 'unit', e.target.value)}
                             className="w-full px-2 py-2 rounded-lg border border-line text-xs text-center"

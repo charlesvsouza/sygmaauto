@@ -95,7 +95,7 @@ export default function WelcomePage() {
               <span className="text-xl font-black tracking-tight text-white">
                 Sigma<span className="text-accent-ink">Auto</span>
               </span>
-              <p className="text-[11px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
+              <p className="text-[12px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
             </div>
           </motion.div>
 

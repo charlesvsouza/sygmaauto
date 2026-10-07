@@ -54,10 +54,10 @@ export function SuperAdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-surface-400 uppercase tracking-widest">Email</label>
+              <label htmlFor="fld-superadminloginpage-b60" className="block text-sm font-semibold text-muted">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                <input
+                <input id="fld-superadminloginpage-b60"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -69,10 +69,10 @@ export function SuperAdminLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-surface-400 uppercase tracking-widest">Senha</label>
+              <label htmlFor="fld-superadminloginpage-b75" className="block text-sm font-semibold text-muted">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
-                <input
+                <input id="fld-superadminloginpage-b75"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

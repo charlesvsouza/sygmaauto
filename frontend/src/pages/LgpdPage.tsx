@@ -229,7 +229,7 @@ export function LgpdPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-muted border-b border-line">
+                <tr className="text-left text-[12px] uppercase tracking-wide text-muted border-b border-line">
                   <th className="py-2 pr-3">Protocolo</th>
                   <th className="py-2 pr-3">Tipo</th>
                   <th className="py-2 pr-3">Assunto</th>
@@ -288,8 +288,8 @@ export function LgpdPage() {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-muted uppercase mb-1 block">Tipo de solicitação</label>
-              <select
+              <label htmlFor="fld-lgpdpage-1" className="block text-sm font-semibold text-muted mb-1">Tipo de solicitação</label>
+              <select id="fld-lgpdpage-1"
                 value={newForm.requestType}
                 onChange={(e) => setNewForm((f) => ({ ...f, requestType: e.target.value }))}
                 className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm"
@@ -300,8 +300,8 @@ export function LgpdPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted uppercase mb-1 block">Assunto</label>
-              <select
+              <label htmlFor="fld-lgpdpage-2" className="block text-sm font-semibold text-muted mb-1">Assunto</label>
+              <select id="fld-lgpdpage-2"
                 value={newForm.subjectType}
                 onChange={(e) => setNewForm((f) => ({ ...f, subjectType: e.target.value, subjectId: '' }))}
                 className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm"
@@ -313,10 +313,10 @@ export function LgpdPage() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-muted uppercase mb-1 block">
+            <label htmlFor="fld-lgpdpage-3" className="block text-sm font-semibold text-muted mb-1">
               {newForm.subjectType === 'CUSTOMER' ? 'Cliente' : 'Usuário'}
             </label>
-            <select
+            <select id="fld-lgpdpage-3"
               value={newForm.subjectId}
               onChange={(e) => setNewForm((f) => ({ ...f, subjectId: e.target.value }))}
               className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm"
@@ -329,16 +329,16 @@ export function LgpdPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-muted uppercase mb-1 block">Nome do solicitante</label>
-              <input
+              <label htmlFor="fld-lgpdpage-4" className="block text-sm font-semibold text-muted mb-1">Nome do solicitante</label>
+              <input id="fld-lgpdpage-4"
                 value={newForm.requesterName}
                 onChange={(e) => setNewForm((f) => ({ ...f, requesterName: e.target.value }))}
                 className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted uppercase mb-1 block">E-mail do solicitante</label>
-              <input
+              <label htmlFor="fld-lgpdpage-5" className="block text-sm font-semibold text-muted mb-1">E-mail do solicitante</label>
+              <input id="fld-lgpdpage-5"
                 type="email"
                 value={newForm.requesterEmail}
                 onChange={(e) => setNewForm((f) => ({ ...f, requesterEmail: e.target.value }))}
@@ -347,8 +347,8 @@ export function LgpdPage() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-muted uppercase mb-1 block">Observações (opcional)</label>
-            <textarea
+            <label htmlFor="fld-lgpdpage-6" className="block text-sm font-semibold text-muted mb-1">Observações (opcional)</label>
+            <textarea id="fld-lgpdpage-6"
               value={newForm.notes}
               onChange={(e) => setNewForm((f) => ({ ...f, notes: e.target.value }))}
               rows={3}
@@ -378,8 +378,8 @@ export function LgpdPage() {
             )}
 
             <div className="border-t border-line pt-3 space-y-2">
-              <label className="text-xs font-semibold text-muted uppercase block">Status</label>
-              <select
+              <label htmlFor="fld-lgpdpage-7" className="block text-sm font-semibold text-muted">Status</label>
+              <select id="fld-lgpdpage-7"
                 value={statusForm.status}
                 onChange={(e) => setStatusForm((f) => ({ ...f, status: e.target.value }))}
                 className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm"
@@ -388,7 +388,7 @@ export function LgpdPage() {
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
-              <textarea
+              <textarea aria-label="Notas de resolução (opcional)"
                 placeholder="Notas de resolução (opcional)"
                 value={statusForm.resolutionNotes}
                 onChange={(e) => setStatusForm((f) => ({ ...f, resolutionNotes: e.target.value }))}
@@ -413,7 +413,7 @@ export function LgpdPage() {
                   <p className="text-xs text-red-800 font-semibold">
                     Ação irreversível. Dados históricos com dependência são anonimizados; o restante é apagado.
                   </p>
-                  <textarea
+                  <textarea aria-label="Motivo da eliminação (obrigatório)"
                     placeholder="Motivo da eliminação (obrigatório)"
                     value={eraseReason}
                     onChange={(e) => setEraseReason(e.target.value)}

@@ -10,3 +10,8 @@ export type { EmptyStateProps } from './EmptyState';
 export { CollapsiblePanel } from './CollapsiblePanel';
 export type { CollapsiblePanelProps } from './CollapsiblePanel';
 export { ToastProvider, useToast } from './Toast';
+export { NumberInput } from './NumberInput';
+export { ConfirmProvider, useConfirm } from './Confirm';
+export type { ConfirmOptions } from './Confirm';
+export { StatusChip, STATUS_CHIP_CLASS } from './StatusChip';
+export type { StatusTone, StatusChipProps } from './StatusChip';

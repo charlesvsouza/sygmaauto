@@ -113,10 +113,10 @@ export function ForgotPasswordPage() {
           {step === 1 ? (
             <form onSubmit={requestReset} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Email de Login</label>
+                <label htmlFor="fld-forgotpasswordpage-b119" className="block text-sm font-semibold text-muted">Email de Login</label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-                  <input
+                  <input id="fld-forgotpasswordpage-b119"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -128,10 +128,10 @@ export function ForgotPasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Email de Recuperação</label>
+                <label htmlFor="fld-forgotpasswordpage-b134" className="block text-sm font-semibold text-muted">Email de Recuperação</label>
                 <div className="relative">
                   <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-                  <input
+                  <input id="fld-forgotpasswordpage-b134"
                     type="email"
                     value={recoveryEmail}
                     onChange={(e) => setRecoveryEmail(e.target.value)}
@@ -159,8 +159,8 @@ export function ForgotPasswordPage() {
               )}
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Token de Recuperação</label>
-                <input
+                <label htmlFor="fld-forgotpasswordpage-1" className="block text-sm font-semibold text-muted">Token de Recuperação</label>
+                <input id="fld-forgotpasswordpage-1"
                   type="text"
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
@@ -171,10 +171,10 @@ export function ForgotPasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Nova Senha</label>
+                <label htmlFor="fld-forgotpasswordpage-b177" className="block text-sm font-semibold text-muted">Nova Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-                  <input
+                  <input id="fld-forgotpasswordpage-b177"
                     type={showNewPassword ? 'text' : 'password'}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -190,9 +190,9 @@ export function ForgotPasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-surface-300 uppercase tracking-widest ml-1">Confirmar Nova Senha</label>
+                <label htmlFor="fld-forgotpasswordpage-b195" className="block text-sm font-semibold text-muted">Confirmar Nova Senha</label>
                 <div className="relative">
-                  <input
+                  <input id="fld-forgotpasswordpage-b195"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}

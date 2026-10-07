@@ -145,7 +145,7 @@ export function LandingPage() {
 
         <div className="grid lg:grid-cols-2 gap-x-12 gap-y-10">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-500 font-bold">Inovações disponíveis</p>
+            <p className="text-[12px] uppercase tracking-[0.2em] text-emerald-500 font-bold">Inovações disponíveis</p>
             <h3 className="mt-2 text-xl font-black text-white">Já em uso por oficinas</h3>
             <div className="mt-6">
               {releasedInnovations.map((item, index) => (
@@ -160,8 +160,8 @@ export function LandingPage() {
                   <span className="text-2xl font-black text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.12em] text-emerald-500/90 font-bold">{item.tag}</p>
-                      <span className="text-[11px] text-white/40">{item.date}</span>
+                      <p className="text-[12px] uppercase tracking-[0.12em] text-emerald-500/90 font-bold">{item.tag}</p>
+                      <span className="text-[12px] text-white/40">{item.date}</span>
                     </div>
                     <p className="mt-1.5 text-sm font-bold text-white">{item.title}</p>
                     <p className="mt-1.5 text-xs text-white/65 leading-relaxed">{item.excerpt}</p>
@@ -172,7 +172,7 @@ export function LandingPage() {
           </div>
 
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-[#7fd2d8] font-bold">Integrações planejadas</p>
+            <p className="text-[12px] uppercase tracking-[0.2em] text-[#7fd2d8] font-bold">Integrações planejadas</p>
             <h3 className="mt-2 text-xl font-black text-white">Próximos passos do roadmap</h3>
             <div className="mt-6">
               {plannedIntegrations.map((item, index) => (
@@ -187,8 +187,8 @@ export function LandingPage() {
                   <span className="text-2xl font-black text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.12em] text-[#7fd2d8] font-bold">{item.tag}</p>
-                      <span className="text-[11px] text-white/40">{item.date}</span>
+                      <p className="text-[12px] uppercase tracking-[0.12em] text-[#7fd2d8] font-bold">{item.tag}</p>
+                      <span className="text-[12px] text-white/40">{item.date}</span>
                     </div>
                     <p className="mt-1.5 text-sm font-bold text-white">{item.title}</p>
                     <p className="mt-1.5 text-xs text-white/65 leading-relaxed">{item.excerpt}</p>
@@ -228,7 +228,7 @@ export function LandingPage() {
               }`}
             >
               {plan.featured ? (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wide bg-[#ff7b2f] text-white px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[11px] font-semibold uppercase tracking-wide bg-[#ff7b2f] text-white px-3 py-1 rounded-full">
                   Mais popular
                 </span>
               ) : null}
@@ -264,7 +264,7 @@ export function LandingPage() {
 
         <div className="mt-14 rounded-xl border border-[#ff7b2f]/20 bg-[#ff7b2f]/6 p-6 md:p-8">
           <div className="max-w-3xl">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-[#ffb182] font-bold">Linha especializada</p>
+            <p className="text-[12px] uppercase tracking-[0.2em] text-[#ffb182] font-bold">Linha especializada</p>
             <h3 className="mt-2 text-2xl md:text-3xl font-black text-white">Modo Retífica de Motores</h3>
             <p className="mt-3 text-sm text-white/65 leading-relaxed">
               Para operacoes que precisam receber tanto veiculos completos quanto motores avulsos, o Sigma Auto passa a ter uma familia dedicada de planos.
@@ -312,7 +312,7 @@ export function LandingPage() {
         <div className="mt-10 rounded-xl border border-line bg-ink/5 p-5 md:p-7">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff7b2f]/75 font-bold">Comparativo por pacote</p>
+              <p className="text-[12px] uppercase tracking-[0.2em] text-[#ff7b2f]/75 font-bold">Comparativo por pacote</p>
               <h3 className="mt-1 text-xl md:text-2xl font-black text-white">Funcoes liberadas em cada plano</h3>
             </div>
             <p className="text-xs text-white/45 max-w-xl">Tabela comercial para facilitar a escolha do pacote ideal por porte de oficina e maturidade da operacao.</p>

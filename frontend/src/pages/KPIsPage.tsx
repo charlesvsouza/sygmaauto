@@ -418,7 +418,7 @@ export function KPIsPage() {
             <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-3">
               <kpi.icon size={18} />
             </div>
-            <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
+            <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
             <p className={cn('text-lg font-bold mt-1', kpi.tone)}>{kpi.value}</p>
           </motion.div>
         ))}
@@ -468,7 +468,7 @@ export function KPIsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Aging de OS em aberto</p>
+            <p className="text-[12px] font-bold text-surface-400 uppercase tracking-wide mb-2">Aging de OS em aberto</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase1.agingBuckets}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
@@ -485,7 +485,7 @@ export function KPIsPage() {
           </div>
 
           <div>
-            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Composição financeira da hora vendida</p>
+            <p className="text-[12px] font-bold text-surface-400 uppercase tracking-wide mb-2">Composição financeira da hora vendida</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <InfoCard
                 title="Horas vendidas"
@@ -548,7 +548,7 @@ export function KPIsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-2">Distribuição da agenda por turno</p>
+            <p className="text-[12px] font-bold text-surface-400 uppercase tracking-wide mb-2">Distribuição da agenda por turno</p>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={fase2.agendaTurnoData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--line))" vertical={false} />
@@ -566,7 +566,7 @@ export function KPIsPage() {
 
           <div className="space-y-3">
             <div className="rounded-xl border border-line p-3 bg-surface-950/40">
-              <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de First Time Fix</p>
+              <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de First Time Fix</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.firstTimeFixRate >= 92
                   ? 'Excelente estabilidade de entrega. Mantenha o padrão de diagnóstico e checklist.'
@@ -574,7 +574,7 @@ export function KPIsPage() {
               </p>
             </div>
             <div className="rounded-xl border border-line p-3 bg-surface-950/40">
-              <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de No-show (estimado)</p>
+              <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-1">Leitura de No-show (estimado)</p>
               <p className="text-sm text-surface-200 font-medium">
                 {fase2.noShowRate <= 8
                   ? 'Taxa controlada. Continue confirmação ativa por WhatsApp antes do horário.'
@@ -752,10 +752,10 @@ function InfoCard({
             <Icon size={14} />
           </span>
         )}
-        <p className="text-[10px] font-bold text-surface-500 uppercase tracking-wide">{title}</p>
+        <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide">{title}</p>
       </div>
       <p className="text-base font-bold text-surface-50 leading-tight">{value}</p>
-      <p className="text-[11px] text-surface-500 mt-1">{hint}</p>
+      <p className="text-[12px] text-surface-500 mt-1">{hint}</p>
     </div>
   );
 }
