@@ -51,7 +51,7 @@ export class VehiclesService {
     }
 
     return this.prisma.vehicle.create({
-      data: { tenantId, ...dto },
+      data: { tenantId, ...this.normalizeDates(dto) },
       include: { customer: true },
     });
   }
@@ -71,9 +71,19 @@ export class VehiclesService {
 
     return this.prisma.vehicle.update({
       where: { id: vehicleId },
-      data: dto,
+      data: this.normalizeDates(dto),
       include: { customer: true },
     });
+  }
+
+  // O front envia "YYYY-MM-DD"; o Prisma exige DateTime ISO completo.
+  private normalizeDates<T extends { lastMaintenanceDate?: string }>(dto: T) {
+    const { lastMaintenanceDate, ...rest } = dto;
+    if (lastMaintenanceDate === undefined) return rest;
+    return {
+      ...rest,
+      lastMaintenanceDate: lastMaintenanceDate ? new Date(lastMaintenanceDate) : null,
+    };
   }
 
   async delete(tenantId: string, vehicleId: string) {
