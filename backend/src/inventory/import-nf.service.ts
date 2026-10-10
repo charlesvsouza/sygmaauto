@@ -231,7 +231,9 @@ export class ImportNfService {
       throw new BadRequestException('Não foi possível extrair texto do PDF para importação de NF.');
     }
 
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = this.genAI.getGenerativeModel({
+      model: this.configService.get<string>('GEMINI_MODEL') || 'gemini-3.8-flash',
+    });
     const prompt = `
 Voce recebe o texto de uma nota fiscal de entrada de pecas e deve responder SOMENTE com JSON valido no formato:
 {

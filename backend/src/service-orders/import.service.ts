@@ -232,7 +232,9 @@ Regras:
         console.log(`ImportService: usando chave de IA via ${this.configuredApiKeyName}`);
       }
 
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const model = this.genAI.getGenerativeModel({
+        model: this.configService.get<string>('GEMINI_MODEL') || 'gemini-3.8-flash',
+      });
       let bestEffortResult: any = null;
       const warnings: string[] = [];
       let text = '';
@@ -271,7 +273,20 @@ Regras:
       throw new Error('Não foi possível extrair dados úteis do PDF.');
     } catch (e) {
       console.error('Error parsing PDF with AI:', e);
-      throw new BadRequestException('Falha ao processar orçamento: ' + (e as Error).message);
+      if (e instanceof BadRequestException) throw e;
+
+      const message = (e as Error).message ?? '';
+      if (/\b402\b|Payment Required|credits are depleted/i.test(message)) {
+        throw new BadRequestException(
+          'A leitura automática de orçamentos está indisponível no momento (créditos da IA esgotados). Cadastre o orçamento manualmente ou tente novamente mais tarde.',
+        );
+      }
+      if (/\b429\b|quota|Too Many Requests/i.test(message)) {
+        throw new BadRequestException(
+          'A IA atingiu o limite de uso. Aguarde alguns minutos e tente novamente.',
+        );
+      }
+      throw new BadRequestException('Falha ao processar orçamento: ' + message);
     }
   }
 }
