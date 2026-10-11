@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpsertChecklistDto } from './dto/checklist.dto';
 
@@ -96,6 +96,10 @@ export class ChecklistService {
       where: { tenantId, serviceOrderId, type: normalizedType },
     });
     if (!checklist) throw new NotFoundException('Checklist não encontrado');
+    const order = await this.prisma.serviceOrder.findFirst({ where: { id: serviceOrderId, tenantId }, select: { checklistRequired: true } });
+    if (order?.checklistRequired) {
+      throw new BadRequestException('Esta O.S. exige checklist: edite o checklist em vez de apagá-lo.');
+    }
 
     return this.prisma.vehicleChecklist.delete({ where: { id: checklist.id } });
   }

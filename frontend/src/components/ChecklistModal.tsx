@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 import { useToast } from './ui';
 
 // ─── Áreas do veículo ──────────────────────────────────────────────────────
-const AREAS = [
+export const AREAS = [
   { key: 'PARA_CHOQUE_DIANT', label: 'Para-choque Diant.' },
   { key: 'CAPO',              label: 'Capô' },
   { key: 'PARABRISA',         label: 'Parabrisa' },
@@ -29,7 +29,7 @@ const LEGACY_AREAS = [
 
 // ─── Acessórios e objetos (lista fixa: presente / ausente) ─────────────────
 // Mesmas chaves e rótulos do backend (common/checklist-labels.ts).
-const ACCESSORIES = [
+export const ACCESSORIES = [
   { key: 'ESTEPE',            label: 'Estepe' },
   { key: 'MACACO',            label: 'Macaco' },
   { key: 'CHAVE_RODA',        label: 'Chave de roda' },
@@ -42,9 +42,9 @@ const ACCESSORIES = [
 
 const ALL_ITEMS = [...AREAS, ...LEGACY_AREAS, ...ACCESSORIES];
 
-type Condition = 'OK' | 'RISCO' | 'AMASSADO' | 'QUEBRADO' | 'AUSENTE' | '';
+export type Condition = 'OK' | 'RISCO' | 'AMASSADO' | 'QUEBRADO' | 'AUSENTE' | '';
 
-const CONDITIONS: { key: Condition; label: string; color: string }[] = [
+export const CONDITIONS: { key: Condition; label: string; color: string }[] = [
   { key: 'OK',       label: 'OK',       color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/40' },
   { key: 'RISCO',    label: 'Risco',    color: 'bg-amber-500/15 text-amber-700 border-amber-500/40' },
   { key: 'AMASSADO', label: 'Amassado', color: 'bg-orange-500/15 text-orange-700 border-orange-500/40' },
@@ -52,7 +52,7 @@ const CONDITIONS: { key: Condition; label: string; color: string }[] = [
   { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-surface-800 text-surface-400 border-line' },
 ];
 
-const ACCESSORY_CONDITIONS: { key: Condition; label: string; color: string }[] = [
+export const ACCESSORY_CONDITIONS: { key: Condition; label: string; color: string }[] = [
   { key: 'OK',       label: 'Presente', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/40' },
   { key: 'AUSENTE',  label: 'Ausente',  color: 'bg-surface-800 text-surface-400 border-line' },
 ];

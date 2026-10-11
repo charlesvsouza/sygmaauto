@@ -1,3 +1,4 @@
+import { UpsertChecklistDto } from '../../checklist/dto/checklist.dto';
 import { IsNotEmpty, IsOptional, IsString, IsEnum, IsArray, ValidateNested, Min, Max, IsNumber, IsBoolean, IsInt, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
@@ -157,6 +158,12 @@ export class CreateOrcamentoDto {
   @IsOptional()
   @IsBoolean()
   reserveStock?: boolean;
+
+  @ApiProperty({ required: false, description: 'Checklist de entrada preenchido no orçamento (obrigatório quando o plano tem checklist)' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpsertChecklistDto)
+  checklist?: UpsertChecklistDto;
 }
 
 export class CreateServiceOrderDto extends CreateOrcamentoDto {
@@ -278,6 +285,11 @@ export class UpdateStatusDto {
   @IsOptional()
   @IsString()
   deliveredTo?: string;
+
+  @ApiProperty({ required: false, description: 'ENTREGUE: quem autorizou a retirada (obrigatório nas O.S. sob a regra do checklist)' })
+  @IsOptional()
+  @IsString()
+  authorizedBy?: string;
 }
 
 export class SetDeliveryDto {
@@ -290,6 +302,11 @@ export class SetDeliveryDto {
   @IsNotEmpty()
   @IsString()
   deliveredTo: string;
+
+  @ApiProperty({ required: false, description: 'Quem autorizou a retirada' })
+  @IsOptional()
+  @IsString()
+  authorizedBy?: string;
 }
 
 export class AprovarOrcamentoDto {

@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.2 — Outubro/2026  
+**Versão:** 3.3 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -209,15 +209,16 @@ Todo atendimento segue o mesmo caminho:
 
 ### 4.2 Criar uma O.S.
 
-1. Clique em **Ordens de Serviço** → **"Nova OS"**
-2. Selecione o **cliente** e o **veículo**
-3. Informe a **reclamação do cliente**
-4. Informe a **KM de entrada**
-5. Opcional: **agendamento** (data e hora) — aparece no Painel e na Agenda
-6. Opcional: marque **Reserva de Peças no Orçamento** (veja 4.4)
-7. Clique em **Criar OS**
+Clique em **Ordens de Serviço** → **"+"**. Abre um **orçamento em branco**, em tela única, **sem número**: o número só nasce quando você salva, então fechar sem salvar não gasta número.
 
-Também é possível trazer um orçamento feito fora do sistema: **Importar de orçamento PDF**.
+1. Escolha o tipo: **Orçamento**, **Ordem de Serviço** ou **Retífica**
+2. **Cliente:** selecione ou clique em **Novo cliente** (nome, CPF/CNPJ, telefone, e-mail)
+3. **Veículo:** selecione um do cliente ou **Novo veículo** (placa, marca, modelo, ano, cor, chassi). Os dados do veículo e a **KM de entrada** ficam todos neste bloco
+4. **Atendimento:** reclamação do cliente, agendamento (opcional) e **Reservar peças** (veja 4.4)
+5. **Checklist de entrada** (seção 5.1): obrigatório nos planos com checklist
+6. Clique em **Salvar e gerar número**. O rodapé mostra o que ainda falta
+
+Também é possível trazer um orçamento feito fora do sistema: **Importar de orçamento PDF** (seção 4.14).
 
 ### 4.3 Etapas (status)
 
@@ -344,7 +345,10 @@ Na O.S. entregue, a data da entrega e quem recebeu o veículo saem nos documento
 Ao clicar em **Confirmar Entrega**, o sistema pede:
 
 1. **Data da entrega** — hoje por padrão; não pode ser futura nem anterior à abertura da O.S.
-2. **Quem recebeu o veículo** — nome de quem retirou (obrigatório)
+2. **Quem retirou o veículo** — nome de quem retirou (obrigatório)
+3. **Autorizado por** — quem autorizou a retirada (obrigatório nas O.S. com checklist)
+
+Nas O.S. com checklist, a entrega só é liberada com o **checklist de saída preenchido**: ao confirmar a entrega, o sistema abre o checklist de saída e, ao salvar, segue para o quadro de entrega.
 
 Se a O.S. ainda tiver saldo a pagar, o aviso aparece antes de confirmar: a entrega não depende de quitação, mas o saldo continua pendente e visível no topo da O.S.
 
@@ -393,12 +397,15 @@ A vistoria registra o estado do veículo na entrada e na saída, com fotos, e pr
 
 ### 5.1 Vistoria de entrada
 
-1. Na O.S., clique no botão **Entrada** (no topo; fica verde quando preenchido)
-2. Informe o **responsável pela vistoria** e o **nível de combustível**
-3. Em **Condição das Áreas**, marque as regiões (para-choques, capô, portas, laterais, teto, vidros, interior e pneus): **OK**, **Risco**, **Amassado**, **Quebrado** ou **Ausente**
-4. Em **Acessórios e Objetos no Veículo**, marque cada item como **Presente** ou **Ausente**: estepe, macaco, chave de roda, triângulo, rádio/multimídia, tapetes, documento do veículo (CRLV) e objetos pessoais (descreva na observação)
-5. Em qualquer item, abra a seta para escrever uma observação e tirar até **3 fotos** (opcionais)
-6. Clique em **Salvar Checklist de Entrada**
+A vistoria de entrada é preenchida **dentro do orçamento, antes de salvar**:
+
+1. Informe o **combustível** (Vazio, 1/4, 1/2, 3/4, Cheio)
+2. Marque o estado das áreas (para-choques, capô, portas, laterais, teto, vidros, interior e pneus): **OK**, **Risco**, **Amassado**, **Quebrado** ou **Ausente**
+3. Marque cada acessório como **Presente** ou **Ausente**: estepe, macaco, chave de roda, triângulo, rádio/multimídia, tapetes, documento do veículo (CRLV) e objetos pessoais
+4. Preencha **Vistoria feita por**, **Quem entregou o veículo** (proprietário ou outra pessoa) e as observações
+5. Fotos (até 3 por item) entram depois de salvar, no botão **Entrada** da O.S.
+
+**Obrigatoriedade:** o orçamento só salva com **ao menos uma informação** do checklist. O que mais registrar é responsabilidade de quem faz a vistoria. A exigência vale para as O.S. criadas depois desta regra e para as oficinas com checklist: planos **Pro** e **Rede**, ou **Start** com o **adicional de checklist** liberado pela SigmaAuto. Um checklist exigido pode ser editado, mas não apagado.
 
 O documento **Entrada do veículo** (menu *Documentos*) imprime a vistoria para o cliente assinar.
 

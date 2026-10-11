@@ -341,6 +341,8 @@ export const superAdminApi = {
     axios.patch(`${SA_BASE}/superadmin/tenants/${id}/status`, { status }, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   updateTenantPlan: (id: string, planName: string) =>
     axios.patch(`${SA_BASE}/superadmin/tenants/${id}/plan`, { planName }, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
+  setChecklistAddon: (id: string, enabled: boolean) =>
+    axios.patch(`${SA_BASE}/superadmin/tenants/${id}/checklist-addon`, { enabled }, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
   extendSubscription: (id: string, days: number) =>
     axios.post(`${SA_BASE}/superadmin/tenants/${id}/extend-subscription`, { days }, { headers: { Authorization: `Bearer ${localStorage.getItem('superAdminToken')}` } }),
 };

@@ -1,3 +1,4 @@
+import { SuperAdminAddonsController } from './superadmin-addons.controller';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,7 +22,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
       inject: [ConfigService],
     }),
   ],
-  controllers: [SuperAdminController],
+  controllers: [SuperAdminController, SuperAdminAddonsController],
   providers: [SuperAdminService, SuperAdminGuard, SeedService],
 })
 export class SuperAdminModule {}

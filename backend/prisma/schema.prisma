@@ -79,6 +79,7 @@ model Tenant {
   warrantyText         String?
   belongingsText       String?
   pixKey               String? // chave PIX da oficina, exibida quando o pagamento é por PIX
+  checklistAddon       Boolean @default(false) // checklist liberado no plano START como adicional (ligado pelo superadmin)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -395,6 +396,8 @@ model ServiceOrder {
   completedAt  DateTime?
   deliveredAt  DateTime?
   deliveredTo  String?   // quem retirou/recebeu o veículo (pode não ser o titular)
+  deliveryAuthorizedBy String? // quem autorizou a retirada
+  checklistRequired Boolean @default(false) // O.S. criada já sob a regra: checklist de entrada no orçamento e de saída na entrega
   paidAt      DateTime?
   // Cobrança emitida pelo Asaas da oficina (ver asaas/)
   asaasPaymentId    String?

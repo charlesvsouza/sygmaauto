@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
+import { checklistHasInfo, tenantHasChecklist } from '../common/plan-access';
 import { resolveDocumentSettings } from '../common/document-settings';
 import { canMoveToStatus } from '../common/roles';
 import { describePaymentPlan, parsePaymentPlan, PaymentPlanError, planHasInstallments } from './payment-plan';
@@ -302,9 +303,19 @@ export class ServiceOrdersService {
       });
     }
 
-    const order = await this.prisma.$transaction(async (tx) => tx.serviceOrder.create({
+    // Todo orçamento nasce com o checklist de entrada (basta uma informação; o resto é responsabilidade
+    // do operador). Vale para quem tem checklist no plano e para OS novas: a O.S. guarda a exigência.
+    const needsChecklist = requestedOrderType !== 'RETIFICA_MOTOR' && (await tenantHasChecklist(this.prisma, tenantId));
+    const entry = dto.checklist;
+    if (needsChecklist && !checklistHasInfo(entry)) {
+      throw new BadRequestException('Preencha o checklist de entrada: informe ao menos o combustível, uma área do veículo ou uma observação.');
+    }
+
+    const order = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.serviceOrder.create({
       data: {
         tenantId,
+        checklistRequired: needsChecklist,
         number: await nextOrderNumber(tx, tenantId),
         customerId: dto.customerId,
         vehicleId: dto.vehicleId || undefined,
@@ -331,7 +342,25 @@ export class ServiceOrdersService {
         vehicle: true,
         items: true,
       },
-    }));
+    });
+      if (needsChecklist && entry) {
+        await tx.vehicleChecklist.create({
+          data: {
+            tenantId,
+            serviceOrderId: created.id,
+            type: 'ENTRADA',
+            fuelLevel: entry.fuelLevel ?? 0,
+            observations: entry.observations,
+            completedBy: entry.completedBy,
+            ownerName: entry.ownerName,
+            ownerType: entry.ownerType ?? 'PROPRIETARIO',
+            completedAt: new Date(),
+            items: { create: (entry.items ?? []).map((it) => ({ area: it.area, condition: it.condition, notes: it.notes })) },
+          },
+        });
+      }
+      return created;
+    });
 
     await this.createTimeline(order.id, 'ABERTA', 'O.S. aberta', userId);
 
@@ -723,13 +752,16 @@ export class ServiceOrdersService {
     if (currentStatus === 'ENTREGUE' && newStatus !== 'ENTREGUE') {
       updateData.deliveredAt = null;
       updateData.deliveredTo = null;
+      updateData.deliveryAuthorizedBy = null;
     }
 
     if (newStatus === 'ENTREGUE') {
       // A entrega não depende de quitação: registra quando e quem recebeu o veículo.
-      const delivery = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
+      const delivery = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo, dto.authorizedBy);
+      await this.assertExitChecklist(order);
       updateData.deliveredAt = delivery.deliveredAt;
       updateData.deliveredTo = delivery.deliveredTo;
+      updateData.deliveryAuthorizedBy = delivery.authorizedBy;
       // Não há campo próprio de conclusão: ela nunca é posterior à entrega (vale a data da entrega).
       const completedAt = updateData.completedAt ?? order.completedAt;
       if (!completedAt || completedAt > delivery.deliveredAt) updateData.completedAt = delivery.deliveredAt;
@@ -778,9 +810,11 @@ export class ServiceOrdersService {
   }
 
   // Valida data/recebedor da entrega. Sem data informada, vale o momento atual.
-  private resolveDelivery(order: { createdAt: Date }, rawDate?: string, rawName?: string) {
+  private resolveDelivery(order: { createdAt: Date; checklistRequired?: boolean }, rawDate?: string, rawName?: string, rawAuthorizedBy?: string) {
     const deliveredTo = (rawName ?? '').trim();
-    if (!deliveredTo) throw new BadRequestException('Informe quem recebeu o veículo');
+    if (!deliveredTo) throw new BadRequestException('Informe quem retirou o veículo');
+    const authorizedBy = (rawAuthorizedBy ?? '').trim() || null;
+    if (order.checklistRequired && !authorizedBy) throw new BadRequestException('Informe quem autorizou a retirada do veículo');
 
     let deliveredAt = new Date();
     if (rawDate) {
@@ -793,7 +827,19 @@ export class ServiceOrdersService {
       const createdBr = new Date(new Date(order.createdAt).getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
       if (rawDate < createdBr) throw new BadRequestException('A data de entrega não pode ser anterior à abertura da O.S.');
     }
-    return { deliveredAt, deliveredTo };
+    return { deliveredAt, deliveredTo, authorizedBy };
+  }
+
+  // O.S. sob a regra do checklist só é entregue com o checklist de saída preenchido.
+  private async assertExitChecklist(order: { id: string; checklistRequired?: boolean }) {
+    if (!order.checklistRequired) return;
+    const exit = await this.prisma.vehicleChecklist.findUnique({
+      where: { serviceOrderId_type: { serviceOrderId: order.id, type: 'SAIDA' } },
+      include: { items: true },
+    });
+    if (!checklistHasInfo(exit)) {
+      throw new BadRequestException('Preencha o checklist de saída antes de entregar o veículo.');
+    }
   }
 
   // Registra/corrige data e recebedor de uma O.S. já entregue (ex.: entregue sem essas informações).
@@ -807,12 +853,14 @@ export class ServiceOrdersService {
         'A entrega já está registrada e a O.S. está travada. Para corrigir, mude o status da O.S. e registre a entrega novamente.',
       );
     }
-    const { deliveredAt, deliveredTo } = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
+    const { deliveredAt, deliveredTo, authorizedBy } = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo, dto.authorizedBy);
+    await this.assertExitChecklist(order);
     const updated = await this.prisma.serviceOrder.update({
       where: { id },
       data: {
         deliveredAt,
         deliveredTo,
+        deliveryAuthorizedBy: authorizedBy,
         ...(!order.completedAt || order.completedAt > deliveredAt ? { completedAt: deliveredAt } : {}),
       },
     });

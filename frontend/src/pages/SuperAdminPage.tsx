@@ -159,6 +159,17 @@ export function SuperAdminPage() {
     }
   };
 
+  const handleChecklistAddon = async (tenantId: string, enabled: boolean) => {
+    try {
+      await superAdminApi.setChecklistAddon(tenantId, enabled);
+      setSuccessMsg(enabled ? 'Checklist liberado para esta oficina' : 'Checklist retirado desta oficina');
+      const res = await superAdminApi.getTenantDetails(tenantId);
+      setSelectedTenant(res.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao alterar o adicional de checklist');
+    }
+  };
+
   const handleUpdatePlan = async (tenantId: string, planName: string) => {
     setUpdatingPlan(true);
     try {
@@ -471,6 +482,17 @@ export function SuperAdminPage() {
                       </div>
                     </div>
                   )}
+
+                  {/* Adicional: checklist no plano START */}
+                  <div className="bg-ink/5 rounded-lg p-4 space-y-2">
+                    <p className="text-xs font-bold text-muted uppercase tracking-wide">Adicional: checklist de entrada e saída</p>
+                    <p className="text-xs text-faint">Pro e Rede já incluem. No Start, libere como adicional contratado fora do pacote.</p>
+                    <label className="flex items-center gap-2 text-sm text-ink">
+                      <input type="checkbox" checked={Boolean(selectedTenant.checklistAddon)}
+                        onChange={(e) => handleChecklistAddon(selectedTenant.id, e.target.checked)} />
+                      Checklist liberado para esta oficina
+                    </label>
+                  </div>
 
                   {/* Estender Assinatura */}
                   {selectedTenant.subscription && (

@@ -311,7 +311,7 @@ export class OrderDocumentsService {
         : order.completedAt;
     return `<table class="kv"><tr><td>Abertura</td><td>${d(order.createdAt)}</td><td>Aprovação</td><td>${d(order.approvedAt)}</td></tr>
 <tr><td>Conclusão</td><td>${order.deliveredAt && completed ? formatDateBR(new Date(completed)) : d(completed)}</td><td>Entrega</td><td>${order.deliveredAt ? formatDateBR(new Date(order.deliveredAt)) : '—'}</td></tr>
-${order.deliveredTo ? `<tr><td>Recebido por</td><td colspan="3">${e(order.deliveredTo)}</td></tr>` : ''}</table>`;
+${order.deliveredTo ? `<tr><td>Retirado por</td><td>${e(order.deliveredTo)}</td><td>Autorizado por</td><td>${e(order.deliveryAuthorizedBy || '—')}</td></tr>` : ''}</table>`;
   }
 
   // ─── ENTRADA (vistoria) ───────────────────────────────────────────────────

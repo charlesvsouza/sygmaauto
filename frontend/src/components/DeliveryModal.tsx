@@ -7,10 +7,13 @@ interface DeliveryModalProps {
   mode: 'confirm' | 'edit';
   initialDate?: string | null;
   initialName?: string | null;
+  initialAuthorizedBy?: string | null;
+  /** O.S. sob a regra do checklist: quem autorizou a retirada é obrigatório */
+  requireAuthorizedBy?: boolean;
   /** Alerta de que o veículo sai sem quitação (só informativo) */
   unpaid?: boolean;
   onClose: () => void;
-  onSubmit: (data: { deliveredAt: string; deliveredTo: string }) => Promise<void>;
+  onSubmit: (data: { deliveredAt: string; deliveredTo: string; authorizedBy?: string }) => Promise<void>;
 }
 
 const toInputDate = (iso?: string | null) => {
@@ -19,18 +22,19 @@ const toInputDate = (iso?: string | null) => {
   return new Date(d.getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
 };
 
-export function DeliveryModal({ mode, initialDate, initialName, unpaid, onClose, onSubmit }: DeliveryModalProps) {
+export function DeliveryModal({ mode, initialDate, initialName, initialAuthorizedBy, requireAuthorizedBy, unpaid, onClose, onSubmit }: DeliveryModalProps) {
   const [date, setDate] = useState(toInputDate(initialDate));
   const [name, setName] = useState(initialName || '');
+  const [authorizedBy, setAuthorizedBy] = useState(initialAuthorizedBy || '');
   const [saving, setSaving] = useState(false);
   const today = toInputDate();
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || (requireAuthorizedBy && !authorizedBy.trim())) return;
     setSaving(true);
     try {
-      await onSubmit({ deliveredAt: date, deliveredTo: name.trim() });
+      await onSubmit({ deliveredAt: date, deliveredTo: name.trim(), authorizedBy: authorizedBy.trim() || undefined });
     } finally {
       setSaving(false);
     }
@@ -63,13 +67,18 @@ export function DeliveryModal({ mode, initialDate, initialName, unpaid, onClose,
             <input id="dlv-date" type="date" required value={date} max={today} onChange={(e) => setDate(e.target.value)} className={inputCls} />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="dlv-name" className="block text-sm font-semibold text-muted">Quem recebeu o veículo *</label>
+            <label htmlFor="dlv-name" className="block text-sm font-semibold text-muted">Quem retirou o veículo *</label>
             <input id="dlv-name" required value={name} onChange={(e) => setName(e.target.value)}
               placeholder="Nome de quem retirou" className={inputCls} />
           </div>
+          <div className="space-y-1.5">
+            <label htmlFor="dlv-auth" className="block text-sm font-semibold text-muted">Autorizado por {requireAuthorizedBy ? '*' : '(opcional)'}</label>
+            <input id="dlv-auth" required={requireAuthorizedBy} value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)}
+              placeholder="Quem autorizou a retirada (cliente, gerente...)" className={inputCls} />
+          </div>
           <div className="flex justify-end gap-3 pt-3 border-t border-line">
             <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl text-sm font-bold text-surface-400 hover:bg-ink/5">Cancelar</button>
-            <button type="submit" disabled={saving || !name.trim() || !date}
+            <button type="submit" disabled={saving || !name.trim() || !date || (requireAuthorizedBy && !authorizedBy.trim())}
               className="px-6 py-2.5 bg-accent text-white rounded-xl font-bold hover:bg-accent-hover disabled:opacity-60 flex items-center gap-2">
               {saving && <Loader2 size={16} className="animate-spin" />}
               {mode === 'confirm' ? 'Confirmar entrega' : 'Salvar'}

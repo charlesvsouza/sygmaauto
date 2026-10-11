@@ -19,6 +19,7 @@ import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
 import { DeliveryModal } from '../components/DeliveryModal';
 import { AsaasChargeModal } from '../components/AsaasChargeModal';
+import { NewOrderSheet } from '../components/NewOrderSheet';
 import { CatalogRegisterModal } from '../components/CatalogRegisterModal';
 import { ChecklistModal } from '../components/ChecklistModal';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
@@ -159,7 +160,11 @@ export function ServiceOrdersPage() {
   const navigate = useNavigate();
   const userRole = String(user?.role ?? '').toUpperCase();
   const planName = tenant?.subscription?.plan?.name || 'START';
-  const canUseChecklist = canAccessFeature(planName, 'CHECKLIST');
+  const [checklistAddon, setChecklistAddon] = useState(false);
+  useEffect(() => {
+    tenantsApi.getMe().then((r) => setChecklistAddon(Boolean(r.data?.checklistAddon))).catch(() => {});
+  }, []);
+  const canUseChecklist = canAccessFeature(planName, 'CHECKLIST') || checklistAddon;
   const canUseRetificaMode = canAccessRetificaMode(planName);
   // Regras em lib/roles.ts (espelho do backend).
   const canManageItems = TECHNICAL_ROLES.includes(userRole);
@@ -187,18 +192,6 @@ export function ServiceOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [newOrder, setNewOrder] = useState({
-    customerId: '',
-    vehicleId: '',
-    complaint: '',
-    kmEntrada: 0,
-    reserveStock: false,
-    orderType: 'ORCAMENTO',
-    equipmentBrand: '',
-    equipmentModel: '',
-    serialNumber: '',
-    scheduledDate: '',
-  });
 
   const [edit, setEdit] = useState({
     complaint: '', diagnosis: '', technicalReport: '',
@@ -227,6 +220,18 @@ export function ServiceOrdersPage() {
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [registerItem, setRegisterItem] = useState<any>(null);
+  // Entrega só com o checklist de saída preenchido (O.S. sob a regra do checklist): abre o checklist
+  // primeiro e, ao salvar, segue para o quadro de entrega.
+  const pendingDelivery = useRef<{ mode: 'confirm' | 'edit'; override: boolean } | null>(null);
+  const openDelivery = (mode: 'confirm' | 'edit', override: boolean) => {
+    if (selectedOrder?.checklistRequired && canUseChecklist && !checklistFlags.SAIDA) {
+      pendingDelivery.current = { mode, override };
+      toast.info('Antes de entregar, preencha o checklist de saída do veículo.');
+      setChecklistModal('SAIDA');
+      return;
+    }
+    setDeliveryModal({ mode, override });
+  };
   const [asaasConnected, setAsaasConnected] = useState(false);
   const [showAsaasCharge, setShowAsaasCharge] = useState(false);
   useEffect(() => {
@@ -240,9 +245,6 @@ export function ServiceOrdersPage() {
   const [showDocsMenu, setShowDocsMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [checklistFlags, setChecklistFlags] = useState<{ ENTRADA: boolean; SAIDA: boolean }>({ ENTRADA: false, SAIDA: false });
-  const [showQuickVehicleForm, setShowQuickVehicleForm] = useState(false);
-  const [creatingQuickVehicle, setCreatingQuickVehicle] = useState(false);
-  const [quickVehicle, setQuickVehicle] = useState({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
   const [deleteConfirmInput, setDeleteConfirmInput] = useState('');
   const [deleteReason, setDeleteReason] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -518,53 +520,6 @@ export function ServiceOrdersPage() {
       toast.error(err?.response?.data?.message || 'Erro ao excluir a O.S.');
     } finally {
       setDeleting(false);
-    }
-  };
-
-  const createQuickVehicle = async () => {
-    if (!newOrder.customerId) {
-      toast.warning('Selecione um cliente antes de cadastrar o veículo.');
-      return;
-    }
-
-    const plate = quickVehicle.plate.trim().toUpperCase();
-    const vin = quickVehicle.vin.trim().toUpperCase();
-    const brand = quickVehicle.brand.trim();
-    const model = quickVehicle.model.trim();
-
-    if (!plate || !brand || !model) {
-      toast.warning('Preencha placa, marca e modelo para cadastrar o veículo.');
-      return;
-    }
-
-    setCreatingQuickVehicle(true);
-    try {
-      const parsedYear = Number(quickVehicle.year);
-      const payload = {
-        customerId: newOrder.customerId,
-        plate,
-        vin: vin || undefined,
-        brand,
-        model,
-        color: quickVehicle.color.trim() || undefined,
-        year: quickVehicle.year && Number.isFinite(parsedYear) ? parsedYear : undefined,
-      };
-
-      const res = await vehiclesApi.create(payload);
-      const createdVehicle = res.data;
-
-      setVehicles((prev) => {
-        const exists = prev.some((v: any) => v.id === createdVehicle.id);
-        return exists ? prev : [...prev, createdVehicle];
-      });
-
-      setNewOrder((prev) => ({ ...prev, vehicleId: createdVehicle.id }));
-      setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
-      setShowQuickVehicleForm(false);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Erro ao cadastrar veículo.');
-    } finally {
-      setCreatingQuickVehicle(false);
     }
   };
 
@@ -854,7 +809,7 @@ export function ServiceOrdersPage() {
     toast.success(isPart ? 'Peça incluída no cadastro e vinculada à O.S.' : 'Serviço incluído no cadastro e vinculado à O.S.');
   };
 
-  const submitDelivery = async (data: { deliveredAt: string; deliveredTo: string }) => {
+  const submitDelivery = async (data: { deliveredAt: string; deliveredTo: string; authorizedBy?: string }) => {
     if (!selectedOrder || !deliveryModal) return;
     try {
       if (deliveryModal.mode === 'edit') {
@@ -898,7 +853,6 @@ export function ServiceOrdersPage() {
 
   const serviceItems = [...itemsOf('service'), ...itemsOf('labor')];
   const partItems = itemsOf('part');
-  const vehiclesOfSelectedCustomer = vehicles.filter((v) => v.customerId === newOrder.customerId);
   const executorOptions = executors.filter((u: any) =>
     ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'MECANICO', 'PRODUTIVO'].includes(String(u.role || '').toUpperCase())
   );
@@ -913,7 +867,7 @@ export function ServiceOrdersPage() {
   // Próxima ação da O.S.: primeira transição positiva do fluxo, destacada no topo da tela.
   const primaryNext = nextStatuses.find((status) => status !== 'CANCELADO' && status !== 'REPROVADO');
   const runStatusAction = async (status: string) => {
-    if (status === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: false }); return; }
+    if (status === 'ENTREGUE') { openDelivery('confirm', false); return; }
     changeStatus(status);
   };
 
@@ -1174,7 +1128,7 @@ export function ServiceOrdersPage() {
                   </div>
                   {!registered && ['MASTER', 'ADMIN'].includes(userRole) && (
                     <button type="button"
-                      onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
+                      onClick={() => openDelivery('edit', false)}
                       className="shrink-0 min-h-[40px] px-4 py-2 bg-accent text-white rounded-lg text-sm font-semibold hover:bg-accent-hover transition-colors"
                     >
                       Registrar entrega
@@ -1298,10 +1252,10 @@ export function ServiceOrdersPage() {
                   </div>
                 </div>
 
-                <div className="bg-accent rounded-lg p-5 text-white shadow-xl">
+                <div className="bg-surface-950 rounded-lg p-5 border border-surface-800">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <h3 className="text-[11px] font-bold text-white flex items-center gap-2">
-                      <Car size={13} /> Dados do Veiculo
+                    <h3 className="text-[11px] font-bold text-surface-500 flex items-center gap-2">
+                      <Car size={13} className="text-surface-100" /> Dados do Veículo
                     </h3>
                     <div className="relative flex items-center gap-1" ref={statusDropdownRef}>
                       {/* Botão retroceder fase - ADMIN/MASTER em OS nao finalizadas */}
@@ -1358,7 +1312,7 @@ export function ServiceOrdersPage() {
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
                                     if (isNegative && !(await confirm({ title: 'Mudar status', message: `Mudar a O.S. para "${cfg.label}"?`, confirmLabel: 'Mudar status', danger: true }))) return;
-                                    if (key === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: true }); return; }
+                                    if (key === 'ENTREGUE') { openDelivery('confirm', true); return; }
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
@@ -1377,30 +1331,30 @@ export function ServiceOrdersPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
-                      <p className="text-[11px] text-white font-bold mb-1">Veículo</p>
-                      <p className="font-bold text-white">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">Veículo</p>
+                      <p className="font-bold text-surface-100">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.brand || ''} ${selectedOrder.vehicle?.model || ''}` : `${selectedOrder.equipmentBrand || 'Motor'} ${selectedOrder.equipmentModel || 'Avulso'}`}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-white font-bold mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
-                      <p className="font-mono font-bold text-white">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">{selectedOrder.vehicle ? 'Placa' : 'Serie / ID'}</p>
+                      <p className="font-mono font-bold text-surface-100">{selectedOrder.vehicle?.plate || selectedOrder.serialNumber || '-'}</p>
                     </div>
                     {selectedOrder.vehicle && (
                       <div>
-                        <p className="text-[11px] text-white font-bold mb-1">Chassi / VIN</p>
-                        <p className="font-mono font-bold text-white text-sm">{selectedOrder.vehicle?.vin || '-'}</p>
+                        <p className="text-[11px] text-surface-500 font-bold mb-1">Chassi / VIN</p>
+                        <p className="font-mono font-bold text-surface-100 text-sm">{selectedOrder.vehicle?.vin || '-'}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-[11px] text-white font-bold mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">{selectedOrder.vehicle ? 'Ano / Cor' : 'Tipo de entrada'}</p>
+                      <p className="font-bold text-surface-100 text-sm">{selectedOrder.vehicle ? `${selectedOrder.vehicle?.year || '-'} / ${selectedOrder.vehicle?.color || '-'}` : 'Motor avulso'}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-white font-bold mb-1">KM Atual</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">KM Atual</p>
+                      <p className="font-bold text-surface-100 text-sm">{selectedOrder.vehicle?.km ? Number(selectedOrder.vehicle.km).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-white font-bold mb-1">KM Entrada</p>
-                      <p className="font-bold text-white text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
+                      <p className="text-[11px] text-surface-500 font-bold mb-1">KM Entrada</p>
+                      <p className="font-bold text-surface-100 text-sm">{selectedOrder.kmEntrada ? Number(selectedOrder.kmEntrada).toLocaleString('pt-BR') : '-'}</p>
                     </div>
                   </div>
                 </div>
@@ -1418,8 +1372,12 @@ export function ServiceOrdersPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold text-surface-500 mb-1">Recebido por</p>
+                    <p className="text-[11px] font-bold text-surface-500 mb-1">Retirado por</p>
                     <p className="font-bold text-surface-100">{selectedOrder.deliveredTo || 'Não registrado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-surface-500 mb-1">Autorizado por</p>
+                    <p className="font-bold text-surface-100">{selectedOrder.deliveryAuthorizedBy || 'Não registrado'}</p>
                   </div>
                 </div>
               )}
@@ -1690,10 +1648,11 @@ export function ServiceOrdersPage() {
                     {selectedOrder.status === 'ENTREGUE' && (
                       <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-3 text-[11px] font-bold text-surface-300 space-y-1">
                         <p>Entregue em: <span className="text-surface-100">{selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'não registrado'}</span></p>
-                        <p>Recebido por: <span className="text-surface-100">{selectedOrder.deliveredTo || 'não registrado'}</span></p>
+                        <p>Retirado por: <span className="text-surface-100">{selectedOrder.deliveredTo || 'não registrado'}</span></p>
+                        <p>Autorizado por: <span className="text-surface-100">{selectedOrder.deliveryAuthorizedBy || 'não registrado'}</span></p>
                         {!(selectedOrder.deliveredTo && selectedOrder.deliveredAt) && ['MASTER', 'ADMIN'].includes(userRole) && (
                           <button type="button"
-                            onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
+                            onClick={() => openDelivery('edit', false)}
                             className="mt-1 text-accent-ink hover:text-accent-hover underline"
                           >
                             Registrar dados da entrega
@@ -1711,7 +1670,7 @@ export function ServiceOrdersPage() {
                     )}
                     {['MASTER', 'ADMIN'].includes(userRole) && selectedOrder.status === 'PRONTO_ENTREGA' && (
                       <button type="button"
-                        onClick={() => setDeliveryModal({ mode: 'confirm', override: true })}
+                        onClick={() => openDelivery('confirm', true)}
                         className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left bg-amber-500/15 text-amber-700 border border-amber-500/30 hover:bg-amber-500/25"
                         title="Registra a entrega sem a quitação; o saldo segue em aberto"
                       >
@@ -1727,7 +1686,7 @@ export function ServiceOrdersPage() {
                           key={status}
                           onClick={async () => {
                             if (isNegative && !(await confirm({ title: 'Confirmar ação', message: `${STATUS_ACTION_LABEL[status] || status}?`, confirmLabel: 'Confirmar', danger: true }))) return;
-                            if (status === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: false }); return; }
+                            if (status === 'ENTREGUE') { openDelivery('confirm', false); return; }
                             changeStatus(status);
                           }}
                           className={cn(
@@ -2356,228 +2315,24 @@ export function ServiceOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/*  MODAL NOVA OS  */}
-      <AnimatePresence>
-        {showCreateModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateModal(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl shadow-2xl w-full max-w-[50%] max-h-[90vh] overflow-hidden p-3 md:p-4">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-lg md:text-xl font-bold text-surface-100 tracking-tight">Nova OS</h2>
-                <button type="button" aria-label="Fechar modal de nova ordem" onClick={() => setShowCreateModal(false)} className="text-surface-600 hover:text-surface-100"><X size={24} /></button>
-              </div>
-              <div className="grid gap-2">
-                <form className="grid gap-2" onSubmit={async (e) => {
-                e.preventDefault();
-                try {
-                  const payload = {
-                    ...newOrder,
-                    vehicleId: newOrder.vehicleId || undefined,
-                    kmEntrada: newOrder.vehicleId ? newOrder.kmEntrada : undefined,
-                    scheduledDate: newOrder.scheduledDate || undefined,
-                    equipmentBrand: newOrder.orderType === 'RETIFICA_MOTOR' ? (newOrder.equipmentBrand || undefined) : undefined,
-                    equipmentModel: newOrder.orderType === 'RETIFICA_MOTOR' ? (newOrder.equipmentModel || undefined) : undefined,
-                    serialNumber: newOrder.orderType === 'RETIFICA_MOTOR' ? (newOrder.serialNumber || undefined) : undefined,
-                  };
-                  const res = await serviceOrdersApi.create(payload);
-                  setShowCreateModal(false);
-                  setNewOrder({ customerId: '', vehicleId: '', complaint: '', kmEntrada: 0, reserveStock: false, orderType: 'ORCAMENTO', equipmentBrand: '', equipmentModel: '', serialNumber: '', scheduledDate: '' });
-                  loadOrders();
-                  selectOrder(res.data);
-                } catch (err: any) { toast.error('Erro ao criar OS: ' + (err?.response?.data?.message || err?.message || 'Verifique os dados.')); }
-              }}>
-                {/* Tipo de documento */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  {[
-                    { value: 'ORCAMENTO', label: 'Orçamento', desc: 'Aguarda aprovação do cliente' },
-                    { value: 'ORDEM_SERVICO', label: 'Ordem de Serviço', desc: 'Serviço já autorizado' },
-                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'Retífica', desc: 'Motor avulso ou fluxo técnico especializado' }] : []),
-                  ].map(({ value, label, desc }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setNewOrder({ ...newOrder, orderType: value })}
-                      className={cn(
-                        'flex flex-col items-start p-3 rounded-lg border-2 text-left transition-all',
-                        newOrder.orderType === value
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-surface-800 bg-white text-surface-300 hover:border-surface-600'
-                      )}
-                    >
-                      <span className="text-xs font-bold">{label}</span>
-                      <span className={cn('text-[11px] mt-0.5', newOrder.orderType === value ? 'text-surface-700' : 'text-surface-500')}>{desc}</span>
-                    </button>
-                  ))}
-                </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div className="space-y-1.5">
-                    <label htmlFor="fld-serviceorderspage-10" className="block text-sm font-semibold text-muted">Cliente *</label>
-                    <select id="fld-serviceorderspage-10" aria-label="Cliente da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.customerId} onChange={(e) => {
-                      setNewOrder({ ...newOrder, customerId: e.target.value, vehicleId: '' });
-                      setShowQuickVehicleForm(false);
-                      setQuickVehicle({ plate: '', vin: '', brand: '', model: '', color: '', year: '' });
-                    }} required>
-                      <option value="">Selecione um cliente...</option>
-                      {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <label className="block text-sm font-semibold text-muted">Veiculo {newOrder.orderType === 'RETIFICA_MOTOR' ? '(opcional)' : '*'}</label>
-                      {newOrder.customerId && (
-                        <button
-                          type="button"
-                          onClick={() => setShowQuickVehicleForm((prev) => !prev)}
-                          className="text-[11px] font-bold text-accent-ink bg-accent-soft border border-accent/40 px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-all"
-                        >
-                          <Plus size={11} className="inline mr-1" /> {showQuickVehicleForm ? 'Fechar cadastro' : 'Incluir veículo'}
-                        </button>
-                      )}
-                    </div>
-                    <select aria-label="Veículo da nova ordem" className="w-full px-3 py-2 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.vehicleId} onChange={(e) => setNewOrder({ ...newOrder, vehicleId: e.target.value })} required={newOrder.orderType !== 'RETIFICA_MOTOR'}>
-                      <option value="">{newOrder.orderType === 'RETIFICA_MOTOR' ? 'Motor avulso / sem veículo' : 'Selecione um veículo...'}</option>
-                      {vehiclesOfSelectedCustomer.map((v) => <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>)}
-                    </select>
-
-                    {newOrder.customerId && vehiclesOfSelectedCustomer.length === 0 && !showQuickVehicleForm && (
-                      <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium">
-                        Este cliente ainda não possui veículo cadastrado. Clique em Incluir veículo para cadastrar agora.
-                      </div>
-                    )}
-
-                    {newOrder.customerId && showQuickVehicleForm && (
-                      <div className="rounded-lg border border-surface-800 bg-surface-950 p-2 space-y-2">
-                        <p className="text-[11px] font-semibold text-surface-500">Cadastro rápido de veículo</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                          <input
-                            aria-label="Placa do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Placa *"
-                            value={quickVehicle.plate}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, plate: e.target.value }))}
-                          />
-                          <input
-                            aria-label="Chassi (VIN) do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Chassi / VIN (opcional)"
-                            maxLength={17}
-                            value={quickVehicle.vin}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, vin: e.target.value.toUpperCase() }))}
-                          />
-                          <input
-                            aria-label="Marca do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Marca *"
-                            value={quickVehicle.brand}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, brand: e.target.value }))}
-                          />
-                          <input
-                            aria-label="Modelo do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Modelo *"
-                            value={quickVehicle.model}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, model: e.target.value }))}
-                          />
-                          <input
-                            aria-label="Cor do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Cor (opcional)"
-                            value={quickVehicle.color}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, color: e.target.value }))}
-                          />
-                          <NumberInput
-                            aria-label="Ano do veículo"
-                            className="w-full px-2 py-1 rounded-md border border-surface-800 bg-white text-xs font-semibold"
-                            placeholder="Ano (opcional)"
-                            value={quickVehicle.year}
-                            onChange={(e) => setQuickVehicle((prev) => ({ ...prev, year: e.target.value }))}
-                          />
-                        </div>
-                        <div className="flex justify-end">
-                          <button
-                            type="button"
-                            onClick={createQuickVehicle}
-                            disabled={creatingQuickVehicle}
-                            className={cn(
-                              'px-2 py-1 rounded-md text-xs font-semibold transition-all',
-                              creatingQuickVehicle
-                                ? 'bg-surface-800 text-surface-600 cursor-not-allowed'
-                                : 'bg-accent text-white hover:bg-accent-hover'
-                            )}
-                          >
-                            {creatingQuickVehicle ? 'Salvando...' : 'Salvar veículo'}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {newOrder.vehicleId && (() => {
-                      const CLOSED = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
-                      const openForVehicle = orders.filter(
-                        (o) => o.vehicleId === newOrder.vehicleId && !CLOSED.includes(o.status)
-                      );
-                      if (openForVehicle.length === 0) return null;
-                      return (
-                        <div className="rounded-xl bg-accent-soft border border-accent/40 px-3 py-2 text-xs text-accent-ink font-medium space-y-1">
-                          <p>
-                            Atencao: Este veiculo ja possui <strong>{openForVehicle.length}</strong> O.S/orcamento{openForVehicle.length > 1 ? 's' : ''} em aberto:
-                            {openForVehicle.map((o: any) => (
-                              <span key={o.id} className="ml-1 font-mono font-bold">#{orderCode(o)}</span>
-                            ))}
-                          </p>
-                          <p className="text-accent-ink/80">Você pode criar múltiplos orcamentos/OSs para o mesmo veículo. Verifique se não e duplicata.</p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-                {newOrder.orderType === 'RETIFICA_MOTOR' && !newOrder.vehicleId && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="space-y-1.5">
-                      <label htmlFor="fld-serviceorderspage-11" className="block text-sm font-semibold text-muted">Marca do motor</label>
-                      <input id="fld-serviceorderspage-11" aria-label="Marca do motor" value={newOrder.equipmentBrand} onChange={(e) => setNewOrder({ ...newOrder, equipmentBrand: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: VW" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label htmlFor="fld-serviceorderspage-12" className="block text-sm font-semibold text-muted">Modelo / família</label>
-                      <input id="fld-serviceorderspage-12" aria-label="Modelo do motor" value={newOrder.equipmentModel} onChange={(e) => setNewOrder({ ...newOrder, equipmentModel: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Ex: AP 1.8" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label htmlFor="fld-serviceorderspage-13" className="block text-sm font-semibold text-muted">N. de serie</label>
-                      <input id="fld-serviceorderspage-13" aria-label="Número de série" value={newOrder.serialNumber} onChange={(e) => setNewOrder({ ...newOrder, serialNumber: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-surface-800 bg-white text-sm font-bold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" placeholder="Opcional" />
-                    </div>
-                  </div>
-                )}
-                <div className="space-y-1">
-                  <label htmlFor="fld-serviceorderspage-14" className="block text-sm font-semibold text-muted">KM Entrada</label>
-                  <NumberInput id="fld-serviceorderspage-14" aria-label="KM de entrada" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.kmEntrada} onChange={(e) => setNewOrder({ ...newOrder, kmEntrada: Number(e.target.value) })} />
-                </div>
-                <div className="space-y-1.5">
-                  <label htmlFor="fld-serviceorderspage-15" className="block text-sm font-semibold text-muted">Data / Hora do Agendamento</label>
-                  <input id="fld-serviceorderspage-15" aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
-                </div>
-                <div className="space-y-1.5">
-                  <label htmlFor="fld-serviceorderspage-16" className="block text-sm font-semibold text-muted">Reclamação Principal</label>
-                  <textarea id="fld-serviceorderspage-16" aria-label="Reclamação principal da nova ordem" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-16 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
-                </div>
-                <label className="block text-sm font-semibold text-muted">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(newOrder.reserveStock)}
-                    onChange={(e) => setNewOrder({ ...newOrder, reserveStock: e.target.checked })}
-                    className="h-4 w-4 rounded border-surface-700 text-surface-100 focus:ring-surface-600"
-                  />
-                  Reservar peças para debitar automaticamente na aprovação
-                </label>
-                <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="px-2 py-1 rounded-md text-xs font-semibold text-surface-500 hover:bg-surface-950 transition-all">Cancelar</button>
-                  <button type="submit" className="px-2 py-1 bg-accent text-white rounded-md font-semibold hover:bg-accent-hover shadow transition-all">Criar Ordem</button>
-                </div>
-              </form>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Orçamento em branco: sem número até salvar (components/NewOrderSheet.tsx) */}
+      {showCreateModal && (
+        <NewOrderSheet
+          customers={customers}
+          vehicles={vehicles}
+          orders={orders}
+          canUseRetifica={canUseRetificaMode}
+          checklistEnabled={canUseChecklist}
+          onClose={() => setShowCreateModal(false)}
+          onCustomerCreated={(c) => setCustomers((prev: any[]) => (prev.some((x) => x.id === c.id) ? prev : [...prev, c]))}
+          onVehicleCreated={(v) => setVehicles((prev: any[]) => (prev.some((x) => x.id === v.id) ? prev : [...prev, v]))}
+          onCreated={(order) => {
+            setShowCreateModal(false);
+            loadOrders();
+            selectOrder(order);
+          }}
+        />
+      )}
       {showAsaasCharge && selectedOrder && (
         <AsaasChargeModal
           orderId={selectedOrder.id}
@@ -2597,6 +2352,8 @@ export function ServiceOrdersPage() {
           mode={deliveryModal.mode}
           initialDate={deliveryModal.mode === 'edit' ? selectedOrder.deliveredAt : null}
           initialName={deliveryModal.mode === 'edit' ? selectedOrder.deliveredTo : null}
+          initialAuthorizedBy={deliveryModal.mode === 'edit' ? selectedOrder.deliveryAuthorizedBy : null}
+          requireAuthorizedBy={Boolean(selectedOrder.checklistRequired)}
           unpaid={deliveryModal.mode === 'confirm' && selectedOrder.status !== 'FATURADO'}
           onClose={() => setDeliveryModal(null)}
           onSubmit={submitDelivery}
@@ -2638,10 +2395,14 @@ export function ServiceOrdersPage() {
           serviceOrderId={selectedOrder.id}
           orderNumber={selectedOrder.orderNumber}
           type={checklistModal}
-          onClose={() => setChecklistModal(null)}
+          onClose={() => { setChecklistModal(null); pendingDelivery.current = null; }}
           onSaved={() => {
             setChecklistFlags((prev) => ({ ...prev, [checklistModal]: true }));
             setChecklistModal(null);
+            if (checklistModal === 'SAIDA' && pendingDelivery.current) {
+              setDeliveryModal(pendingDelivery.current);
+              pendingDelivery.current = null;
+            }
           }}
         />
       )}

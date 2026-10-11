@@ -51,6 +51,7 @@ Cinco apostas que um sistema genérico de gestão não copiaria com verdade:
 
 - **Planos:** START (até 3 usuários, 50 O.S./mês) · PRO (até 10 usuários, O.S. ilimitadas; aprovação por link, checklist com fotos, kanban de pátio, WhatsApp automático, lembrete de manutenção, comissão de mecânicos, NPS) · REDE (usuários ilimitados; DRE completo, multi-unidades, NF-e/NFS-e, portal do cliente PWA, IA no orçamento). Upgrade imediato; downgrade só após o vencimento.
 - **Permissões:** a tela mostra apenas as etapas da O.S. que o perfil pode executar. Revogar ou forçar aprovação: MASTER/ADMIN. Excluir O.S.: MASTER. Registrar entrega de O.S. antiga sem os dados: MASTER/ADMIN. Teto de desconto por perfil em peças e serviços.
+- **Checklist:** toda O.S. nova de oficina com checklist (Pro, Rede ou Start com adicional ligado pelo superadmin) nasce com o checklist de entrada (basta uma informação) e só é entregue com o checklist de saída, a data, quem retirou e quem autorizou. O orçamento é um rascunho sem número até ser salvo.
 - **Regras de estado:** O.S. entregue, faturada, cancelada ou reprovada não aceita mudança de itens; para ajustar, muda-se o status (reabrir desfaz o registro de entrega). A conclusão nunca é posterior à entrega.
 - **Terminologia do domínio:** O.S., orçamento, laudo, solução, vistoria, retífica, chassi/VIN, pátio, entrega, TMO (tempo de mão de obra), VH (valor da hora).
 - **Idioma:** PT-BR com acentuação completa em toda a interface, nos documentos e nas páginas públicas.
