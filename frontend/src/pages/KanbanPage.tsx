@@ -349,7 +349,7 @@ export function KanbanPage() {
                   </div>
 
                   {/* Column body */}
-                  <div className={`flex-1 rounded-lg border border-line border-t-4 ${col.color} bg-panel-2 p-2 space-y-2 overflow-y-auto`}
+                  <div className={`flex-1 rounded-lg border border-line border-t-4 ${col.color.replace("border-", "border-t-")} bg-panel-2 p-2 space-y-2 overflow-y-auto`}
                     style={{ minHeight: 120 }}>
                     <AnimatePresence>
                       {colOrders.length === 0 ? (

@@ -1016,13 +1016,13 @@ export function ServiceOrdersPage() {
           </div>
         ) : (
           <>
-            {/* Top bar: uma ação principal (Salvar); o resto em dois menus */}
-            <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex items-center justify-between gap-4">
+            {/* Top bar: próxima ação da O.S. em destaque; Salvar e os dois menus ficam secundários */}
+            <div className="p-6 border-b border-surface-800/60 bg-surface-950/50 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
                 <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-white shrink-0">
                   <FileText size={24} />
                 </div>
-                <h1 className="text-xl font-bold text-surface-100 tracking-tight truncate">
+                <h1 className="text-xl font-bold text-surface-100 tracking-tight whitespace-nowrap">
                   O.S. #{orderCode(selectedOrder)}
                 </h1>
               </div>

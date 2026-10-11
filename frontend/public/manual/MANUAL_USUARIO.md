@@ -175,7 +175,9 @@ Na tela da O.S., cada perfil só vê os botões das etapas que pode aplicar. Tod
 
 ## 3. Painel
 
-O **Painel** é a tela inicial após o login:
+O **Painel** é a tela inicial após o login. Ele abre com **Precisa de atenção**: uma lista só com o que exige ação (O.S. com prazo vencido, orçamentos aguardando aprovação, veículos prontos para entrega, peças no estoque mínimo e agendamentos de hoje). Cada linha leva à tela correspondente; sem pendências, o Painel avisa que não há nada pendente.
+
+Abaixo ficam os indicadores:
 
 | Indicador | Descrição |
 |---|---|
@@ -234,7 +236,7 @@ Também é possível trazer um orçamento feito fora do sistema: **Importar de o
 | **Entregue** | Veículo entregue ao cliente, com data e recebedor registrados — a O.S. fica **travada** (seção 4.13) |
 | **Cancelado** | Atendimento cancelado |
 
-**Onde mudar a etapa:** dentro da O.S., pelo selo de status no quadro **Dados do Veículo** ou pelos botões de **Avançar Status**. Cada perfil vê só as etapas que pode aplicar (seção 2.3).
+**Próxima ação:** no topo da O.S. há um botão grande com o verbo da próxima etapa (por exemplo **Enviar para Aprovação**, **Registrar Pagamento**, **Confirmar Entrega**), e o andamento mostra a fase atual e a próxima. Para outras mudanças, use o selo de status no quadro **Dados do Veículo** ou os botões de **Avançar Status** no fim da O.S. Cada perfil vê só as etapas que pode aplicar (seção 2.3).
 
 ### 4.4 Lançar serviços e peças
 
@@ -531,7 +533,7 @@ Menu **Kanban de Pátio**: as O.S. em andamento em colunas por etapa. Cada cart�
 
 ### 13.1 Modo TV
 
-Clique em **"Modo TV"** para tela cheia; **Esc** para sair.
+Clique em **"Modo TV"** para tela cheia; **Esc** para sair. Na TV, só aparecem as colunas com O.S., em texto grande para leitura a distância. Fora do modo TV, o quadro rola na horizontal em vez de encolher o texto.
 
 ### 13.2 Alertas de prazo
 
