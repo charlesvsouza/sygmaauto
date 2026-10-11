@@ -376,6 +376,7 @@ model ServiceOrder {
   startedAt    DateTime?
   completedAt  DateTime?
   deliveredAt  DateTime?
+  deliveredTo  String?   // quem retirou/recebeu o veículo (pode não ser o titular)
   paidAt      DateTime?
   
   // Informações
@@ -447,6 +448,7 @@ model ServiceOrderItem {
   partId          String?
   assignedUserId  String?
   description     String
+  internalCode    String?  // código de fábrica vindo de importação, até a peça entrar no cadastro
   quantity        Float    @default(1)
   unitPrice       Float
   totalPrice      Float

@@ -4,7 +4,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nes
 import { ServiceOrdersService } from './service-orders.service';
 import { ImportService } from './import.service';
 import { OrderDocumentsService, OrderDocumentKind } from './order-documents.service';
-import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
+import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto, SetDeliveryDto } from './dto/service-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -108,6 +108,18 @@ export class ServiceOrdersController {
     @Body() dto: UpdateStatusDto,
   ) {
     return this.serviceOrdersService.updateStatus(tenant.tenantId, id, dto, user.userId);
+  }
+
+  @Patch(':id/delivery')
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Registrar/corrigir data e recebedor da entrega (O.S. já entregue)' })
+  async setDelivery(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() dto: SetDeliveryDto,
+  ) {
+    return this.serviceOrdersService.setDelivery(tenant.tenantId, id, dto, user.userId);
   }
 
   @Post('approve/:token')

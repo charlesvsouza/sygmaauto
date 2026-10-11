@@ -9,7 +9,7 @@ import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
   Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
-  ClipboardCheck, ShoppingCart, CheckCircle2, AlertTriangle, Calendar, Sparkles,
+  ClipboardCheck, ShoppingCart, CheckCircle2, AlertTriangle, Calendar, Sparkles, PackagePlus,
 } from 'lucide-react';
 
 import { cn } from '../lib/utils';
@@ -17,6 +17,8 @@ import { useToast, useConfirm, StatusChip, STATUS_CHIP_CLASS, NumberInput } from
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
+import { DeliveryModal } from '../components/DeliveryModal';
+import { CatalogRegisterModal } from '../components/CatalogRegisterModal';
 import { ChecklistModal } from '../components/ChecklistModal';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
 import { LaudoRetificaModal } from '../components/LaudoRetificaModal';
@@ -166,6 +168,8 @@ export function ServiceOrdersPage() {
   const canSyncOrder = TECHNICAL_ROLES.includes(userRole);
   const canReserveParts = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'SECRETARIA'].includes(userRole);
   const canDelete = userRole === 'MASTER';
+  // Cadastro de peças/serviços é restrito ao admin (mesma regra das telas de Estoque e Serviços).
+  const canRegisterCatalog = userRole === 'MASTER' || userRole === 'ADMIN';
   // Cada perfil só vê as etapas que pode aplicar (nextStatuses é filtrado por canMoveToStatus).
   const canChangeStatus = STATUS_CHANGE_ROLES.includes(userRole);
   const canAssignExecutor = canManageItems;
@@ -220,6 +224,8 @@ export function ServiceOrdersPage() {
   const [aiDescription, setAiDescription] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+  const [registerItem, setRegisterItem] = useState<any>(null);
+  const [deliveryModal, setDeliveryModal] = useState<{ mode: 'confirm' | 'edit'; override: boolean } | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importTargetOrderId, setImportTargetOrderId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -694,10 +700,10 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const changeStatus = async (status: string, adminOverride = false) => {
+  const changeStatus = async (status: string, adminOverride = false, extra: Record<string, any> = {}) => {
     if (!selectedOrder) return;
     try {
-      await serviceOrdersApi.updateStatus(selectedOrder.id, { status, ...(adminOverride && { adminOverride: true }) });
+      await serviceOrdersApi.updateStatus(selectedOrder.id, { status, ...extra, ...(adminOverride && { adminOverride: true }) });
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
       setShowDiagBanner(res.data.status === 'REPROVADO');
@@ -823,6 +829,38 @@ export function ServiceOrdersPage() {
       loadOrders();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Erro ao atualizar item.');
+    }
+  };
+
+  // Vincula o item da O.S. ao registro recém-incluído (ou já existente) no cadastro.
+  const linkItemToCatalog = async (item: any, record: any) => {
+    if (!selectedOrder) return;
+    const isPart = item.type?.toLowerCase() === 'part';
+    await serviceOrdersApi.updateItem(selectedOrder.id, item.id, isPart
+      ? { partId: record.id, description: record.name, unitPrice: Number(record.unitPrice) }
+      : { serviceId: record.id, description: record.name });
+    const res = await serviceOrdersApi.getById(selectedOrder.id);
+    setSelectedOrder(res.data);
+    loadOrders();
+    setRegisterItem(null);
+    toast.success(isPart ? 'Peça incluída no cadastro e vinculada à O.S.' : 'Serviço incluído no cadastro e vinculado à O.S.');
+  };
+
+  const submitDelivery = async (data: { deliveredAt: string; deliveredTo: string }) => {
+    if (!selectedOrder || !deliveryModal) return;
+    try {
+      if (deliveryModal.mode === 'edit') {
+        await serviceOrdersApi.setDelivery(selectedOrder.id, data);
+        const res = await serviceOrdersApi.getById(selectedOrder.id);
+        setSelectedOrder(res.data);
+        loadOrders();
+        toast.success('Dados da entrega salvos.');
+      } else {
+        await changeStatus('ENTREGUE', deliveryModal.override, data);
+      }
+      setDeliveryModal(null);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Erro ao registrar a entrega.');
     }
   };
 
@@ -1261,6 +1299,7 @@ export function ServiceOrdersPage() {
                                   onClick={async () => {
                                     setShowStatusDropdown(false);
                                     if (isNegative && !(await confirm({ title: 'Mudar status', message: `Mudar a O.S. para "${cfg.label}"?`, confirmLabel: 'Mudar status', danger: true }))) return;
+                                    if (key === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: true }); return; }
                                     await changeStatus(key, true);
                                   }}
                                   className={cn(
@@ -1374,13 +1413,16 @@ export function ServiceOrdersPage() {
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
-                      <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20" />
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-surface-900/70">
                     {serviceItems.map((item: any) => (
                       <tr key={item.id} className="hover:bg-surface-950/60">
-                        <td className="px-5 py-3 font-bold text-surface-100">{item.description}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100">
+                          <div>{item.description}</div>
+                          {!item.serviceId && <div className="mt-1 text-[11px] font-bold text-amber-600">Fora do cadastro de serviços</div>}
+                        </td>
                         <td className="px-5 py-3">
                           <select
                             aria-label={`Executor do serviço ${item.description}`}
@@ -1426,7 +1468,18 @@ export function ServiceOrdersPage() {
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="px-5 py-3 text-right whitespace-nowrap">
+                          {canRegisterCatalog && !isClosed && !item.serviceId && (
+                            <button
+                              type="button"
+                              aria-label="Incluir serviço no cadastro"
+                              title="Incluir no cadastro"
+                              onClick={() => setRegisterItem(item)}
+                              className="p-1 rounded text-accent-ink hover:text-accent-hover transition-colors"
+                            >
+                              <PackagePlus size={15} />
+                            </button>
+                          )}
                           <button
                             type="button"
                             aria-label="Remover serviço"
@@ -1472,7 +1525,7 @@ export function ServiceOrdersPage() {
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
-                      <th className="px-5 py-3 border-b border-surface-800/70 w-12" />
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20" />
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-surface-900/70">
@@ -1480,6 +1533,11 @@ export function ServiceOrdersPage() {
                       <tr key={item.id} className="hover:bg-surface-950/60">
                         <td className="px-5 py-3 font-bold text-surface-100">
                           <div>{item.description}</div>
+                          {!item.partId && (
+                            <div className="mt-1 text-[11px] font-bold text-amber-600">
+                              Fora do cadastro de peças{item.internalCode ? ` · Cód. ${item.internalCode}` : ''}
+                            </div>
+                          )}
                           <div className="mt-1 text-[11px] text-surface-500 font-bold">
                             Estoque atual: <span className={cn('font-bold', Number(item.part?.currentStock || 0) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(item.part?.currentStock || 0)}</span>
                             {' - '}Status: {item.applied ? 'Baixada' : 'Pendente'}
@@ -1511,7 +1569,18 @@ export function ServiceOrdersPage() {
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
                         <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="px-5 py-3 text-right whitespace-nowrap">
+                          {canRegisterCatalog && !isClosed && !item.partId && (
+                            <button
+                              type="button"
+                              aria-label="Incluir peça no cadastro"
+                              title="Incluir no cadastro"
+                              onClick={() => setRegisterItem(item)}
+                              className="p-1 rounded text-accent-ink hover:text-accent-hover transition-colors"
+                            >
+                              <PackagePlus size={15} />
+                            </button>
+                          )}
                           <button
                             type="button"
                             aria-label="Remover peça"
@@ -1541,6 +1610,29 @@ export function ServiceOrdersPage() {
                     {nextStatuses.length === 0 && (
                       <p className="text-[11px] font-bold text-surface-600">Fluxo encerrado para este status.</p>
                     )}
+                    {selectedOrder.status === 'ENTREGUE' && (
+                      <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-3 text-[11px] font-bold text-surface-300 space-y-1">
+                        <p>Entregue em: <span className="text-surface-100">{selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'não registrado'}</span></p>
+                        <p>Recebido por: <span className="text-surface-100">{selectedOrder.deliveredTo || 'não registrado'}</span></p>
+                        {['MASTER', 'ADMIN'].includes(userRole) && (
+                          <button type="button"
+                            onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
+                            className="mt-1 text-accent-ink hover:text-accent-hover underline"
+                          >
+                            {selectedOrder.deliveredTo && selectedOrder.deliveredAt ? 'Corrigir dados da entrega' : 'Registrar dados da entrega'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {['MASTER', 'ADMIN'].includes(userRole) && selectedOrder.status === 'PRONTO_ENTREGA' && (
+                      <button type="button"
+                        onClick={() => setDeliveryModal({ mode: 'confirm', override: true })}
+                        className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left bg-amber-500/15 text-amber-700 border border-amber-500/30 hover:bg-amber-500/25"
+                        title="Registra a entrega sem a quitação; o saldo segue em aberto"
+                      >
+                        Entregar sem quitação
+                      </button>
+                    )}
                     {nextStatuses.map((status) => {
                       const isCancel = status === 'CANCELADO';
                       const isReprovadoBtn = status === 'REPROVADO';
@@ -1550,6 +1642,7 @@ export function ServiceOrdersPage() {
                           key={status}
                           onClick={async () => {
                             if (isNegative && !(await confirm({ title: 'Confirmar ação', message: `${STATUS_ACTION_LABEL[status] || status}?`, confirmLabel: 'Confirmar', danger: true }))) return;
+                            if (status === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: false }); return; }
                             changeStatus(status);
                           }}
                           className={cn(
@@ -2400,6 +2493,26 @@ export function ServiceOrdersPage() {
           </div>
         )}
       </AnimatePresence>
+      {deliveryModal && selectedOrder && (
+        <DeliveryModal
+          mode={deliveryModal.mode}
+          initialDate={deliveryModal.mode === 'edit' ? selectedOrder.deliveredAt : null}
+          initialName={deliveryModal.mode === 'edit' ? selectedOrder.deliveredTo : null}
+          unpaid={deliveryModal.mode === 'confirm' && selectedOrder.status !== 'FATURADO'}
+          onClose={() => setDeliveryModal(null)}
+          onSubmit={submitDelivery}
+        />
+      )}
+
+      {registerItem && (
+        <CatalogRegisterModal
+          type={registerItem.type?.toLowerCase() === 'part' ? 'part' : 'service'}
+          item={registerItem}
+          onClose={() => setRegisterItem(null)}
+          onSaved={(record) => linkItemToCatalog(registerItem, record)}
+        />
+      )}
+
       {showImportModal && (
         <ImportOSModal 
           targetOrderId={importTargetOrderId ?? undefined}

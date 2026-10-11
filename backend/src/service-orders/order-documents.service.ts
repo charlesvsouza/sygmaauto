@@ -466,7 +466,8 @@ ${this.stageDates(order)}
 ${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.valuedItems(order, true)}
 ${this.totals(order, [['Valor pago', paid], ['Saldo a pagar', balance]])}
-<table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr></table>
+<table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr>
+${order.deliveredTo ? `<tr><td>Recebido por</td><td colspan="3">${e(order.deliveredTo)}</td></tr>` : ''}</table>
 ${this.paymentSchedule(order)}
 ${order.paidAt && !balance ? '' : this.pixInfo(order, settings)}
 <div class="sec">Garantia</div>

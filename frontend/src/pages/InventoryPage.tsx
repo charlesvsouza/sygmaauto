@@ -14,7 +14,7 @@ import { ImportNFModal } from '../components/ImportNFModal';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
-const CATEGORIES = [
+export const CATEGORIES = [
   { code: 'FRE', label: 'Freios' },
   { code: 'MOT', label: 'Motor / Óleo' },
   { code: 'SUS', label: 'Suspensão' },
@@ -29,7 +29,7 @@ const CATEGORIES = [
   { code: 'OUT', label: 'Outros' },
 ];
 
-const UNITS = [
+export const UNITS = [
   { value: 'un', label: 'Unidade (un)' },
   { value: 'L', label: 'Litro (L)' },
   { value: 'ml', label: 'Mililitro (ml)' },
@@ -74,7 +74,7 @@ function randomSuffix(len = 4): string {
   return out;
 }
 
-function generateInternalCode(name: string, category: string, existingCodes: string[]): string {
+export function generateInternalCode(name: string, category: string, existingCodes: string[]): string {
   const nameSig = abbreviateName(name);
   const areaSig = (category || 'OUT').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3) || 'OUT';
   const exist = new Set(existingCodes.filter(Boolean));

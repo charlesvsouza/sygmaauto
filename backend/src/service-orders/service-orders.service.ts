@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto } from './dto/service-order.dto';
+import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto, SetDeliveryDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
@@ -291,6 +291,7 @@ export class ServiceOrdersService {
       itemsData.push({
         serviceId: item.serviceId,
         partId: item.partId,
+        internalCode: item.internalCode || null,
         description: item.description,
         quantity: qty,
         unitPrice,
@@ -719,7 +720,10 @@ export class ServiceOrdersService {
     }
 
     if (newStatus === 'ENTREGUE') {
-      updateData.deliveredAt = new Date();
+      // A entrega não depende de quitação: registra quando e quem recebeu o veículo.
+      const delivery = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
+      updateData.deliveredAt = delivery.deliveredAt;
+      updateData.deliveredTo = delivery.deliveredTo;
     }
 
     const updated = await this.prisma.serviceOrder.update({
@@ -751,6 +755,44 @@ export class ServiceOrdersService {
 
     this.notifyStatusChange(tenantId, updated, newStatus);
 
+    return updated;
+  }
+
+  // Valida data/recebedor da entrega. Sem data informada, vale o momento atual.
+  private resolveDelivery(order: { createdAt: Date }, rawDate?: string, rawName?: string) {
+    const deliveredTo = (rawName ?? '').trim();
+    if (!deliveredTo) throw new BadRequestException('Informe quem recebeu o veículo');
+
+    let deliveredAt = new Date();
+    if (rawDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) throw new BadRequestException('Data de entrega inválida');
+      // Meio-dia no fuso de Brasília para a data não "voltar um dia" ao exibir.
+      deliveredAt = new Date(`${rawDate}T12:00:00-03:00`);
+      if (Number.isNaN(deliveredAt.getTime())) throw new BadRequestException('Data de entrega inválida');
+      const todayBr = new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+      if (rawDate > todayBr) throw new BadRequestException('A data de entrega não pode ser futura');
+      const createdBr = new Date(new Date(order.createdAt).getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+      if (rawDate < createdBr) throw new BadRequestException('A data de entrega não pode ser anterior à abertura da O.S.');
+    }
+    return { deliveredAt, deliveredTo };
+  }
+
+  // Registra/corrige data e recebedor de uma O.S. já entregue (ex.: entregue sem essas informações).
+  async setDelivery(tenantId: string, id: string, dto: SetDeliveryDto, userId: string) {
+    const order = await this.findById(tenantId, id);
+    if (order.status !== 'ENTREGUE') {
+      throw new BadRequestException('Só é possível registrar a entrega de uma O.S. com status Entregue');
+    }
+    const { deliveredAt, deliveredTo } = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
+    const updated = await this.prisma.serviceOrder.update({
+      where: { id },
+      data: { deliveredAt, deliveredTo },
+    });
+    await this.createTimeline(
+      id, 'DELIVERY_UPDATED',
+      `Entrega registrada: ${deliveredAt.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}, recebida por ${deliveredTo}`,
+      userId,
+    );
     return updated;
   }
 
@@ -1135,6 +1177,18 @@ export class ServiceOrdersService {
       }
     }
 
+    // Vincula o item ao cadastro (ex.: peça/serviço importado que acabou de ser cadastrado)
+    let link: { partId?: string; serviceId?: string } = {};
+    if (dto.partId && oldItem.type === 'part') {
+      const part = await this.prisma.part.findFirst({ where: { id: dto.partId, tenantId }, select: { id: true } });
+      if (!part) throw new NotFoundException('Peça não encontrada');
+      link = { partId: part.id };
+    } else if (dto.serviceId && oldItem.type !== 'part') {
+      const service = await this.prisma.service.findFirst({ where: { id: dto.serviceId, tenantId }, select: { id: true } });
+      if (!service) throw new NotFoundException('Serviço não encontrado');
+      link = { serviceId: service.id };
+    }
+
     const updated = await this.prisma.serviceOrderItem.update({
       where: { id: itemId },
       data: {
@@ -1143,6 +1197,7 @@ export class ServiceOrdersService {
         unitPrice,
         discount,
         totalPrice,
+        ...link,
         ...(dto.assignedUserId !== undefined && { assignedUserId: dto.assignedUserId }),
       },
     });

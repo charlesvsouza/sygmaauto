@@ -268,6 +268,28 @@ export class UpdateStatusDto {
   @IsOptional()
   @IsBoolean()
   adminOverride?: boolean;
+
+  @ApiProperty({ required: false, description: 'ENTREGUE: data real da entrega (AAAA-MM-DD). Padrão: hoje.' })
+  @IsOptional()
+  @IsString()
+  deliveredAt?: string;
+
+  @ApiProperty({ required: false, description: 'ENTREGUE: nome de quem recebeu o veículo (obrigatório)' })
+  @IsOptional()
+  @IsString()
+  deliveredTo?: string;
+}
+
+export class SetDeliveryDto {
+  @ApiProperty({ description: 'Data real da entrega (AAAA-MM-DD)' })
+  @IsNotEmpty()
+  @IsString()
+  deliveredAt: string;
+
+  @ApiProperty({ description: 'Nome de quem recebeu o veículo' })
+  @IsNotEmpty()
+  @IsString()
+  deliveredTo: string;
 }
 
 export class AprovarOrcamentoDto {
