@@ -74,7 +74,7 @@ const posts = [
 
 export default function BlogPage() {
   return (
-    <main className="min-h-screen bg-[#060608]">
+    <main className="min-h-screen bg-app">
       {/* Hero */}
       <div className="relative pt-28 pb-16 overflow-hidden">
         <div
@@ -85,11 +85,11 @@ export default function BlogPage() {
             backgroundSize: '64px 64px',
           }}
         />
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px from-transparent via-amber-500/20 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-surface-400 hover:text-white text-sm font-medium transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-surface-400 hover:text-surface-50 text-sm font-medium transition-colors mb-8"
           >
             <ArrowLeft size={14} />
             Voltar ao site
@@ -111,10 +111,10 @@ export default function BlogPage() {
       <div className="max-w-7xl mx-auto px-6 pb-28">
         {/* Featured post */}
         <div className="mb-8">
-          <div className="rounded-xl border border-line bg-[#0f0f12] p-8 lg:p-10 hover:border-amber-500/20 transition-all duration-300 group cursor-pointer">
+          <div className="rounded-xl border border-line bg-app p-8 lg:p-10 hover:border-amber-500/20 transition-all duration-300 group cursor-pointer">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               {/* Cover placeholder */}
-              <div className="aspect-video rounded-lg bg-gradient-to-br from-amber-500/10 to-orange-600/5 border border-amber-500/10 flex items-center justify-center order-2 lg:order-1">
+              <div className="aspect-video rounded-lg from-amber-500/10 to-orange-600/5 border border-amber-500/10 flex items-center justify-center order-2 lg:order-1">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center mb-3">
                     <span className="text-2xl">📈</span>
@@ -129,7 +129,7 @@ export default function BlogPage() {
                 >
                   {posts[0].tag}
                 </span>
-                <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-amber-600 transition-colors">
+                <h2 className="text-2xl lg:text-3xl font-bold text-surface-50 mb-3 leading-tight group-hover:text-amber-600 transition-colors">
                   {posts[0].title}
                 </h2>
                 <p className="text-surface-400 text-sm leading-relaxed mb-5">{posts[0].excerpt}</p>
@@ -148,10 +148,10 @@ export default function BlogPage() {
           {posts.slice(1).map((post) => (
             <article
               key={post.slug}
-              className="group rounded-xl border border-line bg-[#0f0f12] p-7 hover:border-line transition-all duration-300 cursor-pointer flex flex-col"
+              className="group rounded-xl border border-line bg-app p-7 hover:border-line transition-all duration-300 cursor-pointer flex flex-col"
             >
               {/* Mini cover */}
-              <div className="aspect-[16/7] rounded-lg bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-line flex items-center justify-center mb-5">
+              <div className="aspect-[16/7] rounded-lg from-white/[0.03] to-white/[0.01] border border-line flex items-center justify-center mb-5">
                 <span className="text-3xl">
                   {post.tag === 'Atendimento' ? '💬' : post.tag === 'Estoque' ? '📦' : post.tag === 'Tecnologia' ? '🤖' : post.tag === 'Retífica' ? '⚙️' : '📊'}
                 </span>
@@ -163,7 +163,7 @@ export default function BlogPage() {
               >
                 {post.tag}
               </span>
-              <h3 className="font-bold text-white text-base leading-snug mb-3 group-hover:text-amber-600 transition-colors flex-1">
+              <h3 className="font-bold text-surface-50 text-base leading-snug mb-3 group-hover:text-amber-600 transition-colors flex-1">
                 {post.title}
               </h3>
               <p className="text-surface-400 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
@@ -177,19 +177,19 @@ export default function BlogPage() {
         </div>
 
         {/* Newsletter CTA */}
-        <div className="mt-16 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 to-orange-600/4 p-10 text-center">
-          <h3 className="text-2xl font-bold text-white mb-2">Receba novos artigos no seu e-mail</h3>
+        <div className="mt-16 rounded-xl border border-amber-500/20 from-amber-500/8 to-orange-600/4 p-10 text-center">
+          <h3 className="text-2xl font-bold text-surface-50 mb-2">Receba novos artigos no seu e-mail</h3>
           <p className="text-surface-400 text-sm mb-6">Conteúdo semanal sobre gestão de oficinas. Sem spam.</p>
           <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
             <input aria-label="seu@email.com.br"
               type="email"
               placeholder="seu@email.com.br"
               required
-              className="flex-1 px-4 py-3 rounded-lg bg-ink/5 border border-line text-white text-sm placeholder:text-surface-500 focus:outline-none focus:border-amber-500/40 transition-all"
+              className="flex-1 px-4 py-3 rounded-lg bg-ink/5 border border-line text-surface-50 text-sm placeholder:text-surface-500 focus:outline-none focus:border-amber-500/40 transition-all"
             />
             <button
               type="submit"
-              className="px-6 py-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-bold hover:shadow-gold transition-all whitespace-nowrap"
+              className="px-6 py-3 rounded-lg from-amber-500 to-orange-600 text-surface-50 text-sm font-bold hover:shadow-gold transition-all whitespace-nowrap"
             >
               Assinar grátis
             </button>

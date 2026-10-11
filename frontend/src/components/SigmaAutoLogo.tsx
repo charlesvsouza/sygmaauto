@@ -30,7 +30,7 @@ interface SigmaAutoLogoProps {
 const BRAND_GRADIENT = 'linear-gradient(135deg, #0f2557 0%, #1e3a8a 45%, #3b82f6 100%)';
 
 export function SigmaAutoLogo({ variant = 'compact', size = 36, className = '', tone = 'light', accent = 'gold' }: SigmaAutoLogoProps) {
-  const primaryText = tone === 'dark' ? '#0f1f2b' : '#ffffff';
+  const primaryText = tone === 'dark' ? '#162f2b' : '#ffffff';
   const secondaryText = tone === 'dark' ? '#4f6470' : tone === 'brand' ? '#5a6b8a' : '#64748b';
 
   const wordStyle =

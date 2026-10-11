@@ -63,7 +63,6 @@ export default {
           900: 'rgb(var(--surface-900) / <alpha-value>)',
           950: 'rgb(var(--surface-950) / <alpha-value>)',
         },
-        base: 'rgb(var(--app) / <alpha-value>)',
         // Cores semânticas — estados de feedback
         success: '#16a34a',
         warning: '#d97706',

@@ -18,9 +18,9 @@ const waveStates = [
 
 export function EcgPulse({
   className,
-  lineColor = '#fb923c',
-  baseColor = 'rgba(148, 163, 184, 0.35)',
-  pointColor = '#fdba74',
+  lineColor = '#0d7d6e',
+  baseColor = 'rgba(13, 125, 110, 0.25)',
+  pointColor = '#1f9d8f',
   waveDuration = 2.4,
   travelDuration = 3.4,
   pointProgress,
@@ -29,7 +29,7 @@ export function EcgPulse({
     typeof pointProgress === 'number' ? Math.max(0, Math.min(1, pointProgress)) : undefined;
 
   return (
-    <div className={className ?? 'h-6 w-[320px] rounded-full border border-[#ff7b2f]/25 bg-[#0d1220]/40 overflow-hidden relative'}>
+    <div className={className ?? 'h-6 w-[320px] rounded-full border border-accent/30 bg-panel overflow-hidden relative'}>
       <motion.svg
         viewBox="0 0 600 40"
         className="absolute inset-0 h-full w-[220%]"
@@ -52,7 +52,7 @@ export function EcgPulse({
 
       {typeof clampedProgress === 'number' ? (
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(253,186,116,0.95)]"
+          className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm"
           style={{
             left: `calc(${clampedProgress * 100}% - 5px)`,
             backgroundColor: pointColor,
@@ -60,7 +60,7 @@ export function EcgPulse({
         />
       ) : (
         <motion.div
-          className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(253,186,116,0.95)]"
+          className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm"
           style={{ backgroundColor: pointColor }}
           animate={{ x: [-12, 360], opacity: [0, 1, 1, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}

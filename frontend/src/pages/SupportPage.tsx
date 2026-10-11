@@ -72,7 +72,7 @@ const faq = [
 
 export function SupportPage() {
   return (
-    <main className="min-h-screen bg-[#060608] pt-16">
+    <main className="min-h-screen bg-app pt-16">
       {/* Hero */}
       <div className="relative py-20 overflow-hidden">
         <div
@@ -83,9 +83,9 @@ export function SupportPage() {
             backgroundSize: '64px 64px',
           }}
         />
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px from-transparent via-amber-500/20 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-surface-400 hover:text-white text-sm font-medium transition-colors mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-surface-400 hover:text-surface-50 text-sm font-medium transition-colors mb-8">
             <ArrowLeft size={14} />
             Voltar ao site
           </Link>
@@ -109,9 +109,9 @@ export function SupportPage() {
                 { icon: Clock, value: '< 4h', label: 'Resposta', color: 'orange' },
                 { icon: Shield, value: '99.95%', label: 'Uptime', color: 'amber' },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg border border-line bg-[#0f0f12] p-5 text-center">
+                <div key={s.label} className="rounded-lg border border-line bg-app p-5 text-center">
                   <s.icon size={20} className="text-amber-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-white">{s.value}</p>
+                  <p className="text-2xl font-bold text-surface-50">{s.value}</p>
                   <p className="text-surface-500 text-xs mt-1">{s.label}</p>
                 </div>
               ))}
@@ -133,17 +133,17 @@ export function SupportPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 className={`rounded-xl border p-7 flex flex-col h-full transition-all duration-300 ${
-                  ch.accent
-                    ? 'border-amber-500/30 bg-amber-500/[0.05] hover:border-amber-500/50'
-                    : 'border-line bg-[#0f0f12] hover:border-line'
-                }`}
+ ch.accent
+ ? 'border-amber-500/30 bg-amber-500/[0.05] hover:border-amber-500/50'
+ : 'border-line bg-app hover:border-line'
+ }`}
               >
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-5 ${
-                  ch.accent ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-ink/5 border border-line'
-                }`}>
+ ch.accent ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-ink/5 border border-line'
+ }`}>
                   <Icon size={22} className={ch.accent ? 'text-amber-600' : 'text-surface-400'} />
                 </div>
-                <h2 className="text-lg font-bold text-white mb-3">{ch.title}</h2>
+                <h2 className="text-lg font-bold text-surface-50 mb-3">{ch.title}</h2>
                 <p className="text-surface-400 text-sm leading-relaxed flex-1">{ch.description}</p>
                 <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-amber-600">
                   {ch.cta} <ChevronRight size={13} />
@@ -163,9 +163,9 @@ export function SupportPage() {
         </div>
 
         {/* FAQ */}
-        <div className="rounded-xl border border-line bg-[#0f0f12] p-8 lg:p-10">
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
-          <h2 className="text-2xl font-bold text-white mb-8">Perguntas frequentes</h2>
+        <div className="rounded-xl border border-line bg-app p-8 lg:p-10">
+          <div className="absolute top-0 inset-x-0 h-px from-transparent via-amber-500/20 to-transparent" />
+          <h2 className="text-2xl font-bold text-surface-50 mb-8">Perguntas frequentes</h2>
           <div className="grid md:grid-cols-2 gap-5">
             {faq.map((item, i) => (
               <motion.div
@@ -176,7 +176,7 @@ export function SupportPage() {
                 transition={{ delay: i * 0.06 }}
                 className="rounded-lg border border-line bg-ink/5 p-5"
               >
-                <p className="font-bold text-white text-sm mb-2">{item.question}</p>
+                <p className="font-bold text-surface-50 text-sm mb-2">{item.question}</p>
                 <p className="text-surface-400 text-sm leading-relaxed">{item.answer}</p>
               </motion.div>
             ))}

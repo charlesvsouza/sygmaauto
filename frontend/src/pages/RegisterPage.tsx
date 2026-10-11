@@ -62,10 +62,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div data-theme="dark" className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glow (dourado, sutil) */}
-      <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -73,10 +70,10 @@ export function RegisterPage() {
         className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-line shadow-card-hover bg-surface-900 z-10"
       >
         {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-accent/10 to-transparent border-r border-line">
+        <div className="hidden lg:flex flex-col justify-between p-12 bg-accent-soft/60 border-r border-line">
           <div>
             <div className="flex items-center gap-3 mb-8">
-              <SigmaAutoLogo variant="full" />
+              <SigmaAutoLogo variant="full" tone="dark" accent="teal" />
             </div>
 
             <h1 className="text-4xl font-bold leading-tight mb-6">
@@ -85,7 +82,7 @@ export function RegisterPage() {
             </h1>
             <p className="text-surface-400 text-lg leading-relaxed">
               Gestão completa, do financeiro ao estoque, em uma única plataforma premium.
-              O primeiro acesso cria sua conta <span className="text-white font-bold">MASTER</span>.
+              O primeiro acesso cria sua conta <span className="text-surface-50 font-bold">MASTER</span>.
             </p>
           </div>
 

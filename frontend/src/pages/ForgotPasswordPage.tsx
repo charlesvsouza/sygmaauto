@@ -82,8 +82,6 @@ export function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-surface-950 text-surface-100 flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/[0.06] rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
@@ -92,7 +90,7 @@ export function ForgotPasswordPage() {
       >
         <div className="bg-surface-900 p-8 md:p-10 rounded-xl border border-line relative overflow-hidden shadow-card-hover">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight text-white">Revalidar Senha</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-surface-50">Revalidar Senha</h1>
             <p className="text-surface-300 text-sm mt-1">
               {step === 1 ? 'Confirme seu e-mail principal e e-mail de recuperação.' : 'Informe o token e sua nova senha.'}
             </p>

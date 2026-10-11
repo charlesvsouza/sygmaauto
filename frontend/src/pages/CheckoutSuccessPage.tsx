@@ -7,7 +7,7 @@ export function CheckoutSuccessPage() {
   const plan = (searchParams.get('plan') || '').toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#090e17] text-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-app text-surface-50 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -20,19 +20,19 @@ export function CheckoutSuccessPage() {
         <p className="text-xs font-bold uppercase tracking-wide text-emerald-700/80">Pagamento recebido</p>
         <h1 className="mt-2 text-3xl md:text-4xl font-bold">Checkout concluído com sucesso</h1>
 
-        <p className="mt-4 text-white/75 leading-relaxed">
+        <p className="mt-4 text-surface-500 leading-relaxed">
           {plan
             ? `Seu pagamento do plano ${plan} foi recebido.`
             : 'Seu pagamento foi recebido.'}{' '}
           Agora vamos enviar o convite de ativação do usuário MASTER para o email informado no checkout.
         </p>
 
-        <div className="mt-6 rounded-lg border border-line bg-[#0f1626] p-5">
-          <p className="text-sm font-bold text-white/90 flex items-center gap-2">
-            <Mail size={16} className="text-[#ff7b2f]" />
+        <div className="mt-6 rounded-lg border border-line bg-app p-5">
+          <p className="text-sm font-bold text-surface-500 flex items-center gap-2">
+            <Mail size={16} className="text-accent-ink" />
             Próximo passo
           </p>
-          <p className="mt-2 text-sm text-white/65">
+          <p className="mt-2 text-sm text-surface-500">
             Verifique sua caixa de entrada e spam para encontrar o convite de ativação. Com ele você conclui o cadastro em poucos minutos.
           </p>
         </div>
@@ -40,14 +40,14 @@ export function CheckoutSuccessPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/"
-            className="h-11 px-6 rounded-xl bg-[#ff7b2f] text-white font-bold inline-flex items-center gap-2 hover:bg-[#f06820]"
+            className="h-11 px-6 rounded-xl bg-accent text-white font-bold inline-flex items-center gap-2 hover:bg-accent-hover"
           >
             Voltar para landing
             <ArrowRight size={16} />
           </Link>
           <Link
             to="/login"
-            className="h-11 px-6 rounded-xl border border-line text-white/85 font-bold inline-flex items-center hover:bg-ink/5"
+            className="h-11 px-6 rounded-xl border border-line text-surface-500 font-bold inline-flex items-center hover:bg-ink/5"
           >
             Já tenho convite, entrar
           </Link>

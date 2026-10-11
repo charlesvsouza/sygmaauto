@@ -12,14 +12,14 @@ export function AboutPage() {
         description="O SigmaAuto nasceu para substituir improviso por processo, papel por rastreabilidade e achismo por indicadores."
         aside={
           <div className="space-y-3">
-            <p className="text-xs uppercase tracking-wide text-white/35">Posicionamento</p>
-            <p className="text-sm text-white/60">ERP automotivo SaaS com foco em simplicidade operacional, implantação rápida e crescimento sustentável.</p>
+            <p className="text-xs uppercase tracking-wide text-surface-500">Posicionamento</p>
+            <p className="text-sm text-surface-500">ERP automotivo SaaS com foco em simplicidade operacional, implantação rápida e crescimento sustentável.</p>
           </div>
         }
       />
 
       <section className="max-w-6xl mx-auto px-6 pb-16 grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-8">
-        <div className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-8 space-y-5 text-white/60 leading-relaxed">
+        <div className="rounded-xl border border-line bg-ink/5 p-8 space-y-5 text-surface-500 leading-relaxed">
           <p>
             A maior parte das oficinas ainda opera com ferramentas genéricas, planilhas soltas e processos que dependem demais de memória e experiência individual. Isso reduz previsibilidade, dificulta crescimento e afeta margem.
           </p>
@@ -39,8 +39,8 @@ export function AboutPage() {
             ['24/7', 'infraestrutura online e monitorada'],
           ].map(([value, text]) => (
             <div key={value} className="rounded-xl border border-line bg-ink/5 p-6 text-center">
-              <p className="text-3xl font-bold text-[#ff7b2f]">{value}</p>
-              <p className="mt-2 text-sm text-white/55">{text}</p>
+              <p className="text-3xl font-bold text-accent-ink">{value}</p>
+              <p className="mt-2 text-sm text-surface-500">{text}</p>
             </div>
           ))}
         </div>
@@ -53,8 +53,8 @@ export function AboutPage() {
           ['Valores', 'Clareza operacional, segurança, proximidade com o cliente e evolução constante do produto.'],
         ].map(([title, text]) => (
           <div key={title} className="rounded-xl border border-line bg-ink/5 p-6">
-            <h2 className="text-lg font-bold text-white">{title}</h2>
-            <p className="mt-3 text-sm text-white/55 leading-relaxed">{text}</p>
+            <h2 className="text-lg font-bold text-surface-50">{title}</h2>
+            <p className="mt-3 text-sm text-surface-500 leading-relaxed">{text}</p>
           </div>
         ))}
       </section>

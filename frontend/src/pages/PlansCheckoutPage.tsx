@@ -121,14 +121,14 @@ export function PlansCheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090e17] text-white" style={{ fontFamily: '"Space Grotesk", "Manrope", sans-serif' }}>
+    <div className="min-h-screen bg-app text-surface-50">
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-[#ff7b2f]/10 blur-[120px]" />
-        <div className="absolute bottom-[-8rem] right-[-8rem] w-[28rem] h-[28rem] rounded-full bg-[#1f4fd3]/12 blur-[110px]" />
+        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-accent-soft " />
+        <div className="absolute bottom-[-8rem] right-[-8rem] w-[28rem] h-[28rem] rounded-full bg-accent-soft " />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-white/65 hover:text-white transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-surface-500 hover:text-surface-50 transition-colors">
           <ArrowLeft size={16} />
           Voltar para a landing
         </Link>
@@ -139,16 +139,16 @@ export function PlansCheckoutPage() {
           transition={{ duration: 0.35 }}
           className="mt-6"
         >
-          <p className="text-xs uppercase tracking-wide text-[#ff7b2f]/80 font-bold">Assinatura</p>
+          <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Assinatura</p>
           <h1 className="mt-3 text-3xl md:text-4xl font-bold">Escolha a modalidade do seu plano</h1>
-          <p className="mt-3 text-white/60 text-sm md:text-base max-w-2xl">
+          <p className="mt-3 text-surface-500 text-sm md:text-base max-w-2xl">
             Selecione o plano e o ciclo de cobrança. No anual, você recebe 15% de desconto automaticamente.
           </p>
         </motion.div>
 
         <div className="mt-9 grid lg:grid-cols-2 gap-6">
           <div className="rounded-xl border border-line bg-ink/5 p-6">
-            <p className="text-xs uppercase tracking-wide text-white/50">1. Plano</p>
+            <p className="text-xs uppercase tracking-wide text-surface-500">1. Plano</p>
             <div className="mt-4 grid sm:grid-cols-3 gap-3">
               {plans.map((plan) => {
                 const active = selectedPlan === plan.name;
@@ -158,20 +158,20 @@ export function PlansCheckoutPage() {
                     type="button"
                     onClick={() => setSelectedPlan(plan.name)}
                     className={`rounded-lg border p-4 text-left transition-all ${
-                      active
-                        ? 'border-[#ff7b2f]/70 bg-[#ff7b2f]/10 shadow-[0_0_20px_rgba(255,123,47,0.25)]'
-                        : 'border-line bg-ink/5 hover:border-line'
-                    }`}
+ active
+ ? 'border-accent/30 bg-accent-soft shadow-sm'
+ : 'border-line bg-ink/5 hover:border-line'
+ }`}
                   >
-                    <p className="text-[12px] uppercase tracking-wide text-white/45">{plan.name}</p>
+                    <p className="text-[12px] uppercase tracking-wide text-surface-500">{plan.name}</p>
                     <p className="mt-1 text-lg font-bold">{plan.label}</p>
-                    <p className="mt-1 text-sm text-white/70">{formatBrl(plan.monthlyPrice)}/mes</p>
+                    <p className="mt-1 text-sm text-surface-500">{formatBrl(plan.monthlyPrice)}/mes</p>
                   </button>
                 );
               })}
             </div>
 
-            <p className="mt-7 text-xs uppercase tracking-wide text-white/50">2. Modalidade</p>
+            <p className="mt-7 text-xs uppercase tracking-wide text-surface-500">2. Modalidade</p>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
               {cycleOptions.map((cycle) => {
                 const active = billingCycle === cycle.value;
@@ -183,10 +183,10 @@ export function PlansCheckoutPage() {
                     type="button"
                     onClick={() => setBillingCycle(cycle.value)}
                     className={`rounded-lg border p-4 text-left transition-all ${
-                      active
-                        ? 'border-[#ff7b2f]/70 bg-[#ff7b2f]/10 shadow-[0_0_20px_rgba(255,123,47,0.25)]'
-                        : 'border-line bg-ink/5 hover:border-line'
-                    }`}
+ active
+ ? 'border-accent/30 bg-accent-soft shadow-sm'
+ : 'border-line bg-ink/5 hover:border-line'
+ }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">{cycle.label}</p>
@@ -197,7 +197,7 @@ export function PlansCheckoutPage() {
                       )}
                     </div>
                     <p className="mt-2 text-base font-bold">{formatBrl(finalValue)}</p>
-                    <p className="text-xs text-white/55">{cycle.months}x de {formatBrl(finalValue / cycle.months)}</p>
+                    <p className="text-xs text-surface-500">{cycle.months}x de {formatBrl(finalValue / cycle.months)}</p>
                   </button>
                 );
               })}
@@ -205,34 +205,34 @@ export function PlansCheckoutPage() {
 
             {!isAuthenticated && (
               <div className="mt-7 grid gap-4">
-                <p className="text-xs uppercase tracking-wide text-white/50">3. Dados para ativacao</p>
-                <label className="text-sm text-white/80">
+                <p className="text-xs uppercase tracking-wide text-surface-500">3. Dados para ativacao</p>
+                <label className="text-sm text-surface-500">
                   Nome da oficina
                   <input
                     value={tenantName}
                     onChange={(e) => setTenantName(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-surface-50 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-accent"
                     placeholder="Ex.: Oficina Almeida"
                   />
                 </label>
 
-                <label className="text-sm text-white/80">
+                <label className="text-sm text-surface-500">
                   Email para convite do MASTER
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-surface-50 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-accent"
                     placeholder="responsavel@empresa.com"
                   />
                 </label>
 
-                <label className="text-sm text-white/80">
+                <label className="text-sm text-surface-500">
                   CPF do pagador (opcional, recomendado para cartao)
                   <input
                     value={document}
                     onChange={(e) => setDocument(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#ff7b2f]/40"
+                    className="mt-1.5 w-full rounded-xl bg-ink/5 border border-line px-3.5 py-2.5 text-surface-50 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-accent"
                     placeholder="Ex.: 123.456.789-00"
                   />
                 </label>
@@ -240,17 +240,17 @@ export function PlansCheckoutPage() {
             )}
           </div>
 
-          <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 p-6 h-fit">
-            <p className="text-xs uppercase tracking-wide text-[#ffccaa] font-bold">Resumo</p>
+          <div className="rounded-xl border border-accent/30 bg-accent-soft p-6 h-fit">
+            <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Resumo</p>
             <h2 className="mt-2 text-2xl font-bold">Plano {selectedPlanDef.label}</h2>
-            <p className="mt-2 text-sm text-white/75 leading-relaxed">{selectedPlanDef.description}</p>
+            <p className="mt-2 text-sm text-surface-500 leading-relaxed">{selectedPlanDef.description}</p>
 
             <div className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center justify-between text-white/70">
+              <div className="flex items-center justify-between text-surface-500">
                 <span>Periodicidade</span>
-                <span className="font-bold text-white">{selectedCycle.label}</span>
+                <span className="font-bold text-surface-50">{selectedCycle.label}</span>
               </div>
-              <div className="flex items-center justify-between text-white/70">
+              <div className="flex items-center justify-between text-surface-500">
                 <span>Subtotal</span>
                 <span>{formatBrl(gross)}</span>
               </div>
@@ -262,10 +262,10 @@ export function PlansCheckoutPage() {
               )}
               <div className="h-px bg-ink/5" />
               <div className="flex items-center justify-between">
-                <span className="text-white/80">Total</span>
+                <span className="text-surface-500">Total</span>
                 <span className="text-2xl font-bold">{formatBrl(discountedTotal)}</span>
               </div>
-              <div className="flex items-center justify-between text-white/70">
+              <div className="flex items-center justify-between text-surface-500">
                 <span>Equivalente mensal</span>
                 <span>{formatBrl(monthlyEquivalent)}/mes</span>
               </div>
@@ -281,7 +281,7 @@ export function PlansCheckoutPage() {
               type="button"
               onClick={startCheckout}
               disabled={loading || (!isAuthenticated && !isPublicFormValid)}
-              className="mt-6 h-12 w-full rounded-xl bg-[#ff7b2f] text-white font-bold hover:bg-[#f06820] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+              className="mt-6 h-12 w-full rounded-xl bg-accent text-white font-bold hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -296,13 +296,13 @@ export function PlansCheckoutPage() {
               )}
             </button>
 
-            <ul className="mt-5 space-y-2 text-sm text-white/75">
+            <ul className="mt-5 space-y-2 text-sm text-surface-500">
               <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-[#ff7b2f] mt-0.5 flex-shrink-0" />
+                <CheckCircle2 size={16} className="text-accent-ink mt-0.5 flex-shrink-0" />
                 Checkout oficial do Mercado Pago
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-[#ff7b2f] mt-0.5 flex-shrink-0" />
+                <CheckCircle2 size={16} className="text-accent-ink mt-0.5 flex-shrink-0" />
                 Convite de ativacao do MASTER enviado apos confirmação
               </li>
             </ul>

@@ -15,9 +15,9 @@ export function SolutionsPage() {
         description="Cada módulo foi pensado para resolver uma etapa real da operação: atendimento, execução, venda, controle e gestão."
         aside={
           <div>
-            <p className="text-xs uppercase tracking-wide text-white/35">Cobertura</p>
-            <p className="mt-3 text-3xl font-bold text-white">360°</p>
-            <p className="text-sm text-white/45">da entrada do veículo ao fechamento financeiro</p>
+            <p className="text-xs uppercase tracking-wide text-surface-500">Cobertura</p>
+            <p className="mt-3 text-3xl font-bold text-surface-50">360°</p>
+            <p className="text-sm text-surface-500">da entrada do veículo ao fechamento financeiro</p>
           </div>
         }
       />
@@ -30,13 +30,13 @@ export function SolutionsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08 }}
-            className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-6"
+            className="rounded-xl border border-line bg-ink/5 p-6"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#ff7b2f]/12 flex items-center justify-center mb-4">
-              <Icon size={22} className="text-[#ff7b2f]" />
+            <div className="w-11 h-11 rounded-xl bg-accent-soft flex items-center justify-center mb-4">
+              <Icon size={22} className="text-accent-ink" />
             </div>
-            <h2 className="text-lg font-bold text-white">{title}</h2>
-            <p className="mt-3 text-sm text-white/55 leading-relaxed">{desc}</p>
+            <h2 className="text-lg font-bold text-surface-50">{title}</h2>
+            <p className="mt-3 text-sm text-surface-500 leading-relaxed">{desc}</p>
           </motion.article>
         ))}
       </section>
@@ -49,15 +49,15 @@ export function SolutionsPage() {
             ['3. Gestão', 'Receba, análise indicadores e acompanhe resultados do negócio em tempo real.'],
           ].map(([title, text]) => (
             <div key={title} className="rounded-xl border border-line bg-ink/5 p-6">
-              <p className="text-sm font-bold text-white">{title}</p>
-              <p className="mt-3 text-sm text-white/55 leading-relaxed">{text}</p>
+              <p className="text-sm font-bold text-surface-50">{title}</p>
+              <p className="mt-3 text-sm text-surface-500 leading-relaxed">{text}</p>
             </div>
           ))}
         </div>
         <div className="mt-8">
           <Link
             to="/planos"
-            className="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-[#ff7b2f] text-white font-bold text-sm hover:bg-[#f06820] transition-colors"
+            className="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-accent text-white font-bold text-sm hover:bg-accent-hover transition-colors"
           >
             Ver planos e modalidades <ArrowRight size={16} />
           </Link>

@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowLeft, RefreshCcw } from 'lucide-react';
 
 export function CheckoutCancelPage() {
   return (
-    <div className="min-h-screen bg-[#090e17] text-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-app text-surface-50 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,21 +17,21 @@ export function CheckoutCancelPage() {
         <p className="text-xs font-bold uppercase tracking-wide text-amber-700/80">Pagamento não concluído</p>
         <h1 className="mt-2 text-3xl md:text-4xl font-bold">Seu checkout foi cancelado</h1>
 
-        <p className="mt-4 text-white/75 leading-relaxed">
+        <p className="mt-4 text-surface-500 leading-relaxed">
           Nenhum problema. Quando quiser, você pode iniciar novamente e escolher outra forma de pagamento no Mercado Pago.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/"
-            className="h-11 px-6 rounded-xl bg-[#ff7b2f] text-white font-bold inline-flex items-center gap-2 hover:bg-[#f06820]"
+            className="h-11 px-6 rounded-xl bg-accent text-white font-bold inline-flex items-center gap-2 hover:bg-accent-hover"
           >
             <RefreshCcw size={16} />
             Tentar novamente
           </Link>
           <Link
             to="/"
-            className="h-11 px-6 rounded-xl border border-line text-white/85 font-bold inline-flex items-center gap-2 hover:bg-ink/5"
+            className="h-11 px-6 rounded-xl border border-line text-surface-500 font-bold inline-flex items-center gap-2 hover:bg-ink/5"
           >
             <ArrowLeft size={16} />
             Voltar

@@ -42,14 +42,13 @@ export function InitialSplash() {
 
   return (
     <div
-      className="min-h-screen bg-[#090e17] flex flex-col items-center justify-center relative overflow-hidden"
-      style={{ fontFamily: '"Space Grotesk", "Manrope", sans-serif' }}
+      className="min-h-screen bg-app flex flex-col items-center justify-center relative overflow-hidden"
     >
       {/* Glow ambiente — mesmo da LandingPage */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-[#ff7b2f]/10 blur-[120px]" />
-        <div className="absolute top-[30%] left-[-8rem] w-[30rem] h-[30rem] rounded-full bg-[#ff7b2f]/6 blur-[100px]" />
-        <div className="absolute top-[60%] right-[-6rem] w-[26rem] h-[26rem] rounded-full bg-[#2855d6]/8 blur-[100px]" />
+        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-accent-soft " />
+        <div className="absolute top-[30%] left-[-8rem] w-[30rem] h-[30rem] rounded-full bg-accent-soft " />
+        <div className="absolute top-[60%] right-[-6rem] w-[26rem] h-[26rem] rounded-full bg-accent-soft " />
       </div>
 
       <motion.div
@@ -65,7 +64,7 @@ export function InitialSplash() {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="flex items-center gap-3 mb-14"
         >
-          <SigmaAutoLogo variant="full" size={56} />
+          <SigmaAutoLogo variant="full" size={56} tone="dark" accent="teal" />
         </motion.div>
 
         {/* Mensagem central */}
@@ -75,7 +74,7 @@ export function InitialSplash() {
           transition={{ delay: 0.3 }}
           className="text-center mb-14"
         >
-          <p className="text-white/50 text-sm tracking-wide">
+          <p className="text-surface-500 text-sm tracking-wide">
             {complete ? 'Tudo pronto. Redirecionando...' : 'Preparando seu ambiente de gestão'}
           </p>
         </motion.div>
@@ -83,14 +82,14 @@ export function InitialSplash() {
         {/* Barra de progresso */}
         <div className="w-72 md:w-96">
           <EcgPulse
-            className="h-7 w-full rounded-full border border-[#ff7b2f]/25 bg-[#0d1220]/45 overflow-hidden relative mb-3"
+            className="h-7 w-full rounded-full border border-accent/30 bg-panel overflow-hidden relative mb-3"
             lineColor="#fb923c"
             pointColor="#fdba74"
             waveDuration={2.6}
             travelDuration={3.6}
             pointProgress={progress}
           />
-          <p className="text-[11px] text-white/35 uppercase tracking-wide text-center mb-4"></p>
+          <p className="text-[11px] text-surface-500 uppercase tracking-wide text-center mb-4"></p>
 
           {/* Step atual */}
           <div className="h-5 flex items-center justify-center">
@@ -101,13 +100,13 @@ export function InitialSplash() {
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="flex items-center gap-2 text-white/30"
+                  className="flex items-center gap-2 text-surface-500"
                 >
                   {steps[currentStep] && (() => {
                     const StepIcon = steps[currentStep].icon;
                     return (
                       <>
-                        <StepIcon size={12} className="text-[#ff7b2f]" />
+                        <StepIcon size={12} className="text-accent-ink" />
                         <span className="text-[11px] uppercase tracking-wide">{steps[currentStep].text}</span>
                       </>
                     );
@@ -129,7 +128,7 @@ export function InitialSplash() {
 
       {/* Rodapé */}
       <div className="absolute bottom-8 flex flex-col items-center gap-1">
-        <p className="text-[11px] text-white/15 uppercase tracking-wide">© 2026 SigmaAuto · sigmaauto.com.br</p>
+        <p className="text-[11px] text-surface-500 uppercase tracking-wide">© 2026 SigmaAuto · sigmaauto.com.br</p>
       </div>
     </div>
   );
