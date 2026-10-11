@@ -171,8 +171,19 @@ export class AsaasService {
     const client = new AsaasClient(decryptSecret(account.apiKeyEnc), environment);
 
     // Reserva a emissão: dois cliques (ou duas abas) não geram duas cobranças.
+    // Atenção: em SQL, NOT (status = 'CREATING') descarta linhas com status NULL; por isso o OR explícito.
+    // Uma reserva com mais de 60 s é considerada abandonada (queda do servidor no meio da emissão).
     const claim = await this.prisma.serviceOrder.updateMany({
-      where: { id: order.id, tenantId, asaasPaymentId: null, NOT: { asaasChargeStatus: 'CREATING' } },
+      where: {
+        id: order.id,
+        tenantId,
+        asaasPaymentId: null,
+        OR: [
+          { asaasChargeStatus: null },
+          { asaasChargeStatus: { not: 'CREATING' } },
+          { asaasChargeStatus: 'CREATING', updatedAt: { lt: new Date(Date.now() - 60_000) } },
+        ],
+      },
       data: { asaasChargeStatus: 'CREATING' },
     });
     if (claim.count === 0) throw new BadRequestException('A cobrança desta O.S. já está sendo emitida. Aguarde alguns segundos.');
