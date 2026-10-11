@@ -111,7 +111,8 @@ export const permissionsApi = {
 
 export const asaasApi = {
   status: () => api.get('/asaas/status'),
-  connect: (data: { apiKey: string; environment: 'production' | 'sandbox' }) => api.post('/asaas/connect', data),
+  connect: (data: { apiKey: string }) => api.post('/asaas/connect', data),
+  setNotify: (notifyCustomers: boolean) => api.patch('/asaas/settings', { notifyCustomers }),
   disconnect: () => api.delete('/asaas/connect'),
   getCharge: (orderId: string) => api.get(`/asaas/orders/${orderId}/charge`),
   createCharge: (orderId: string, data: { billingType: string; dueDate?: string }) =>

@@ -6,7 +6,8 @@ import { ServiceOrdersService } from '../service-orders/service-orders.service';
 import { UpdateStatusDto } from '../service-orders/dto/service-order.dto';
 import { decryptSecret, encryptSecret, safeEqual } from '../common/secret-box';
 import { formatOrderCode } from '../common/order-number';
-import { AsaasBillingType, AsaasClient, AsaasEnvironment } from './asaas.client';
+import { isValidCpfCnpj, onlyDigits } from '../common/br-documents';
+import { AsaasBillingType, AsaasClient, AsaasEnvironment, environmentFromKey } from './asaas.client';
 
 // Etapas em que faz sentido cobrar: da aprovação até a entrega do carro, antes de faturar.
 const CHARGEABLE_STATUSES = ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO', 'PRONTO_ENTREGA'];
@@ -18,7 +19,7 @@ const PAYMENT_LABEL: Record<string, string> = {
   UNDEFINED: 'Asaas',
 };
 
-const digits = (v?: string | null) => (v ?? '').replace(/\D/g, '');
+const digits = onlyDigits;
 
 @Injectable()
 export class AsaasService {
@@ -59,21 +60,27 @@ export class AsaasService {
       accountLabel: account.accountLabel,
       connectedAt: account.connectedAt,
       webhookConfigured: account.webhookConfigured,
+      notifyCustomers: account.notifyCustomers,
       // Para configurar à mão no painel do Asaas quando o cadastro automático não é possível.
       webhookUrl: this.webhookUrl(tenantId),
       webhookToken: account.webhookToken,
     };
   }
 
-  async connect(tenantId: string, apiKey: string, environment: AsaasEnvironment) {
+  async connect(tenantId: string, apiKey: string) {
     const key = apiKey.trim();
     if (!key) throw new BadRequestException('Informe a chave de API do Asaas.');
+    // O ambiente vem do prefixo da chave: $aact_prod_ (produção) ou $aact_hmlg_ (sandbox).
+    const environment = environmentFromKey(key);
+    if (!environment) {
+      throw new BadRequestException('A chave deve começar com $aact_prod_ (produção) ou $aact_hmlg_ (sandbox). Copie a chave inteira no Asaas.');
+    }
     const client = new AsaasClient(key, environment);
     await client.balance(); // falha com mensagem clara se a chave não vale
 
     const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { email: true, name: true } });
     const existing = await this.prisma.asaasAccount.findUnique({ where: { tenantId } });
-    const webhookToken = existing?.webhookToken ?? randomBytes(24).toString('hex');
+    const webhookToken = existing?.webhookToken ?? randomBytes(24).toString('hex'); // 48 caracteres (o Asaas exige 32 a 255)
 
     let webhookConfigured = false;
     const url = this.webhookUrl(tenantId);
@@ -91,6 +98,11 @@ export class AsaasService {
       create: { tenantId, apiKeyEnc: encryptSecret(key), environment, webhookToken, webhookConfigured, accountLabel: tenant?.name ?? null },
       update: { apiKeyEnc: encryptSecret(key), environment, webhookToken, webhookConfigured, accountLabel: tenant?.name ?? null },
     });
+    return this.getStatus(tenantId);
+  }
+
+  async setNotifyCustomers(tenantId: string, enabled: boolean) {
+    await this.prisma.asaasAccount.update({ where: { tenantId }, data: { notifyCustomers: enabled } });
     return this.getStatus(tenantId);
   }
 
@@ -142,8 +154,8 @@ export class AsaasService {
     if (value <= 0) throw new BadRequestException('O valor da O.S. é zero: não há o que cobrar.');
 
     const cpfCnpj = digits(order.customer.document);
-    if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
-      throw new BadRequestException('O cliente precisa ter CPF ou CNPJ válido no cadastro para emitir a cobrança.');
+    if (!isValidCpfCnpj(cpfCnpj)) {
+      throw new BadRequestException('O CPF ou CNPJ do cliente está ausente ou inválido. Corrija o cadastro do cliente para emitir a cobrança.');
     }
 
     // Vencimento: hoje ou futuro, no horário de Brasília.
@@ -153,25 +165,61 @@ export class AsaasService {
       throw new BadRequestException('O vencimento deve ser hoje ou uma data futura.');
     }
 
-    const client = await this.clientFor(tenantId);
-    const customer =
-      (await client.findCustomerByDocument(cpfCnpj)) ??
-      (await client.createCustomer({
-        name: order.customer.name,
-        cpfCnpj,
-        email: order.customer.email || undefined,
-        mobilePhone: digits(order.customer.phone) || undefined,
-        externalReference: order.customer.id,
-      }));
+    const account = await this.prisma.asaasAccount.findUnique({ where: { tenantId } });
+    if (!account) throw new BadRequestException('Conecte o Asaas em Configurações → Pagamentos antes de cobrar.');
+    const environment = account.environment as AsaasEnvironment;
+    const client = new AsaasClient(decryptSecret(account.apiKeyEnc), environment);
 
-    const payment = await client.createPayment({
-      customer: customer.id,
-      billingType: dto.billingType,
-      value,
-      dueDate,
-      description: `O.S. ${formatOrderCode(order)}`,
-      externalReference: order.id,
+    // Reserva a emissão: dois cliques (ou duas abas) não geram duas cobranças.
+    const claim = await this.prisma.serviceOrder.updateMany({
+      where: { id: order.id, tenantId, asaasPaymentId: null, NOT: { asaasChargeStatus: 'CREATING' } },
+      data: { asaasChargeStatus: 'CREATING' },
     });
+    if (claim.count === 0) throw new BadRequestException('A cobrança desta O.S. já está sendo emitida. Aguarde alguns segundos.');
+
+    let payment;
+    try {
+      // O Asaas aceita clientes duplicados: reaproveita o id guardado (do mesmo ambiente) ou o cliente
+      // que já existe pelo CPF/CNPJ, e só cria quando não há nenhum.
+      let asaasCustomerId =
+        order.customer.asaasCustomerId && order.customer.asaasCustomerEnv === environment ? order.customer.asaasCustomerId : null;
+      if (!asaasCustomerId) {
+        const found = await client.findCustomerByDocument(cpfCnpj);
+        const created = found ?? (await client.createCustomer({
+          name: order.customer.name,
+          cpfCnpj,
+          email: order.customer.email || undefined,
+          mobilePhone: digits(order.customer.phone) || undefined,
+          address: order.customer.address || undefined,
+          postalCode: digits(order.customer.cep) || undefined,
+          observations: order.customer.notes || undefined,
+          externalReference: order.customer.id,
+          // Avisos do Asaas ao cliente (e-mail/SMS) só se a oficina quiser; no sandbox eles são reais.
+          notificationDisabled: !account.notifyCustomers,
+        }));
+        asaasCustomerId = created.id;
+        await this.prisma.customer.update({
+          where: { id: order.customer.id },
+          data: { asaasCustomerId, asaasCustomerEnv: environment },
+        });
+      }
+
+      // Retentativa segura: se uma emissão anterior chegou ao Asaas mas a resposta se perdeu, adota a cobrança.
+      const earlier = (await client.findPaymentsByReference(order.id)).find((p) => !p.deleted && p.status !== 'REFUNDED');
+      payment =
+        earlier ??
+        (await client.createPayment({
+          customer: asaasCustomerId,
+          billingType: dto.billingType,
+          value,
+          dueDate,
+          description: `O.S. ${formatOrderCode(order)}`.slice(0, 500),
+          externalReference: order.id,
+        }));
+    } catch (err) {
+      await this.prisma.serviceOrder.updateMany({ where: { id: order.id, asaasChargeStatus: 'CREATING' }, data: { asaasChargeStatus: null } });
+      throw err;
+    }
 
     await this.prisma.serviceOrder.update({
       where: { id: order.id },
@@ -250,7 +298,9 @@ export class AsaasService {
     });
     if (!order) return { ok: true, ignored: true };
 
-    await this.applyPaymentStatus(tenantId, order.id, payment.status, event, payment.billingType);
+    // O evento manda mais que o campo status: exclusão e estorno chegam com o status anterior.
+    const status = event === 'PAYMENT_DELETED' ? 'DELETED' : event === 'PAYMENT_REFUNDED' ? 'REFUNDED' : event === 'PAYMENT_OVERDUE' ? 'OVERDUE' : payment.status;
+    await this.applyPaymentStatus(tenantId, order.id, status, event, payment.billingType);
     return { ok: true };
   }
 

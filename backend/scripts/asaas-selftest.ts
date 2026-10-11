@@ -3,10 +3,18 @@
 import assert from 'assert';
 import { decryptSecret, encryptSecret } from '../src/common/secret-box';
 import { AsaasService } from '../src/asaas/asaas.service';
+import { environmentFromKey } from '../src/asaas/asaas.client';
+import { isValidCnpj, isValidCpf } from '../src/common/br-documents';
 
 const enc = encryptSecret('chave-secreta');
 assert.notStrictEqual(enc, 'chave-secreta');
 assert.strictEqual(decryptSecret(enc), 'chave-secreta');
+
+assert.strictEqual(environmentFromKey('$aact_hmlg_abc'), 'sandbox');
+assert.strictEqual(environmentFromKey('$aact_prod_abc'), 'production');
+assert.strictEqual(environmentFromKey('abc'), null);
+assert.ok(isValidCpf('529.982.247-25') && !isValidCpf('111.111.111-11') && !isValidCpf('529.982.247-24'));
+assert.ok(isValidCnpj('11.222.333/0001-81') && !isValidCnpj('11.222.333/0001-80'));
 
 const order: any = { id: 'o1', tenantId: 't1', status: 'PRONTO_ENTREGA', asaasPaymentId: 'pay_1', asaasBillingType: 'PIX', asaasPaidAt: null };
 const calls: string[] = [];

@@ -9,6 +9,7 @@ type Status = {
   webhookConfigured?: boolean;
   webhookUrl?: string | null;
   webhookToken?: string;
+  notifyCustomers?: boolean;
   connectedAt?: string;
 };
 
@@ -19,7 +20,6 @@ export function AsaasSettingsForm({ canEdit }: { canEdit: boolean }) {
   const confirm = useConfirm();
   const [status, setStatus] = useState<Status | null>(null);
   const [apiKey, setApiKey] = useState('');
-  const [environment, setEnvironment] = useState<'production' | 'sandbox'>('production');
   const [saving, setSaving] = useState(false);
 
   const load = () => asaasApi.status().then((r) => setStatus(r.data)).catch(() => setStatus({ connected: false }));
@@ -38,7 +38,7 @@ export function AsaasSettingsForm({ canEdit }: { canEdit: boolean }) {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await asaasApi.connect({ apiKey, environment });
+      const res = await asaasApi.connect({ apiKey });
       setStatus(res.data);
       setApiKey('');
       toast.success('Asaas conectado.');
@@ -93,6 +93,28 @@ export function AsaasSettingsForm({ canEdit }: { canEdit: boolean }) {
           </div>
 
           {canEdit && (
+            <label className="flex items-start gap-2 text-sm text-surface-200">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4"
+                checked={Boolean(status.notifyCustomers)}
+                onChange={async (e) => {
+                  try {
+                    const res = await asaasApi.setNotify(e.target.checked);
+                    setStatus(res.data);
+                  } catch (err: any) {
+                    toast.error(err.response?.data?.message || 'Não foi possível salvar.');
+                  }
+                }}
+              />
+              <span>
+                Deixar o Asaas avisar o cliente por e-mail e SMS
+                <span className="block text-xs text-surface-500">Vale para clientes novos no Asaas. No ambiente de testes os envios são reais: use contatos seus.</span>
+              </span>
+            </label>
+          )}
+
+          {canEdit && (
             status.webhookConfigured ? (
               <p className="text-sm text-surface-500">Aviso de pagamento (webhook) cadastrado no Asaas automaticamente.</p>
             ) : (
@@ -132,15 +154,8 @@ export function AsaasSettingsForm({ canEdit }: { canEdit: boolean }) {
               placeholder="$aact_..."
               className="input mt-1 font-mono"
             />
-            <p className="text-xs text-surface-500 mt-1">No Asaas: Integrações → Chave de API. A chave fica guardada cifrada e não aparece de novo.</p>
+            <p className="text-xs text-surface-500 mt-1">No Asaas: Integrações → Chave de API. O ambiente é detectado pela chave ($aact_hmlg_ = testes, $aact_prod_ = produção). A chave fica guardada cifrada e não aparece de novo.</p>
           </div>
-          <fieldset>
-            <legend className="block text-sm font-semibold text-muted">Ambiente</legend>
-            <div className="mt-1 flex gap-4 text-sm text-surface-200">
-              <label className="inline-flex items-center gap-2"><input type="radio" name="asaas-env" checked={environment === 'production'} onChange={() => setEnvironment('production')} /> Produção</label>
-              <label className="inline-flex items-center gap-2"><input type="radio" name="asaas-env" checked={environment === 'sandbox'} onChange={() => setEnvironment('sandbox')} /> Testes (sandbox)</label>
-            </div>
-          </fieldset>
           <button type="submit" disabled={saving || !apiKey.trim()} className="btn btn-primary h-11 px-6 rounded-lg font-semibold disabled:opacity-50">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Conectar Asaas'}
           </button>

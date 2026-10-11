@@ -113,6 +113,7 @@ model AsaasAccount {
   environment       String   @default("production") // production | sandbox
   webhookToken      String   // segredo conferido em cada chamada de webhook
   webhookConfigured Boolean  @default(false)
+  notifyCustomers   Boolean  @default(false) // deixa o Asaas avisar o cliente por e-mail/SMS (no sandbox os envios sao reais)
   accountLabel      String?
   connectedAt       DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -223,6 +224,8 @@ model Customer {
   estado    String?
   notes     String?
   lgpdErasedAt DateTime?
+  asaasCustomerId  String? // id do cliente na conta Asaas da oficina (evita duplicar: o Asaas aceita duplicados)
+  asaasCustomerEnv String? // production | sandbox: ids de um ambiente nao valem no outro
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

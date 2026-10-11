@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Headers, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Capability } from '../auth/decorators/roles.decorator';
@@ -11,9 +11,11 @@ import { AsaasService } from './asaas.service';
 class ConnectAsaasDto {
   @IsString()
   apiKey: string;
+}
 
-  @IsIn(['production', 'sandbox'])
-  environment: 'production' | 'sandbox';
+class NotifyAsaasDto {
+  @IsBoolean()
+  notifyCustomers: boolean;
 }
 
 class CreateChargeDto {
@@ -49,7 +51,14 @@ export class AsaasController {
   @Roles('MASTER', 'ADMIN')
   @ApiOperation({ summary: 'Conectar a conta Asaas da oficina (valida a chave)' })
   connect(@Tenant() tenant: { tenantId: string }, @Body() dto: ConnectAsaasDto) {
-    return this.asaas.connect(tenant.tenantId, dto.apiKey, dto.environment);
+    return this.asaas.connect(tenant.tenantId, dto.apiKey);
+  }
+
+  @Patch('settings')
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Deixar o Asaas avisar o cliente por e-mail/SMS' })
+  settings(@Tenant() tenant: { tenantId: string }, @Body() dto: NotifyAsaasDto) {
+    return this.asaas.setNotifyCustomers(tenant.tenantId, dto.notifyCustomers);
   }
 
   @Delete('connect')
