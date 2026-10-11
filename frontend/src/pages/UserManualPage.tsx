@@ -154,7 +154,7 @@ const markdownComponents: Components = {
   h1: ({ children }) => (
     <h1
       id={slugify(nodeText(children))}
-      className="manual-h1 scroll-mt-28 pt-14 text-xs font-bold uppercase tracking-[0.28em] text-[#33b6bf]"
+      className="manual-h1 scroll-mt-28 pt-14 text-xs font-bold uppercase tracking-wide text-[#33b6bf]"
     >
       {children}
     </h1>
@@ -165,7 +165,7 @@ const markdownComponents: Components = {
     return (
       <h2
         id={slugify(heading)}
-        className={`manual-h2 ${m ? '' : 'manual-intro-h2'} scroll-mt-28 mt-2 flex items-baseline gap-3 border-b border-line pb-3 pt-6 text-[1.7rem] font-black leading-tight text-white`}
+        className={`manual-h2 ${m ? '' : 'manual-intro-h2'} scroll-mt-28 mt-2 flex items-baseline gap-3 border-b border-line pb-3 pt-6 text-[1.7rem] font-bold leading-tight text-white`}
       >
         {m ? <span className="text-[#33b6bf]">{m[1]}.</span> : null}
         {m ? m[2] : heading}
@@ -218,7 +218,7 @@ const markdownComponents: Components = {
     const isPlan = /^planos?\b/i.test(first);
     return (
       <aside className="manual-note rounded-lg border border-[#33b6bf]/30 bg-[#0b7f86]/10 px-4 py-3 text-sm [&_p]:text-sm [&_p]:leading-6">
-        <p className="mb-1 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-[#33b6bf]">{isPlan ? 'Planos' : 'Dica'}</p>
+        <p className="mb-1 text-[0.7rem] font-bold uppercase tracking-wide text-[#33b6bf]">{isPlan ? 'Planos' : 'Dica'}</p>
         {children}
       </aside>
     );
@@ -333,8 +333,8 @@ export function UserManualPage() {
             <Link to="/" className="mb-4 inline-flex items-center gap-1.5 text-sm text-[#9aa9ba] hover:text-[#8ce2e7]">
               <ArrowLeft size={15} /> Voltar
             </Link>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#33b6bf]">Guia do usuário</p>
-            <h1 className="mt-2 text-3xl font-black text-white lg:text-4xl">Manual do SigmaAuto</h1>
+            <p className="text-xs font-bold uppercase tracking-wide text-[#33b6bf]">Guia do usuário</p>
+            <h1 className="mt-2 text-3xl font-bold text-white lg:text-4xl">Manual do SigmaAuto</h1>
             {manual?.meta.version ? <p className="mt-1 text-sm text-[#9aa9ba]">Versão {manual.meta.version}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -357,7 +357,7 @@ export function UserManualPage() {
               type="button"
               onClick={() => window.print()}
               disabled={!manual}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0b7f86] px-5 py-2 text-sm font-black text-white shadow-[0_10px_24px_rgba(11,127,134,0.34)] hover:bg-[#0f98a0] disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0b7f86] px-5 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(11,127,134,0.34)] hover:bg-[#0f98a0] disabled:opacity-50"
             >
               <Printer size={16} /> Salvar como PDF
             </button>
@@ -407,7 +407,7 @@ export function UserManualPage() {
                   grouped.map((group) => (
                     <div key={group.part || 'intro'} className="mb-4">
                       {group.part ? (
-                        <p className="mb-1 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[#9aa9ba]">{group.part}</p>
+                        <p className="mb-1 text-[0.68rem] font-bold uppercase tracking-wide text-[#9aa9ba]">{group.part}</p>
                       ) : null}
                       <ul className="border-l border-line text-sm">
                         {group.items.map((c) => {

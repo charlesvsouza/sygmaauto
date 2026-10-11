@@ -12,7 +12,7 @@ export function AboutPage() {
         description="O SigmaAuto nasceu para substituir improviso por processo, papel por rastreabilidade e achismo por indicadores."
         aside={
           <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.2em] text-white/35">Posicionamento</p>
+            <p className="text-xs uppercase tracking-wide text-white/35">Posicionamento</p>
             <p className="text-sm text-white/60">ERP automotivo SaaS com foco em simplicidade operacional, implantação rápida e crescimento sustentável.</p>
           </div>
         }
@@ -39,7 +39,7 @@ export function AboutPage() {
             ['24/7', 'infraestrutura online e monitorada'],
           ].map(([value, text]) => (
             <div key={value} className="rounded-xl border border-line bg-ink/5 p-6 text-center">
-              <p className="text-3xl font-black text-[#ff7b2f]">{value}</p>
+              <p className="text-3xl font-bold text-[#ff7b2f]">{value}</p>
               <p className="mt-2 text-sm text-white/55">{text}</p>
             </div>
           ))}
@@ -53,7 +53,7 @@ export function AboutPage() {
           ['Valores', 'Clareza operacional, segurança, proximidade com o cliente e evolução constante do produto.'],
         ].map(([title, text]) => (
           <div key={title} className="rounded-xl border border-line bg-ink/5 p-6">
-            <h2 className="text-lg font-black text-white">{title}</h2>
+            <h2 className="text-lg font-bold text-white">{title}</h2>
             <p className="mt-3 text-sm text-white/55 leading-relaxed">{text}</p>
           </div>
         ))}

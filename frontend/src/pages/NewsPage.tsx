@@ -14,9 +14,9 @@ export function NewsPage() {
         description="Central pública de novidades da plataforma, melhorias recentes e marcos do produto para oficinas mecânicas."
         aside={
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/35">Resumo</p>
-            <p className="mt-3 text-3xl font-black text-white">{news.length}</p>
-            <p className="text-sm text-white/45">publicações em destaque</p>
+            <p className="text-xs uppercase tracking-wide text-white/35">Resumo</p>
+            <p className="mt-3 text-3xl font-bold text-white">{news.length}</p>
+            <p className="text-sm text-white/45">públicações em destaque</p>
           </div>
         }
       />
@@ -48,7 +48,7 @@ export function NewsPage() {
 
       <section className="max-w-6xl mx-auto px-6 pb-16">
         <div className="rounded-xl border border-line bg-ink/5 backdrop-blur-sm p-8 md:p-10">
-          <h3 className="text-2xl font-black text-white">Como usamos essas atualizações</h3>
+          <h3 className="text-2xl font-bold text-white">Como usamos essas atualizações</h3>
           <div className="mt-6 grid md:grid-cols-3 gap-5 text-sm text-white/55">
             <div>
               <p className="font-bold text-white mb-2">Transparência</p>

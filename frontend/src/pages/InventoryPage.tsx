@@ -277,7 +277,7 @@ export function InventoryPage() {
       setParts(Array.isArray(partsRes.data) ? partsRes.data : []);
       setSuppliers(Array.isArray(suppRes.data) ? suppRes.data : []);
     } catch (err: any) {
-      setErrorMessage(err?.response?.data?.message || 'Nao foi possivel carregar o estoque de pecas.');
+      setErrorMessage(err?.response?.data?.message || 'Não foi possível carregar o estoque de peças.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -309,7 +309,7 @@ export function InventoryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canManageParts) {
-      toast.error('Voce nao tem permissao para cadastrar ou editar pecas.');
+      toast.error('Você não tem permissão para cadastrar ou editar peças.');
       return;
     }
     try {
@@ -344,7 +344,7 @@ export function InventoryPage() {
   const handleMovement = async () => {
     if (!showMovModal) return;
     if (!canManageParts) {
-      toast.error('Voce nao tem permissao para movimentar estoque. Use MASTER ou ADMIN.');
+      toast.error('Você não tem permissão para movimentar estoque. Use MASTER ou ADMIN.');
       return;
     }
     try {
@@ -404,7 +404,7 @@ export function InventoryPage() {
 
       {!canManageParts && (
         <div className="rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sky-700 text-sm font-semibold">
-          Seu usuario nao tem permissao para cadastrar ou editar pecas. Use MASTER ou ADMIN.
+          Seu usuário não tem permissão para cadastrar ou editar peças. Use MASTER ou ADMIN.
         </div>
       )}
 

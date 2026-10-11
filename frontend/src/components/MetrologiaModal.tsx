@@ -571,8 +571,8 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
               <div className="flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/8 px-4 py-3">
                 <AlertTriangle size={16} className="text-emerald-600 mt-0.5 shrink-0" />
                 <p className="text-emerald-700 text-xs leading-relaxed">
-                  Com base nas medidas inseridas, o sistema identificou os serviços e peças abaixo. 
-                  Marque ou desmarque conforme a decisão técnica — os itens selecionados serão 
+                  Com base nas medidas inseridas, o sistema identificou os serviços e peças abaixo.
+                  Marque ou desmarque conforme a decisão técnica — os itens selecionados serão
                   adicionados automaticamente à OS.
                 </p>
               </div>

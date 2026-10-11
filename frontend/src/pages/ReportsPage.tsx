@@ -936,7 +936,7 @@ const ICON_BG: Record<string, string> = {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-[0.3em] mb-2">
+          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-wide mb-2">
             <Activity size={14} /> Inteligência Gerencial
           </div>
           <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">

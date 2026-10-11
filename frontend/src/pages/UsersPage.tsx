@@ -592,7 +592,7 @@ export function UsersPage() {
 
             <form onSubmit={handleAdminResetPassword} className="space-y-5">
               <p className="text-sm text-surface-400">
-                Por seguranca, a senha atual nao pode ser exibida. Defina uma nova senha para este usuario.
+                Por segurança, a senha atual não pode ser exibida. Defina uma nova senha para este usuário.
               </p>
 
               <div className="space-y-2">
@@ -603,7 +603,7 @@ export function UsersPage() {
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
                     className="input h-14 bg-surface-950/40 border-line font-bold"
-                    placeholder="Minimo 6 caracteres"
+                    placeholder="Mínimo 6 caracteres"
                     minLength={6}
                     required
                   />

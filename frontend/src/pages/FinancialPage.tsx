@@ -246,7 +246,7 @@ export function FinancialPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div variants={itemVariants}>
-          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-[0.3em] mb-2">
+          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-wide mb-2">
             <Activity size={14} /> Inteligência Financeira
           </div>
           <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">
@@ -271,7 +271,7 @@ export function FinancialPage() {
             onClick={() => setShowAddModal(true)}
             disabled={!canManageFinancial}
             className="h-12 px-6 rounded-lg bg-accent text-white font-bold text-sm shadow-xl shadow-black/40 hover:bg-accent-hover transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            title={!canManageFinancial ? 'Sem permissao para lancamentos financeiros' : undefined}
+            title={!canManageFinancial ? 'Sem permissão para lançamentos financeiros' : undefined}
           >
             <Plus size={18} /> Lançar Movimentação
           </button>
@@ -589,7 +589,7 @@ export function FinancialPage() {
                   <button
                     type="submit"
                     disabled={!canManageFinancial}
-                    className="w-full py-5 bg-accent text-white rounded-[1.5rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-5 bg-accent text-white rounded-[1.5rem] font-bold uppercase tracking-wide text-xs shadow-xl shadow-black/40 hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Confirmar Lançamento
                   </button>

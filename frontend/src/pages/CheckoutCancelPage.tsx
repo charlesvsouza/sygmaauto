@@ -14,7 +14,7 @@ export function CheckoutCancelPage() {
           <AlertTriangle className="text-amber-700" size={30} />
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700/80">Pagamento não concluído</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-amber-700/80">Pagamento não concluído</p>
         <h1 className="mt-2 text-3xl md:text-4xl font-bold">Seu checkout foi cancelado</h1>
 
         <p className="mt-4 text-white/75 leading-relaxed">

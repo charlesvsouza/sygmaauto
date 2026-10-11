@@ -98,7 +98,7 @@ export function ActivateTenantPage() {
       >
         <div className="bg-surface-950/80 backdrop-blur-xl rounded-xl border border-line shadow-2xl p-5 sm:p-7 md:p-8">
           <div className="mb-5 sm:mb-6">
-            <h1 className="text-xl sm:text-2xl font-black">Ativação Inicial</h1>
+            <h1 className="text-xl sm:text-2xl font-bold">Ativação Inicial</h1>
             <p className="text-surface-400 text-sm mt-1">Finalize o cadastro em poucos campos para liberar o tenant.</p>
           </div>
 

@@ -51,10 +51,10 @@ const PHASE_LABEL: Record<string, string> = {
   ABERTA: 'Recebido',
   DESMONTAGEM: 'Desmontagem',
   METROLOGIA: 'Metrologia',
-  ORCAMENTO_RETIFICA: 'Orc. Tecnico',
-  AGUARDANDO_APROVACAO_RETIFICA: 'Ag. Aprovacao',
+  ORCAMENTO_RETIFICA: 'Orc. Técnico',
+  AGUARDANDO_APROVACAO_RETIFICA: 'Ag. Aprovação',
   APROVADO: 'Aprovado',
-  EM_RETIFICA: 'Em Retifica',
+  EM_RETIFICA: 'Em Retífica',
   MONTAGEM: 'Montagem',
   TESTE_FINAL: 'Teste Final',
   PRONTO_ENTREGA: 'Pronto Entrega',
@@ -132,7 +132,7 @@ export function DashboardRetificaPage() {
       setOrders(relevant);
     } catch (e) {
       console.error(e);
-      setError('Nao foi possivel carregar o dashboard da retifica.');
+      setError('Não foi possível carregar o dashboard da retífica.');
     } finally {
       setLoading(false);
     }
@@ -262,12 +262,12 @@ export function DashboardRetificaPage() {
         const level = !sla ? 'none' : h >= sla.danger ? 'danger' : h >= sla.warn ? 'warning' : 'none';
         const motorLabel = !o.vehicleId && !o.vehicle
           ? `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || ''}`.trim()
-          : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veiculo sem identificacao';
+          : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veículo sem identificacao';
 
         return {
           id: o.id,
           shortId: orderCode(o),
-          customer: o.customer?.name || 'Cliente nao informado',
+          customer: o.customer?.name || 'Cliente não informado',
           status: o.status,
           statusLabel: PHASE_LABEL[o.status] || o.status,
           elapsedHours: h,
@@ -277,7 +277,7 @@ export function DashboardRetificaPage() {
             level === 'danger'
               ? `SLA critico: ${Math.floor(h)}h na fase`
               : level === 'warning'
-                ? `Atencao: ${Math.floor(h)}h na fase`
+                ? `Atenção: ${Math.floor(h)}h na fase`
                 : '',
           motorLabel,
         };
@@ -293,7 +293,7 @@ export function DashboardRetificaPage() {
       <div className="min-h-screen bg-app text-ink p-6 flex items-center justify-center">
         <div className="flex items-center gap-3 text-muted">
           <Loader2 className="animate-spin" size={20} />
-          Carregando dashboard de retifica...
+          Carregando dashboard de retífica...
         </div>
       </div>
     );
@@ -321,7 +321,7 @@ export function DashboardRetificaPage() {
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-ink">Dashboard Retifica</h1>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-ink">Dashboard Retífica</h1>
               <p className="text-muted text-sm mt-1">
                 Monitoramento operacional completo: fluxo, tempo por fase, aprovacao tecnica e entregas.
               </p>
@@ -354,19 +354,19 @@ export function DashboardRetificaPage() {
           <MetricCard
             title="Motores em fluxo"
             value={String(motoresEmFluxo)}
-            subtitle="Total nas fases ativas de retifica"
+            subtitle="Total nas fases ativas de retífica"
             icon={<Activity size={16} />}
             tone="blue"
           />
           <MetricCard
-            title="Tempo medio por fase"
+            title="Tempo médio por fase"
             value={fmtHours(tempoMedioGeralHoras)}
             subtitle="Media atual considerando statusChangedAt"
             icon={<Clock3 size={16} />}
             tone="amber"
           />
           <MetricCard
-            title="Taxa aprovacao tecnica"
+            title="Taxa aprovação técnica"
             value={`${taxaAprovacao.value.toFixed(1)}%`}
             subtitle={`${taxaAprovacao.aprovados} aprovados · ${taxaAprovacao.reprovados} reprovados · ${taxaAprovacao.pendentes} pendentes`}
             icon={<Percent size={16} />}
@@ -382,7 +382,7 @@ export function DashboardRetificaPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          <ChartShell title="Motores em fluxo por fase" hint="Volume atual por etapa do Kanban Retifica">
+          <ChartShell title="Motores em fluxo por fase" hint="Volume atual por etapa do Kanban Retífica">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={fluxoPorFaseChart} margin={{ top: 8, right: 10, left: 0, bottom: 26 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink))" />
@@ -409,7 +409,7 @@ export function DashboardRetificaPage() {
             </ResponsiveContainer>
           </ChartShell>
 
-          <ChartShell title="Tempo medio atual por fase" hint="Media em horas de permanencia por etapa">
+          <ChartShell title="Tempo médio atual por fase" hint="Media em horas de permanencia por etapa">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={tempoPorFaseChart} margin={{ top: 8, right: 10, left: 0, bottom: 26 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink))" />
@@ -448,13 +448,13 @@ export function DashboardRetificaPage() {
               onClick={() => navigate('/kanban-retifica')}
               className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/90 hover:bg-blue-500 text-xs font-bold text-white"
             >
-              Ir para Kanban Retifica
+              Ir para Kanban Retífica
             </button>
           </div>
 
           {!acoesCriticas.length ? (
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-700 text-sm">
-              Nenhum motor em estado de atencao critica no momento.
+              Nenhum motor em estado de atenção critica no momento.
             </div>
           ) : (
             <div className="space-y-2">
@@ -501,9 +501,9 @@ export function DashboardRetificaPage() {
             Leitura operacional
           </div>
           <p className="text-muted text-sm">
-            O painel usa ordens do tipo RETIFICA_MOTOR com status do fluxo da retifica. O tempo medio por fase
+            O painel usa ordens do tipo RETIFICA_MOTOR com status do fluxo da retífica. O tempo médio por fase
             considera o campo statusChangedAt (fallback para updatedAt/criatedAt), permitindo detectar gargalos no
-            processo tecnico antes do prazo estourar.
+            processo técnico antes do prazo estourar.
           </p>
         </div>
       </div>

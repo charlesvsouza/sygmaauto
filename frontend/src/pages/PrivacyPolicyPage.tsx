@@ -33,7 +33,7 @@ export function PrivacyPolicyPage() {
       {/* Conteúdo */}
       <main className="relative z-10 max-w-4xl mx-auto px-6 py-16 pb-24">
         <div className="mb-12">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Documento Legal</p>
+          <p className="text-xs uppercase tracking-wide text-[#ff7b2f]/70 font-bold mb-3">Documento Legal</p>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Política de Privacidade</h1>
           <p className="text-white/40 text-sm">
             Última atualização: 1 de maio de 2026 &nbsp;·&nbsp; Versão 1.0

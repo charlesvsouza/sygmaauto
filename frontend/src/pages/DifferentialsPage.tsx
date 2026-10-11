@@ -14,8 +14,8 @@ export function DifferentialsPage() {
         description="A proposta não é só entregar funcionalidades. É entregar previsibilidade operacional, curva curta de adoção e evolução contínua."
         aside={
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/35">Disponibilidade</p>
-            <p className="mt-3 text-3xl font-black text-white">99,95%</p>
+            <p className="text-xs uppercase tracking-wide text-white/35">Disponibilidade</p>
+            <p className="mt-3 text-3xl font-bold text-white">99,95%</p>
             <p className="text-sm text-white/45">meta de uptime e operação em nuvem</p>
           </div>
         }
@@ -34,7 +34,7 @@ export function DifferentialsPage() {
             <div className="w-11 h-11 rounded-xl bg-[#2855d6]/12 flex items-center justify-center mb-4">
               <Icon size={22} className="text-[#2855d6]" />
             </div>
-            <h2 className="text-lg font-black text-white">{title}</h2>
+            <h2 className="text-lg font-bold text-white">{title}</h2>
             <p className="mt-3 text-sm text-white/55 leading-relaxed">{desc}</p>
           </motion.article>
         ))}

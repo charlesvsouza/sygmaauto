@@ -70,15 +70,15 @@ export const plans: Plan[] = [
     price: 'R$ 149',
     period: '/mes',
     description: 'Para oficinas iniciando com o fluxo essencial do dia a dia.',
-    highlights: ['Ate 50 O.S./mes', 'Financeiro, estoque inclusos', 'Clientes e Veiculos', 'Ate 3 usuarios'],
+    highlights: ['Até 50 O.S./mes', 'Financeiro, estoque inclusos', 'Clientes e Veículos', 'Até 3 usuários'],
   },
   {
     name: 'PRO',
     label: 'Pro',
     price: 'R$ 299',
     period: '/mes',
-    description: 'Aceleracao com operacao completa, visao gerencial e produtividade.',
-    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'WhatsApp automatico', 'Ate 15 usuarios'],
+    description: 'Aceleração com operação completa, visão gerencial e produtividade.',
+    highlights: ['O.S. ilimitadas', 'Financeiro, estoque e checklist', 'WhatsApp automático', 'Até 15 usuários'],
     featured: true,
   },
   {
@@ -86,42 +86,42 @@ export const plans: Plan[] = [
     label: 'Rede',
     price: 'R$ 599',
     period: '/mes',
-    description: 'Para grupos de oficinas com governanca, escala e padronizacao entre unidades.',
-    highlights: ['Tudo do PRO', 'Multiunidade e consolidado', 'Usuarios ilimitados', 'Prioridade no suporte'],
+    description: 'Para grupos de oficinas com governança, escala e padronizacao entre unidades.',
+    highlights: ['Tudo do PRO', 'Multiunidade e consolidado', 'Usuários ilimitados', 'Prioridade no suporte'],
   },
 ];
 
 export const retificaPlans: RetificaPlan[] = [
   {
     name: 'RETIFICA_PRO',
-    label: 'Modo Retifica Pro',
+    label: 'Modo Retífica Pro',
     price: 'R$ 499',
     period: '/mes',
-    description: 'Para retificas ou oficinas especializadas que precisam operar com veiculo e motor avulso no mesmo ambiente.',
-    highlights: ['Tudo do Pro', 'Entrada com motor avulso', 'Operacao oficina + retifica', 'Fluxo tecnico especializado'],
+    description: 'Para retíficas ou oficinas especializadas que precisam operar com veículo e motor avulso no mesmo ambiente.',
+    highlights: ['Tudo do Pro', 'Entrada com motor avulso', 'Operação oficina + retífica', 'Fluxo técnico especializado'],
   },
   {
     name: 'RETIFICA_REDE',
-    label: 'Modo Retifica Rede',
+    label: 'Modo Retífica Rede',
     price: 'R$ 899',
     period: '/mes',
-    description: 'Para grupos com varias unidades, governanca tecnica e operacao integrada de retifica em rede.',
-    highlights: ['Tudo do Rede', 'Retifica multiunidade', 'Padronizacao de operacao', 'Gestao centralizada'],
+    description: 'Para grupos com várias unidades, governança técnica e operação integrada de retífica em rede.',
+    highlights: ['Tudo do Rede', 'Retífica multiunidade', 'Padronizacao de operação', 'Gestão centralizada'],
   },
 ];
 
 export const planCapabilities: PlanCapability[] = [
-  { feature: 'Ordens de Servico por mes', start: '50', pro: 'Ilimitado', rede: 'Ilimitado' },
-  { feature: 'Usuarios inclusos', start: '3', pro: '15', rede: 'Ilimitado' },
-  { feature: 'Clientes e Veiculos', start: 'Sim', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Ordens de Serviço por mês', start: '50', pro: 'Ilimitado', rede: 'Ilimitado' },
+  { feature: 'Usuários inclusos', start: '3', pro: '15', rede: 'Ilimitado' },
+  { feature: 'Clientes e Veículos', start: 'Sim', pro: 'Sim', rede: 'Sim' },
   { feature: 'Financeiro e Fluxo de Caixa', start: 'Sim', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Estoque e Reserva de Pecas', start: 'Sim', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Checklist Entrada/Saida', start: 'Nao', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Kanban Patio + Recepcao TV', start: 'Nao', pro: 'Nao', rede: 'Sim' },
-  { feature: 'DRE, KPI e Relatorios', start: 'Nao', pro: 'Nao', rede: 'Sim' },
-  { feature: 'Comissoes e Ranking tecnico', start: 'Nao', pro: 'Nao', rede: 'Sim' },
-  { feature: 'Multiunidade', start: 'Nao', pro: 'Nao', rede: 'Sim' },
-  { feature: 'WhatsApp automatico', start: 'Nao', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Estoque e Reserva de Peças', start: 'Sim', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Checklist Entrada/Saida', start: 'Não', pro: 'Sim', rede: 'Sim' },
+  { feature: 'Kanban Patio + Recepcao TV', start: 'Não', pro: 'Não', rede: 'Sim' },
+  { feature: 'DRE, KPI e Relatórios', start: 'Não', pro: 'Não', rede: 'Sim' },
+  { feature: 'Comissões e Ranking técnico', start: 'Não', pro: 'Não', rede: 'Sim' },
+  { feature: 'Multiunidade', start: 'Não', pro: 'Não', rede: 'Sim' },
+  { feature: 'WhatsApp automático', start: 'Não', pro: 'Sim', rede: 'Sim' },
 ];
 
 export const features: IconCard[] = [
@@ -194,19 +194,19 @@ export const quickLinks = [
 
 export const news: NewsItem[] = [
   {
-    tag: 'Lancamento',
+    tag: 'Lançamento',
     date: 'Maio 2026',
     title: 'IA Assistiva no Orçamento',
     excerpt: 'Descreveu o problema do veículo? A IA analisa o sintoma e sugere serviços e peças do seu próprio catálogo. Com OpenAI integrada, o orçamento fica pronto mais rápido e com menos chance de esquecer itens.',
   },
   {
-    tag: 'Lancamento',
+    tag: 'Lançamento',
     date: 'Maio 2026',
     title: 'Módulo de Retífica de Motores',
     excerpt: 'Fluxo completo para retificadoras: desmontagem, metrologia em 2 etapas, diagnóstico automático de serviços, laudo técnico para impressão e painel Kanban dedicado com SLA por motor.',
   },
   {
-    tag: 'Lancamento',
+    tag: 'Lançamento',
     date: 'Abril / Maio 2026',
     title: 'NPS Automático e Manutenção Preventiva',
     excerpt: 'Pesquisa de satisfação enviada automaticamente via WhatsApp após a entrega do veículo, com dashboard de NPS em tempo real. E lembretes automáticos de revisão por KM ou data — tudo sem intervenção manual.',

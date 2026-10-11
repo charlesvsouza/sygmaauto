@@ -17,7 +17,7 @@ export function CheckoutSuccessPage() {
           <CheckCircle2 className="text-emerald-700" size={30} />
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700/80">Pagamento recebido</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-emerald-700/80">Pagamento recebido</p>
         <h1 className="mt-2 text-3xl md:text-4xl font-bold">Checkout concluído com sucesso</h1>
 
         <p className="mt-4 text-white/75 leading-relaxed">

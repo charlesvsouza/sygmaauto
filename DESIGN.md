@@ -50,7 +50,7 @@ typography:
     lineHeight: 1.55
   label:
     fontFamily: "Inter, system-ui, sans-serif"
-    fontSize: "12px"
+    fontSize: "11px"
     fontWeight: 600
     letterSpacing: "0.02em"
   tv:
@@ -193,14 +193,14 @@ Uma paleta de off-whites frios e um único verde-água aprofundado; matizes sem�
 
 **Fonte única:** Inter (fallback `system-ui, sans-serif`), pesos 400 a 700. Space Grotesk e qualquer segunda família estão aposentadas, inclusive nas páginas públicas.
 
-**Character:** uma família geométrico-humanista carrega toda a hierarquia; a distinção vem de tamanho, peso e cor. A escala global do app roda a 85% do `rem` para densidade operacional, por isso **o piso é 12px renderizados**: nada de `text-[9px]` ou `text-[10px]`.
+**Character:** uma família geométrico-humanista carrega toda a hierarquia; a distinção vem de tamanho, peso e cor. A escala global do app roda a 85% do `rem` para densidade operacional, por isso **o piso é 11px renderizados** no app (`text-[11px]`); nada de `text-[9px]` ou `text-[10px]`, e `text-xs` só em apoio fora do Kanban e da TV.
 
 ### Hierarchy
 - **Display** (700, `clamp(2rem, 5vw, 3.25rem)`, 1.08): só hero das páginas públicas.
 - **Headline** (700, `1.5rem`, 1.2): título de página.
 - **Title** (600, `0.9375rem`, 1.3): título de painel e de cartão.
 - **Body** (400, `14px`, 1.55): texto corrido, 65–75ch em prosa e no manual.
-- **Label** (600, `12px`, `0.02em`): cabeçalho de tabela e rótulo de campo. Caixa-alta somente em cabeçalho de tabela.
+- **Label** (600, `11px`, `0.02em`): cabeçalho de tabela e rótulo de campo. Caixa-alta somente em cabeçalho de tabela.
 - **TV** (600, `1rem` mínimo, 1.35): cartões do Kanban de Pátio e da Recepção, lidos a metros.
 
 ### Named Rules
@@ -275,7 +275,7 @@ Cantos discretos: 6px em botões e campos, 8px em cartões e painéis, 12px em m
 - **Do** deixar o botão de próxima ação como o elemento mais forte da O.S., e a fila "Precisa de atenção" como o primeiro bloco do Painel.
 - **Do** usar teal (`#0d7d6e`) como única cor de ação e `#0a6458` para todo texto teal.
 - **Do** usar um único estilo de KPI em Painel, Financeiro, KPIs e Retífica.
-- **Do** manter 12px como piso de texto no app e 16px no modo TV.
+- **Do** manter 11px como piso de texto no app e 16px no modo TV.
 - **Do** acentuar todo texto em português e revisar copy nova antes de publicar.
 - **Do** mostrar estado vazio útil ("Sem movimentação ainda" + ação) em vez de selo otimista.
 - **Do** manter contraste AA e status com rótulo em texto.

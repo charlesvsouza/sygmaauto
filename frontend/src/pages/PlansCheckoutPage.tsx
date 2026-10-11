@@ -18,9 +18,9 @@ type PlanDef = {
 const plans: PlanDef[] = [
   { name: 'START', label: 'Start', monthlyPrice: 149, description: 'Ideal para oficinas iniciando com controle completo.' },
   { name: 'PRO', label: 'Pro', monthlyPrice: 299, description: 'Financeiro, estoque e produtividade para crescer com previsibilidade.' },
-  { name: 'REDE', label: 'Rede', monthlyPrice: 599, description: 'Governanca de unidades e operacao padronizada em escala.' },
-  { name: 'RETIFICA_PRO', label: 'Modo Retifica Pro', monthlyPrice: 499, description: 'Operacao completa de oficina com fluxo tecnico de retifica de motores.' },
-  { name: 'RETIFICA_REDE', label: 'Modo Retifica Rede', monthlyPrice: 899, description: 'Retifica de motores com multiunidade, padronizacao e gestao em rede.' },
+  { name: 'REDE', label: 'Rede', monthlyPrice: 599, description: 'Governança de unidades e operação padronizada em escala.' },
+  { name: 'RETIFICA_PRO', label: 'Modo Retífica Pro', monthlyPrice: 499, description: 'Operação completa de oficina com fluxo técnico de retífica de motores.' },
+  { name: 'RETIFICA_REDE', label: 'Modo Retífica Rede', monthlyPrice: 899, description: 'Retífica de motores com multiunidade, padronizacao e gestão em rede.' },
 ];
 
 const cycleOptions: Array<{ value: BillingCycle; label: string; months: number; discountRate: number; badge?: string }> = [
@@ -139,10 +139,10 @@ export function PlansCheckoutPage() {
           transition={{ duration: 0.35 }}
           className="mt-6"
         >
-          <p className="text-xs uppercase tracking-[0.22em] text-[#ff7b2f]/80 font-bold">Assinatura</p>
+          <p className="text-xs uppercase tracking-wide text-[#ff7b2f]/80 font-bold">Assinatura</p>
           <h1 className="mt-3 text-3xl md:text-4xl font-bold">Escolha a modalidade do seu plano</h1>
           <p className="mt-3 text-white/60 text-sm md:text-base max-w-2xl">
-            Selecione o plano e o ciclo de cobranca. No anual, voce recebe 15% de desconto automaticamente.
+            Selecione o plano e o ciclo de cobrança. No anual, você recebe 15% de desconto automaticamente.
           </p>
         </motion.div>
 
@@ -241,7 +241,7 @@ export function PlansCheckoutPage() {
           </div>
 
           <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/10 p-6 h-fit">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#ffccaa] font-bold">Resumo</p>
+            <p className="text-xs uppercase tracking-wide text-[#ffccaa] font-bold">Resumo</p>
             <h2 className="mt-2 text-2xl font-bold">Plano {selectedPlanDef.label}</h2>
             <p className="mt-2 text-sm text-white/75 leading-relaxed">{selectedPlanDef.description}</p>
 
@@ -303,7 +303,7 @@ export function PlansCheckoutPage() {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-[#ff7b2f] mt-0.5 flex-shrink-0" />
-                Convite de ativacao do MASTER enviado apos confirmacao
+                Convite de ativacao do MASTER enviado apos confirmação
               </li>
             </ul>
           </div>

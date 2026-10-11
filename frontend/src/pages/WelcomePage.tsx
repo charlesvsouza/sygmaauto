@@ -92,7 +92,7 @@ export default function WelcomePage() {
               <Zap className="text-white" size={22} />
             </div>
             <div>
-              <span className="text-xl font-black tracking-tight text-white">
+              <span className="text-xl font-bold tracking-tight text-white">
                 Sigma<span className="text-accent-ink">Auto</span>
               </span>
               <p className="text-[12px] text-surface-400 mt-0.5 tracking-wide uppercase">Sistema para Oficina Mecânica · ERP Automotivo</p>
@@ -105,7 +105,7 @@ export default function WelcomePage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-4xl md:text-5xl font-black leading-tight mb-6"
+                className="text-4xl md:text-5xl font-bold leading-tight mb-6"
               >
                 Bem-vindo ao seu <br />
                 <span className="text-accent-ink">
@@ -129,7 +129,7 @@ export default function WelcomePage() {
               >
                 <button type="button"
                   onClick={goToLogin}
-                  className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-accent text-white font-black rounded-lg hover:brightness-110 transition-all hover:scale-105 shadow-xl shadow-accent/20"
+                  className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-accent text-white font-bold rounded-lg hover:brightness-110 transition-all hover:scale-105 shadow-xl shadow-accent/20"
                 >
                   Ir para o login
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -150,7 +150,7 @@ export default function WelcomePage() {
                     <item.icon size={20} />
                   </div>
                   <div>
-                    <h3 className="font-black text-white mb-1">{item.title}</h3>
+                    <h3 className="font-bold text-white mb-1">{item.title}</h3>
                     <p className="text-sm text-surface-400 leading-snug">{item.description}</p>
                   </div>
                 </motion.div>
@@ -162,12 +162,12 @@ export default function WelcomePage() {
           <div className="mt-12 pt-8 border-t border-line flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-surface-500 uppercase tracking-widest">SigmaAuto Cloud Online</span>
+              <span className="text-xs font-medium text-surface-500 uppercase tracking-wide">SigmaAuto Cloud Online</span>
             </div>
 
             <div className="flex flex-col md:items-end gap-2">
               <p className="text-xs text-surface-400">
-                Redirecionando em <span className="text-white font-black">{seconds}s</span>
+                Redirecionando em <span className="text-white font-bold">{seconds}s</span>
               </p>
               <div className="w-48 h-1 bg-ink/5 rounded-full overflow-hidden">
                 <motion.div

@@ -85,7 +85,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
           <div className="flex items-center gap-3">
             <button type="button"
               onClick={handleAccess}
-              className="h-9 px-4 rounded-xl border border-[#1f9aa2]/35 text-xs font-black text-[#80d6dc] hover:border-[#33b6bf] hover:bg-[#0b7f86] hover:text-white transition-all hidden sm:flex items-center"
+              className="h-9 px-4 rounded-xl border border-[#1f9aa2]/35 text-xs font-bold text-[#80d6dc] hover:border-[#33b6bf] hover:bg-[#0b7f86] hover:text-white transition-all hidden sm:flex items-center"
             >
               Acessar sistema
             </button>
@@ -121,7 +121,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
                 </Link>
                 <button type="button"
                   onClick={handleAccess}
-                  className="mt-2 h-10 rounded-xl bg-[#0b7f86] text-white font-black text-sm shadow-[0_10px_24px_rgba(11,127,134,0.34)]"
+                  className="mt-2 h-10 rounded-xl bg-[#0b7f86] text-white font-bold text-sm shadow-[0_10px_24px_rgba(11,127,134,0.34)]"
                 >
                   Acessar sistema
                 </button>

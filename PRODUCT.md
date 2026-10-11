@@ -82,4 +82,4 @@ Quatro apostas que um sistema genérico de gestão não copiaria com verdade:
 
 ## Accessibility & Inclusion
 
-WCAG 2.1 AA como piso: texto 4.5:1 ou mais, texto grande 3:1 ou mais, foco visível em todo controle interativo. Status nunca só por cor. Alvos de toque de 44px ou mais nas ações primárias (tablet no chão de oficina). `prefers-reduced-motion` respeitado. Texto mínimo de 12px no app e de 16px no modo TV. Legível a distância no TV da recepção.
+WCAG 2.1 AA como piso: texto 4.5:1 ou mais, texto grande 3:1 ou mais, foco visível em todo controle interativo. Status nunca só por cor. Alvos de toque de 44px ou mais nas ações primárias (tablet no chão de oficina). `prefers-reduced-motion` respeitado. Texto mínimo de 11px renderizados no app e de 16px no modo TV. Legível a distância no TV da recepção.

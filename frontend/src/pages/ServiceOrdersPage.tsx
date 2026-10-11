@@ -106,16 +106,16 @@ const STATUS_ACTION_LABEL: Record<string, string> = {
   APROVADO:             'Marcar como Aprovado',
   REPROVADO:            'Marcar como Reprovado',
   AGUARDANDO_PECAS:     'Aguardar Peças',
-  EM_EXECUCAO:          'Iniciar Execucao',
+  EM_EXECUCAO:          'Iniciar Execução',
   PRONTO_ENTREGA:       'Marcar Pronto p/ Entrega',
   FATURADO:             'Registrar Pagamento',
   ENTREGUE:             'Confirmar Entrega',
   CANCELADO:            'Cancelar O.S.',
   DESMONTAGEM:          'Iniciar Desmontagem',
   METROLOGIA:           'Enviar para Metrologia',
-  ORCAMENTO_RETIFICA:   'Gerar Orçamento Tecnico',
+  ORCAMENTO_RETIFICA:   'Gerar Orçamento Técnico',
   AGUARDANDO_APROVACAO_RETIFICA: 'Enviar para Aprovação',
-  EM_RETIFICA:          'Iniciar Retifica',
+  EM_RETIFICA:          'Iniciar Retífica',
   MONTAGEM:             'Iniciar Montagem',
   TESTE_FINAL:          'Executar Teste Final',
 };
@@ -124,8 +124,8 @@ const FLOW_PHASES = [
   { key: 'ABERTURA',    label: 'Abertura',    statuses: ['ABERTA', 'ORCAMENTO'] },
   { key: 'DIAGNOSTICO', label: 'Diagnóstico', statuses: ['EM_DIAGNOSTICO'] },
   { key: 'ORCAMENTO',   label: 'Orçamento',   statuses: ['ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO'] },
-  { key: 'APROVACAO',   label: 'Aprovacao',   statuses: ['APROVADO', 'REPROVADO'] },
-  { key: 'EXECUCAO',    label: 'Execucao',    statuses: ['AGUARDANDO_PECAS', 'EM_EXECUCAO'] },
+  { key: 'APROVACAO',   label: 'Aprovação',   statuses: ['APROVADO', 'REPROVADO'] },
+  { key: 'EXECUCAO',    label: 'Execução',    statuses: ['AGUARDANDO_PECAS', 'EM_EXECUCAO'] },
   { key: 'FINALIZACAO', label: 'Faturamento', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA',     label: 'Entrega',      statuses: ['ENTREGUE'] },
 ];
@@ -135,7 +135,7 @@ const RETIFICA_FLOW_PHASES = [
   { key: 'DESMONTAGEM', label: 'Desmontagem', statuses: ['DESMONTAGEM'] },
   { key: 'ANALISE', label: 'Metrologia', statuses: ['METROLOGIA'] },
   { key: 'ORCAMENTO', label: 'Orçamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
-  { key: 'EXECUCAO', label: 'Retifica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
+  { key: 'EXECUCAO', label: 'Retífica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
   { key: 'FINALIZACAO', label: 'Finalizacao', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA', label: 'Entrega', statuses: ['ENTREGUE'] },
 ];
@@ -571,7 +571,7 @@ export function ServiceOrdersPage() {
       const opened = window.open(url, '_blank', 'noopener,noreferrer');
       if (!opened) {
         window.URL.revokeObjectURL(url);
-        toast.warning('Não foi possivel abrir a visualização. Verifique o bloqueador de pop-ups.');
+        toast.warning('Não foi possível abrir a visualização. Verifique o bloqueador de pop-ups.');
         return;
       }
       window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
@@ -658,7 +658,7 @@ export function ServiceOrdersPage() {
       </div>
       <hr />
       <div style="font-size:8pt;margin-bottom:6px">
-        <strong>${(o.vehicle as any) ? 'Veiculo' : 'Motor'}:</strong> ${escapeHtml((o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} - Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` - Serie ${o.serialNumber}` : ''}`)}
+        <strong>${(o.vehicle as any) ? 'Veículo' : 'Motor'}:</strong> ${escapeHtml((o.vehicle as any) ? `${(o.vehicle as any)?.brand || ''} ${(o.vehicle as any)?.model || ''} - Placa ${(o.vehicle as any)?.plate || ''}` : `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || 'Avulso'}${o.serialNumber ? ` - Serie ${o.serialNumber}` : ''}`)}
         &nbsp;&nbsp;-&nbsp;&nbsp;
         <strong>Cliente:</strong> ${escapeHtml((o.customer as any)?.name || '')}
         &nbsp;&nbsp;-&nbsp;&nbsp;
@@ -668,7 +668,7 @@ export function ServiceOrdersPage() {
         <thead><tr>
           <th style="width:80px">Cod. Interno</th>
           <th style="width:80px">Cod. Original</th>
-          <th>Peça / Descricao</th>
+          <th>Peça / Descrição</th>
           <th style="width:50px;text-align:center">Qtd</th>
           <th style="width:80px;text-align:right">Unitario</th>
           <th style="width:90px;text-align:right">Total</th>
@@ -1399,10 +1399,10 @@ export function ServiceOrdersPage() {
                 {(['complaint', 'diagnosis', 'technicalReport'] as const).map((field, i) => (
                   <div key={field} className="space-y-1.5">
                     <label htmlFor="fld-serviceorderspage-1" className="block text-sm font-semibold text-muted">
-                      {['Reclamacao Inicial', 'Diagnóstico Tecnico', 'Laudo / Solução'][i]}
+                      {['Reclamação Inicial', 'Diagnóstico Técnico', 'Laudo / Solução'][i]}
                     </label>
                     <textarea id="fld-serviceorderspage-1"
-                      aria-label={['Reclamacao Inicial', 'Diagnóstico Tecnico', 'Laudo / Solução'][i]}
+                      aria-label={['Reclamação Inicial', 'Diagnóstico Técnico', 'Laudo / Solução'][i]}
                       value={edit[field]}
                       ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = `${el.scrollHeight}px`; } }}
                       onChange={(e) => {
@@ -1454,7 +1454,7 @@ export function ServiceOrdersPage() {
                 <table className="w-full text-left text-xs">
                   <thead className="bg-surface-950/60 text-surface-500 font-bold text-[11px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70">Descrição</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-56">Executor</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd/Hrs</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
@@ -1567,7 +1567,7 @@ export function ServiceOrdersPage() {
                 <table className="w-full text-left text-xs">
                   <thead className="bg-surface-950/60 text-surface-500 font-bold text-[11px]">
                     <tr>
-                      <th className="px-5 py-3 border-b border-surface-800/70">Descricao</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70">Descrição</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
@@ -2127,7 +2127,7 @@ export function ServiceOrdersPage() {
                 </p>
                 <div className="flex items-end gap-2">
                   <div className="flex-1 space-y-1">
-                    <label htmlFor="fld-serviceorderspage-5" className="block text-sm font-semibold text-muted">Descricao *</label>
+                    <label htmlFor="fld-serviceorderspage-5" className="block text-sm font-semibold text-muted">Descrição *</label>
                     <input id="fld-serviceorderspage-5"
                       aria-label="Descrição do item rápido"
                       type="text"
@@ -2274,7 +2274,7 @@ export function ServiceOrdersPage() {
                               <p className="text-[11px] text-surface-500 font-bold mt-0.5">
                                 {p.internalCode && `${p.internalCode} - `}
                                 Estoque: <span className={cn('font-bold', p.currentStock > 0 ? 'text-emerald-600' : 'text-red-600')}>{p.currentStock}</span>
-                                {' - Minimo: '}<span className="font-bold text-surface-300">{p.minStock || 0}</span>
+                                {' - Mínimo: '}<span className="font-bold text-surface-300">{p.minStock || 0}</span>
                                 {' - '}R$ {fmtBR(p.unitPrice)}
                               </p>
                             </div>
@@ -2353,7 +2353,7 @@ export function ServiceOrdersPage() {
                   {[
                     { value: 'ORCAMENTO', label: 'Orçamento', desc: 'Aguarda aprovação do cliente' },
                     { value: 'ORDEM_SERVICO', label: 'Ordem de Serviço', desc: 'Serviço já autorizado' },
-                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'Retifica', desc: 'Motor avulso ou fluxo tecnico especializado' }] : []),
+                    ...(canUseRetificaMode ? [{ value: 'RETIFICA_MOTOR', label: 'Retífica', desc: 'Motor avulso ou fluxo técnico especializado' }] : []),
                   ].map(({ value, label, desc }) => (
                     <button
                       key={value}
@@ -2409,7 +2409,7 @@ export function ServiceOrdersPage() {
 
                     {newOrder.customerId && showQuickVehicleForm && (
                       <div className="rounded-lg border border-surface-800 bg-surface-950 p-2 space-y-2">
-                        <p className="text-[11px] font-semibold text-surface-500">Cadastro rapido de veículo</p>
+                        <p className="text-[11px] font-semibold text-surface-500">Cadastro rápido de veículo</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                           <input
                             aria-label="Placa do veículo"
@@ -2487,7 +2487,7 @@ export function ServiceOrdersPage() {
                               <span key={o.id} className="ml-1 font-mono font-bold">#{orderCode(o)}</span>
                             ))}
                           </p>
-                          <p className="text-accent-ink/80">Voce pode criar múltiplos orcamentos/OSs para o mesmo veículo. Verifique se não e duplicata.</p>
+                          <p className="text-accent-ink/80">Você pode criar múltiplos orcamentos/OSs para o mesmo veículo. Verifique se não e duplicata.</p>
                         </div>
                       );
                     })()}
@@ -2518,7 +2518,7 @@ export function ServiceOrdersPage() {
                   <input id="fld-serviceorderspage-15" aria-label="Data e hora do agendamento da nova ordem" type="datetime-local" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all" value={newOrder.scheduledDate} onChange={(e) => setNewOrder({ ...newOrder, scheduledDate: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="fld-serviceorderspage-16" className="block text-sm font-semibold text-muted">Reclamacao Principal</label>
+                  <label htmlFor="fld-serviceorderspage-16" className="block text-sm font-semibold text-muted">Reclamação Principal</label>
                   <textarea id="fld-serviceorderspage-16" aria-label="Reclamação principal da nova ordem" className="w-full px-2.5 py-1.5 rounded-md border border-surface-800 bg-white text-xs font-semibold text-surface-300 focus:ring-4 focus:ring-surface-100/5 transition-all h-16 resize-none" value={newOrder.complaint} onChange={(e) => setNewOrder({ ...newOrder, complaint: e.target.value })} placeholder="O que o cliente relatou?" />
                 </div>
                 <label className="block text-sm font-semibold text-muted">

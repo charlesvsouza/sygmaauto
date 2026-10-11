@@ -40,7 +40,7 @@ export function SuperAdminLoginPage() {
           <div className="w-16 h-16 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4 border border-red-500/20">
             <Shield className="text-red-600 w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-black text-white">Super Admin</h1>
+          <h1 className="text-2xl font-bold text-white">Super Admin</h1>
           <p className="text-surface-400 text-sm mt-1">Acesso restrito — área de manutenção global</p>
         </div>
 
@@ -93,7 +93,7 @@ export function SuperAdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+              className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 size={18} className="animate-spin" /> : <Shield size={18} />}
               {loading ? 'Autenticando...' : 'Entrar como Super Admin'}

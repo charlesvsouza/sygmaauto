@@ -232,12 +232,12 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="fld-importnfmodal-3" className="block text-sm font-semibold text-muted">Numero NF</label>
+                  <label htmlFor="fld-importnfmodal-3" className="block text-sm font-semibold text-muted">Número NF</label>
                   <input id="fld-importnfmodal-3"
                     value={data.invoice?.number || ''}
                     onChange={(e) => updateInvoiceField('number', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-line text-sm"
-                    placeholder="Numero"
+                    placeholder="Número"
                   />
                 </div>
                 <div className="space-y-2">
@@ -255,8 +255,8 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                 <table className="w-full min-w-[980px]">
                   <thead className="bg-surface-950/40 border-b border-line">
                     <tr>
-                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Codigo Original</th>
-                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Descricao</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Código Original</th>
+                      <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Descrição</th>
                       <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Origem</th>
                       <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">Tipo</th>
                       <th className="px-3 py-3 text-left text-[11px] font-bold text-surface-500 uppercase tracking-wide">NCM</th>

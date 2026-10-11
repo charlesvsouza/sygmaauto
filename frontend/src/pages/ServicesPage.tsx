@@ -49,7 +49,7 @@ export function ServicesPage() {
       const response = await servicesApi.getAll();
       setServices(response.data);
     } catch (error: any) {
-      setErrorMessage(error?.response?.data?.message || 'Nao foi possivel carregar o catalogo de servicos.');
+      setErrorMessage(error?.response?.data?.message || 'Não foi possível carregar o catalogo de serviços.');
       console.error('Falha ao carregar serviços:', error);
     } finally {
       setLoading(false);
@@ -59,7 +59,7 @@ export function ServicesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canManageServices) {
-      toast.error('Voce nao tem permissao para cadastrar ou editar servicos.');
+      toast.error('Você não tem permissão para cadastrar ou editar serviços.');
       return;
     }
     try {
@@ -80,7 +80,7 @@ export function ServicesPage() {
 
   const handleEdit = (service: any) => {
     if (!canManageServices) {
-      toast.error('Voce nao tem permissao para editar servicos.');
+      toast.error('Você não tem permissão para editar serviços.');
       return;
     }
     setEditingService(service);
@@ -157,7 +157,7 @@ export function ServicesPage() {
         <button type="button"
           onClick={() => {
             if (!canManageServices) {
-              toast.error('Voce nao tem permissao para cadastrar servicos.');
+              toast.error('Você não tem permissão para cadastrar serviços.');
               return;
             }
             resetForm();

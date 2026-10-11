@@ -186,7 +186,7 @@ export function CommissionsPage() {
     const xlsx = await import('xlsx');
     const ws = xlsx.utils.json_to_sheet(rows);
     const wb = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, ws, 'Comissoes');
+    xlsx.utils.book_append_sheet(wb, ws, 'Comissões');
     xlsx.writeFile(wb, `${fileBase()}.xlsx`);
   };
 

@@ -61,7 +61,7 @@ export function ContactPage() {
         {contactSent ? (
           <div className="rounded-xl border border-[#ff7b2f]/30 bg-[#ff7b2f]/8 p-8 text-center">
             <CheckCircle2 size={44} className="text-[#ff7b2f] mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-white">Mensagem registrada</h2>
+            <h2 className="text-2xl font-bold text-white">Mensagem registrada</h2>
             <p className="mt-3 text-sm text-white/55">Nossa equipe responderá em breve no e-mail informado.</p>
             <button type="button"
               onClick={() => {
@@ -110,7 +110,7 @@ export function ContactPage() {
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-[#ff7b2f] text-white font-black text-sm hover:bg-[#f06820] transition-colors"
+              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-[#ff7b2f] text-white font-bold text-sm hover:bg-[#f06820] transition-colors"
             >
               Enviar mensagem <Send size={16} />
             </button>

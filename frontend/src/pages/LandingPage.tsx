@@ -24,8 +24,8 @@ export function LandingPage() {
     navigate('/splash');
   };
 
-  const releasedInnovations = news.filter((item) => item.tag === 'Lancamento').slice(0, 4);
-  const plannedIntegrations = news.filter((item) => item.tag !== 'Lancamento').slice(0, 4);
+  const releasedInnovations = news.filter((item) => item.tag === 'Lançamento').slice(0, 4);
+  const plannedIntegrations = news.filter((item) => item.tag !== 'Lançamento').slice(0, 4);
 
   return (
     <MarketingShell>
@@ -37,7 +37,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-[#0b7f86]/35 bg-[#0b7f86]/12 px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#7fd2d8]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#0b7f86]/35 bg-[#0b7f86]/12 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-[#7fd2d8]"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#0b7f86] animate-pulse" />
               Sistema para oficinas mecânicas
@@ -47,7 +47,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mt-6 text-[clamp(2.1rem,5.6vw,3.8rem)] font-black leading-[0.95] tracking-tight"
+              className="mt-6 text-[clamp(2.1rem,5.6vw,3.8rem)] font-bold leading-[0.95] tracking-tight"
             >
               <span className="text-[#f8fafc]">Sigma</span>{' '}
               <span className="text-[#58c3cb]">Auto</span>
@@ -89,7 +89,7 @@ export function LandingPage() {
             >
               <button type="button"
                 onClick={handleAccess}
-                className="h-[52px] px-8 rounded-lg bg-[#0b7f86] text-white font-black text-base tracking-wide hover:bg-[#076168] transition-all shadow-[0_16px_34px_rgba(11,127,134,0.28)] inline-flex items-center gap-2"
+                className="h-[52px] px-8 rounded-lg bg-[#0b7f86] text-white font-bold text-base tracking-wide hover:bg-[#076168] transition-all shadow-[0_16px_34px_rgba(11,127,134,0.28)] inline-flex items-center gap-2"
               >
                 Entrar no sistema
                 <ArrowRight size={18} />
@@ -136,8 +136,8 @@ export function LandingPage() {
       {/* Transparência de produto */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
         <div className="mb-10">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#58c3cb]/80 font-bold mb-3">Transparência de produto</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">O que já entregamos e o que vem a seguir</h2>
+          <p className="text-xs uppercase tracking-wide text-[#58c3cb]/80 font-bold mb-3">Transparência de produto</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">O que já entregamos e o que vem a seguir</h2>
           <p className="mt-3 text-white/65 text-sm max-w-2xl">
             Sem promessa vazia: aqui mostramos as inovações já disponíveis e as integrações planejadas para a evolução da sua operação.
           </p>
@@ -145,8 +145,8 @@ export function LandingPage() {
 
         <div className="grid lg:grid-cols-2 gap-x-12 gap-y-10">
           <div>
-            <p className="text-[12px] uppercase tracking-[0.2em] text-emerald-500 font-bold">Inovações disponíveis</p>
-            <h3 className="mt-2 text-xl font-black text-white">Já em uso por oficinas</h3>
+            <p className="text-[12px] uppercase tracking-wide text-emerald-500 font-bold">Inovações disponíveis</p>
+            <h3 className="mt-2 text-xl font-bold text-white">Já em uso por oficinas</h3>
             <div className="mt-6">
               {releasedInnovations.map((item, index) => (
                 <motion.div
@@ -157,10 +157,10 @@ export function LandingPage() {
                   transition={{ delay: index * 0.06 }}
                   className="flex gap-4 py-5 border-b border-line last:border-b-0"
                 >
-                  <span className="text-2xl font-black text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="text-2xl font-bold text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[12px] uppercase tracking-[0.12em] text-emerald-500/90 font-bold">{item.tag}</p>
+                      <p className="text-[12px] uppercase tracking-wide text-emerald-500/90 font-bold">{item.tag}</p>
                       <span className="text-[12px] text-white/40">{item.date}</span>
                     </div>
                     <p className="mt-1.5 text-sm font-bold text-white">{item.title}</p>
@@ -172,8 +172,8 @@ export function LandingPage() {
           </div>
 
           <div>
-            <p className="text-[12px] uppercase tracking-[0.2em] text-[#7fd2d8] font-bold">Integrações planejadas</p>
-            <h3 className="mt-2 text-xl font-black text-white">Próximos passos do roadmap</h3>
+            <p className="text-[12px] uppercase tracking-wide text-[#7fd2d8] font-bold">Integrações planejadas</p>
+            <h3 className="mt-2 text-xl font-bold text-white">Próximos passos do roadmap</h3>
             <div className="mt-6">
               {plannedIntegrations.map((item, index) => (
                 <motion.div
@@ -184,10 +184,10 @@ export function LandingPage() {
                   transition={{ delay: index * 0.06 }}
                   className="flex gap-4 py-5 border-b border-line last:border-b-0"
                 >
-                  <span className="text-2xl font-black text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="text-2xl font-bold text-white/25 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[12px] uppercase tracking-[0.12em] text-[#7fd2d8] font-bold">{item.tag}</p>
+                      <p className="text-[12px] uppercase tracking-wide text-[#7fd2d8] font-bold">{item.tag}</p>
                       <span className="text-[12px] text-white/40">{item.date}</span>
                     </div>
                     <p className="mt-1.5 text-sm font-bold text-white">{item.title}</p>
@@ -207,9 +207,9 @@ export function LandingPage() {
       {/* Planos */}
       <section id="planos" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
         <div className="text-center mb-10">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black">Escolha e inicie sua assinatura</h2>
-          <p className="mt-3 text-white/45 text-sm">Sem conta? voce conclui o pagamento e recebe convite de ativacao no e-mail.</p>
+          <p className="text-xs uppercase tracking-wide text-[#ff7b2f]/70 font-bold mb-3">Planos</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Escolha e inicie sua assinatura</h2>
+          <p className="mt-3 text-white/45 text-sm">Sem conta? você conclui o pagamento e recebe convite de ativacao no e-mail.</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -232,9 +232,9 @@ export function LandingPage() {
                   Mais popular
                 </span>
               ) : null}
-              <p className="text-xs uppercase tracking-widest text-white/40">{plan.label}</p>
+              <p className="text-xs uppercase tracking-wide text-white/40">{plan.label}</p>
               <div className="mt-2 flex items-end gap-1">
-                <p className="text-3xl font-black text-white">{plan.price}</p>
+                <p className="text-3xl font-bold text-white">{plan.price}</p>
                 <p className="text-sm text-white/40 mb-1">{plan.period}</p>
               </div>
               <p className="mt-3 text-sm text-white/60 leading-relaxed">{plan.description}</p>
@@ -250,7 +250,7 @@ export function LandingPage() {
 
               <button type="button"
                 onClick={() => startPlanCheckout(plan.name)}
-                className={`mt-6 h-11 w-full rounded-xl text-sm font-black transition-all inline-flex items-center justify-center gap-2 ${
+                className={`mt-6 h-11 w-full rounded-xl text-sm font-bold transition-all inline-flex items-center justify-center gap-2 ${
                   plan.featured
                     ? 'bg-[#ff7b2f] text-white hover:bg-[#f06820] shadow-[0_0_20px_rgba(255,123,47,0.4)]'
                     : 'bg-ink/5 text-white border border-line hover:bg-ink/5'
@@ -264,11 +264,11 @@ export function LandingPage() {
 
         <div className="mt-14 rounded-xl border border-[#ff7b2f]/20 bg-[#ff7b2f]/6 p-6 md:p-8">
           <div className="max-w-3xl">
-            <p className="text-[12px] uppercase tracking-[0.2em] text-[#ffb182] font-bold">Linha especializada</p>
-            <h3 className="mt-2 text-2xl md:text-3xl font-black text-white">Modo Retífica de Motores</h3>
+            <p className="text-[12px] uppercase tracking-wide text-[#ffb182] font-bold">Linha especializada</p>
+            <h3 className="mt-2 text-2xl md:text-3xl font-bold text-white">Modo Retífica de Motores</h3>
             <p className="mt-3 text-sm text-white/65 leading-relaxed">
-              Para operacoes que precisam receber tanto veiculos completos quanto motores avulsos, o Sigma Auto passa a ter uma familia dedicada de planos.
-              Ela preserva toda a operacao da oficina e adiciona o trilho especializado de retifica.
+              Para operações que precisam receber tanto veículos completos quanto motores avulsos, o Sigma Auto passa a ter uma familia dedicada de planos.
+              Ela preserva toda a operação da oficina e adiciona o trilho especializado de retífica.
             </p>
           </div>
 
@@ -282,9 +282,9 @@ export function LandingPage() {
                 transition={{ delay: index * 0.1 }}
                 className="rounded-xl border border-line bg-[#0c1220]/60 p-6"
               >
-                <p className="text-xs uppercase tracking-widest text-[#ffb182]">{plan.label}</p>
+                <p className="text-xs uppercase tracking-wide text-[#ffb182]">{plan.label}</p>
                 <div className="mt-2 flex items-end gap-1">
-                  <p className="text-3xl font-black text-white">{plan.price}</p>
+                  <p className="text-3xl font-bold text-white">{plan.price}</p>
                   <p className="text-sm text-white/40 mb-1">{plan.period}</p>
                 </div>
                 <p className="mt-3 text-sm text-white/60 leading-relaxed">{plan.description}</p>
@@ -300,7 +300,7 @@ export function LandingPage() {
 
                 <button type="button"
                   onClick={() => startPlanCheckout(plan.name)}
-                  className="mt-6 h-11 w-full rounded-xl bg-[#ff7b2f] text-white hover:bg-[#f06820] shadow-[0_0_20px_rgba(255,123,47,0.28)] text-sm font-black transition-all inline-flex items-center justify-center gap-2"
+                  className="mt-6 h-11 w-full rounded-xl bg-[#ff7b2f] text-white hover:bg-[#f06820] shadow-[0_0_20px_rgba(255,123,47,0.28)] text-sm font-bold transition-all inline-flex items-center justify-center gap-2"
                 >
                   Ver modalidade Retifica
                 </button>
@@ -312,10 +312,10 @@ export function LandingPage() {
         <div className="mt-10 rounded-xl border border-line bg-ink/5 p-5 md:p-7">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.2em] text-[#ff7b2f]/75 font-bold">Comparativo por pacote</p>
-              <h3 className="mt-1 text-xl md:text-2xl font-black text-white">Funcoes liberadas em cada plano</h3>
+              <p className="text-[12px] uppercase tracking-wide text-[#ff7b2f]/75 font-bold">Comparativo por pacote</p>
+              <h3 className="mt-1 text-xl md:text-2xl font-bold text-white">Funcoes liberadas em cada plano</h3>
             </div>
-            <p className="text-xs text-white/45 max-w-xl">Tabela comercial para facilitar a escolha do pacote ideal por porte de oficina e maturidade da operacao.</p>
+            <p className="text-xs text-white/45 max-w-xl">Tabela comercial para facilitar a escolha do pacote ideal por porte de oficina e maturidade da operação.</p>
           </div>
 
           <div className="overflow-x-auto">
@@ -323,15 +323,15 @@ export function LandingPage() {
               <thead>
                 <tr className="text-left border-b border-line">
                   <th className="py-2.5 pr-3 text-white/70 font-bold">Funcionalidade</th>
-                  <th className="py-2.5 px-3 text-white font-black">Start</th>
-                  <th className="py-2.5 px-3 text-[#ffb182] font-black">Pro</th>
-                  <th className="py-2.5 px-3 text-[#ffd6ba] font-black">Rede</th>
+                  <th className="py-2.5 px-3 text-white font-bold">Start</th>
+                  <th className="py-2.5 px-3 text-[#ffb182] font-bold">Pro</th>
+                  <th className="py-2.5 px-3 text-[#ffd6ba] font-bold">Rede</th>
                 </tr>
               </thead>
               <tbody>
                 {planCapabilities.map((row) => {
                   const renderCell = (value: string) => {
-                    const enabled = value !== 'Nao';
+                    const enabled = value !== 'Não';
                     return (
                       <span className={`inline-flex items-center gap-1.5 ${enabled ? 'text-emerald-500' : 'text-white/60'}`}>
                         {enabled ? <CheckCircle size={15} className="shrink-0" /> : <CircleSlash size={15} className="shrink-0" />}
