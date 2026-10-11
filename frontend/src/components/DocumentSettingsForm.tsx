@@ -11,6 +11,7 @@ type Settings = {
   authorizationText: string;
   warrantyText: string;
   belongingsText: string;
+  pixKey: string;
 };
 
 const TEXTS: Array<{ key: 'authorizationText' | 'warrantyText' | 'belongingsText'; label: string; hint: string }> = [
@@ -45,6 +46,7 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
       authorizationText: stored.authorizationText ?? '',
       warrantyText: stored.warrantyText ?? '',
       belongingsText: stored.belongingsText ?? '',
+      pixKey: stored.pixKey ?? '',
     });
   };
 
@@ -66,6 +68,7 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
         authorizationText: data.authorizationText,
         warrantyText: data.warrantyText,
         belongingsText: data.belongingsText,
+        pixKey: data.pixKey,
       }));
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -113,6 +116,19 @@ export function DocumentSettingsForm({ canEdit }: { canEdit: boolean }) {
             {numberField('warrantyDaysServices', 'Garantia serviços (dias)')}
             {numberField('warrantyDaysParts', 'Garantia peças (dias)')}
             {numberField('budgetValidityDays', 'Validade orçamento (dias)')}
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="fld-documentsettingsform-pix" className="block text-sm font-semibold text-muted">Chave PIX da oficina</label>
+            <input id="fld-documentsettingsform-pix"
+              value={data.pixKey}
+              maxLength={140}
+              placeholder={defaults?.pixKey ? `Padrão: CPF/CNPJ da empresa (${defaults.pixKey})` : 'CPF/CNPJ, e-mail, telefone ou chave aleatória'}
+              onChange={(e) => canEdit && setData({ ...data, pixKey: e.target.value })}
+              disabled={!canEdit}
+              className={inputClass(canEdit)}
+            />
+            <p className="text-[11px] text-surface-500 ml-1">Aparece na O.S. e nos documentos quando a forma de pagamento é PIX. Em branco, vale o CPF/CNPJ da empresa.</p>
           </div>
 
           {TEXTS.map((t) => (

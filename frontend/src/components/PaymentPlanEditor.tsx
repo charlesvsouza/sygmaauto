@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { tenantsApi } from '../api/client';
 import { cn } from '../lib/utils';
 import {
   buildInstallments,
@@ -49,6 +51,10 @@ interface Props {
 }
 
 export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disabled }: Props) {
+  const [pixKey, setPixKey] = useState('');
+  useEffect(() => {
+    tenantsApi.getDocumentSettings().then((res) => setPixKey(res.data?.effective?.pixKey ?? '')).catch(() => {});
+  }, []);
   const amounts = splitOrderTotal(order);
   const amountOf: Record<PaymentPlanScope, number> = { TOTAL: amounts.total, PECAS: amounts.parts, SERVICOS: amounts.services };
 
@@ -130,6 +136,12 @@ export function PaymentPlanEditor({ plan, onChange, order, legacyMethod, disable
                 </button>
               ))}
             </div>
+
+            {active && g.method === 'PIX' && (
+              <p className="px-2.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-bold text-emerald-700 break-all">
+                {pixKey ? `Chave PIX da oficina: ${pixKey}` : 'Chave PIX não cadastrada — informe em Configurações › Documentos.'}
+              </p>
+            )}
 
             {active && (
               <>

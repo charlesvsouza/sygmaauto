@@ -8,23 +8,46 @@ export class ImportService {
   private configuredApiKeyName: string | null = null;
 
   private readonly basePrompt = `
-Você é um especialista em sistemas de gestão de oficinas mecânicas.
-Sua tarefa é extrair os dados de um orçamento e formatá-los em JSON rigoroso para importação.
+Você é um analista experiente de oficina mecânica. Vai receber um orçamento ou ordem de serviço feito por OUTRO sistema ou oficina.
+Leia o documento inteiro, ENTENDA o que cada informação significa e coloque cada uma no campo correto do nosso sistema.
+Não copie o documento cegamente: interprete, classifique e separe.
 
-Retorne SOMENTE JSON válido com a estrutura:
+Retorne SOMENTE um JSON válido com esta estrutura:
 {
-  "customer": { "name": "", "document": "", "phone": "", "email": "", "address": "" },
+  "customer": { "name": "", "document": "", "rg": "", "phone": "", "email": "", "address": "", "cep": "", "cidade": "", "estado": "" },
   "vehicle": { "brand": "", "model": "", "plate": "", "year": "", "km": null, "vin": "", "color": "" },
+  "equipment": { "brand": "", "model": "", "serialNumber": "" },
+  "complaint": "",
+  "diagnosis": "",
+  "technicalReport": "",
+  "observations": "",
+  "notes": "",
+  "paymentMethod": "",
+  "scheduledDate": "",
   "items": [
-    { "type": "part|service", "description": "", "quantity": 1, "unitPrice": 0, "internalCode": "" }
+    { "type": "part|service", "description": "", "quantity": 1, "unitPrice": 0, "discount": 0, "internalCode": "" }
   ],
-  "totals": { "parts": 0, "services": 0, "labor": 0, "total": 0 }
+  "totals": { "parts": 0, "services": 0, "labor": 0, "discount": 0, "total": 0 }
 }
 
+Significado de cada campo (coloque cada informação SOMENTE no campo certo, sem repetir em dois):
+- customer: dados do cliente/proprietário. "document" = CPF ou CNPJ. "estado" = sigla da UF. Endereço sem cidade/UF/CEP em "address".
+- vehicle: dados do veículo. "plate" = placa. "km" = quilometragem do veículo como número inteiro (sem pontos). "year" = ano.
+- equipment: SOMENTE se o documento tratar de um equipamento que não é um carro (motor avulso, câmbio, máquina etc.); caso contrário, deixe vazio.
+- complaint: o que o cliente RELATOU / defeito reclamado / motivo da visita (ex.: "barulho na suspensão ao virar").
+- diagnosis: o que o mecânico CONSTATOU / causa identificada / parecer de diagnóstico.
+- technicalReport: laudo técnico detalhado, medições, testes, procedimentos executados, se houver.
+- observations: SUGESTÕES e RECOMENDAÇÕES ao cliente (itens a trocar no futuro, serviços adicionais recomendados, alertas de segurança, próximas revisões). Uma por linha.
+- notes: informações administrativas e comerciais: garantia, validade do orçamento, prazos, condições, avisos legais, observações gerais que não sejam sugestão técnica.
+- paymentMethod: forma de pagamento citada, normalizada para um destes valores exatos: "PIX", "Cartão de Crédito", "Cartão de Débito", "Dinheiro", "Boleto", "Transferência Bancária", "Cheque". Se houver parcelamento (ex.: 3x no cartão), mantenha o método aqui e registre as parcelas em "notes". Vazio se não houver.
+- scheduledDate: data prevista/agendada em formato AAAA-MM-DD, vazio se não houver.
+- items: CADA linha de peça, produto, serviço ou mão de obra. "type": "part" para peça/produto/insumo/fluido; "service" para serviço, mão de obra, revisão, diagnóstico. "description" = nome limpo do item (sem o código dentro). "internalCode" = código/referência da peça, se houver. "quantity" = quantidade. "unitPrice" = preço UNITÁRIO (se o documento só traz o total da linha, divida pela quantidade). "discount" = desconto em R$ naquela linha (0 se não houver).
+- totals: valores totais do documento. "discount" = desconto total em R$.
+
 Regras:
-1. Se não encontrar um campo, use string vazia, null ou 0.
-2. No campo "type", use "part" para peça/produto e "service" para mão de obra/serviço.
-3. Valores numéricos devem ser número, não string.
+1. Se não encontrar um campo, use string vazia, null ou 0. NUNCA invente dados que não estejam no documento.
+2. Valores numéricos devem ser número (ponto decimal), não string. Converta "1.234,56" para 1234.56.
+3. Se uma mesma informação aparece em mais de um lugar, use-a uma vez no campo mais adequado.
 4. Não inclua markdown, explicações nem texto fora do JSON.
 `;
 
@@ -127,6 +150,11 @@ Regras:
     return false;
   }
 
+  private toText(value: unknown): string {
+    if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean).join('\n');
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
   private normalizeResult(input: any): any {
     const safe = input && typeof input === 'object' ? input : {};
     const customer = safe.customer && typeof safe.customer === 'object' ? safe.customer : {};
@@ -134,35 +162,72 @@ Regras:
     const totals = safe.totals && typeof safe.totals === 'object' ? safe.totals : {};
     const items = Array.isArray(safe.items) ? safe.items : [];
 
+    const num = (v: unknown): number => {
+      if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
+      if (typeof v === 'string') {
+        const n = Number(v.replace(/\./g, '').replace(',', '.'));
+        return Number.isFinite(n) ? n : 0;
+      }
+      return 0;
+    };
+    const str = (v: unknown): string => (typeof v === 'string' ? v.trim() : typeof v === 'number' ? String(v) : '');
+    const equipment = safe.equipment && typeof safe.equipment === 'object' ? safe.equipment : {};
+    const km = num(vehicle.km);
+    const methods = ['PIX', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'Boleto', 'Transferência Bancária', 'Cheque'];
+    const rawMethod = str(safe.paymentMethod);
+    const paymentMethod = methods.find((m) => m.toLowerCase() === rawMethod.toLowerCase()) ?? '';
+    const scheduled = str(safe.scheduledDate);
+
     return {
       customer: {
-        name: customer.name ?? '',
-        document: customer.document ?? '',
-        phone: customer.phone ?? '',
-        email: customer.email ?? '',
-        address: customer.address ?? '',
+        name: str(customer.name),
+        document: str(customer.document),
+        rg: str(customer.rg),
+        phone: str(customer.phone),
+        email: str(customer.email),
+        address: str(customer.address),
+        cep: str(customer.cep),
+        cidade: str(customer.cidade),
+        estado: str(customer.estado),
       },
       vehicle: {
-        brand: vehicle.brand ?? '',
-        model: vehicle.model ?? '',
-        plate: vehicle.plate ?? '',
-        year: vehicle.year ?? '',
-        km: typeof vehicle.km === 'number' ? vehicle.km : null,
-        vin: vehicle.vin ?? '',
-        color: vehicle.color ?? '',
+        brand: str(vehicle.brand),
+        model: str(vehicle.model),
+        plate: str(vehicle.plate),
+        year: str(vehicle.year),
+        km: km > 0 ? Math.round(km) : null,
+        vin: str(vehicle.vin),
+        color: str(vehicle.color),
       },
-      items: items.map((item: any) => ({
-        type: item?.type === 'part' || item?.type === 'service' ? item.type : 'service',
-        description: item?.description ?? '',
-        quantity: typeof item?.quantity === 'number' && item.quantity > 0 ? item.quantity : 1,
-        unitPrice: typeof item?.unitPrice === 'number' ? item.unitPrice : 0,
-        internalCode: item?.internalCode ?? '',
-      })),
+      equipment: {
+        brand: str(equipment.brand),
+        model: str(equipment.model),
+        serialNumber: str(equipment.serialNumber),
+      },
+      complaint: this.toText(safe.complaint),
+      diagnosis: this.toText(safe.diagnosis),
+      technicalReport: this.toText(safe.technicalReport),
+      observations: this.toText(safe.observations),
+      notes: this.toText(safe.notes),
+      paymentMethod,
+      scheduledDate: /^\d{4}-\d{2}-\d{2}$/.test(scheduled) ? scheduled : '',
+      items: items.map((item: any) => {
+        const quantity = num(item?.quantity);
+        return {
+          type: item?.type === 'part' ? 'part' : 'service',
+          description: str(item?.description),
+          quantity: quantity > 0 ? quantity : 1,
+          unitPrice: num(item?.unitPrice),
+          discount: num(item?.discount),
+          internalCode: str(item?.internalCode),
+        };
+      }),
       totals: {
-        parts: typeof totals.parts === 'number' ? totals.parts : 0,
-        services: typeof totals.services === 'number' ? totals.services : 0,
-        labor: typeof totals.labor === 'number' ? totals.labor : 0,
-        total: typeof totals.total === 'number' ? totals.total : 0,
+        parts: num(totals.parts),
+        services: num(totals.services),
+        labor: num(totals.labor),
+        discount: num(totals.discount),
+        total: num(totals.total),
       },
     };
   }
@@ -234,6 +299,7 @@ Regras:
 
       const model = this.genAI.getGenerativeModel({
         model: this.configService.get<string>('GEMINI_MODEL') || 'gemini-3.8-flash',
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.1 },
       });
       let bestEffortResult: any = null;
       const warnings: string[] = [];

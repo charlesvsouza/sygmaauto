@@ -262,6 +262,18 @@ export class OrderDocumentsService {
     return `<table class="totals">${rows.map(([k, v, cls]) => `<tr${cls ? ` class="${cls}"` : ''}><td>${e(k)}</td><td class="r">${v}</td></tr>`).join('')}</table>`;
   }
 
+  // Chave PIX da oficina, quando o pagamento (ou parte dele) é por PIX.
+  private pixInfo(order: any, settings: DocumentSettings): string {
+    if (!settings.pixKey) return '';
+    let plan: ReturnType<typeof parsePaymentPlan> = null;
+    try { plan = parsePaymentPlan(order.paymentPlan); } catch { plan = null; }
+    const usesPix = plan
+      ? plan.groups.some((g) => g.method === 'PIX')
+      : /pix/i.test(String(order.paymentMethod || ''));
+    if (!usesPix) return '';
+    return `<table class="kv"><tr><td>Chave PIX</td><td><b>${e(settings.pixKey)}</b></td></tr></table>`;
+  }
+
   // Parcelas do plano de pagamento. Antes do faturamento, prazos relativos ("no ato",
   // "30 dias"); depois, datas contadas a partir do faturamento.
   private paymentSchedule(order: any): string {
@@ -371,6 +383,7 @@ ${this.valuedItems(order, false)}
 ${this.totals(order)}
 <table class="kv"><tr><td>Validade do orçamento</td><td>${formatDateBR(validUntil)}</td><td>Condição de pagamento</td><td>${e(order.paymentMethod || 'A combinar')}</td></tr></table>
 ${this.paymentSchedule(order)}
+${this.pixInfo(order, settings)}
 ${this.textSection('Observações', order.observations)}
 ${approval}
 <div class="legal">${e(settings.authorizationText)}</div>
@@ -383,7 +396,7 @@ ${this.signatures([
   // ─── O.S. (via do cliente, com valores) ───────────────────────────────────
 
   private osCliente(ctx: Ctx): string {
-    const { order } = ctx;
+    const { order, settings } = ctx;
     const techs = [...new Set(order.items.map((i: any) => i.assignedUser?.name).filter(Boolean))] as string[];
     return `
 ${this.clientVehicle(ctx)}
@@ -394,6 +407,7 @@ ${this.valuedItems(order, true)}
 ${this.totals(order)}
 ${order.paymentMethod ? `<table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod)}</td></tr></table>` : ''}
 ${this.paymentSchedule(order)}
+${this.pixInfo(order, settings)}
 ${this.textSection('Laudo / Solução', order.technicalReport)}
 ${this.textSection('Observações', order.observations)}
 ${this.signatures([
@@ -454,6 +468,7 @@ ${this.valuedItems(order, true)}
 ${this.totals(order, [['Valor pago', paid], ['Saldo a pagar', balance]])}
 <table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr></table>
 ${this.paymentSchedule(order)}
+${order.paidAt && !balance ? '' : this.pixInfo(order, settings)}
 <div class="sec">Garantia</div>
 <table class="kv">
   <tr><td>Serviços</td><td>${settings.warrantyDaysServices} dias — até <b>${formatDateBR(warrantyServices)}</b></td></tr>

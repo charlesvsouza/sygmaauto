@@ -43,7 +43,7 @@ export class TenantsService {
       where: { id: tenantId },
       select: {
         warrantyDaysServices: true, warrantyDaysParts: true, budgetValidityDays: true,
-        authorizationText: true, warrantyText: true, belongingsText: true,
+        authorizationText: true, warrantyText: true, belongingsText: true, pixKey: true, taxId: true, document: true,
       },
     });
     return { effective: resolveDocumentSettings(tenant), stored: tenant };
@@ -52,7 +52,7 @@ export class TenantsService {
   // Texto vazio volta ao padrão (grava null).
   async updateDocumentSettings(tenantId: string, dto: UpdateDocumentSettingsDto) {
     const data: Record<string, unknown> = { ...dto };
-    for (const key of ['authorizationText', 'warrantyText', 'belongingsText'] as const) {
+    for (const key of ['authorizationText', 'warrantyText', 'belongingsText', 'pixKey'] as const) {
       if (key in data) data[key] = (dto[key] ?? '').trim() || null;
     }
     await this.prisma.tenant.update({ where: { id: tenantId }, data });

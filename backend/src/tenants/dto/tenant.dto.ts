@@ -142,4 +142,10 @@ export class UpdateDocumentSettingsDto {
   @IsString()
   @MaxLength(2000)
   belongingsText?: string;
+
+  @ApiProperty({ required: false, description: 'Chave PIX da oficina (CPF/CNPJ, e-mail, telefone ou aleatória)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(140)
+  pixKey?: string;
 }

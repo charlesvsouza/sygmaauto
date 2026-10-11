@@ -78,6 +78,7 @@ model Tenant {
   authorizationText    String?
   warrantyText         String?
   belongingsText       String?
+  pixKey               String? // chave PIX da oficina, exibida quando o pagamento é por PIX
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

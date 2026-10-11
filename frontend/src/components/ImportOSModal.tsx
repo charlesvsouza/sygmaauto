@@ -69,6 +69,11 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
         const currentComplaint = String(currentOrder.data?.complaint || '').trim();
         const currentObservations = String(currentOrder.data?.observations || '').trim();
         const importedObservations = String(data?.observations || '').trim();
+        const importedComplaint = String(data?.complaint || '').trim();
+        const importedNotes = String(data?.notes || '').trim();
+        const importedDiagnosis = String(data?.diagnosis || '').trim();
+        const currentNotes = String(currentOrder.data?.notes || '').trim();
+        const currentDiagnosis = String(currentOrder.data?.diagnosis || '').trim();
 
         for (const item of data?.items || []) {
           await serviceOrdersApi.addItem(targetOrderId, {
@@ -76,18 +81,23 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
             description: item.description,
             quantity: Number(item.quantity) || 1,
             unitPrice: Number(item.unitPrice) || 0,
+            discount: Number(item.discount) || 0,
             internalCode: item.internalCode,
           });
         }
 
-        if (importedObservations) {
+        if (importedObservations || importedNotes || importedDiagnosis || (!currentComplaint && importedComplaint)) {
           const mergedObservations = currentObservations
             ? `${currentObservations}\n\n${importedObservations}`
             : importedObservations;
 
           await serviceOrdersApi.update(targetOrderId, {
             observations: mergedObservations,
-            ...(currentComplaint ? {} : { complaint: importedObservations }),
+            ...(importedNotes ? { notes: currentNotes ? `${currentNotes}
+
+${importedNotes}` : importedNotes } : {}),
+            ...(importedDiagnosis && !currentDiagnosis ? { diagnosis: importedDiagnosis } : {}),
+            ...(currentComplaint ? {} : { complaint: importedComplaint || importedObservations }),
           });
         }
 
@@ -97,28 +107,40 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
       }
 
       // 1. Garantir Cliente
+      const clean = (v: any) => {
+        const t = typeof v === 'string' ? v.trim() : v;
+        return t ? t : undefined;
+      };
+      const customerName = clean(data.customer?.name) || 'Cliente importado';
+      const customerDocument = clean(data.customer?.document);
       let customerId = '';
       try {
         const cRes = await customersApi.getAll();
-        const existingCustomer = cRes.data.find((c: any) => 
-          (data.customer.document && c.document === data.customer.document) || 
-          c.name.toLowerCase() === data.customer.name.toLowerCase()
+        const existingCustomer = cRes.data.find((c: any) =>
+          (customerDocument && c.document === customerDocument) ||
+          String(c.name || '').toLowerCase() === customerName.toLowerCase()
         );
 
         if (existingCustomer) {
           customerId = existingCustomer.id;
         } else {
+          const email = clean(data.customer?.email);
           const newC = await customersApi.create({
-            name: data.customer.name,
-            document: data.customer.document,
-            phone: data.customer.phone,
-            email: data.customer.email,
-            address: data.customer.address,
+            name: customerName,
+            document: customerDocument,
+            phone: clean(data.customer?.phone),
+            email: email && /^\S+@\S+\.\S+$/.test(email) ? email : undefined,
+            address: clean(data.customer?.address),
+            rg: clean(data.customer?.rg),
+            cep: clean(data.customer?.cep),
+            cidade: clean(data.customer?.cidade),
+            estado: clean(data.customer?.estado),
           });
           customerId = newC.data.id;
         }
       } catch (e) {
         console.error('Erro ao processar cliente', e);
+        throw new Error(parseApiError(e, 'Não foi possível cadastrar o cliente da importação.'));
       }
 
       // 2. Garantir Veículo
@@ -156,21 +178,40 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
       }
 
       // 3. Criar OS
-      await serviceOrdersApi.create({
+      const created = await serviceOrdersApi.create({
         customerId,
         vehicleId,
         orderType: 'ORCAMENTO',
-        complaint: data.observations || 'Orçamento importado de terceiros',
-        observations: data.observations || '',
+        complaint: clean(data.complaint) || clean(data.observations) || 'Orçamento importado de terceiros',
+        observations: clean(data.observations) || '',
+        notes: clean(data.notes),
+        equipmentBrand: clean(data.equipment?.brand),
+        equipmentModel: clean(data.equipment?.model),
+        serialNumber: clean(data.equipment?.serialNumber),
+        scheduledDate: clean(data.scheduledDate),
         kmEntrada: data.vehicle.km ? parseInt(data.vehicle.km) : 0,
         items: data.items.map((it: any) => ({
           type: it.type,
           description: it.description,
           quantity: Number(it.quantity),
           unitPrice: Number(it.unitPrice),
+          discount: Number(it.discount) || 0,
           internalCode: it.internalCode,
         })),
       });
+
+      // Campos que o cadastro inicial não aceita: diagnóstico, laudo e forma de pagamento
+      const extras: Record<string, string> = {};
+      if (clean(data.diagnosis)) extras.diagnosis = clean(data.diagnosis);
+      if (clean(data.technicalReport)) extras.technicalReport = clean(data.technicalReport);
+      if (clean(data.paymentMethod)) extras.paymentMethod = clean(data.paymentMethod);
+      if (Object.keys(extras).length > 0 && created?.data?.id) {
+        try {
+          await serviceOrdersApi.update(created.data.id, extras);
+        } catch (e) {
+          console.error('Erro ao complementar OS importada', e);
+        }
+      }
 
       onSuccess();
       onClose();
@@ -343,15 +384,47 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
               )}
 
               {/* Observações do PDF */}
-              {(data.observations || data._warnings) && (
-                <div className="p-5 bg-amber-500/10 rounded-xl border border-amber-500/30">
-                  <label htmlFor="fld-importosmodal-6" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Observações extraídas do PDF</label>
+              {(data.complaint || data.diagnosis || data.observations || data.notes || data.paymentMethod || data._warnings) && (
+                <div className="p-5 bg-amber-500/10 rounded-xl border border-amber-500/30 space-y-4">
+                  <div>
+                    <label htmlFor="fld-importosmodal-complaint" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Defeito / reclamação extraído do PDF</label>
+                    <textarea id="fld-importosmodal-complaint"
+                      className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
+                      rows={2}
+                      value={data.complaint || ''}
+                      onChange={(e) => setData({ ...data, complaint: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="fld-importosmodal-diagnosis" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Diagnóstico / laudo constatado</label>
+                    <textarea id="fld-importosmodal-diagnosis"
+                      className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
+                      rows={2}
+                      value={data.diagnosis || ''}
+                      onChange={(e) => setData({ ...data, diagnosis: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                  <label htmlFor="fld-importosmodal-6" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Sugestões e observações extraídas do PDF</label>
                   <textarea id="fld-importosmodal-6"
                     className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
                     rows={3}
                     value={data.observations || ''}
                     onChange={(e) => setData({ ...data, observations: e.target.value })}
                   />
+                  </div>
+                  <div>
+                    <label htmlFor="fld-importosmodal-notes" className="text-[11px] font-bold text-amber-600 uppercase mb-2 block">Garantia, prazos e condições</label>
+                    <textarea id="fld-importosmodal-notes"
+                      className="w-full bg-surface-900 border border-amber-500/30 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-amber-400 transition-all resize-none"
+                      rows={2}
+                      value={data.notes || ''}
+                      onChange={(e) => setData({ ...data, notes: e.target.value })}
+                    />
+                  </div>
+                  {data.paymentMethod && (
+                    <p className="text-[11px] text-amber-700 font-bold">Forma de pagamento identificada: {data.paymentMethod}</p>
+                  )}
                   {data._warnings && (
                     <p className="text-[11px] text-amber-600 font-bold mt-1">{data._warnings.join(' ')}</p>
                   )}

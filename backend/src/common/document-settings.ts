@@ -27,6 +27,9 @@ type TenantDocFields = {
   authorizationText?: string | null;
   warrantyText?: string | null;
   belongingsText?: string | null;
+  pixKey?: string | null;
+  taxId?: string | null;
+  document?: string | null;
 };
 
 export type DocumentSettings = {
@@ -36,8 +39,10 @@ export type DocumentSettings = {
   authorizationText: string;
   warrantyText: string;
   belongingsText: string;
+  pixKey: string;
 };
 
+const onlyDigits = (v: string | null | undefined) => (v ?? '').replace(/\D/g, '');
 const text = (v: string | null | undefined, fallback: string) => (v && v.trim() ? v.trim() : fallback);
 
 export function resolveDocumentSettings(tenant: TenantDocFields | null | undefined): DocumentSettings {
@@ -48,6 +53,8 @@ export function resolveDocumentSettings(tenant: TenantDocFields | null | undefin
     authorizationText: text(tenant?.authorizationText, DEFAULT_AUTHORIZATION_TEXT),
     warrantyText: text(tenant?.warrantyText, DEFAULT_WARRANTY_TEXT),
     belongingsText: text(tenant?.belongingsText, DEFAULT_BELONGINGS_TEXT),
+    // Sem chave personalizada, vale o CPF/CNPJ cadastrado da empresa (só dígitos, como na chave PIX).
+    pixKey: text(tenant?.pixKey, '') || onlyDigits(tenant?.taxId) || onlyDigits(tenant?.document),
   };
 }
 
