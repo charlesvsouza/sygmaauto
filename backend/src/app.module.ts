@@ -69,6 +69,7 @@ import { DataBackfillsService } from './common/data-backfills.service';
     PdfModule,
     ComplianceModule,
     AsaasModule,
+    PermissionsModule,
   ],
   providers: [TenantMiddleware, DataBackfillsService],
 })
