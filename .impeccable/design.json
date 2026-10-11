@@ -254,7 +254,48 @@
       "Legível com pressa, com a mão suja e a metros de distância (TV).",
       "Português completo e acentuado, sem exceção."
     ],
-    "rules": [],
+    "rules": [
+      {
+        "name": "A Regra de Uma Voz",
+        "body": "Teal é a única cor de ação e de identidade. Indigo, violeta, laranja e azul existem só como codificação de estado ou de série em gráfico, nunca como chrome (botão, foco, link, ícone de KPI).",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Tinta",
+        "body": "Texto teal em fundo claro usa `#0a6458`, nunca o teal de preenchimento.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Dado Vazio",
+        "body": "Nenhum selo de saúde ou conclusão (\"Ótima\", \"Em dia\") aparece sem dado que o sustente. Sem dados, a tela diz \"Sem movimentação ainda\" e convida à primeira ação.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Impressão à Parte",
+        "body": "PDF e impressão (laudos, termos, relatórios) são outro meio e têm CSS próprio (`#111`, `#555`). Não migram para os tokens de tela.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Peso Único",
+        "body": "Peso máximo 700. `font-black` não existe neste sistema.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Eyebrow Contido",
+        "body": "Nada de rótulo caixa-alta espaçado acima de título (\"PAINEL DE INTELIGÊNCIA\", \"INTELIGÊNCIA FINANCEIRA\"). O título fala por si. Tracking máximo `tracking-wide`.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Acento",
+        "body": "Toda palavra em português leva seu acento, em rótulo, estágio, tabela, preço e documento. \"Execucao\" é bug.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra Plana por Padrão",
+        "body": "Nunca borda de 1px com sombra difusa de 16px ou mais no mesmo elemento. Nenhum brilho, órbita ou blur decorativo no fundo, nem nas páginas públicas.",
+        "section": "elevation"
+      }
+    ],
     "dos": [
       "Do deixar o botão de próxima ação como o elemento mais forte da O.S., e a fila \"Precisa de atenção\" como o primeiro bloco do Painel.",
       "Do usar teal (`#0d7d6e`) como única cor de ação e `#0a6458` para todo texto teal.",
