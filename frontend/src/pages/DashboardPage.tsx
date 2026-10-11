@@ -321,10 +321,7 @@ export function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-primary-600 font-bold text-xs uppercase tracking-wide mb-1">
-            <Activity size={14} /> Painel de Inteligência
-          </div>
-          <h1 className="text-4xl font-bold text-surface-50 tracking-tight">
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight">
             {greeting}, <span className="text-primary-600">{userName.split(' ')[0]}</span>
           </h1>
           <p className="text-surface-400 font-medium mt-1">
@@ -337,16 +334,62 @@ export function DashboardPage() {
         </button>
       </div>
 
+      {/* Precisa de atenção */}
+      {(() => {
+        const ageH = (o: any) => (Date.now() - new Date(o.statusChangedAt || o.updatedAt || o.createdAt).getTime()) / 3_600_000;
+        const late = orders.filter((o) =>
+          (o.status === 'EM_DIAGNOSTICO' && ageH(o) > 48) ||
+          (o.status === 'EM_EXECUCAO' && ageH(o) > 72) ||
+          (o.status === 'AGUARDANDO_PECAS' && o.expectedPartsDate && new Date(o.expectedPartsDate) < new Date()),
+        ).length;
+        const awaitingApproval = orders.filter((o) => o.status === 'AGUARDANDO_APROVACAO').length;
+        const readyToDeliver = orders.filter((o) => o.status === 'PRONTO_ENTREGA').length;
+        const rows = [
+          { key: 'late', n: late, danger: true, title: `${late} O.S. com prazo vencido`, hint: 'Diagnóstico, execução ou peças além do prazo no pátio', to: '/kanban' },
+          { key: 'approval', n: awaitingApproval, danger: false, title: `${awaitingApproval} orçamento(s) aguardando aprovação do cliente`, hint: 'Reenvie o link ou aprove no balcão', to: '/service-orders' },
+          { key: 'ready', n: readyToDeliver, danger: false, title: `${readyToDeliver} veículo(s) pronto(s) para entrega`, hint: 'Registre o pagamento e confirme a entrega', to: '/service-orders' },
+          { key: 'stock', n: stats.lowStockCount, danger: false, title: `${stats.lowStockCount} peça(s) com estoque no mínimo`, hint: 'Reponha antes de faltar na bancada', to: '/inventory' },
+          { key: 'today', n: stats.scheduledToday, danger: false, title: `${stats.scheduledToday} agendamento(s) para hoje`, hint: 'Confira a agenda do dia', to: '/agenda' },
+        ].filter((r) => r.n > 0);
+        return (
+          <section aria-labelledby="attention-title" className="space-y-3">
+            <h2 id="attention-title" className="text-lg font-bold text-surface-50">Precisa de atenção</h2>
+            {rows.length > 0 ? (
+              <div className="grid gap-2">
+                {rows.map((r) => (
+                  <button type="button" key={r.key} onClick={() => navigate(r.to)}
+                    className={cn(
+                      'flex w-full items-center justify-between gap-4 rounded-lg border bg-surface-900 px-4 py-3 text-left transition-colors hover:bg-surface-950',
+                      r.danger ? 'border-red-500' : 'border-line',
+                    )}>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-surface-50">{r.title}</span>
+                      <span className="block text-xs text-surface-500">{r.hint}</span>
+                    </span>
+                    <span className="shrink-0 text-sm font-semibold text-accent-ink">Ver</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-line bg-surface-900 px-4 py-4 text-sm text-surface-500">
+                {stats.totalOrders > 0
+                  ? 'Nada pendente agora: nenhuma O.S. atrasada, aguardando aprovação ou pronta para entrega.'
+                  : 'Sem movimentação ainda. Abra a primeira O.S. para ver aqui o que precisa de você.'}
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {kpiCards.map((kpi, i) => (
           <motion.div key={kpi.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
             onClick={() => navigate(kpi.to)}
             className="bg-surface-900 p-5 rounded-xl border border-line shadow-sm hover:shadow-card-hover transition-all cursor-pointer group">
-            <div className={cn('w-11 h-11 rounded-lg flex items-center justify-center text-white mb-3 group-hover:scale-105 transition-transform', kpi.color)}>
-              <kpi.icon size={20} />
-            </div>
-            <p className="text-xs font-bold text-surface-500 uppercase tracking-wide">{kpi.title}</p>
+            <p className="flex items-center gap-2 text-xs font-semibold text-surface-500">
+              <kpi.icon size={16} className="text-accent-ink" /> {kpi.title}
+            </p>
             <h3 className="text-2xl font-bold text-surface-50 mt-1">{kpi.value}</h3>
             <p className="mt-2 text-[12px] font-medium text-surface-500">{kpi.trend}</p>
           </motion.div>

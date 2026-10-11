@@ -246,11 +246,8 @@ export function FinancialPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div variants={itemVariants}>
-          <div className="flex items-center gap-2 text-primary-500 font-bold text-[11px] uppercase tracking-wide mb-2">
-            <Activity size={14} /> Inteligência Financeira
-          </div>
-          <h1 className="text-4xl font-bold text-surface-50 tracking-tight leading-none">
-            Gestão <span className="text-accent-ink">Financeira</span>
+          <h1 className="text-3xl font-bold text-surface-50 tracking-tight leading-none">
+            Gestão Financeira
           </h1>
           <p className="text-surface-400 font-medium mt-2">Relatórios detalhados e controle de fluxo de caixa</p>
         </motion.div>
@@ -317,19 +314,16 @@ export function FinancialPage() {
         </motion.div>
 
         <div className="grid grid-cols-1 gap-6">
-          <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 text-white shadow-xl relative overflow-hidden group">
-            <p className="text-[11px] font-bold text-primary-400 uppercase tracking-wide mb-4">Ticket Médio</p>
-            <h3 className="text-3xl font-bold tracking-tight">R$ {fmtBR(metrics.ticketMedio, 0)}</h3>
-            <div className="flex items-center gap-2 mt-4 text-[11px] text-surface-500 font-bold uppercase">
-              <Receipt size={12} /> {metrics.incomeCount} Entradas
-            </div>
-            <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
-              <Wallet size={80} />
+          <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 border border-line shadow-sm">
+            <p className="flex items-center gap-2 text-xs font-semibold text-surface-500 mb-3"><Wallet size={16} className="text-accent-ink" /> Ticket médio</p>
+            <h3 className="text-3xl font-bold text-surface-50 tracking-tight">R$ {fmtBR(metrics.ticketMedio, 0)}</h3>
+            <div className="flex items-center gap-2 mt-3 text-xs text-surface-500 font-medium">
+              <Receipt size={12} /> {metrics.incomeCount} {metrics.incomeCount === 1 ? 'entrada' : 'entradas'}
             </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-6 border border-line shadow-sm relative overflow-hidden group">
-            <p className="text-[11px] font-bold text-surface-500 uppercase tracking-wide mb-4">Lucratividade</p>
+            <p className="flex items-center gap-2 text-xs font-semibold text-surface-500 mb-3"><Percent size={16} className="text-accent-ink" /> Lucratividade</p>
             <div className="flex items-end gap-2">
               <h3 className="text-3xl font-bold text-surface-50 tracking-tight">{metrics.lucratividade.toFixed(1)}%</h3>
             </div>
@@ -337,62 +331,42 @@ export function FinancialPage() {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(metrics.lucratividade, 100)}%` }}
-                className="h-full bg-emerald-500 rounded-full"
+                className="h-full bg-accent rounded-full"
               />
-            </div>
-            <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
-              <Percent size={80} />
             </div>
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="bg-primary-600 rounded-xl p-8 text-white shadow-xl shadow-primary-500/20 flex flex-col justify-between relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-[11px] font-bold text-primary-200 uppercase tracking-wide mb-2">Fluxo Disponível</p>
-            <h3 className={cn('text-4xl font-bold tracking-tighter', summary.balance < 0 && 'text-red-700')}>
+        <motion.div variants={itemVariants} className="bg-surface-900 rounded-xl p-8 border border-line shadow-sm flex flex-col justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-semibold text-surface-500 mb-2"><Wallet size={16} className="text-accent-ink" /> Fluxo disponível</p>
+            <h3 className={cn('text-4xl font-bold tracking-tight text-surface-50', summary.balance < 0 && 'text-red-700')}>
               R$ {fmtBR(summary.balance)}
             </h3>
-            <div className="mt-6 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-ink/5 flex items-center justify-center">
-                <CheckCircle2 size={16} />
-              </div>
-              <p className="text-[11px] font-bold text-primary-100 uppercase tracking-wide">
-                {summary.balance >= 0 ? 'Saúde Financeira: ÓTIMA' : 'Atenção: saldo negativo'}
-              </p>
-            </div>
+            <p className="mt-4 text-xs font-medium text-surface-500">
+              {summary.income === 0 && summary.expense === 0
+                ? 'Sem movimentação no período ainda.'
+                : summary.balance >= 0 ? 'Entradas cobrem as saídas no período.' : 'Atenção: as saídas superam as entradas no período.'}
+            </p>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-ink/5 rounded-full -mr-16 -mt-16 blur-3xl" />
         </motion.div>
       </div>
 
       {/* Quick Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div variants={itemVariants} className="bg-emerald-500/10 border border-emerald-500/25 p-6 rounded-xl flex items-center justify-between group">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants} className="bg-surface-900 border border-line p-6 rounded-xl flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wide mb-1">Entradas Acumuladas</p>
+            <p className="text-xs font-semibold text-surface-500 mb-1">Entradas acumuladas</p>
             <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.income)}</h4>
           </div>
-          <div className="w-12 h-12 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-12 transition-transform">
-            <ArrowDownLeft size={24} />
-          </div>
+          <ArrowDownLeft size={24} className="text-accent-ink" aria-hidden="true" />
         </motion.div>
-        <motion.div variants={itemVariants} className="bg-red-500/10 border border-red-500/25 p-6 rounded-xl flex items-center justify-between group">
+        <motion.div variants={itemVariants} className="bg-surface-900 border border-line p-6 rounded-xl flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold text-red-600 uppercase tracking-wide mb-1">Saídas Totais</p>
+            <p className="text-xs font-semibold text-surface-500 mb-1">Saídas totais</p>
             <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.expense)}</h4>
           </div>
-          <div className="w-12 h-12 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:-rotate-12 transition-transform">
-            <ArrowUpRight size={24} />
-          </div>
-        </motion.div>
-        <motion.div variants={itemVariants} className="bg-surface-950/40 border border-line p-6 rounded-xl flex items-center justify-between group">
-          <div>
-            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wide mb-1">Projeção Próx. Mês</p>
-            <h4 className="text-2xl font-bold text-surface-50">R$ {fmtBR(summary.income * 1.1, 0)}</h4>
-          </div>
-          <div className="w-12 h-12 bg-accent text-white rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <TrendingUp size={24} />
-          </div>
+          <ArrowUpRight size={24} className="text-red-700" aria-hidden="true" />
         </motion.div>
       </div>
 

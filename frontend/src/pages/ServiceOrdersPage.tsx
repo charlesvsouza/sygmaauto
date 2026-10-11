@@ -9,7 +9,7 @@ import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
   Printer, Save, Zap, Loader2, RefreshCw, FileUp, ChevronDown,
-  ClipboardCheck, ShoppingCart, CheckCircle2, AlertTriangle, Calendar, Sparkles, PackagePlus,
+  ClipboardCheck, ShoppingCart, ArrowRight, CheckCircle2, AlertTriangle, Calendar, Sparkles, PackagePlus,
 } from 'lucide-react';
 
 import { cn } from '../lib/utils';
@@ -900,6 +900,13 @@ export function ServiceOrdersPage() {
     ? (activeStatusFlow[selectedOrder.status] ?? []).filter((status) => canMoveToStatus(userRole, status))
     : [];
 
+  // Próxima ação da O.S.: primeira transição positiva do fluxo, destacada no topo da tela.
+  const primaryNext = nextStatuses.find((status) => status !== 'CANCELADO' && status !== 'REPROVADO');
+  const runStatusAction = async (status: string) => {
+    if (status === 'ENTREGUE') { setDeliveryModal({ mode: 'confirm', override: false }); return; }
+    changeStatus(status);
+  };
+
   const filteredOrders = orders.filter(
     (o) =>
       o.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -1020,6 +1027,16 @@ export function ServiceOrdersPage() {
                 </h1>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                {primaryNext && (
+                  <button type="button"
+                    onClick={() => runStatusAction(primaryNext)}
+                    className="h-12 px-6 rounded-lg text-sm font-semibold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2"
+                    title="Próxima etapa desta O.S."
+                  >
+                    {STATUS_ACTION_LABEL[primaryNext] || statusConfig[primaryNext]?.label || primaryNext}
+                    <ArrowRight size={16} />
+                  </button>
+                )}
                 <div className="relative">
                   <button type="button"
                     onClick={() => { setShowDocsMenu((v) => !v); setShowMoreMenu(false); }}
@@ -1114,7 +1131,7 @@ export function ServiceOrdersPage() {
                 <button type="button"
                   onClick={() => saveDetails(false)}
                   disabled={isClosed || !canEditOrderDetails}
-                  className="h-11 px-5 rounded-lg text-sm font-semibold flex items-center gap-2 bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={cn('h-11 px-5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed', primaryNext ? 'border border-surface-800 bg-white text-surface-100 hover:bg-surface-950' : 'bg-accent text-white hover:bg-accent-hover')}
                   title={isClosed ? 'O.S. finalizada não pode ser editada.' : !canEditOrderDetails ? 'Seu perfil não pode editar esta O.S.' : undefined}
                 >
                   <Save size={16} /> Salvar alterações
@@ -1197,6 +1214,7 @@ export function ServiceOrdersPage() {
                   <h3 className="text-[11px] font-bold text-surface-500">Andamento da O.S.</h3>
                   <span className="text-[11px] font-bold text-surface-300">
                     Fase atual: {activeFlowPhases[getCurrentPhaseIndex(selectedOrder.status)]?.label || 'Abertura'}
+                    {primaryNext ? ` · Próxima ação: ${STATUS_ACTION_LABEL[primaryNext] || primaryNext}` : ''}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-7">
@@ -1225,9 +1243,10 @@ export function ServiceOrdersPage() {
                         onClick={() => setMetrologiaOsTarget({ id: selectedOrder.id, number: orderCode(selectedOrder), metrology: selectedOrder.metrology ?? null })}
                         className={cn(
                           'rounded-xl border px-3 py-2 text-center transition-all cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-accent/40',
-                          isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
-                          isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
-                          !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
+                          isCurrent && 'border-accent bg-accent text-white',
+                          isDone && 'border-accent/30 bg-accent-soft text-accent-ink',
+                          !isCurrent && !isDone && index === currentIdx + 1 && 'border-accent/50 bg-white text-accent-ink',
+                          !isCurrent && !isDone && index !== currentIdx + 1 && 'border-surface-800 bg-white text-surface-600'
                         )}
                       >
                         {inner}
@@ -1235,9 +1254,10 @@ export function ServiceOrdersPage() {
                     ) : (
                       <div key={phase.key} className={cn(
                         'rounded-xl border px-3 py-2 text-center transition-all',
-                        isCurrent && 'border-accent/40 bg-accent/10 text-accent-ink',
-                        isDone && 'border-emerald-200 bg-emerald-50 text-emerald-700',
-                        !isCurrent && !isDone && 'border-surface-800 bg-white text-surface-600'
+                        isCurrent && 'border-accent bg-accent text-white',
+                        isDone && 'border-accent/30 bg-accent-soft text-accent-ink',
+                        !isCurrent && !isDone && index === currentIdx + 1 && 'border-accent/50 bg-white text-accent-ink',
+                          !isCurrent && !isDone && index !== currentIdx + 1 && 'border-surface-800 bg-white text-surface-600'
                       )}>
                         {inner}
                       </div>

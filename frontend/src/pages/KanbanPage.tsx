@@ -111,10 +111,10 @@ function KanbanCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-panel border-2 ${alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-sm' : 'text-xs'}`}
+      className={`bg-panel border-2 ${alertBorder} rounded-xl p-3 space-y-2 hover:border-line transition-all ${tvMode ? 'text-[16px] leading-snug' : 'text-xs'}`}
     >
       {level !== 'none' && (
-        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-bold ${
+        <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 ${tvMode ? 'text-[15px]' : 'text-[11px]'} font-bold ${
           level === 'danger' ? 'bg-red-500/20 text-red-700' : 'bg-amber-500/20 text-amber-700'
         }`}>
           {level === 'danger' ? <AlertTriangle size={11} className="shrink-0 animate-pulse" /> : <Timer size={11} className="shrink-0" />}
@@ -124,18 +124,18 @@ function KanbanCard({
 
       {/* Número da OS + tempo */}
       <div className="flex items-center justify-between">
-        <span className={`font-bold text-ink ${tvMode ? 'text-base' : 'text-sm'}`}>
+        <span className={`font-bold text-ink ${tvMode ? 'text-[19px]' : 'text-sm'}`}>
           #{orderCode(os)}
         </span>
         <span className={`flex items-center gap-1 font-semibold ${urgencyColor(statusRefDate)}`}>
-          <Clock size={tvMode ? 14 : 11} />
+          <Clock size={tvMode ? 18 : 11} />
           {elapsed(statusRefDate)}
         </span>
       </div>
 
       {/* Veículo */}
       <div className="flex items-center gap-1.5 text-ink/80">
-        <Car size={tvMode ? 14 : 11} className="shrink-0 text-surface-400" />
+        <Car size={tvMode ? 18 : 11} className="shrink-0 text-surface-400" />
         <span className="truncate font-semibold">
           {os.vehicle?.brand} {os.vehicle?.model}
         </span>
@@ -144,7 +144,7 @@ function KanbanCard({
 
       {/* Cliente */}
       <div className="flex items-center gap-1.5 text-surface-400">
-        <User size={tvMode ? 13 : 10} className="shrink-0" />
+        <User size={tvMode ? 17 : 10} className="shrink-0" />
         <span className="truncate">{os.customer?.name}</span>
       </div>
 
@@ -229,9 +229,14 @@ export function KanbanPage() {
 
   const totalActive = orders.length;
   const activeAlerts = orders.filter((o) => getAlertLevel(o).level !== 'none').length;
-  const columnWidth = getColumnWidth(tvMode);
+  // Na TV só entram as colunas com O.S. (no mínimo uma), para o texto caber grande.
+  const visibleColumns = tvMode
+    ? KANBAN_COLUMNS.filter((c) => ordersForColumn(c.status).length > 0)
+    : KANBAN_COLUMNS;
+  const boardColumns = visibleColumns.length > 0 ? visibleColumns : KANBAN_COLUMNS.slice(0, 1);
+  const columnWidth = getColumnWidth(tvMode, Math.min(5, boardColumns.length));
   const boardFit = getBoardFit({
-    columnCount: KANBAN_COLUMNS.length,
+    columnCount: boardColumns.length,
     columnWidth,
     tvMode,
   });
@@ -324,7 +329,7 @@ export function KanbanPage() {
             className={`flex gap-3 p-3 sm:p-4 h-full min-w-max snap-x snap-mandatory`}
             style={boardFit.fitEnabled ? boardFit.innerStyle : { minHeight: 'calc(100vh - 104px)' }}
           >
-            {KANBAN_COLUMNS.map((col) => {
+            {boardColumns.map((col) => {
               const colOrders = ordersForColumn(col.status);
               return (
                 <div
@@ -335,16 +340,16 @@ export function KanbanPage() {
                   {/* Column header */}
                   <div className={`flex items-center gap-2 mb-3 px-1`}>
                     <span className={`w-2 h-2 rounded-full ${col.dot} shrink-0`} />
-                    <span className={`font-bold text-ink truncate ${tvMode ? 'text-base' : 'text-sm'}`}>
+                    <span className={`font-bold text-ink truncate ${tvMode ? 'text-[20px]' : 'text-sm'}`}>
                       {col.label}
                     </span>
-                    <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${col.bg} text-ink`}>
+                    <span className={`ml-auto font-bold px-2 py-0.5 rounded-full bg-panel-2 text-ink ${tvMode ? 'text-[18px]' : 'text-xs'}`}>
                       {colOrders.length}
                     </span>
                   </div>
 
                   {/* Column body */}
-                  <div className={`flex-1 rounded-lg border ${col.color}/30 ${col.bg} p-2 space-y-2 overflow-y-auto`}
+                  <div className={`flex-1 rounded-lg border border-line border-t-4 ${col.color} bg-panel-2 p-2 space-y-2 overflow-y-auto`}
                     style={{ minHeight: 120 }}>
                     <AnimatePresence>
                       {colOrders.length === 0 ? (

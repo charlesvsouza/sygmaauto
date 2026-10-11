@@ -12,11 +12,11 @@ type UseBoardViewportOptions = {
 export function useBoardViewport(options: UseBoardViewportOptions = {}) {
   const {
     desktopWidth = 256,
-    tvWidth = 288,
+    tvWidth = 320,
     mobileOffset = 48,
     tabletRatio = 0.46,
     fitBreakpoint = 768,
-    minFitScale = 0.58,
+    minFitScale = 0.85,
   } = options;
 
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
@@ -30,8 +30,13 @@ export function useBoardViewport(options: UseBoardViewportOptions = {}) {
 
   const isCompactViewport = viewportWidth < 1024;
 
-  const getColumnWidth = (tvMode: boolean) => {
-    if (tvMode) return tvWidth;
+  // TV: poucas colunas largas e legíveis a distância (as vazias ficam fora; ver KanbanPage).
+  const getColumnWidth = (tvMode: boolean, visibleColumns = 5) => {
+    if (tvMode) {
+      const gap = 12;
+      const usable = viewportWidth - 48 - gap * (visibleColumns - 1);
+      return Math.max(tvWidth, Math.floor(usable / Math.max(1, visibleColumns)));
+    }
     if (viewportWidth < 640) return Math.max(250, viewportWidth - mobileOffset);
     if (viewportWidth < 1024) return Math.max(260, Math.min(320, viewportWidth * tabletRatio));
     return desktopWidth;
@@ -75,7 +80,8 @@ export function useBoardViewport(options: UseBoardViewportOptions = {}) {
     }
 
     const rawScale = availableWidth / totalBoardWidth;
-    const scale = Math.min(1, Math.max(minFitScale, rawScale));
+    // Reduzir demais deixa o texto ilegível: abaixo do mínimo o quadro rola na horizontal em escala 1.
+    const scale = rawScale < minFitScale ? 1 : Math.min(1, rawScale);
     const fitEnabled = scale < 0.999;
 
     return {
