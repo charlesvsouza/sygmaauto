@@ -1,10 +1,29 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.0 — Setembro/2026  
+**Versão:** 3.1 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
 As seções seguem a ordem do menu lateral do sistema.
+
+## Como usar este manual
+
+Este manual ensina, passo a passo, o dia a dia da oficina no SigmaAuto. Os capítulos 1 a 3 valem para todos; depois vá direto ao que o seu perfil usa:
+
+| Seu perfil | Comece por |
+|---|---|
+| **Master / Admin** (dono ou gestor) | 1.4 Checklist de configuração, 2 Planos e perfis, 24 Configurações, 22 Usuários |
+| **Secretaria / Recepção** | 4 Ordens de Serviço, 5 Vistoria, 6 Agenda, 7 Clientes, 8 Veículos |
+| **Gerente** | 4 Ordens de Serviço, 10 Estoque, 13 Kanban, 18 Indicadores |
+| **Mecânico / Técnico** | 4.4 Lançar serviços e peças, 13 Kanban de Pátio, 16 Comissões |
+| **Financeiro** | 15 Fluxo de Caixa, 16 Comissões, 17 DRE |
+| **Retífica de motores** | 21 Retífica de Motores |
+
+Como ler as marcações:
+
+- Os nomes em destaque como **Registrar Pagamento** indicam exatamente o que aparece na tela (botões, campos e menus).
+- Os quadros de **Dica** trazem atalhos e cuidados; os de **Planos** avisam quando um recurso depende do plano contratado.
+- Use o botão **Salvar como PDF** no topo desta página para gerar uma versão em formato de livro, pronta para imprimir ou arquivar.
 
 ---
 
@@ -77,6 +96,20 @@ As seções seguem a ordem do menu lateral do sistema.
 No primeiro login aparece um resumo das principais funcionalidades. Clique em **"Entrar"** ou aguarde o redirecionamento para o painel.
 
 > O sistema funciona em computador, tablet e celular, direto no navegador.
+
+### 1.4 Checklist de configuração inicial
+
+Um roteiro para deixar a oficina pronta para operar. Não é uma ordem obrigatória, só a sequência que costuma fazer mais sentido:
+
+1. **Dados da oficina e logo** — aparecem em todos os documentos (seção 24.1)
+2. **Valor da hora, comissão padrão e limites de desconto** (seções 24.2 e 24.3)
+3. **Textos e prazos dos documentos**: garantia, validade do orçamento e autorização (seção 24.4)
+4. **Equipe**: cadastre os colaboradores e defina o perfil de cada um (seção 22)
+5. **Catálogo de serviços** com tempo de mão de obra (TMO) e valor (seção 9)
+6. **Estoque**: cadastre as peças ou importe a nota fiscal do fornecedor (seção 10)
+7. **WhatsApp**: conecte para enviar avisos e orçamentos automáticos (seção 11.2)
+8. **Clientes e veículos**: cadastre ou deixe entrar pela primeira O.S. (seções 7 e 8)
+9. **Primeira O.S.** de teste, do orçamento à entrega (seção 4)
 
 ---
 
@@ -198,7 +231,7 @@ Também é possível trazer um orçamento feito fora do sistema: **Importar de o
 | **Em Execução** | Serviços sendo realizados |
 | **Pronto p/ Entrega** | Serviços concluídos, aguardando pagamento |
 | **Faturado** | Pagamento registrado — a receita da O.S. entra no Fluxo de Caixa |
-| **Entregue** | Veículo entregue ao cliente |
+| **Entregue** | Veículo entregue ao cliente, com data e recebedor registrados — a O.S. fica **travada** (seção 4.13) |
 | **Cancelado** | Atendimento cancelado |
 
 **Onde mudar a etapa:** dentro da O.S., pelo selo de status no quadro **Dados do Veículo** ou pelos botões de **Avançar Status**. Cada perfil vê só as etapas que pode aplicar (seção 2.3).
@@ -279,7 +312,7 @@ Depois que a execução começa, não é possível revogar.
 1. Mude para **Pronto p/ Entrega** (informe a KM de saída, se houver teste de rodagem)
 2. Registre a **condição de pagamento** na O.S.
 3. Clique em **Registrar Pagamento** — a O.S. passa para **Faturado** e o sistema lança **uma única receita** no Fluxo de Caixa ("Receita - OS nº"), pelo total
-4. Entregue o veículo com o **Termo de Entrega e Garantia** e clique em **Confirmar Entrega**
+4. Entregue o veículo com o **Termo de Entrega** (com ou sem garantia — seção 4.11) e clique em **Confirmar Entrega**: informe a **data da entrega** e **quem recebeu o veículo** (seção 4.13)
 
 > A aprovação não lança receita. A receita de cada O.S. entra uma vez só, no faturamento — por isso o Fluxo de Caixa, a DRE e os Indicadores mostram os mesmos números.
 
@@ -293,13 +326,44 @@ Dentro da O.S., clique em **Documentos**. O menu mostra os documentos da etapa a
 | **Orçamento** | Sempre | Diagnóstico, laudo/solução, serviços e peças (com código), descontos, total, validade, condição de pagamento, texto de autorização e QR code para aprovação |
 | **Ordem de Serviço — via do cliente** | Após a aprovação | Itens aprovados com valores, técnico de cada serviço e datas de cada etapa |
 | **Ordem de Serviço — via da oficina** | Após a aprovação | **Sem valores**: reclamação, diagnóstico, laudo, serviços e peças para marcar como feitos, local no estoque e assinatura do técnico |
-| **Termo de entrega e garantia** | A partir de *Pronto p/ Entrega* | Laudo, serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com vencimento e destino das peças substituídas |
+| **Termo de entrega com garantia** | A partir de *Pronto p/ Entrega* | Laudo, serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com vencimento e destino das peças substituídas |
+| **Termo de entrega sem garantia** | A partir de *Pronto p/ Entrega* | O mesmo termo, sem a seção e o texto de garantia (para serviços e peças sem cobertura) |
+
+Na O.S. entregue, a data da entrega e quem recebeu o veículo saem nos documentos, e a data de conclusão nunca é posterior à de entrega.
 
 ### 4.12 Ações de edição
 
 - **Fechar**: volta para a listagem sem salvar alterações pendentes
 - **Salvar alterações**: grava os dados da O.S. sem sair da tela
-- **Atualizar O.S.**: recalcula os valores no quadro de totais
+- **Atualizar O.S.**: recalcula os valores no quadro de totais, usando a regra do catálogo: TMO × valor da hora quando o serviço tem os dois; senão, o preço base
+
+### 4.13 Entrega e O.S. travada
+
+Ao clicar em **Confirmar Entrega**, o sistema pede:
+
+1. **Data da entrega** — hoje por padrão; não pode ser futura nem anterior à abertura da O.S.
+2. **Quem recebeu o veículo** — nome de quem retirou (obrigatório)
+
+Se a O.S. ainda tiver saldo a pagar, o aviso aparece antes de confirmar: a entrega não depende de quitação, mas o saldo continua pendente e visível no topo da O.S.
+
+Depois da entrega, a O.S. fica **encerrada e travada**: não aceita lançar, editar ou remover serviços e peças, e o banner no topo mostra data e recebedor. Para corrigir algo:
+
+1. Mude o status da O.S. para uma etapa anterior (isso desfaz o registro de entrega)
+2. Ajuste o que for preciso
+3. Entregue de novo, informando data e recebedor
+
+> Em uma O.S. entregue sem esses dados (antigas), **Master e Admin** veem o botão **Registrar entrega** no banner, para informar data e recebedor sem reabrir a O.S.
+
+### 4.14 Importar orçamento de PDF
+
+Use **Importar de orçamento PDF** na tela de Ordens de Serviço para trazer um orçamento feito fora do sistema:
+
+1. Envie o arquivo PDF
+2. Confira o que foi lido: cliente, veículo (placa, marca/modelo, KM), defeito/reclamação, diagnóstico, observações, garantia e prazos, e a lista de itens (tipo, código de fábrica, descrição, quantidade e valor unitário)
+3. Corrija o que precisar. Se o cliente do PDF coincidir com um já cadastrado, o sistema pergunta **"Cliente já cadastrado?"** e, ao confirmar, completa só os dados que faltam no cadastro
+4. Confirme: a O.S. é criada com o mesmo conteúdo
+
+> Os itens importados podem ser vinculados ao catálogo e ao estoque depois, direto na O.S.: edite o item e escolha a peça ou o serviço cadastrado. A leitura usa IA e **pede conferência**: nunca confirme sem revisar valores e quantidades.
 
 ---
 
@@ -742,6 +806,7 @@ Desconto máximo (%) que o Gerente pode dar em peças e em serviços. Master e A
 
 | Campo | Padrão | Onde aparece |
 |---|---|---|
+| **Chave PIX da oficina** | — | Orçamento e termo de entrega, quando o pagamento (ou parte dele) é por PIX |
 | **Garantia serviços (dias)** | 90 | Termo de entrega, com data de vencimento |
 | **Garantia peças (dias)** | 90 | Termo de entrega, com data de vencimento |
 | **Validade orçamento (dias)** | 7 | Orçamento e prazo do link de aprovação |
