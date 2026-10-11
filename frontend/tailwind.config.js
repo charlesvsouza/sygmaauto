@@ -6,6 +6,8 @@ export default {
   ],
   theme: {
     extend: {
+      // Piso de 11px renderizados (a raiz roda a 85%): text-xs = 0.8125rem.
+      fontSize: { xs: ['0.8125rem', { lineHeight: '1.1rem' }] },
       colors: {
         primary: {
           50: '#f6f6f7',

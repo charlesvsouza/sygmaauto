@@ -193,7 +193,7 @@ Uma paleta de off-whites frios e um único verde-água aprofundado; matizes sem�
 
 **Fonte única:** Inter (fallback `system-ui, sans-serif`), pesos 400 a 700. Space Grotesk e qualquer segunda família estão aposentadas, inclusive nas páginas públicas.
 
-**Character:** uma família geométrico-humanista carrega toda a hierarquia; a distinção vem de tamanho, peso e cor. A escala global do app roda a 85% do `rem` para densidade operacional, por isso **o piso é 11px renderizados** no app (`text-[11px]`); nada de `text-[9px]` ou `text-[10px]`, e `text-xs` só em apoio fora do Kanban e da TV.
+**Character:** uma família geométrico-humanista carrega toda a hierarquia; a distinção vem de tamanho, peso e cor. A escala global do app roda a 85% do `rem` para densidade operacional, por isso **o piso é 11px renderizados** no app (`text-xs` e `text-[11px]`); nada de `text-[9px]` ou `text-[10px]`.
 
 ### Hierarchy
 - **Display** (700, `clamp(2rem, 5vw, 3.25rem)`, 1.08): só hero das páginas públicas.

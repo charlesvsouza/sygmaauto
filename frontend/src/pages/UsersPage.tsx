@@ -435,7 +435,7 @@ export function UsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="fld-userspage-3" className="block text-sm font-semibold text-muted">Email Recuperacao</label>
+                  <label htmlFor="fld-userspage-3" className="block text-sm font-semibold text-muted">Email Recuperação</label>
                   <input id="fld-userspage-3"
                     type="email"
                     value={formData.recoveryEmail}

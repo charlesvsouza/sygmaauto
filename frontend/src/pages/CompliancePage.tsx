@@ -41,7 +41,7 @@ const pillars = [
   {
     icon: UserRoundCog,
     title: 'Canal e responsável provisório',
-    description: 'O atendimento operacional de privacidade esta centralizado provisoriamente na direcao da SigmaAuto, com entrada por suporte@sigmaauto.com.br até designacao formal de encarregado.',
+    description: 'O atendimento operacional de privacidade esta centralizado provisoriamente na direção da SigmaAuto, com entrada por suporte@sigmaauto.com.br até designação formal de encarregado.',
   },
   {
     icon: FileText,
@@ -74,10 +74,10 @@ const publicDocuments = [
 ];
 
 const nextSteps = [
-  'Revisão jurídica dos textos antes de consolidacao definitiva no site institucional.',
-  'Formalizacao nominal do encarregado/DPO e da matriz de responsabilidades.',
-  'Automacao de retenção e descarte por categoria de dado com cronograma operacional.',
-  'Expansao continua da trilha de auditoria para dominios administrativos críticos.',
+  'Revisão jurídica dos textos antes de consolidação definitiva no site institucional.',
+  'Formalização nominal do encarregado/DPO e da matriz de responsabilidades.',
+  'Automação de retenção e descarte por categoria de dado com cronograma operacional.',
+  'Expansão continua da trilha de auditoria para dominios administrativos críticos.',
 ];
 
 export function CompliancePage() {
@@ -97,7 +97,7 @@ export function CompliancePage() {
           <div className="max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-[12px] font-bold uppercase tracking-wide text-accent-ink">
               <ShieldCheck size={14} />
-              Publicação provisória de compliance
+              Públicação provisória de compliance
             </div>
             <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-none text-surface-50">
               Central de Privacidade,
@@ -182,7 +182,7 @@ export function CompliancePage() {
           >
             <div className="flex items-center gap-3">
               <BadgeCheck className="text-accent-ink" size={20} />
-              <h2 className="text-2xl font-bold text-surface-50">Canais e documentos publicos</h2>
+              <h2 className="text-2xl font-bold text-surface-50">Canais e documentos públicos</h2>
             </div>
             <div className="mt-6 space-y-4">
               {publicDocuments.map((item) => {
@@ -245,7 +245,7 @@ export function CompliancePage() {
         <div className="rounded-xl border border-line bg-accent-soft p-8 md:p-10">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Proximas consolidacoes</p>
+              <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Proximas consolidações</p>
               <h2 className="mt-2 text-3xl md:text-4xl font-bold text-surface-50">O que ainda esta em amadurecimento</h2>
             </div>
             <p className="max-w-2xl text-sm text-surface-500 leading-relaxed">
