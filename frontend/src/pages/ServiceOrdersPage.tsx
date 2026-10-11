@@ -1135,12 +1135,7 @@ export function ServiceOrdersPage() {
               return (
                 <div className="mx-6 mt-4 p-4 bg-accent-soft border border-accent/40 rounded-lg flex items-center justify-between gap-4">
                   <div className="text-sm font-semibold text-surface-100 space-y-1">
-                    <p>
-                      <span className="font-bold">Entrega:</span>{' '}
-                      {selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'data não registrada'}
-                      {' · '}
-                      <span className="font-bold">Recebido por:</span> {selectedOrder.deliveredTo || 'não registrado'}
-                    </p>
+                    {!registered && <p className="font-bold">Data e recebedor da entrega ainda não foram registrados.</p>}
                     {pending > 0 && <p className="text-amber-700 font-bold">Saldo pendente: R$ {fmtBR(pending)}</p>}
                     {registered && (
                       <p className="text-[12px] font-medium text-surface-500">
@@ -1378,6 +1373,24 @@ export function ServiceOrdersPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Entrega: fica registrada na O.S. após a retirada do veículo */}
+              {(selectedOrder.status === 'ENTREGUE' || selectedOrder.deliveredAt || selectedOrder.deliveredTo) && (
+                <div className="bg-surface-950 rounded-lg px-5 py-4 border border-surface-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[11px] font-bold text-surface-500 mb-1">Data da entrega</p>
+                    <p className="font-bold text-surface-100">
+                      {selectedOrder.deliveredAt
+                        ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+                        : 'Não registrada'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-surface-500 mb-1">Recebido por</p>
+                    <p className="font-bold text-surface-100">{selectedOrder.deliveredTo || 'Não registrado'}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Campos texto */}
               <div className="grid grid-cols-1 gap-4">
