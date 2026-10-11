@@ -4,7 +4,7 @@ import { CustomersService } from './customers.service';
 import { CreateCustomerDto, UpdateCustomerDto } from './dto/customer.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles, Capability } from '../auth/decorators/roles.decorator';
 import { Tenant } from '../common/decorators/tenant.decorator';
 import { FRONT_OFFICE_ROLES } from '../common/roles';
 
@@ -28,14 +28,14 @@ export class CustomersController {
   }
 
   @Post()
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @ApiOperation({ summary: 'Create customer' })
   async create(@Tenant() tenant: { tenantId: string }, @Body() dto: CreateCustomerDto) {
     return this.customersService.create(tenant.tenantId, dto);
   }
 
   @Patch(':id')
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @ApiOperation({ summary: 'Update customer' })
   async update(
     @Tenant() tenant: { tenantId: string },

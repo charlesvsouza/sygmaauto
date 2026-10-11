@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.3 — Outubro/2026  
+**Versão:** 3.4 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -813,6 +813,8 @@ Menu **LGPD**: registro e atendimento das solicitações de titulares de dados (
 
 ## 24. Configurações e Assinatura
 
+**Como a tela é organizada:** o menu lateral de **Configurações** traz uma seção por assunto: **Oficina**, **Operação**, **Documentos**, **Atendimento**, **Pagamentos**, **Equipe**, **Permissões** e **Assinatura**. Cada seção abre sozinha, com o seu próprio botão de salvar, e o perfil só vê as que pode usar.
+
 ### 24.1 Dados da oficina
 
 Menu **Configurações**: razão social / nome fantasia, CNPJ ou CPF, endereço, telefone, e-mail e **logo** (aparece nos documentos e relatórios). Salve.
@@ -865,6 +867,18 @@ Em **Configurações**, na seção **Pagamentos pelo Asaas**, conecte a conta As
 A chave é guardada **cifrada** no servidor e não aparece de novo. Para trocar de conta, use **Desconectar** e conecte novamente. As cobranças já emitidas continuam no Asaas.
 
 > Use primeiro o ambiente de testes (sandbox) para conferir o fluxo antes de cobrar clientes de verdade.
+
+### 24.8 Atendimento e Permissões *(Master e Admin)*
+
+**Atendimento** mostra, só para consulta, as regras em vigor na oficina: orçamento sem número até salvar, checklist de entrada obrigatório, entrega só com checklist de saída e O.S. entregue travada.
+
+**Permissões** define o que cada perfil pode fazer. A tabela tem uma linha por ação (abrir e editar O.S., lançar itens, mover as fases técnicas, aprovar, registrar pagamento, confirmar entrega, cancelar, lançar no Fluxo de Caixa) e uma coluna por perfil (Gerente, Chefe de oficina, Mecânico, Secretaria e Financeiro):
+
+1. Marque ou desmarque a caixa do perfil
+2. Caixas com contorno âmbar são diferentes do padrão do sistema
+3. Clique em **Salvar permissões** (ou **Restaurar padrão** para voltar ao original)
+
+**Master** e **Admin** sempre podem tudo e não aparecem na tabela. A mudança vale para os próximos acessos de cada usuário em até meio minuto.
 
 ---
 

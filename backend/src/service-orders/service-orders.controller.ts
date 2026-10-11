@@ -7,7 +7,7 @@ import { OrderDocumentsService, OrderDocumentKind } from './order-documents.serv
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto, SetDeliveryDto } from './dto/service-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles, Capability } from '../auth/decorators/roles.decorator';
 import { Tenant, CurrentUser } from '../common/decorators/tenant.decorator';
 import { APPROVAL_ROLES, FRONT_OFFICE_ROLES, INVOICE_ROLES, STATUS_CHANGE_ROLES, TECHNICAL_ROLES } from '../common/roles';
 
@@ -23,7 +23,7 @@ export class ServiceOrdersController {
   ) {}
 
   @Post('import-pdf')
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -62,7 +62,7 @@ export class ServiceOrdersController {
   }
 
   @Post('orcamento')
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @ApiOperation({ summary: 'Criar orçamento' })
   async createOrcamento(
     @Tenant() tenant: { tenantId: string },
@@ -73,7 +73,7 @@ export class ServiceOrdersController {
   }
 
   @Post()
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @ApiOperation({ summary: 'Criar OS ou Orçamento' })
   async create(
     @Tenant() tenant: { tenantId: string },
@@ -87,7 +87,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id')
-  @Roles(...FRONT_OFFICE_ROLES)
+  @Capability('os.create_edit')
   @ApiOperation({ summary: 'Atualizar ordem' })
   async update(
     @Tenant() tenant: { tenantId: string },
@@ -99,7 +99,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id/status')
-  @Roles(...STATUS_CHANGE_ROLES)
+  @Capability('os.status_menu')
   @ApiOperation({ summary: 'Atualizar status' })
   async updateStatus(
     @Tenant() tenant: { tenantId: string },
@@ -132,7 +132,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/request-approval')
-  @Roles(...APPROVAL_ROLES)
+  @Capability('os.approval')
   @ApiOperation({ summary: 'Solicitar aprovação do cliente' })
   async requestApproval(
     @Tenant() tenant: { tenantId: string },
@@ -165,7 +165,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/receive-payment')
-  @Roles(...INVOICE_ROLES)
+  @Capability('os.invoice')
   @ApiOperation({ summary: 'Receber pagamento' })
   async receivePayment(
     @Tenant() tenant: { tenantId: string },
@@ -195,7 +195,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/sync-prices')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Sincronizar preços dos itens com o catálogo atual' })
   async syncPrices(
     @Tenant() tenant: { tenantId: string },
@@ -228,7 +228,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/diagnostic-order')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Cria nova OS de diagnóstico a partir de OS reprovada' })
   async createDiagnosticOrder(
     @Tenant() tenant: { tenantId: string },
@@ -239,7 +239,7 @@ export class ServiceOrdersController {
   }
 
   @Post(':id/items')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Adicionar item à ordem' })
   async addItem(
     @Tenant() tenant: { tenantId: string },
@@ -251,7 +251,7 @@ export class ServiceOrdersController {
   }
 
   @Delete(':id/items/:itemId')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Remover item da ordem' })
   async removeItem(
     @Tenant() tenant: { tenantId: string },
@@ -263,7 +263,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id/items/:itemId')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Atualizar item da ordem' })
   async updateItem(
     @Tenant() tenant: { tenantId: string },
@@ -285,7 +285,7 @@ export class ServiceOrdersController {
   }
 
   @Patch(':id/metrology')
-  @Roles(...TECHNICAL_ROLES)
+  @Capability('os.items')
   @ApiOperation({ summary: 'Salvar ficha de metrologia da Retífica' })
   async saveMetrology(
     @Tenant() tenant: { tenantId: string },

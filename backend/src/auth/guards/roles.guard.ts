@@ -1,28 +1,34 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { PermissionsService } from '../../permissions/permissions.service';
 
 export const ROLES_KEY = 'roles';
+export const CAPABILITY_KEY = 'capability';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector, private permissions: PermissionsService) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const targets = [context.getHandler(), context.getClass()];
+    const capability = this.reflector.getAllAndOverride<string>(CAPABILITY_KEY, targets);
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, targets);
 
-    if (!requiredRoles) {
+    if (!capability && !requiredRoles) {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
     const userRole = String(user?.role || '').toUpperCase();
     if (!userRole) return false;
 
     if (userRole === 'MASTER') return true;
-    return requiredRoles.map((role) => role.toUpperCase()).includes(userRole);
 
+    // Capacidade ajustável pela oficina (padrão = regra histórica de common/roles.ts).
+    if (capability) {
+      return this.permissions.can(request.tenant?.tenantId ?? user?.tenantId, userRole, capability);
+    }
+    return requiredRoles!.map((role) => role.toUpperCase()).includes(userRole);
   }
 }

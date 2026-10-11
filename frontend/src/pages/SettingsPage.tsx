@@ -28,9 +28,10 @@ import {
   lookupCnpj,
   onlyDigits,
 } from '../lib/masks';
-import { getPlanLabel, getPlanRank } from '../lib/planAccess';
+import { canAccessFeature, getPlanLabel, getPlanRank } from '../lib/planAccess';
 import { DocumentSettingsForm } from '../components/DocumentSettingsForm';
 import { AsaasSettingsForm } from '../components/AsaasSettingsForm';
+import { PermissionsMatrix } from '../components/PermissionsMatrix';
 
 type TenantForm = {
   taxId: string;
@@ -386,17 +387,54 @@ export function SettingsPage() {
     );
   }
 
+  const SECTIONS: { key: string; label: string; hint: string; show: boolean }[] = [
+    { key: 'oficina', label: 'Oficina', hint: 'Cadastro e logo', show: true },
+    { key: 'operacao', label: 'Operação', hint: 'Valor da hora, comissão, descontos', show: true },
+    { key: 'documentos', label: 'Documentos', hint: 'Garantia, validade, textos, PIX', show: true },
+    { key: 'atendimento', label: 'Atendimento', hint: 'Regras em vigor', show: true },
+    { key: 'pagamentos', label: 'Pagamentos', hint: 'Asaas: PIX, boleto, cartão', show: canConfigureDiscounts },
+    { key: 'equipe', label: 'Equipe', hint: 'Usuários', show: true },
+    { key: 'permissoes', label: 'Permissões', hint: 'Quem pode o quê', show: canConfigureDiscounts },
+    { key: 'assinatura', label: 'Assinatura', hint: 'Plano e cobrança', show: true },
+  ];
+  const visibleSections = SECTIONS.filter((x) => x.show);
+  const section = visibleSections.some((x) => x.key === searchParams.get('secao')) ? (searchParams.get('secao') as string) : 'oficina';
+  const goSection = (key: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('secao', key);
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <div className="space-y-6 pb-10">
       <div>
-        <h1 className="text-2xl font-bold text-surface-50 tracking-tight uppercase">Configurações</h1>
+        <h1 className="text-2xl font-bold text-surface-50 tracking-tight">Configurações</h1>
         <p className="text-surface-400 font-medium text-sm">Gestão da oficina, operações, equipe e assinatura</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,1fr)] gap-6 items-start">
+        <nav aria-label="Seções de configurações" className="lg:sticky lg:top-4 flex lg:flex-col gap-1 overflow-x-auto rounded-lg border border-line bg-surface-900 p-2">
+          {visibleSections.map((x) => (
+            <button
+              key={x.key}
+              type="button"
+              onClick={() => goSection(x.key)}
+              aria-current={section === x.key ? 'page' : undefined}
+              className={cn(
+                'shrink-0 rounded-md px-3 py-2 text-left transition-colors',
+                section === x.key ? 'bg-accent-soft text-accent-ink' : 'text-surface-300 hover:bg-surface-950',
+              )}
+            >
+              <span className="block text-sm font-semibold">{x.label}</span>
+              <span className="hidden lg:block text-xs text-surface-500">{x.hint}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="space-y-6 min-w-0">
 
           {/* Perfil da Oficina */}
+          {section === 'oficina' && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -617,8 +655,10 @@ export function SettingsPage() {
               </div>
             </form>
           </motion.div>
+          )}
 
           {/* Configurações Operacionais */}
+          {section === 'operacao' && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -830,16 +870,25 @@ export function SettingsPage() {
               )}
             </form>
 
-            <div className="border-t border-line" />
+          </motion.div>
+          )}
 
+          {section === 'documentos' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden">
             <DocumentSettingsForm canEdit={canConfigureDiscounts} />
+          </motion.div>
+          )}
 
-            <div className="border-t border-line" />
-
+          {section === 'pagamentos' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden">
             <AsaasSettingsForm canEdit={canConfigureDiscounts} />
           </motion.div>
+          )}
+
+          {section === 'atendimento' && <AtendimentoRules planName={currentPlan} canUseChecklistByPlan={canAccessFeature(currentPlan, 'CHECKLIST')} />}
 
           {/* Equipe */}
+          {section === 'equipe' && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -903,10 +952,15 @@ export function SettingsPage() {
               )}
             </div>
           </motion.div>
-        </div>
+          )}
 
-        {/* Sidebar — Assinatura */}
-        <div className="space-y-6">
+          {section === 'permissoes' && (
+            <div className="bg-surface-900 rounded-lg border border-line shadow-sm overflow-hidden">
+              <PermissionsMatrix canEdit={canConfigureDiscounts} />
+            </div>
+          )}
+
+          {section === 'assinatura' && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -977,8 +1031,43 @@ export function SettingsPage() {
               </div>
             </div>
           </motion.div>
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// Regras do atendimento em vigor nesta oficina (somente leitura).
+function AtendimentoRules({ planName, canUseChecklistByPlan }: { planName?: string; canUseChecklistByPlan: boolean }) {
+  const [addon, setAddon] = useState(false);
+  useEffect(() => {
+    tenantsApi.getMe().then((r) => setAddon(Boolean(r.data?.checklistAddon))).catch(() => {});
+  }, []);
+  const checklist = canUseChecklistByPlan || addon;
+  const rules = [
+    { ok: true, title: 'Orçamento sem número até salvar', text: 'O número sequencial só é gerado quando o orçamento é salvo com cliente, veículo e, se houver checklist, ao menos uma informação.' },
+    { ok: checklist, title: 'Checklist de entrada no orçamento', text: checklist ? 'Obrigatório em toda O.S. nova: basta uma informação (combustível, uma área, um acessório ou observação).' : `Indisponível no plano ${planName || 'Start'}. Pode ser liberado como adicional pela SigmaAuto.` },
+    { ok: checklist, title: 'Entrega só com checklist de saída', text: checklist ? 'A entrega pede o checklist de saída, a data, quem retirou e quem autorizou a retirada.' : 'Sem checklist, a entrega pede só a data e quem retirou.' },
+    { ok: true, title: 'O.S. entregue fica travada', text: 'Para ajustar itens é preciso mudar o status antes. Reabrir desfaz o registro de entrega.' },
+  ];
+  return (
+    <div className="bg-surface-900 rounded-lg border border-line shadow-sm p-6 space-y-4">
+      <div>
+        <h3 className="text-lg font-bold text-surface-50">Regras do atendimento</h3>
+        <p className="text-sm text-surface-500 mt-1">Como o fluxo da O.S. funciona hoje nesta oficina. Quem pode executar cada etapa fica em Permissões.</p>
+      </div>
+      <ul className="divide-y divide-line rounded-lg border border-line">
+        {rules.map((r) => (
+          <li key={r.title} className="flex items-start gap-3 px-4 py-3">
+            <span className={cn('mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold', r.ok ? 'bg-accent-soft text-accent-ink' : 'bg-surface-800 text-surface-500')}>{r.ok ? 'Ativa' : 'Indisponível'}</span>
+            <span>
+              <span className="block text-sm font-semibold text-surface-50">{r.title}</span>
+              <span className="block text-sm text-surface-500">{r.text}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

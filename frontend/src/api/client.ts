@@ -103,6 +103,12 @@ export const tenantsApi = {
   updateDocumentSettings: (data: any) => api.patch('/tenants/document-settings', data),
 };
 
+export const permissionsApi = {
+  me: () => api.get('/permissions/me'),
+  getMatrix: () => api.get('/permissions/matrix'),
+  saveMatrix: (data: Record<string, string[]>) => api.put('/permissions/matrix', data),
+};
+
 export const asaasApi = {
   status: () => api.get('/asaas/status'),
   connect: (data: { apiKey: string; environment: 'production' | 'sandbox' }) => api.post('/asaas/connect', data),

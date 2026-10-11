@@ -79,6 +79,7 @@ model Tenant {
   warrantyText         String?
   belongingsText       String?
   pixKey               String? // chave PIX da oficina, exibida quando o pagamento é por PIX
+  permissionOverrides  Json? // { capacidade: perfis[] } - ajuste da oficina sobre common/permissions.ts
   checklistAddon       Boolean @default(false) // checklist liberado no plano START como adicional (ligado pelo superadmin)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

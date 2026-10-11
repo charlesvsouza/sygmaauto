@@ -5,7 +5,7 @@ import { CreateTransactionDto } from './dto/financial.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { PlanGuard, RequirePlan } from '../auth/guards/plan.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles, Capability } from '../auth/decorators/roles.decorator';
 import { CurrentUser, Tenant } from '../common/decorators/tenant.decorator';
 import { LEDGER_ROLES } from '../common/roles';
 
@@ -102,7 +102,7 @@ export class FinancialController {
   }
 
   @Post()
-  @Roles(...LEDGER_ROLES)
+  @Capability('financial.ledger')
   @ApiOperation({ summary: 'Create transaction' })
   async create(
     @Tenant() tenant: { tenantId: string },
@@ -113,7 +113,7 @@ export class FinancialController {
   }
 
   @Delete(':id')
-  @Roles(...LEDGER_ROLES)
+  @Capability('financial.ledger')
   @ApiOperation({ summary: 'Delete transaction' })
   async delete(
     @Tenant() tenant: { tenantId: string },

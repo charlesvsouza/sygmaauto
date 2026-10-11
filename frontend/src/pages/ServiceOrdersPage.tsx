@@ -4,7 +4,7 @@ import { asaasApi, serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inv
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import { orderCode, orderShortCode } from '../lib/orderCode';
 import { availableDocuments, type OrderDocumentKind } from '../lib/orderDocuments';
-import { canMoveToStatus, FRONT_OFFICE_ROLES, STATUS_CHANGE_ROLES, TECHNICAL_ROLES } from '../lib/roles';
+import { usePermissions } from '../lib/permissions';
 import {
   ClipboardList, Plus, Search, Car, User, XCircle,
   Wrench, Package, FileText, Trash2, Layout, X,
@@ -167,18 +167,19 @@ export function ServiceOrdersPage() {
   const canUseChecklist = canAccessFeature(planName, 'CHECKLIST') || checklistAddon;
   const canUseRetificaMode = canAccessRetificaMode(planName);
   // Regras em lib/roles.ts (espelho do backend).
-  const canManageItems = TECHNICAL_ROLES.includes(userRole);
+  const { can, canMoveToStatus } = usePermissions();
+  const canManageItems = can('os.items');
   const canManageStock = canManageItems;
-  const canEditOrderDetails = FRONT_OFFICE_ROLES.includes(userRole);
+  const canEditOrderDetails = can('os.create_edit');
   const canGrantOrderDiscount = ['MASTER', 'ADMIN', 'GERENTE'].includes(userRole);
-  const canCreateDiagnostic = TECHNICAL_ROLES.includes(userRole);
-  const canSyncOrder = TECHNICAL_ROLES.includes(userRole);
+  const canCreateDiagnostic = can('os.items');
+  const canSyncOrder = can('os.items');
   const canReserveParts = ['MASTER', 'ADMIN', 'GERENTE', 'CHEFE_OFICINA', 'SECRETARIA'].includes(userRole);
   const canDelete = userRole === 'MASTER';
   // Cadastro de peças/serviços é restrito ao admin (mesma regra das telas de Estoque e Serviços).
   const canRegisterCatalog = userRole === 'MASTER' || userRole === 'ADMIN';
   // Cada perfil só vê as etapas que pode aplicar (nextStatuses é filtrado por canMoveToStatus).
-  const canChangeStatus = STATUS_CHANGE_ROLES.includes(userRole);
+  const canChangeStatus = can('os.status_menu');
   const canAssignExecutor = canManageItems;
   const CLOSED_STATUSES = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
   const statusDropdownRef = useRef<HTMLDivElement>(null);
@@ -857,12 +858,12 @@ export function ServiceOrdersPage() {
     ['MASTER', 'ADMIN', 'CHEFE_OFICINA', 'MECANICO', 'PRODUTIVO'].includes(String(u.role || '').toUpperCase())
   );
   const nextStatuses = selectedOrder
-    ? (activeStatusFlow[selectedOrder.status] ?? []).filter((status) => canMoveToStatus(userRole, status))
+    ? (activeStatusFlow[selectedOrder.status] ?? []).filter((status) => canMoveToStatus(status))
     : [];
 
   const canChargeAsaas = asaasConnected
     && ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO', 'PRONTO_ENTREGA'].includes(selectedOrder?.status)
-    && canMoveToStatus(userRole, 'FATURADO');
+    && canMoveToStatus('FATURADO');
 
   // Próxima ação da O.S.: primeira transição positiva do fluxo, destacada no topo da tela.
   const primaryNext = nextStatuses.find((status) => status !== 'CANCELADO' && status !== 'REPROVADO');

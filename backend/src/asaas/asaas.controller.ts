@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiExcludeController, ApiOperation, ApiTags } from '@nes
 import { IsIn, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles, Capability } from '../auth/decorators/roles.decorator';
 import { Tenant, CurrentUser } from '../common/decorators/tenant.decorator';
 import { INVOICE_ROLES } from '../common/roles';
 import { AsaasService } from './asaas.service';
@@ -33,7 +33,7 @@ export class AsaasController {
   constructor(private asaas: AsaasService) {}
 
   @Get('status')
-  @Roles('MASTER', 'ADMIN', ...INVOICE_ROLES)
+  @Capability('os.invoice')
   @ApiOperation({ summary: 'Situação da conexão da oficina com o Asaas' })
   async status(@Tenant() tenant: { tenantId: string }, @CurrentUser() user: { role?: string }) {
     const status: any = await this.asaas.getStatus(tenant.tenantId);
@@ -60,14 +60,14 @@ export class AsaasController {
   }
 
   @Get('orders/:orderId/charge')
-  @Roles('MASTER', 'ADMIN', ...INVOICE_ROLES)
+  @Capability('os.invoice')
   @ApiOperation({ summary: 'Cobrança Asaas da O.S. (atualiza o status e traz o QR do PIX)' })
   getCharge(@Tenant() tenant: { tenantId: string }, @Param('orderId') orderId: string) {
     return this.asaas.getCharge(tenant.tenantId, orderId);
   }
 
   @Post('orders/:orderId/charge')
-  @Roles('MASTER', 'ADMIN', ...INVOICE_ROLES)
+  @Capability('os.invoice')
   @ApiOperation({ summary: 'Emitir cobrança (PIX, boleto, cartão ou escolha do cliente) para a O.S.' })
   createCharge(
     @Tenant() tenant: { tenantId: string },
@@ -79,7 +79,7 @@ export class AsaasController {
   }
 
   @Delete('orders/:orderId/charge')
-  @Roles('MASTER', 'ADMIN', ...INVOICE_ROLES)
+  @Capability('os.invoice')
   @ApiOperation({ summary: 'Cancelar a cobrança aberta da O.S.' })
   cancelCharge(
     @Tenant() tenant: { tenantId: string },

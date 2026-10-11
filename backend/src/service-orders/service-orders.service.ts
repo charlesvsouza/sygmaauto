@@ -7,8 +7,8 @@ import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { checklistHasInfo, tenantHasChecklist } from '../common/plan-access';
+import { PermissionsService } from '../permissions/permissions.service';
 import { resolveDocumentSettings } from '../common/document-settings';
-import { canMoveToStatus } from '../common/roles';
 import { describePaymentPlan, parsePaymentPlan, PaymentPlanError, planHasInstallments } from './payment-plan';
 
 // Status em que o orçamento espera a resposta do cliente (oficina e retífica).
@@ -20,6 +20,7 @@ export class ServiceOrdersService {
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
     private commissions: CommissionsService,
+    private permissions: PermissionsService,
   ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
@@ -668,7 +669,7 @@ export class ServiceOrdersService {
     // (common/roles.ts). A resposta do cliente pelo link não tem usuário e já foi validada.
     if (userId) {
       const actor = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-      if (!canMoveToStatus(actor?.role, newStatus)) {
+      if (!(await this.permissions.canMoveToStatus(tenantId, actor?.role, newStatus))) {
         throw new ForbiddenException('Seu perfil de acesso não pode levar a O.S. para esta etapa');
       }
     }
