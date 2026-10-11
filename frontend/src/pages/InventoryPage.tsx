@@ -9,7 +9,7 @@ import {
   Truck, CheckCircle, FileSpreadsheet,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useToast, NumberInput } from '../components/ui';
+import { useToast, NumberInput, CurrencyInput } from '../components/ui';
 import { ImportNFModal } from '../components/ImportNFModal';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -601,13 +601,13 @@ export function InventoryPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label htmlFor="fld-inventorypage-10" className="block text-sm font-semibold text-muted">Preço de Venda (R$) *</label>
-                    <NumberInput id="fld-inventorypage-10" required step="0.01" min="0" value={formData.unitPrice}
+                    <CurrencyInput id="fld-inventorypage-10" required step="0.01" min="0" value={formData.unitPrice}
                       onChange={e => setFormData({...formData, unitPrice: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm font-bold" />
                   </div>
                   <div className="space-y-1.5">
                     <label htmlFor="fld-inventorypage-11" className="block text-sm font-semibold text-muted">Custo / Preço de Compra (R$)</label>
-                    <NumberInput id="fld-inventorypage-11" step="0.01" min="0" value={formData.costPrice}
+                    <CurrencyInput id="fld-inventorypage-11" step="0.01" min="0" value={formData.costPrice}
                       onChange={e => setFormData({...formData, costPrice: Number(e.target.value)})}
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm" />
                   </div>

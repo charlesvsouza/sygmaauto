@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileUp, Loader2, X, FileSpreadsheet, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { inventoryApi } from '../api/client';
 
-import { NumberInput } from './ui';
+import { NumberInput, CurrencyInput } from './ui';
 type ImportNFModalProps = {
   onClose: () => void;
   onSuccess: () => void;
@@ -314,7 +314,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <NumberInput aria-label="Valor unitário"
+                          <CurrencyInput aria-label="Valor unitário"
                             min={0}
                             step="0.01"
                             value={item.unitPrice}

@@ -28,7 +28,7 @@ import {
   Printer,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useToast, NumberInput } from '../components/ui';
+import { useToast, NumberInput, CurrencyInput } from '../components/ui';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -559,7 +559,7 @@ export function FinancialPage() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label htmlFor="fld-financialpage-2" className="block text-sm font-semibold text-muted">Valor (R$)</label>
-                    <NumberInput id="fld-financialpage-2" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-lg" />
+                    <CurrencyInput id="fld-financialpage-2" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })} className="w-full px-5 py-3.5 rounded-lg border border-line bg-surface-950/40 focus:bg-surface-900 focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all font-bold text-lg" />
                   </div>
                   <div className="space-y-1.5">
                     <label htmlFor="fld-financialpage-3" className="block text-sm font-semibold text-muted">Data</label>

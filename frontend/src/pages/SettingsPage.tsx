@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
-import { useToast, NumberInput } from '../components/ui';
+import { useToast, NumberInput, CurrencyInput } from '../components/ui';
 import {
   formatCpfCnpj,
   formatPhone,
@@ -644,15 +644,14 @@ export function SettingsPage() {
                     Base de cálculo para mão de obra.
                   </p>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-surface-500 font-bold text-sm">R$</span>
-                    <NumberInput id="fld-settingspage-b648"
+                    <CurrencyInput id="fld-settingspage-b648"
                       step="0.01"
                       min="0"
                       value={opsData.laborHourlyRate}
                       onChange={(e) => isMaster && setOpsData({ ...opsData, laborHourlyRate: Number(e.target.value) })}
                       disabled={!isMaster}
                       className={cn(
-                        "w-full pl-10 pr-4 py-2 rounded-lg border text-base font-bold transition-all",
+                        "w-full px-4 py-2 rounded-lg border text-base font-bold transition-all",
                         isMaster
                           ? "border-line bg-surface-950/40 focus:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                           : "border-line bg-surface-950/40 text-surface-500 cursor-not-allowed"

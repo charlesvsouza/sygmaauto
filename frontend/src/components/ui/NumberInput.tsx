@@ -21,7 +21,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
     // Texto digitado enquanto o campo está em foco; null = mostrar o valor do pai.
     const [draft, setDraft] = useState<string | null>(null);
 
-    const isZero = value === 0 || value === '0';
+    const isZero = value !== undefined && value !== null && value !== '' && Number(value) === 0;
     const shown = draft !== null ? draft : isZero ? '' : String(value ?? '');
     const allowNegative = min !== undefined && Number(min) < 0;
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { serviceOrdersApi, customersApi, vehiclesApi } from '../api/client';
 import { cn } from '../lib/utils';
 
-import { NumberInput } from './ui';
+import { NumberInput, CurrencyInput, useConfirm, useToast } from './ui';
 interface ImportOSModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -18,6 +18,8 @@ export function ImportOSModal({ onClose, onSuccess, targetOrderId }: ImportOSMod
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const isAppendMode = Boolean(targetOrderId);
+  const confirm = useConfirm();
+  const toast = useToast();
 
   const parseApiError = (err: any, fallback: string) => {
     const message = err?.response?.data?.message;
@@ -106,23 +108,90 @@ ${importedNotes}` : importedNotes } : {}),
         return;
       }
 
-      // 1. Garantir Cliente
+      // 1. Identificar o cliente: cruza os dados do orçamento com os cadastrados
       const clean = (v: any) => {
         const t = typeof v === 'string' ? v.trim() : v;
         return t ? t : undefined;
       };
+      const norm = (v: any) => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const digits = (v: any) => String(v ?? '').replace(/\D/g, '');
+      const plateKey = (v: any) => String(v ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const sameName = (x: string, y: string) => {
+        const a1 = norm(x), b1 = norm(y);
+        if (!a1 || !b1) return false;
+        if (a1 === b1) return true;
+        const ta = a1.split(' '), tb = b1.split(' ');
+        const [short, long] = ta.length <= tb.length ? [ta, tb] : [tb, ta];
+        return short.length >= 2 && short.every((t) => long.includes(t));
+      };
+
       const customerName = clean(data.customer?.name) || 'Cliente importado';
       const customerDocument = clean(data.customer?.document);
+      const plate = plateKey(data.vehicle?.plate);
+
+      // Veículo já cadastrado com essa placa (com ou sem hífen)
+      let existingVehicle: any = null;
+      if (plate) {
+        for (const candidate of [String(data.vehicle.plate).trim().toUpperCase(), plate, `${plate.slice(0, 3)}-${plate.slice(3)}`]) {
+          try {
+            const vSearch = await vehiclesApi.searchByPlate(candidate);
+            if (vSearch.data) { existingVehicle = vSearch.data; break; }
+          } catch { /* 404: não cadastrado */ }
+        }
+      }
+
       let customerId = '';
+      let matchedCustomer: any = null;
       try {
         const cRes = await customersApi.getAll();
-        const existingCustomer = cRes.data.find((c: any) =>
-          (customerDocument && c.document === customerDocument) ||
-          String(c.name || '').toLowerCase() === customerName.toLowerCase()
-        );
+        const scored = (cRes.data as any[]).map((c) => {
+          const signals: string[] = [];
+          if (customerDocument && digits(c.document).length >= 11 && digits(c.document) === digits(customerDocument)) signals.push('documento');
+          if (sameName(c.name, customerName) && clean(data.customer?.name)) signals.push('nome');
+          if (existingVehicle && existingVehicle.customerId === c.id) signals.push('placa');
+          const ph = digits(data.customer?.phone), cph = digits(c.phone);
+          if (ph.length >= 8 && cph.length >= 8 && ph.slice(-8) === cph.slice(-8)) signals.push('telefone');
+          const em = norm(data.customer?.email);
+          if (em && norm(c.email) === em) signals.push('e-mail');
+          return { c, signals };
+        }).filter((x) => x.signals.length > 0).sort((x, y) => y.signals.length - x.signals.length);
 
-        if (existingCustomer) {
-          customerId = existingCustomer.id;
+        const best = scored[0];
+        if (best) {
+          // CPF/CNPJ identifica sozinho; senão, ao menos duas coincidências
+          const certain = best.signals.includes('documento') || best.signals.length >= 2;
+          if (certain || await confirm({
+            title: 'Cliente já cadastrado?',
+            message: `O cliente do orçamento (${customerName}) é o mesmo cliente "${best.c.name}", já cadastrado? Coincidiu apenas: ${best.signals.join(', ')}.`,
+            confirmLabel: 'Sim, é o mesmo',
+            cancelLabel: 'Não, cadastrar novo',
+          })) {
+            matchedCustomer = best.c;
+            customerId = best.c.id;
+          }
+        }
+
+        if (matchedCustomer) {
+          // Completa só o que falta no cadastro
+          const email = clean(data.customer?.email);
+          const incoming: Record<string, any> = {
+            document: customerDocument,
+            rg: clean(data.customer?.rg),
+            phone: clean(data.customer?.phone),
+            email: email && /^\S+@\S+\.\S+$/.test(email) ? email : undefined,
+            address: clean(data.customer?.address),
+            cep: clean(data.customer?.cep),
+            cidade: clean(data.customer?.cidade),
+            estado: clean(data.customer?.estado),
+          };
+          const patch: Record<string, any> = {};
+          for (const [k, v] of Object.entries(incoming)) {
+            if (v && !String(matchedCustomer[k] ?? '').trim()) patch[k] = v;
+          }
+          if (Object.keys(patch).length > 0) {
+            try { await customersApi.update(matchedCustomer.id, patch); } catch (e) { console.error('Erro ao completar cliente', e); }
+          }
+          toast.info(`Cliente "${matchedCustomer.name}" já cadastrado${Object.keys(patch).length ? ' — dados completados' : ''}.`);
         } else {
           const email = clean(data.customer?.email);
           const newC = await customersApi.create({
@@ -144,33 +213,36 @@ ${importedNotes}` : importedNotes } : {}),
       }
 
       // 2. Garantir Veículo
+      const year = data.vehicle.year ? parseInt(data.vehicle.year) : null;
+      const km = data.vehicle.km ? parseInt(data.vehicle.km) : null;
       let vehicleId = '';
-      try {
-        const vSearch = await vehiclesApi.searchByPlate(data.vehicle.plate);
-        if (vSearch.data) {
-          vehicleId = vSearch.data.id;
-        } else {
-          const newV = await vehiclesApi.create({
-            customerId,
-            brand: data.vehicle.brand || 'Importado',
-            model: data.vehicle.model,
-            plate: data.vehicle.plate.toUpperCase(),
-            year: data.vehicle.year ? parseInt(data.vehicle.year) : null,
-            km: data.vehicle.km ? parseInt(data.vehicle.km) : null,
-            vin: data.vehicle.vin,
-            color: data.vehicle.color,
-          });
-          vehicleId = newV.data.id;
+      if (existingVehicle) {
+        vehicleId = existingVehicle.id;
+        const incoming: Record<string, any> = {
+          brand: clean(data.vehicle.brand),
+          model: clean(data.vehicle.model),
+          year: year || undefined,
+          color: clean(data.vehicle.color),
+          vin: clean(data.vehicle.vin),
+          km: km || undefined,
+        };
+        const patch: Record<string, any> = {};
+        for (const [k, v] of Object.entries(incoming)) {
+          const current = existingVehicle[k];
+          const blank = current === null || current === undefined || String(current).trim() === '' || (k === 'brand' && current === 'Importado');
+          if (v && blank) patch[k] = v;
         }
-      } catch (e) {
-        // Se a busca falhar (404), tentamos criar
+        if (Object.keys(patch).length > 0) {
+          try { await vehiclesApi.update(existingVehicle.id, patch); } catch (e) { console.error('Erro ao completar veículo', e); }
+        }
+      } else {
         const newV = await vehiclesApi.create({
           customerId,
           brand: data.vehicle.brand || 'Importado',
           model: data.vehicle.model,
           plate: data.vehicle.plate.toUpperCase(),
-          year: data.vehicle.year ? parseInt(data.vehicle.year) : null,
-          km: data.vehicle.km ? parseInt(data.vehicle.km) : null,
+          year,
+          km,
           vin: data.vehicle.vin,
           color: data.vehicle.color,
         });
@@ -484,7 +556,7 @@ ${importedNotes}` : importedNotes } : {}),
                         <td className="px-6 py-4">
                           <div className="relative">
                             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[11px] font-bold text-surface-500">R$</span>
-                            <NumberInput aria-label="Valor unitário"
+                            <CurrencyInput aria-label="Valor unitário"
                               className="w-full bg-surface-800 border-none rounded-lg pl-7 pr-2 py-1 text-sm font-bold text-right focus:ring-2 focus:ring-accent"
                               value={item.unitPrice}
                               onChange={(e) => updateItemField(idx, 'unitPrice', e.target.value)}

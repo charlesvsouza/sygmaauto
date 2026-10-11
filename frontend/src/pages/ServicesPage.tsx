@@ -14,7 +14,7 @@ import {
   Zap,
   DollarSign
 } from 'lucide-react';
-import { useToast, useConfirm, NumberInput } from '../components/ui';
+import { useToast, useConfirm, NumberInput, CurrencyInput } from '../components/ui';
 
 export function ServicesPage() {
   const { user } = useAuthStore();
@@ -326,12 +326,11 @@ export function ServicesPage() {
                     <label htmlFor="fld-servicespage-2" className="text-[11px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                       <DollarSign size={10} /> Valor Hora (VH)
                     </label>
-                    <NumberInput id="fld-servicespage-2"
+                    <CurrencyInput id="fld-servicespage-2"
                       step="0.01"
                       value={formData.hourlyRate}
                       onChange={(e) => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
                       className="w-full bg-transparent border-none focus:ring-0 p-0 text-lg font-bold text-surface-50"
-                      placeholder="0.00"
                     />
                   </div>
                   <div className="space-y-1.5 p-4 bg-surface-950/40 rounded-lg border border-line">
@@ -351,7 +350,7 @@ export function ServicesPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label htmlFor="fld-servicespage-4" className="block text-sm font-semibold text-muted">Preço Fixo (Base)</label>
-                    <NumberInput id="fld-servicespage-4"
+                    <CurrencyInput id="fld-servicespage-4"
                       step="0.01"
                       value={formData.basePrice}
                       onChange={(e) => setFormData({ ...formData, basePrice: Number(e.target.value) })}
