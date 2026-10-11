@@ -676,6 +676,28 @@ export function ServiceOrdersPage() {
     }
   };
 
+  // Estorno de faturamento: só Master/Admin, até 12 h depois do pagamento (o servidor confere).
+  const reverseBilling = async () => {
+    if (!selectedOrder) return;
+    const reason = await prompt({
+      title: 'Estornar faturamento',
+      message: 'A O.S. volta para "Pronto p/ Entrega", a receita sai do Fluxo de Caixa e as comissões são desfeitas. Fica tudo registrado na auditoria.',
+      inputLabel: 'Motivo do estorno',
+      confirmLabel: 'Estornar faturamento',
+      required: true,
+    });
+    if (!reason?.trim()) return;
+    try {
+      await serviceOrdersApi.reverseBilling(selectedOrder.id, reason.trim());
+      const fresh = await serviceOrdersApi.getById(selectedOrder.id);
+      setSelectedOrder(fresh.data);
+      loadOrders();
+      toast.success('Faturamento estornado. A O.S. voltou para Pronto p/ Entrega.');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Não foi possível estornar o faturamento.');
+    }
+  };
+
   // Desfaz a aprovação para o cliente aprovar de novo (novo link/QR code).
   const revokeApproval = async () => {
     if (!selectedOrder) return;
@@ -1123,7 +1145,7 @@ export function ServiceOrdersPage() {
                     {pending > 0 && <p className="text-amber-700 font-bold">Saldo pendente: R$ {fmtBR(pending)}</p>}
                     {registered && (
                       <p className="text-[12px] font-medium text-surface-500">
-                        O.S. encerrada e travada para edição. Para alterar, mude o status e ajuste novamente.
+                        {selectedOrder.paidAt ? 'O.S. faturada e travada: não muda de status. Só o estorno de faturamento, em até 12 h do pagamento, desfaz.' : 'O.S. encerrada e travada para edição. Para alterar, mude o status e ajuste novamente.'}
                       </p>
                     )}
                   </div>
@@ -1280,7 +1302,7 @@ export function ServiceOrdersPage() {
                           </button>
                         );
                        })()}
-                      {canChangeStatus ? (
+                      {canChangeStatus && !selectedOrder.paidAt ? (
                         <button type="button"
                           onClick={() => setShowStatusDropdown((v) => !v)}
                           title="Clique para alterar o status"
@@ -1646,6 +1668,22 @@ export function ServiceOrdersPage() {
                     {nextStatuses.length === 0 && (
                       <p className="text-[11px] font-bold text-surface-600">Fluxo encerrado para este status.</p>
                     )}
+                    {selectedOrder.paidAt && (() => {
+                      const hoursLeft = 12 - (Date.now() - new Date(selectedOrder.paidAt).getTime()) / 3_600_000;
+                      const canReverse = ['MASTER', 'ADMIN'].includes(userRole);
+                      if (hoursLeft > 0) {
+                        return canReverse ? (
+                          <button type="button" onClick={reverseBilling}
+                            className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                            title="Desfaz o faturamento desta O.S. (receita, comissões e status)">
+                            Estornar faturamento ({Math.max(1, Math.ceil(hoursLeft))} h restantes)
+                          </button>
+                        ) : (
+                          <p className="text-[11px] font-bold text-surface-600">Faturamento pode ser estornado por Master ou Admin em até {Math.max(1, Math.ceil(hoursLeft))} h.</p>
+                        );
+                      }
+                      return <p className="text-[11px] font-bold text-surface-600">Prazo de 12 h para estorno encerrado. Siga os procedimentos legais (nota de devolução ou cancelamento fiscal).</p>;
+                    })()}
                     {selectedOrder.status === 'ENTREGUE' && (
                       <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-3 text-[11px] font-bold text-surface-300 space-y-1">
                         <p>Entregue em: <span className="text-surface-100">{selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'não registrado'}</span></p>

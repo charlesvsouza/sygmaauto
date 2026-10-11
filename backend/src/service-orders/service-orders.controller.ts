@@ -182,6 +182,18 @@ export class ServiceOrdersController {
     return this.serviceOrdersService.getApprovalPage(token);
   }
 
+  @Post(':id/reverse-billing')
+  @Roles('MASTER', 'ADMIN')
+  @ApiOperation({ summary: 'Estornar o faturamento (até 12 h após o pagamento)' })
+  async reverseBilling(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body('reason') reason?: string,
+  ) {
+    return this.serviceOrdersService.reverseBilling(tenant.tenantId, id, reason, user.userId);
+  }
+
   @Delete(':id')
   @Roles('MASTER')
   @ApiOperation({ summary: 'Excluir ordem (somente MASTER)' })

@@ -14,6 +14,10 @@ import { describePaymentPlan, parsePaymentPlan, PaymentPlanError, planHasInstall
 // Status em que o orçamento espera a resposta do cliente (oficina e retífica).
 const AWAITING_APPROVAL = ['AGUARDANDO_APROVACAO', 'AGUARDANDO_APROVACAO_RETIFICA'];
 
+export const REVERSAL_WINDOW_HOURS = 12;
+const BILLED_LOCK_MESSAGE =
+  `Esta O.S. já foi faturada e não pode mudar de status nem ser excluída. Para desfazer, use o estorno de faturamento, disponível por ${REVERSAL_WINDOW_HOURS} horas após o pagamento. Depois desse prazo, siga os procedimentos legais (nota fiscal de devolução ou cancelamento fiscal).`;
+
 @Injectable()
 export class ServiceOrdersService {
   constructor(
@@ -650,6 +654,12 @@ export class ServiceOrdersService {
     const currentStatus = order.status;
     const newStatus = dto.status;
 
+    // Trava de segurança: O.S. faturada só segue para a entrega. Nem o override de Master/Admin vale;
+    // desfazer só pelo estorno de faturamento (reverseBilling), em até 12 h do pagamento.
+    if (order.paidAt && !(currentStatus === 'FATURADO' && newStatus === 'ENTREGUE')) {
+      throw new BadRequestException(BILLED_LOCK_MESSAGE);
+    }
+
     // Valida transição (ADMIN/MASTER podem fazer override do fluxo)
     const allowed = this.getStatusFlow(order.orderType)[currentStatus] || [];
     if (!allowed.includes(newStatus)) {
@@ -998,8 +1008,73 @@ export class ServiceOrdersService {
     return { success: true, amountPaid: Number(updated.totalCost), status: 'FATURADO' };
   }
 
+
+  // Estorno de faturamento: única forma de desfazer uma O.S. faturada, em até 12 h do pagamento.
+  // Devolve a O.S. para "Pronto p/ Entrega", desfaz a receita e as comissões e registra tudo na auditoria.
+  async reverseBilling(tenantId: string, id: string, reason: string | undefined, userId: string) {
+    const order = await this.findById(tenantId, id);
+    const why = (reason ?? '').trim();
+    if (!why) throw new BadRequestException('Informe o motivo do estorno do faturamento.');
+    if (!order.paidAt || !['FATURADO', 'ENTREGUE'].includes(order.status)) {
+      throw new BadRequestException('Só é possível estornar o faturamento de uma O.S. faturada.');
+    }
+    const hours = (Date.now() - new Date(order.paidAt).getTime()) / 3_600_000;
+    if (hours > REVERSAL_WINDOW_HOURS) {
+      throw new BadRequestException(
+        `O prazo de ${REVERSAL_WINDOW_HOURS} horas para estornar o faturamento terminou. Siga os procedimentos legais (nota fiscal de devolução ou cancelamento fiscal).`,
+      );
+    }
+    // Pagamento recebido pelo Asaas: o dinheiro precisa ser devolvido lá antes (o aviso de estorno do Asaas marca a cobrança).
+    if (order.asaasPaymentId && order.asaasPaidAt && order.asaasChargeStatus !== 'REFUNDED') {
+      throw new BadRequestException(
+        'O pagamento foi recebido pelo Asaas. Estorne a cobrança no painel do Asaas primeiro; quando o Asaas avisar o estorno, repita aqui.',
+      );
+    }
+    const paidCommissions = await this.prisma.commission.count({ where: { serviceOrderId: id, status: { not: 'PENDENTE' } } });
+    if (paidCommissions > 0) {
+      throw new BadRequestException('Há comissão desta O.S. já paga ou fechada. Desfaça o pagamento da comissão antes de estornar.');
+    }
+
+    const refundedInAsaas = order.asaasChargeStatus === 'REFUNDED';
+    await this.prisma.$transaction(async (tx) => {
+      await tx.financialTransaction.deleteMany({
+        where: { tenantId, referenceId: id, referenceType: 'service_order', type: 'INCOME' },
+      });
+      await tx.commission.deleteMany({ where: { serviceOrderId: id } });
+      await tx.serviceOrder.update({
+        where: { id },
+        data: {
+          status: 'PRONTO_ENTREGA',
+          statusChangedAt: new Date(),
+          paidAt: null,
+          paymentMethod: null,
+          deliveredAt: null,
+          deliveredTo: null,
+          deliveryAuthorizedBy: null,
+          asaasPaidAt: null,
+          ...(refundedInAsaas
+            ? { asaasPaymentId: null, asaasBillingType: null, asaasChargeStatus: null, asaasInvoiceUrl: null, asaasDueDate: null }
+            : {}),
+        },
+      });
+      await tx.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          entityType: 'ServiceOrder',
+          entityId: id,
+          action: 'BILLING_REVERSAL',
+          changes: JSON.stringify({ osNumber: formatOrderCode(order), totalCost: order.totalCost, paidAt: order.paidAt, reason: why }),
+        },
+      });
+    });
+    await this.createTimeline(id, 'PRONTO_ENTREGA', `Faturamento estornado: ${why}`, userId);
+    return this.findById(tenantId, id);
+  }
+
   async delete(tenantId: string, id: string, userId?: string, reason?: string) {
     const order = await this.findById(tenantId, id);
+    if (order.paidAt) throw new BadRequestException(BILLED_LOCK_MESSAGE);
 
     // Registra auditoria antes de deletar
     await this.prisma.auditLog.create({

@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.5 — Outubro/2026  
+**Versão:** 3.6 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -318,6 +318,20 @@ Depois que a execução começa, não é possível revogar.
 4. Entregue o veículo com o **Termo de Entrega** (com ou sem garantia — seção 4.11) e clique em **Confirmar Entrega**: informe a **data da entrega** e **quem recebeu o veículo** (seção 4.13)
 
 > A aprovação não lança receita. A receita de cada O.S. entra uma vez só, no faturamento — por isso o Fluxo de Caixa, a DRE e os Indicadores mostram os mesmos números.
+
+### 4.10.1 Trava de faturamento e estorno
+
+Depois de **Faturado**, a O.S. fica **travada**: não muda de status (nem para trás, nem cancelando), não pode ser excluída e nem Master ou Admin conseguem forçar o fluxo. A única continuidade é **Confirmar Entrega**.
+
+Se o pagamento foi lançado por engano, **Master** e **Admin** têm **Estornar faturamento** por **12 horas** após o pagamento:
+
+1. Abra a O.S. e clique em **Estornar faturamento (X h restantes)**
+2. Informe o **motivo**: ele fica na linha do tempo e na auditoria
+3. A O.S. volta para **Pronto p/ Entrega**, a receita sai do Fluxo de Caixa, as comissões pendentes são desfeitas e o registro de entrega é limpo
+
+Se o pagamento veio pelo **Asaas**, estorne primeiro a cobrança no painel do Asaas; quando o Asaas avisar o estorno, repita o estorno aqui. Comissão já paga impede o estorno até ser desfeita.
+
+**Depois das 12 horas** o sistema não permite mais desfazer: siga os procedimentos legais (nota fiscal de devolução ou cancelamento fiscal, conforme o caso).
 
 ### 4.11 Documentos do atendimento (PDF)
 
