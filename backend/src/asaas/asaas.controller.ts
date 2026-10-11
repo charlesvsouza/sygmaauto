@@ -11,6 +11,11 @@ import { AsaasService } from './asaas.service';
 class ConnectAsaasDto {
   @IsString()
   apiKey: string;
+
+  // Versões antigas da tela ainda mandam o ambiente; agora ele vem do prefixo da chave e este campo é ignorado.
+  @IsOptional()
+  @IsString()
+  environment?: string;
 }
 
 class NotifyAsaasDto {
