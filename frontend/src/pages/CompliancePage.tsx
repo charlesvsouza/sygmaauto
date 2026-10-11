@@ -97,7 +97,7 @@ export function CompliancePage() {
           <div className="max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-[12px] font-bold uppercase tracking-wide text-accent-ink">
               <ShieldCheck size={14} />
-              Públicação provisória de compliance
+              Publicação provisória de compliance
             </div>
             <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-none text-surface-50">
               Central de Privacidade,
@@ -245,7 +245,7 @@ export function CompliancePage() {
         <div className="rounded-xl border border-line bg-accent-soft p-8 md:p-10">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Proximas consolidações</p>
+              <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Próximas consolidações</p>
               <h2 className="mt-2 text-3xl md:text-4xl font-bold text-surface-50">O que ainda esta em amadurecimento</h2>
             </div>
             <p className="max-w-2xl text-sm text-surface-500 leading-relaxed">

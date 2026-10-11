@@ -17,7 +17,7 @@ const channels = [
   {
     icon: ShieldCheck,
     title: 'Central de Compliance',
-    description: 'Acompanhe a públicação provisória de privacidade, governança documental e status real de controles LGPD e segurança.',
+    description: 'Acompanhe a publicação provisória de privacidade, governança documental e status real de controles LGPD e segurança.',
     href: '/compliance',
     cta: 'Abrir central',
     external: false,
