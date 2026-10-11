@@ -85,6 +85,12 @@ th { background: #eef1f5; font-size: 8pt; text-transform: uppercase; letter-spac
 .qr { display: flex; gap: 10px; align-items: center; border: 1px dashed #999; padding: 6px 8px; margin: 8px 0; break-inside: avoid; }
 .qr img { width: 92px; height: 92px; }
 .approved { border: 2px solid #16a34a; color: #166534; padding: 6px 8px; font-weight: bold; margin: 8px 0; }
+.wm { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-32deg); font-size: 62pt; font-weight: 900; letter-spacing: .06em; line-height: .95; text-align: center; color: rgba(30, 41, 59, .075); white-space: nowrap; z-index: 9999; pointer-events: none; }
+.stamp-row { text-align: right; margin: -2px 6px 8px 0; break-inside: avoid; }
+.stamp { display: inline-block; border: 3px double #15803d; border-radius: 6px; color: #15803d; padding: 3px 16px 4px; text-align: center; transform: rotate(-4deg); }
+.stamp .big { font-size: 20pt; font-weight: 900; letter-spacing: .22em; line-height: 1.1; padding-left: .22em; }
+.stamp .sm { font-size: 7.5pt; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.nofiscal { font-size: 7.5pt; color: #666; margin-top: 2px; }
 `;
 
 type Ctx = {
@@ -142,7 +148,7 @@ export class OrderDocumentsService {
     else if (kind === 'oficina') body = this.oficina(ctx);
     else body = await this.entrega(ctx);
 
-    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8" /><title>${e(title)} ${e(ctx.code)}</title><style>${CSS}</style></head><body>${this.header(ctx)}${body}</body></html>`;
+    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8" /><title>${e(title)} ${e(ctx.code)}</title><style>${CSS}</style></head><body>${this.paidWatermark(order, kind)}${this.header(ctx)}${this.paidStamp(order, kind)}${body}</body></html>`;
     const companyName = this.companyName(order.tenant);
     const buffer = await this.pdf.renderHtml(html, {
       margin: { top: '12mm', right: '12mm', bottom: '14mm', left: '12mm' },
@@ -150,6 +156,25 @@ export class OrderDocumentsService {
       footerIssued: pdfIssuedLine(issuer?.name),
     });
     return { buffer, fileName: orderFileName(FILE_LABEL[kind], order, order.vehicle?.plate) };
+  }
+
+  // ─── PAGO / sem valor fiscal ──────────────────────────────────────────────
+
+  // Enquanto não há nota fiscal, o documento de uma O.S. paga (pelo Asaas ou baixada à mão) leva a marca
+  // d'água "SEM VALOR FISCAL" em todas as páginas e o sinete PAGO. Só nos documentos com valores.
+  private isPaidDocument(order: any, kind: OrderDocumentKind): boolean {
+    return (kind === 'os' || kind === 'entrega') && Boolean(order.paidAt);
+  }
+
+  private paidWatermark(order: any, kind: OrderDocumentKind): string {
+    return this.isPaidDocument(order, kind) ? '<div class="wm">SEM VALOR<br>FISCAL</div>' : '';
+  }
+
+  private paidStamp(order: any, kind: OrderDocumentKind): string {
+    if (!this.isPaidDocument(order, kind)) return '';
+    const viaAsaas = Boolean(order.asaasPaymentId && order.asaasPaidAt);
+    const detail = [formatDateBR(new Date(order.paidAt)), order.paymentMethod, viaAsaas ? 'via Asaas' : null].filter(Boolean).join(' · ');
+    return `<div class="stamp-row"><div class="stamp"><div class="big">PAGO</div><div class="sm">${e(detail)}</div></div><div class="nofiscal">Documento sem valor fiscal.</div></div>`;
   }
 
   // ─── partes comuns ────────────────────────────────────────────────────────

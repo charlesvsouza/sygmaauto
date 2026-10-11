@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.4 — Outubro/2026  
+**Versão:** 3.5 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -331,6 +331,8 @@ Dentro da O.S., clique em **Documentos**. O menu mostra os documentos da etapa a
 | **Ordem de Serviço — via da oficina** | Após a aprovação | **Sem valores**: reclamação, diagnóstico, laudo, serviços e peças para marcar como feitos, local no estoque e assinatura do técnico |
 | **Termo de entrega com garantia** | A partir de *Pronto p/ Entrega* | Laudo, serviços executados, total, valor pago e saldo, forma de pagamento, prazos de garantia com vencimento e destino das peças substituídas |
 | **Termo de entrega sem garantia** | A partir de *Pronto p/ Entrega* | O mesmo termo, sem a seção e o texto de garantia (para serviços e peças sem cobertura) |
+
+**O.S. paga:** enquanto a oficina não emite nota fiscal, os documentos com valores (**Ordem de Serviço — via do cliente** e **Termo de entrega**) de uma O.S. já paga recebem a marca d'água **SEM VALOR FISCAL** em todas as páginas e o sinete **PAGO**, com a data, a forma de pagamento e, quando foi pelo Asaas, "via Asaas". Vale para o pagamento confirmado pelo Asaas e para o declarado manualmente em **Registrar Pagamento**. Orçamento, entrada e a via da oficina não levam a marca.
 
 Na O.S. entregue, a data da entrega e quem recebeu o veículo saem nos documentos, e a data de conclusão nunca é posterior à de entrega.
 
