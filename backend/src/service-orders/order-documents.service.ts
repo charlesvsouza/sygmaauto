@@ -92,6 +92,9 @@ type Ctx = {
   settings: DocumentSettings;
   code: string;
   kind: OrderDocumentKind;
+  /** Termo de entrega: imprime a seção de garantia (padrão) ou não. */
+  warranty: boolean;
+  title: string;
 };
 
 @Injectable()
@@ -101,7 +104,7 @@ export class OrderDocumentsService {
     private pdf: PdfService,
   ) {}
 
-  async generate(tenantId: string, orderId: string, kind: OrderDocumentKind, userId?: string) {
+  async generate(tenantId: string, orderId: string, kind: OrderDocumentKind, userId?: string, opts: { warranty?: boolean } = {}) {
     if (!ORDER_DOCUMENT_KINDS.includes(kind)) {
       throw new BadRequestException(`Documento inválido: ${kind}`);
     }
@@ -125,7 +128,9 @@ export class OrderDocumentsService {
     });
     if (!order) throw new NotFoundException('Ordem de Serviço não encontrada');
 
-    const ctx: Ctx = { order, settings: resolveDocumentSettings(order.tenant), code: formatOrderCode(order), kind };
+    const warranty = opts.warranty !== false;
+    const title = kind === 'entrega' && !warranty ? 'Termo de Entrega' : TITLES[kind];
+    const ctx: Ctx = { order, settings: resolveDocumentSettings(order.tenant), code: formatOrderCode(order), kind, warranty, title };
     const issuer = userId
       ? await this.prisma.user.findFirst({ where: { id: userId, tenantId }, select: { name: true } })
       : null;
@@ -137,7 +142,6 @@ export class OrderDocumentsService {
     else if (kind === 'oficina') body = this.oficina(ctx);
     else body = await this.entrega(ctx);
 
-    const title = TITLES[kind];
     const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8" /><title>${e(title)} ${e(ctx.code)}</title><style>${CSS}</style></head><body>${this.header(ctx)}${body}</body></html>`;
     const companyName = this.companyName(order.tenant);
     const buffer = await this.pdf.renderHtml(html, {
@@ -154,7 +158,7 @@ export class OrderDocumentsService {
     return t?.name || t?.tradeName || t?.legalName || 'Oficina';
   }
 
-  private header({ order, code, kind }: Ctx): string {
+  private header({ order, code, title }: Ctx): string {
     const t = order.tenant;
     const contact = [t.phone && `Tel: ${t.phone}`, t.email].filter(Boolean).join(' · ');
     const doc = t.taxId || t.document;
@@ -170,7 +174,7 @@ export class OrderDocumentsService {
     </div>
   </div>
   <div class="doc">
-    <div class="t">${e(TITLES[kind])}</div>
+    <div class="t">${e(title)}</div>
     <div class="n">Nº ${e(code)}</div>
     <div class="small">Abertura: ${formatDateBR(order.createdAt)}</div>
     <div class="small">Situação: ${e(serviceOrderStatusLabel(order.status))}</div>
@@ -448,7 +452,7 @@ ${this.signatures(
   // ─── TERMO DE ENTREGA E GARANTIA ──────────────────────────────────────────
 
   private async entrega(ctx: Ctx): Promise<string> {
-    const { order, settings } = ctx;
+    const { order, settings, warranty } = ctx;
     // A O.S. faturada está paga pelo total, salvo parcelas a vencer do plano de pagamento
     // (cartão de crédito conta como pago: quem parcela é o cliente com a operadora).
     const total = Number(order.totalCost || 0);
@@ -470,15 +474,15 @@ ${this.totals(order, [['Valor pago', paid], ['Saldo a pagar', balance]])}
 <table class="kv"><tr><td>Forma de pagamento</td><td>${e(order.paymentMethod || '—')}</td><td>Data da entrega</td><td>${formatDateBR(deliveredAt)}</td></tr></table>
 ${this.paymentSchedule(order)}
 ${order.paidAt && !balance ? '' : this.pixInfo(order, settings)}
-<div class="sec">Garantia</div>
+${warranty ? `<div class="sec">Garantia</div>
 <table class="kv">
   <tr><td>Serviços</td><td>${settings.warrantyDaysServices} dias — até <b>${formatDateBR(warrantyServices)}</b></td></tr>
   ${hasParts ? `<tr><td>Peças</td><td>${settings.warrantyDaysParts} dias — até <b>${formatDateBR(warrantyParts)}</b></td></tr>` : ''}
 </table>
-<div class="legal">${e(fillWarrantyText(settings))}</div>
+<div class="legal">${e(fillWarrantyText(settings))}</div>` : ''}
 ${hasParts ? `<table class="kv"><tr><td>Peças substituídas</td><td><span class="check"></span> devolvidas ao cliente &nbsp;&nbsp; <span class="check"></span> descartadas pela oficina</td></tr></table>` : ''}
 ${exit ? `<table class="kv"><tr><td>Vistoria de saída</td><td>Realizada${exit.completedBy ? ` por ${e(exit.completedBy)}` : ''} · combustível ${e(FUEL_LEVEL_LABEL[exit.fuelLevel] ?? String(exit.fuelLevel))}</td></tr></table>` : ''}
-<div class="legal">Declaro que recebi o veículo com os serviços acima executados, em condições de uso, e que tomei conhecimento das condições de garantia.</div>
+<div class="legal">Declaro que recebi o veículo com os serviços acima executados, em condições de uso${warranty ? ', e que tomei conhecimento das condições de garantia' : ''}.</div>
 ${this.signatures([
   { role: 'Cliente — retirada', name: exit?.ownerName || order.customer.name },
   { role: 'Oficina', name: this.companyName(order.tenant) },

@@ -150,8 +150,11 @@ export const serviceOrdersApi = {
   getById: (id: string) => api.get(`/service-orders/${id}`),
   downloadPdf: (id: string) =>
     api.get(`/service-orders/${id}/pdf`, { responseType: 'blob' }),
-  downloadDocument: (id: string, kind: string) =>
-    api.get(`/service-orders/${id}/documents/${kind}`, { responseType: 'blob' }),
+  downloadDocument: (id: string, kind: string, opts?: { warranty?: boolean }) =>
+    api.get(`/service-orders/${id}/documents/${kind}`, {
+      responseType: 'blob',
+      params: opts?.warranty === false ? { warranty: 0 } : undefined,
+    }),
   create: (data: any) => api.post('/service-orders', data),
   update: (id: string, data: any) => api.patch(`/service-orders/${id}`, data),
   delete: (id: string, reason?: string) => api.delete(`/service-orders/${id}`, { data: { reason } }),

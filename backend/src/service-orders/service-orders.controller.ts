@@ -315,9 +315,10 @@ export class ServiceOrdersController {
     @CurrentUser() user: { userId?: string },
     @Param('id') id: string,
     @Param('kind') kind: OrderDocumentKind,
+    @Query('warranty') warranty: string | undefined,
     @Res() res: any,
   ) {
-    return this.sendDocument(res, await this.orderDocuments.generate(tenant.tenantId, id, kind, user?.userId));
+    return this.sendDocument(res, await this.orderDocuments.generate(tenant.tenantId, id, kind, user?.userId, { warranty: warranty !== '0' }));
   }
 
   private sendDocument(res: any, generated: { buffer: Buffer; fileName: string }) {

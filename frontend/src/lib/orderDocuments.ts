@@ -7,7 +7,7 @@ const DELIVERY_STATUSES = ['PRONTO_ENTREGA', 'FATURADO', 'ENTREGUE'];
 
 export function availableDocuments(order: { orderType?: string; status?: string }) {
   const approved = order.orderType !== 'ORCAMENTO';
-  const docs: Array<{ kind: OrderDocumentKind; label: string; hint: string }> = [
+  const docs: Array<{ kind: OrderDocumentKind; label: string; hint: string; warranty?: boolean }> = [
     { kind: 'entrada', label: 'Entrada do veículo', hint: 'Vistoria, acessórios e fotos — assinatura do cliente' },
     { kind: 'orcamento', label: 'Orçamento', hint: 'Valores, validade, autorização e QR code de aprovação' },
   ];
@@ -18,7 +18,10 @@ export function availableDocuments(order: { orderType?: string; status?: string 
     );
   }
   if (DELIVERY_STATUSES.includes(order.status ?? '')) {
-    docs.push({ kind: 'entrega', label: 'Termo de entrega e garantia', hint: 'Serviços executados, pagamento e prazos de garantia' });
+    docs.push(
+      { kind: 'entrega', label: 'Termo de entrega com garantia', hint: 'Serviços executados, pagamento e prazos de garantia', warranty: true },
+      { kind: 'entrega', label: 'Termo de entrega sem garantia', hint: 'Mesmo termo, sem a seção e o texto de garantia', warranty: false },
+    );
   }
   return docs;
 }

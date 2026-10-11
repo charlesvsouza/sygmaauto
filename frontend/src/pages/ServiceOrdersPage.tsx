@@ -561,11 +561,11 @@ export function ServiceOrdersPage() {
     }
   };
 
-  const openOrderDocument = async (kind: OrderDocumentKind) => {
+  const openOrderDocument = async (kind: OrderDocumentKind, warranty?: boolean) => {
     if (!selectedOrder) return;
     setShowDocsMenu(false);
     try {
-      const response = await serviceOrdersApi.downloadDocument(selectedOrder.id, kind);
+      const response = await serviceOrdersApi.downloadDocument(selectedOrder.id, kind, { warranty });
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const opened = window.open(url, '_blank', 'noopener,noreferrer');
       if (!opened) {
@@ -1032,8 +1032,8 @@ export function ServiceOrdersPage() {
                       <div className="fixed inset-0 z-20" onClick={() => setShowDocsMenu(false)} />
                       <div role="menu" className="absolute right-0 mt-2 w-72 z-30 bg-surface-900 border border-line rounded-lg shadow-xl py-1">
                         {availableDocuments(selectedOrder).map((d) => (
-                          <button type="button" role="menuitem" key={d.kind}
-                            onClick={() => { setShowDocsMenu(false); openOrderDocument(d.kind); }}
+                          <button type="button" role="menuitem" key={`${d.kind}-${d.warranty ?? ''}`}
+                            onClick={() => { setShowDocsMenu(false); openOrderDocument(d.kind, d.warranty); }}
                             className="w-full text-left px-4 py-2.5 hover:bg-ink/5 transition-colors"
                           >
                             <div className="text-sm font-semibold text-surface-100">{d.label}</div>
