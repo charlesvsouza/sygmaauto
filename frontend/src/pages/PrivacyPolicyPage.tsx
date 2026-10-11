@@ -11,7 +11,6 @@ export function PrivacyPolicyPage() {
     >
       {/* Glow ambiente */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-accent-soft " />
       </div>
 
       {/* Header */}

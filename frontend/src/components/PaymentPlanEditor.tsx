@@ -18,9 +18,9 @@ import {
 const LEGACY_METHOD: Record<string, PaymentPlanMethod> = {
   Dinheiro: 'DINHEIRO',
   PIX: 'PIX',
-  'Cartao de Debito': 'CARTAO_DEBITO',
-  'Cartao de Credito': 'CARTAO_CREDITO',
-  'Transferencia Bancaria': 'TRANSFERENCIA',
+  'Cartão de Debito': 'CARTAO_DEBITO',
+  'Cartão de Credito': 'CARTAO_CREDITO',
+  'Transferência Bancária': 'TRANSFERENCIA',
   Boleto: 'BOLETO',
   Cheque: 'CHEQUE',
 };

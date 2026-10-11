@@ -396,7 +396,7 @@ export function SuperAdminPage() {
                       ['Veículos', selectedTenant._count?.vehicles],
                       ['OS', selectedTenant._count?.serviceOrders],
                       ['Peças', selectedTenant._count?.parts],
-                      ['Transacoes', selectedTenant._count?.financialTransactions],
+                      ['Transações', selectedTenant._count?.financialTransactions],
                     ].map(([l, v]) => (
                       <div key={l as string} className="bg-ink/5 rounded-xl p-3">
                         <p className="text-muted text-xs">{l}</p>
@@ -513,7 +513,7 @@ export function SuperAdminPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-ink text-lg">Excluir Tenant</h3>
-                  <p className="text-muted text-sm">Esta acao e irreversivel</p>
+                  <p className="text-muted text-sm">Esta acao e irreversível</p>
                 </div>
               </div>
 

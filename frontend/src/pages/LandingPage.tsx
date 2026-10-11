@@ -207,7 +207,7 @@ export function LandingPage() {
         <div className="text-center mb-10">
           <p className="text-xs uppercase tracking-wide text-accent-ink font-bold mb-3">Planos</p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Escolha e inicie sua assinatura</h2>
-          <p className="mt-3 text-surface-500 text-sm">Sem conta? você conclui o pagamento e recebe convite de ativacao no e-mail.</p>
+          <p className="mt-3 text-surface-500 text-sm">Sem conta? você conclui o pagamento e recebe convite de ativação no e-mail.</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -265,7 +265,7 @@ export function LandingPage() {
             <p className="text-[12px] uppercase tracking-wide text-accent-ink font-bold">Linha especializada</p>
             <h3 className="mt-2 text-2xl md:text-3xl font-bold text-surface-50">Modo Retífica de Motores</h3>
             <p className="mt-3 text-sm text-surface-500 leading-relaxed">
-              Para operações que precisam receber tanto veículos completos quanto motores avulsos, o Sigma Auto passa a ter uma familia dedicada de planos.
+              Para operações que precisam receber tanto veículos completos quanto motores avulsos, o Sigma Auto passa a ter uma família dedicada de planos.
               Ela preserva toda a operação da oficina e adiciona o trilho especializado de retífica.
             </p>
           </div>
@@ -311,7 +311,7 @@ export function LandingPage() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
             <div>
               <p className="text-[12px] uppercase tracking-wide text-accent-ink font-bold">Comparativo por pacote</p>
-              <h3 className="mt-1 text-xl md:text-2xl font-bold text-surface-50">Funcoes liberadas em cada plano</h3>
+              <h3 className="mt-1 text-xl md:text-2xl font-bold text-surface-50">Funções liberadas em cada plano</h3>
             </div>
             <p className="text-xs text-surface-500 max-w-xl">Tabela comercial para facilitar a escolha do pacote ideal por porte de oficina e maturidade da operação.</p>
           </div>

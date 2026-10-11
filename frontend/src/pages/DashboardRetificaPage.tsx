@@ -262,7 +262,7 @@ export function DashboardRetificaPage() {
         const level = !sla ? 'none' : h >= sla.danger ? 'danger' : h >= sla.warn ? 'warning' : 'none';
         const motorLabel = !o.vehicleId && !o.vehicle
           ? `${o.equipmentBrand || 'Motor'} ${o.equipmentModel || ''}`.trim()
-          : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veículo sem identificacao';
+          : `${o.vehicle?.brand || ''} ${o.vehicle?.model || ''}`.trim() || 'Veículo sem identificação';
 
         return {
           id: o.id,
@@ -275,7 +275,7 @@ export function DashboardRetificaPage() {
           level,
           reason:
             level === 'danger'
-              ? `SLA critico: ${Math.floor(h)}h na fase`
+              ? `SLA crítico: ${Math.floor(h)}h na fase`
               : level === 'warning'
                 ? `Atenção: ${Math.floor(h)}h na fase`
                 : '',
@@ -409,7 +409,7 @@ export function DashboardRetificaPage() {
             </ResponsiveContainer>
           </ChartShell>
 
-          <ChartShell title="Tempo médio atual por fase" hint="Media em horas de permanencia por etapa">
+          <ChartShell title="Tempo médio atual por fase" hint="Media em horas de permanência por etapa">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={tempoPorFaseChart} margin={{ top: 8, right: 10, left: 0, bottom: 26 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink))" />
@@ -454,7 +454,7 @@ export function DashboardRetificaPage() {
 
           {!acoesCriticas.length ? (
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-emerald-700 text-sm">
-              Nenhum motor em estado de atenção critica no momento.
+              Nenhum motor em estado de atenção crítica no momento.
             </div>
           ) : (
             <div className="space-y-2">

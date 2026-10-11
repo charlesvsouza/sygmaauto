@@ -20,7 +20,7 @@ const plans: PlanDef[] = [
   { name: 'PRO', label: 'Pro', monthlyPrice: 299, description: 'Financeiro, estoque e produtividade para crescer com previsibilidade.' },
   { name: 'REDE', label: 'Rede', monthlyPrice: 599, description: 'Governança de unidades e operação padronizada em escala.' },
   { name: 'RETIFICA_PRO', label: 'Modo Retífica Pro', monthlyPrice: 499, description: 'Operação completa de oficina com fluxo técnico de retífica de motores.' },
-  { name: 'RETIFICA_REDE', label: 'Modo Retífica Rede', monthlyPrice: 899, description: 'Retífica de motores com multiunidade, padronizacao e gestão em rede.' },
+  { name: 'RETIFICA_REDE', label: 'Modo Retífica Rede', monthlyPrice: 899, description: 'Retífica de motores com multiunidade, padronização e gestão em rede.' },
 ];
 
 const cycleOptions: Array<{ value: BillingCycle; label: string; months: number; discountRate: number; badge?: string }> = [
@@ -81,7 +81,7 @@ export function PlansCheckoutPage() {
         const checkoutUrl = response.data?.checkoutUrl;
 
         if (!checkoutUrl) {
-          throw new Error('Checkout indisponivel para este plano');
+          throw new Error('Checkout indisponível para este plano');
         }
 
         window.location.href = checkoutUrl;
@@ -102,7 +102,7 @@ export function PlansCheckoutPage() {
 
       const checkoutUrl = response.data?.checkoutUrl;
       if (!checkoutUrl) {
-        throw new Error('Checkout indisponivel para este plano');
+        throw new Error('Checkout indisponível para este plano');
       }
 
       window.location.href = checkoutUrl;
@@ -123,8 +123,6 @@ export function PlansCheckoutPage() {
   return (
     <div className="min-h-screen bg-app text-surface-50">
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-accent-soft " />
-        <div className="absolute bottom-[-8rem] right-[-8rem] w-[28rem] h-[28rem] rounded-full bg-accent-soft " />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-10">
@@ -205,7 +203,7 @@ export function PlansCheckoutPage() {
 
             {!isAuthenticated && (
               <div className="mt-7 grid gap-4">
-                <p className="text-xs uppercase tracking-wide text-surface-500">3. Dados para ativacao</p>
+                <p className="text-xs uppercase tracking-wide text-surface-500">3. Dados para ativação</p>
                 <label className="text-sm text-surface-500">
                   Nome da oficina
                   <input
@@ -303,7 +301,7 @@ export function PlansCheckoutPage() {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-accent-ink mt-0.5 flex-shrink-0" />
-                Convite de ativacao do MASTER enviado apos confirmação
+                Convite de ativação do MASTER enviado após confirmação
               </li>
             </ul>
           </div>

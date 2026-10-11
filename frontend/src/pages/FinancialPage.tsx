@@ -310,7 +310,6 @@ export function FinancialPage() {
               ))}
             </div>
           </div>
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary-500/5 rounded-full blur-[80px]" />
         </motion.div>
 
         <div className="grid grid-cols-1 gap-6">

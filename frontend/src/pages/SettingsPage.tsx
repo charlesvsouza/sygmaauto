@@ -971,7 +971,6 @@ export function SettingsPage() {
                 ))}
               </div>
             </div>
-            <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
           </motion.div>
         </div>
       </div>

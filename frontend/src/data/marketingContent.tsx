@@ -86,7 +86,7 @@ export const plans: Plan[] = [
     label: 'Rede',
     price: 'R$ 599',
     period: '/mes',
-    description: 'Para grupos de oficinas com governança, escala e padronizacao entre unidades.',
+    description: 'Para grupos de oficinas com governança, escala e padronização entre unidades.',
     highlights: ['Tudo do PRO', 'Multiunidade e consolidado', 'Usuários ilimitados', 'Prioridade no suporte'],
   },
 ];
@@ -106,7 +106,7 @@ export const retificaPlans: RetificaPlan[] = [
     price: 'R$ 899',
     period: '/mes',
     description: 'Para grupos com várias unidades, governança técnica e operação integrada de retífica em rede.',
-    highlights: ['Tudo do Rede', 'Retífica multiunidade', 'Padronizacao de operação', 'Gestão centralizada'],
+    highlights: ['Tudo do Rede', 'Retífica multiunidade', 'Padronização de operação', 'Gestão centralizada'],
   },
 ];
 
@@ -117,7 +117,7 @@ export const planCapabilities: PlanCapability[] = [
   { feature: 'Financeiro e Fluxo de Caixa', start: 'Sim', pro: 'Sim', rede: 'Sim' },
   { feature: 'Estoque e Reserva de Peças', start: 'Sim', pro: 'Sim', rede: 'Sim' },
   { feature: 'Checklist Entrada/Saida', start: 'Não', pro: 'Sim', rede: 'Sim' },
-  { feature: 'Kanban Patio + Recepcao TV', start: 'Não', pro: 'Não', rede: 'Sim' },
+  { feature: 'Kanban Pátio + Recepção TV', start: 'Não', pro: 'Não', rede: 'Sim' },
   { feature: 'DRE, KPI e Relatórios', start: 'Não', pro: 'Não', rede: 'Sim' },
   { feature: 'Comissões e Ranking técnico', start: 'Não', pro: 'Não', rede: 'Sim' },
   { feature: 'Multiunidade', start: 'Não', pro: 'Não', rede: 'Sim' },

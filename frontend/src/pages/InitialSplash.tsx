@@ -46,9 +46,6 @@ export function InitialSplash() {
     >
       {/* Glow ambiente — mesmo da LandingPage */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[-10rem] left-1/2 -translate-x-1/2 w-[60rem] h-[30rem] rounded-full bg-accent-soft " />
-        <div className="absolute top-[30%] left-[-8rem] w-[30rem] h-[30rem] rounded-full bg-accent-soft " />
-        <div className="absolute top-[60%] right-[-6rem] w-[26rem] h-[26rem] rounded-full bg-accent-soft " />
       </div>
 
       <motion.div

@@ -136,7 +136,7 @@ const RETIFICA_FLOW_PHASES = [
   { key: 'ANALISE', label: 'Metrologia', statuses: ['METROLOGIA'] },
   { key: 'ORCAMENTO', label: 'Orçamento', statuses: ['ORCAMENTO_RETIFICA', 'AGUARDANDO_APROVACAO_RETIFICA'] },
   { key: 'EXECUCAO', label: 'Retífica', statuses: ['APROVADO', 'EM_RETIFICA', 'MONTAGEM', 'TESTE_FINAL'] },
-  { key: 'FINALIZACAO', label: 'Finalizacao', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
+  { key: 'FINALIZACAO', label: 'Finalização', statuses: ['PRONTO_ENTREGA', 'FATURADO'] },
   { key: 'ENTREGA', label: 'Entrega', statuses: ['ENTREGUE'] },
 ];
 
@@ -670,7 +670,7 @@ export function ServiceOrdersPage() {
           <th style="width:80px">Cod. Original</th>
           <th>Peça / Descrição</th>
           <th style="width:50px;text-align:center">Qtd</th>
-          <th style="width:80px;text-align:right">Unitario</th>
+          <th style="width:80px;text-align:right">Unitário</th>
           <th style="width:90px;text-align:right">Total</th>
           <th style="width:100px">Fornecedor</th>
           <th style="width:70px">N. OS</th>
@@ -2052,7 +2052,7 @@ export function ServiceOrdersPage() {
                         ? 'bg-accent text-white shadow-md'
                         : 'bg-surface-900 text-surface-300 hover:bg-surface-800'
                     )}
-                    title="IA Assistiva - sugestoes por sintoma"
+                    title="IA Assistiva - sugestões por sintoma"
                   >
                     <Sparkles size={13} />
                     IA
@@ -2075,7 +2075,7 @@ export function ServiceOrdersPage() {
                     <div className="p-4 space-y-3">
                       <p className="text-[11px] font-bold text-surface-300 flex items-center gap-1">
                         <Sparkles size={11} />
-                        IA Assistiva - descreva o problema e receba sugestoes
+                        IA Assistiva - descreva o problema e receba sugestões
                       </p>
                       <div className="flex gap-2">
                         <input
@@ -2132,7 +2132,7 @@ export function ServiceOrdersPage() {
                         </div>
                       )}
                       {!aiLoading && aiSuggestions.length === 0 && aiDescription.trim() && (
-                        <p className="text-[11px] text-surface-600 text-center py-1">Nenhuma sugestao encontrada. Tente descrever com mais detalhes.</p>
+                        <p className="text-[11px] text-surface-600 text-center py-1">Nenhuma sugestão encontrada. Tente descrever com mais detalhes.</p>
                       )}
                     </div>
                   </motion.div>

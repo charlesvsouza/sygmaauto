@@ -31,8 +31,8 @@ export function RetificaMotoresPage() {
             <p className="text-xs font-bold uppercase tracking-wide text-amber-600">Modo especializado</p>
             <h1 className="mt-2 text-3xl font-bold text-surface-50">Retífica de Motores</h1>
             <p className="mt-3 max-w-3xl text-sm text-surface-300">
-              Esta área concentra a operação hibrida de oficina + retífica. O tenant pode receber um veículo com diagnóstico de motor
-              ou receber apenas o motor avulso, mantendo o mesmo trilho técnico de desmontagem, medicao, aprovação e entrega.
+              Esta área concentra a operação híbrida de oficina + retífica. O tenant pode receber um veículo com diagnóstico de motor
+              ou receber apenas o motor avulso, mantendo o mesmo trilho técnico de desmontagem, medição, aprovação e entrega.
             </p>
           </div>
           <div className="rounded-lg bg-amber-500/10 p-3 text-amber-700">
@@ -81,7 +81,7 @@ export function RetificaMotoresPage() {
             </div>
             <ul className="mt-4 space-y-2 text-sm text-surface-300">
               <li>Cadastro técnico do motor e origem da entrada</li>
-              <li>O.S. com tipo especifico de retífica</li>
+              <li>O.S. com tipo específico de retífica</li>
               <li>Checklist de metrologia e montagem</li>
               <li>Kanban técnico e laudo final</li>
             </ul>
@@ -91,12 +91,12 @@ export function RetificaMotoresPage() {
             <div className="rounded-lg border border-line bg-surface-900 p-4 shadow-sm">
               <Wrench className="h-5 w-5 text-amber-600" />
               <p className="mt-3 text-sm font-bold text-surface-50">Desmontagem</p>
-              <p className="mt-1 text-xs text-surface-400">Abertura técnica do motor e inventario interno.</p>
+              <p className="mt-1 text-xs text-surface-400">Abertura técnica do motor e inventário interno.</p>
             </div>
             <div className="rounded-lg border border-line bg-surface-900 p-4 shadow-sm">
               <Gauge className="h-5 w-5 text-amber-600" />
               <p className="mt-3 text-sm font-bold text-surface-50">Metrologia</p>
-              <p className="mt-1 text-xs text-surface-400">Medicoes, tolerancias e decisao técnica do reparo.</p>
+              <p className="mt-1 text-xs text-surface-400">Medições, tolerâncias e decisão técnica do reparo.</p>
             </div>
             <div className="rounded-lg border border-line bg-surface-900 p-4 shadow-sm">
               <Car className="h-5 w-5 text-amber-600" />

@@ -642,7 +642,6 @@ export function DashboardPage() {
                 Ver Ordens
               </button>
             </div>
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl" />
           </motion.div>
 
           {/* Alertas */}

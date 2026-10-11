@@ -241,7 +241,7 @@ export function ImportNFModal({ onClose, onSuccess }: ImportNFModalProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="fld-importnfmodal-4" className="block text-sm font-semibold text-muted">Data Emissao</label>
+                  <label htmlFor="fld-importnfmodal-4" className="block text-sm font-semibold text-muted">Data Emissão</label>
                   <input id="fld-importnfmodal-4"
                     value={data.invoice?.issueDate || ''}
                     onChange={(e) => updateInvoiceField('issueDate', e.target.value)}

@@ -28,7 +28,7 @@ const maturityItems = [
   {
     title: 'Governança documental',
     value: '50%',
-    detail: 'Politicas, procedimento do titular, plano de incidentes e registro de governança já foram estruturados.',
+    detail: 'Políticas, procedimento do titular, plano de incidentes e registro de governança já foram estruturados.',
   },
 ];
 
@@ -36,7 +36,7 @@ const pillars = [
   {
     icon: Lock,
     title: 'Controles implementados',
-    description: 'Autenticacao por JWT, perfis de acesso, segregação logica multi-tenant, hashing de senha e trilhas de auditoria em eventos relevantes.',
+    description: 'Autenticação por JWT, perfis de acesso, segregação lógica multi-tenant, hashing de senha e trilhas de auditoria em eventos relevantes.',
   },
   {
     icon: UserRoundCog,
@@ -59,12 +59,12 @@ const publicDocuments = [
   {
     title: 'Política de Privacidade',
     href: '/privacidade',
-    description: 'Versao pública com informações gerais sobre coleta, uso e exercicio de direitos.',
+    description: 'Versão pública com informações gerais sobre coleta, uso e exercicio de direitos.',
   },
   {
     title: 'Canal de atendimento ao titular',
     href: `mailto:${companyContacts.support}`,
-    description: 'Solicitacoes de acesso, correção, exportação e eliminação devem ser iniciadas por esse canal operacional.',
+    description: 'Solicitações de acesso, correção, exportação e eliminação devem ser iniciadas por esse canal operacional.',
   },
   {
     title: 'Central de suporte',
@@ -77,7 +77,7 @@ const nextSteps = [
   'Revisão jurídica dos textos antes de consolidacao definitiva no site institucional.',
   'Formalizacao nominal do encarregado/DPO e da matriz de responsabilidades.',
   'Automacao de retenção e descarte por categoria de dado com cronograma operacional.',
-  'Expansao continua da trilha de auditoria para dominios administrativos criticos.',
+  'Expansao continua da trilha de auditoria para dominios administrativos críticos.',
 ];
 
 export function CompliancePage() {
@@ -92,27 +92,26 @@ export function CompliancePage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="relative rounded-xl border border-accent/30 bg-[linear-gradient(135deg,rgba(255,123,47,0.12),rgba(40,85,214,0.08))] p-8 md:p-10 overflow-hidden"
+          className="relative rounded-xl border border-accent/30 bg-accent-soft p-8 md:p-10 overflow-hidden"
         >
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-accent-soft blur-3xl" />
           <div className="max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-[12px] font-bold uppercase tracking-wide text-accent-ink">
               <ShieldCheck size={14} />
-              Publicacao provisoria de compliance
+              Publicação provisória de compliance
             </div>
             <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-none text-surface-50">
               Central de Privacidade,
               <span className="block text-accent-ink">LGPD e Compliance</span>
             </h1>
             <p className="mt-5 max-w-3xl text-sm md:text-base leading-relaxed text-surface-500">
-              Esta página consolida, de forma pública e provisoria, o status real dos controles de privacidade e segurança do SigmaAuto.
+              Esta página consolida, de forma pública e provisória, o status real dos controles de privacidade e segurança do SigmaAuto.
               O objetivo aqui e transparencia operacional: mostrar o que ja existe, o que esta em amadurecimento e o que ainda depende de revisao juridica e formalizacao adicional.
             </p>
 
             <div className="mt-6 rounded-lg border border-line bg-panel p-5 text-sm text-surface-500 leading-relaxed">
               <p className="font-bold text-surface-50">Importante</p>
               <p className="mt-2">
-                Este conteudo não representa certificação, parecer jurídico ou declaração de conformidade plena. Trata-se de uma central de governança e transparência em revisão continua.
+                Este conteúdo não representa certificação, parecer jurídico ou declaração de conformidade plena. Trata-se de uma central de governança e transparência em revisão continua.
               </p>
             </div>
           </div>
@@ -145,7 +144,7 @@ export function CompliancePage() {
             <h2 className="mt-2 text-3xl md:text-4xl font-bold text-surface-50">O que já esta operacionalizado</h2>
           </div>
           <p className="max-w-2xl text-sm text-surface-500 leading-relaxed">
-            A página foi desenhada para publicar somente informações verificaveis no produto, na infraestrutura e na governança documental já existente.
+            A página foi desenhada para publicar somente informações verificáveis no produto, na infraestrutura e na governança documental já existente.
           </p>
         </div>
 
@@ -223,11 +222,11 @@ export function CompliancePage() {
               <h2 className="text-2xl font-bold text-surface-50">Contato de privacidade</h2>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-surface-500">
-              Até a nomeacao formal de encarregado, o canal operacional provisório para temas de privacidade, governança documental e solicitacoes iniciais do titular e o e-mail abaixo.
+              Até a nomeação formal de encarregado, o canal operacional provisório para temas de privacidade, governança documental e solicitações iniciais do titular e o e-mail abaixo.
             </p>
             <a
               href={`mailto:${companyContacts.support}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg border border-line bg-ink/5 px-4 py-3 text-sm font-bold text-white hover:border-accent/30 hover:bg-accent-soft transition-all"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg border border-line bg-ink/5 px-4 py-3 text-sm font-bold text-surface-50 hover:border-accent/30 hover:bg-accent-soft transition-all"
             >
               <LifeBuoy size={16} />
               {companyContacts.support}
@@ -235,7 +234,7 @@ export function CompliancePage() {
             <div className="mt-6 rounded-lg border border-line bg-panel p-5">
               <p className="text-xs uppercase tracking-wide text-surface-500 font-bold">Escopo atual</p>
               <p className="mt-3 text-sm text-surface-500 leading-relaxed">
-                Recebimento inicial de pedidos de acesso, correção, exportação, eliminação e duvidas sobre tratamento de dados no contexto da plataforma.
+                Recebimento inicial de pedidos de acesso, correção, exportação, eliminação e dúvidas sobre tratamento de dados no contexto da plataforma.
               </p>
             </div>
           </motion.aside>
@@ -243,7 +242,7 @@ export function CompliancePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <div className="rounded-xl border border-line bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 md:p-10">
+        <div className="rounded-xl border border-line bg-accent-soft p-8 md:p-10">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-wide text-accent-ink font-bold">Proximas consolidacoes</p>
