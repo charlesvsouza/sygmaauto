@@ -719,6 +719,12 @@ export class ServiceOrdersService {
       this.commissions.generateForOrder(tenantId, id).catch(() => {});
     }
 
+    // Reabrir uma O.S. entregue desfaz o registro de entrega: será refeito ao entregar de novo.
+    if (currentStatus === 'ENTREGUE' && newStatus !== 'ENTREGUE') {
+      updateData.deliveredAt = null;
+      updateData.deliveredTo = null;
+    }
+
     if (newStatus === 'ENTREGUE') {
       // A entrega não depende de quitação: registra quando e quem recebeu o veículo.
       const delivery = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
@@ -758,6 +764,16 @@ export class ServiceOrdersService {
     return updated;
   }
 
+  // O.S. encerrada (entregue, faturada, cancelada ou reprovada) não aceita mudança nos itens:
+  // para ajustar, é preciso mudar o status antes.
+  private assertItemsEditable(status: string) {
+    if (['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'].includes(status)) {
+      throw new BadRequestException(
+        `A O.S. está com status ${status} e não pode ser alterada. Mude o status para ajustar os itens.`,
+      );
+    }
+  }
+
   // Valida data/recebedor da entrega. Sem data informada, vale o momento atual.
   private resolveDelivery(order: { createdAt: Date }, rawDate?: string, rawName?: string) {
     const deliveredTo = (rawName ?? '').trim();
@@ -782,6 +798,11 @@ export class ServiceOrdersService {
     const order = await this.findById(tenantId, id);
     if (order.status !== 'ENTREGUE') {
       throw new BadRequestException('Só é possível registrar a entrega de uma O.S. com status Entregue');
+    }
+    if (order.deliveredAt && order.deliveredTo) {
+      throw new BadRequestException(
+        'A entrega já está registrada e a O.S. está travada. Para corrigir, mude o status da O.S. e registre a entrega novamente.',
+      );
     }
     const { deliveredAt, deliveredTo } = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
     const updated = await this.prisma.serviceOrder.update({
@@ -1001,10 +1022,7 @@ export class ServiceOrdersService {
   async addItem(tenantId: string, orderId: string, dto: CreateOrUpdateItemDto, userId: string) {
     const order = await this.findById(tenantId, orderId);
 
-    const CLOSED = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
-    if (CLOSED.includes(order.status)) {
-      throw new BadRequestException(`Não é possível adicionar itens a uma OS com status ${order.status}`);
-    }
+    this.assertItemsEditable(order.status);
 
     if (dto.type === 'part') {
       await this.ensureStockPrivilege(tenantId, userId);
@@ -1108,6 +1126,8 @@ export class ServiceOrdersService {
       throw new NotFoundException('Item não encontrado na ordem');
     }
 
+    this.assertItemsEditable(order.status);
+
     if (item.type === 'part') {
       await this.ensureStockPrivilege(tenantId, userId);
     }
@@ -1143,6 +1163,8 @@ export class ServiceOrdersService {
     if (!oldItem || oldItem.serviceOrderId !== orderId) {
       throw new NotFoundException('Item não encontrado na ordem');
     }
+
+    this.assertItemsEditable(order.status);
 
     if (oldItem.type === 'part') {
       await this.ensureStockPrivilege(tenantId, userId);

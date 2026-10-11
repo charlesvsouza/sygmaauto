@@ -1128,25 +1128,37 @@ export function ServiceOrdersPage() {
               </div>
             </div>
 
-            {/* Banner: dados da entrega (O.S. entregue) */}
-            {selectedOrder.status === 'ENTREGUE' && (
-              <div className="mx-6 mt-4 p-4 bg-accent-soft border border-accent/40 rounded-lg flex items-center justify-between gap-4">
-                <div className="text-sm font-semibold text-surface-100">
-                  <span className="font-bold">Entrega:</span>{' '}
-                  {selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'data não registrada'}
-                  {' · '}
-                  <span className="font-bold">Recebido por:</span> {selectedOrder.deliveredTo || 'não registrado'}
+            {/* Banner: dados da entrega (O.S. entregue = fluxo encerrado e travado) */}
+            {selectedOrder.status === 'ENTREGUE' && (() => {
+              const registered = Boolean(selectedOrder.deliveredAt && selectedOrder.deliveredTo);
+              const pending = selectedOrder.paidAt ? 0 : Number(selectedOrder.totalCost || 0);
+              return (
+                <div className="mx-6 mt-4 p-4 bg-accent-soft border border-accent/40 rounded-lg flex items-center justify-between gap-4">
+                  <div className="text-sm font-semibold text-surface-100 space-y-1">
+                    <p>
+                      <span className="font-bold">Entrega:</span>{' '}
+                      {selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'data não registrada'}
+                      {' · '}
+                      <span className="font-bold">Recebido por:</span> {selectedOrder.deliveredTo || 'não registrado'}
+                    </p>
+                    {pending > 0 && <p className="text-amber-700 font-bold">Saldo pendente: R$ {fmtBR(pending)}</p>}
+                    {registered && (
+                      <p className="text-[12px] font-medium text-surface-500">
+                        O.S. encerrada e travada para edição. Para alterar, mude o status e ajuste novamente.
+                      </p>
+                    )}
+                  </div>
+                  {!registered && ['MASTER', 'ADMIN'].includes(userRole) && (
+                    <button type="button"
+                      onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
+                      className="shrink-0 min-h-[40px] px-4 py-2 bg-accent text-white rounded-lg text-sm font-semibold hover:bg-accent-hover transition-colors"
+                    >
+                      Registrar entrega
+                    </button>
+                  )}
                 </div>
-                {['MASTER', 'ADMIN'].includes(userRole) && (
-                  <button type="button"
-                    onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
-                    className="shrink-0 min-h-[40px] px-4 py-2 bg-accent text-white rounded-lg text-sm font-semibold hover:bg-accent-hover transition-colors"
-                  >
-                    {selectedOrder.deliveredAt && selectedOrder.deliveredTo ? 'Corrigir entrega' : 'Registrar entrega'}
-                  </button>
-                )}
-              </div>
-            )}
+              );
+            })()}
 
             {/* Banner: OS reprovada + opção de diagnostico */}
             {isReprovado && showDiagBanner && canCreateDiagnostic && (
@@ -1634,12 +1646,12 @@ export function ServiceOrdersPage() {
                       <div className="rounded-lg border border-surface-800 bg-surface-950/70 p-3 text-[11px] font-bold text-surface-300 space-y-1">
                         <p>Entregue em: <span className="text-surface-100">{selectedOrder.deliveredAt ? new Date(selectedOrder.deliveredAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'não registrado'}</span></p>
                         <p>Recebido por: <span className="text-surface-100">{selectedOrder.deliveredTo || 'não registrado'}</span></p>
-                        {['MASTER', 'ADMIN'].includes(userRole) && (
+                        {!(selectedOrder.deliveredTo && selectedOrder.deliveredAt) && ['MASTER', 'ADMIN'].includes(userRole) && (
                           <button type="button"
                             onClick={() => setDeliveryModal({ mode: 'edit', override: false })}
                             className="mt-1 text-accent-ink hover:text-accent-hover underline"
                           >
-                            {selectedOrder.deliveredTo && selectedOrder.deliveredAt ? 'Corrigir dados da entrega' : 'Registrar dados da entrega'}
+                            Registrar dados da entrega
                           </button>
                         )}
                       </div>
