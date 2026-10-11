@@ -114,7 +114,9 @@ body {
 }
 
 #root {
-  overflow-x: hidden;
+  /* clip (não hidden): hidden transforma o #root no contêiner de rolagem e a janela deixa de rolar
+     (cabeçalho público sem fundo ao rolar, sticky e scroll-to-top quebrados). */
+  overflow-x: clip;
 }
 
 button,

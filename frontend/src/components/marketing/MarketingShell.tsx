@@ -49,7 +49,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
 
   return (
     <div
-      className="min-h-screen bg-[#060b13] text-[#f1f5f9] overflow-x-hidden"
+      className="min-h-screen bg-[#060b13] text-[#f1f5f9] overflow-x-clip"
       style={{ fontFamily: '"Space Grotesk", "Manrope", sans-serif' }}
     >
       <div className="pointer-events-none fixed inset-0 z-0">

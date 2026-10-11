@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Loader2, Ruler, CheckCircle2, ChevronDown, ChevronRight, Wrench, Package, AlertTriangle, ChevronLeft, FlaskConical } from 'lucide-react';
 
-import { NumberInput } from './ui';
+import { NumberInput, usePrompt } from './ui';
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
 /** Medidas de um cilindro */
@@ -333,6 +333,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
   const [saved,   setSaved]   = useState(false);
 
   // Controle de steps
+  const prompt = usePrompt();
   const [step, setStep] = useState<1 | 2>(1);
   const [diagItems, setDiagItems] = useState<SuggestedItem[]>([]);
 
@@ -366,8 +367,14 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
   const toggleDiagItem = (id: string) =>
     setDiagItems((p) => p.map((it) => it.id === id ? { ...it, selected: !it.selected } : it));
 
-  const addCustomItem = (type: 'service' | 'part') => {
-    const desc = window.prompt(type === 'service' ? 'Descrição do serviço:' : 'Descrição da peça:');
+  const addCustomItem = async (type: 'service' | 'part') => {
+    const desc = await prompt({
+      title: type === 'service' ? 'Adicionar serviço' : 'Adicionar peça',
+      message: 'Entra na lista do diagnóstico como item manual.',
+      inputLabel: type === 'service' ? 'Descrição do serviço' : 'Descrição da peça',
+      confirmLabel: 'Adicionar',
+      required: true,
+    });
     if (!desc?.trim()) return;
     setDiagItems((p) => [
       ...p,

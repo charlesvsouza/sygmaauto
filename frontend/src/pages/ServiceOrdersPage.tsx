@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 import { cn } from '../lib/utils';
-import { useToast, useConfirm, StatusChip, STATUS_CHIP_CLASS, NumberInput } from '../components/ui';
+import { useToast, useConfirm, usePrompt, StatusChip, STATUS_CHIP_CLASS, NumberInput } from '../components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
@@ -153,6 +153,7 @@ function itemDiscountPercent(item: any): number {
 export function ServiceOrdersPage() {
   const toast = useToast();
   const confirm = useConfirm();
+  const prompt = usePrompt();
   const { user, tenant } = useAuthStore();
   const navigate = useNavigate();
   const userRole = String(user?.role ?? '').toUpperCase();
@@ -716,11 +717,12 @@ export function ServiceOrdersPage() {
   // Desfaz a aprovação para o cliente aprovar de novo (novo link/QR code).
   const revokeApproval = async () => {
     if (!selectedOrder) return;
-    const reason = window.prompt(
-      'Revogar a aprovação desta O.S.?\n\nEla volta a ser orçamento aguardando aprovação, com o mesmo número e um link novo para o cliente. '
-      + 'Peças baixadas na aprovação voltam ao estoque.\n\nMotivo (opcional):',
-      '',
-    );
+    const reason = await prompt({
+      title: 'Revogar aprovação',
+      message: 'A O.S. volta a ser orçamento aguardando aprovação, com o mesmo número e um link novo para o cliente. Peças baixadas na aprovação voltam ao estoque.',
+      inputLabel: 'Motivo (opcional)',
+      confirmLabel: 'Revogar aprovação',
+    });
     if (reason === null) return;
     try {
       const res = await serviceOrdersApi.revokeApproval(selectedOrder.id, reason.trim() || undefined);
