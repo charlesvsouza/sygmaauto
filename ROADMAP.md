@@ -91,6 +91,7 @@
 - [x] CRM de Clientes e Veículos
 - [x] Catálogo de Serviços com TMO e VH
 - [x] Assinaturas com Mercado Pago Checkout Pro
+- [x] Cobrança do cliente pelo Asaas da oficina (PIX, boleto, cartão) com baixa automática da O.S. por webhook
 - [x] Painel Super Admin
 - [x] Deploy Vercel + Railway + GitHub Actions CI/CD
 - [x] Domínio sigmaauto.com.br

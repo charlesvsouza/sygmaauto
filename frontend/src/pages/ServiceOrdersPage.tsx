@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
+import { asaasApi, serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import { orderCode, orderShortCode } from '../lib/orderCode';
 import { availableDocuments, type OrderDocumentKind } from '../lib/orderDocuments';
@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { ImportOSModal } from '../components/ImportOSModal';
 import { DeliveryModal } from '../components/DeliveryModal';
+import { AsaasChargeModal } from '../components/AsaasChargeModal';
 import { CatalogRegisterModal } from '../components/CatalogRegisterModal';
 import { ChecklistModal } from '../components/ChecklistModal';
 import { MetrologiaModal, type MetrologiaData, type SuggestedItem } from '../components/MetrologiaModal';
@@ -226,6 +227,11 @@ export function ServiceOrdersPage() {
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [registerItem, setRegisterItem] = useState<any>(null);
+  const [asaasConnected, setAsaasConnected] = useState(false);
+  const [showAsaasCharge, setShowAsaasCharge] = useState(false);
+  useEffect(() => {
+    asaasApi.status().then((r) => setAsaasConnected(Boolean(r.data?.connected))).catch(() => setAsaasConnected(false));
+  }, []);
   const [deliveryModal, setDeliveryModal] = useState<{ mode: 'confirm' | 'edit'; override: boolean } | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importTargetOrderId, setImportTargetOrderId] = useState<string | null>(null);
@@ -899,6 +905,10 @@ export function ServiceOrdersPage() {
   const nextStatuses = selectedOrder
     ? (activeStatusFlow[selectedOrder.status] ?? []).filter((status) => canMoveToStatus(userRole, status))
     : [];
+
+  const canChargeAsaas = asaasConnected
+    && ['APROVADO', 'AGUARDANDO_PECAS', 'EM_EXECUCAO', 'PRONTO_ENTREGA'].includes(selectedOrder?.status)
+    && canMoveToStatus(userRole, 'FATURADO');
 
   // Próxima ação da O.S.: primeira transição positiva do fluxo, destacada no topo da tela.
   const primaryNext = nextStatuses.find((status) => status !== 'CANCELADO' && status !== 'REPROVADO');
@@ -1690,6 +1700,14 @@ export function ServiceOrdersPage() {
                           </button>
                         )}
                       </div>
+                    )}
+                    {canChargeAsaas && (
+                      <button type="button"
+                        onClick={() => setShowAsaasCharge(true)}
+                        className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left border border-accent/40 bg-accent-soft text-accent-ink hover:bg-accent/10"
+                      >
+                        {selectedOrder.asaasPaymentId ? 'Ver cobrança do Asaas' : 'Cobrar pelo Asaas (PIX, boleto ou cartão)'}
+                      </button>
                     )}
                     {['MASTER', 'ADMIN'].includes(userRole) && selectedOrder.status === 'PRONTO_ENTREGA' && (
                       <button type="button"
@@ -2560,6 +2578,20 @@ export function ServiceOrdersPage() {
           </div>
         )}
       </AnimatePresence>
+      {showAsaasCharge && selectedOrder && (
+        <AsaasChargeModal
+          orderId={selectedOrder.id}
+          orderLabel={orderCode(selectedOrder)}
+          total={Number(selectedOrder.totalCost || 0)}
+          onClose={() => setShowAsaasCharge(false)}
+          onChanged={async () => {
+            const fresh = await serviceOrdersApi.getById(selectedOrder.id);
+            setSelectedOrder(fresh.data);
+            loadOrders();
+          }}
+        />
+      )}
+
       {deliveryModal && selectedOrder && (
         <DeliveryModal
           mode={deliveryModal.mode}

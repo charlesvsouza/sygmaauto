@@ -25,6 +25,7 @@ import { NpsModule } from './nps/nps.module';
 import { AiModule } from './ai/ai.module';
 import { PdfModule } from './pdf/pdf.module';
 import { ComplianceModule } from './compliance/compliance.module';
+import { AsaasModule } from './asaas/asaas.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 import { DataBackfillsService } from './common/data-backfills.service';
@@ -66,6 +67,7 @@ import { DataBackfillsService } from './common/data-backfills.service';
     AiModule,
     PdfModule,
     ComplianceModule,
+    AsaasModule,
   ],
   providers: [TenantMiddleware, DataBackfillsService],
 })

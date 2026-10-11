@@ -30,6 +30,7 @@ import {
 } from '../lib/masks';
 import { getPlanLabel, getPlanRank } from '../lib/planAccess';
 import { DocumentSettingsForm } from '../components/DocumentSettingsForm';
+import { AsaasSettingsForm } from '../components/AsaasSettingsForm';
 
 type TenantForm = {
   taxId: string;
@@ -832,6 +833,10 @@ export function SettingsPage() {
             <div className="border-t border-line" />
 
             <DocumentSettingsForm canEdit={canConfigureDiscounts} />
+
+            <div className="border-t border-line" />
+
+            <AsaasSettingsForm canEdit={canConfigureDiscounts} />
           </motion.div>
 
           {/* Equipe */}

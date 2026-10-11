@@ -1,6 +1,6 @@
 # Manual do Usuário — SigmaAuto
 
-**Versão:** 3.1 — Outubro/2026  
+**Versão:** 3.2 — Outubro/2026  
 **Acesso:** [sigmaauto.com.br](https://sigmaauto.com.br)  
 **Suporte:** suporte@sigmaauto.com.br
 
@@ -366,6 +366,22 @@ Use **Importar de orçamento PDF** na tela de Ordens de Serviço para trazer um 
 4. Confirme: a O.S. é criada com o mesmo conteúdo
 
 > Os itens importados podem ser vinculados ao catálogo e ao estoque depois, direto na O.S.: edite o item e escolha a peça ou o serviço cadastrado. A leitura usa IA e **pede conferência**: nunca confirme sem revisar valores e quantidades.
+
+### 4.15 Cobrar pelo Asaas (PIX, boleto ou cartão)
+
+> Disponível quando o **Master** ou o **Admin** conectou o Asaas em **Configurações → Pagamentos pelo Asaas** (seção 24.7).
+
+Com a O.S. aprovada, em execução ou pronta para entrega, o botão **Cobrar pelo Asaas** aparece ao lado das ações de etapa (para perfis que podem faturar):
+
+1. Clique em **Cobrar pelo Asaas**
+2. Escolha a forma de pagamento: **PIX**, **Boleto**, **Cartão de crédito** ou **O cliente escolhe**, e o **vencimento** (hoje ou futuro)
+3. Clique em **Emitir cobrança**: o valor é o total da O.S. e o cliente precisa ter **CPF ou CNPJ** no cadastro
+4. Envie ao cliente o **link de pagamento** (copie ou abra) ou mostre o **QR code do PIX**
+5. Acompanhe o status no mesmo botão (**Ver cobrança do Asaas**): *Aguardando pagamento*, *Pago*, *Vencida*
+
+Quando o Asaas confirma o pagamento, o sistema registra no histórico da O.S. e, se ela estiver em **Pronto p/ Entrega**, passa para **Faturado** sozinho, lançando **uma única receita** no Fluxo de Caixa, como no **Registrar Pagamento** manual. Se a O.S. ainda não estiver pronta, o pagamento fica registrado e você fatura normalmente depois.
+
+Para trocar a forma de pagamento ou o vencimento, use **Cancelar cobrança** e emita outra. Cobrança já paga não pode ser cancelada por aqui.
 
 ---
 
@@ -830,6 +846,18 @@ A aba **Assinatura** mostra o plano atual:
 |---|---|
 | **Upgrade** | Imediato — escolha o plano e pague pelo checkout (Mercado Pago) |
 | **Downgrade** | Após o vencimento do plano atual |
+
+### 24.7 Pagamentos pelo Asaas *(Master e Admin)*
+
+Em **Configurações**, na seção **Pagamentos pelo Asaas**, conecte a conta Asaas da oficina para cobrar clientes por PIX, boleto ou cartão (seção 4.15):
+
+1. No Asaas, copie a **Chave de API** (Integrações → Chave de API)
+2. No SigmaAuto, cole a chave, escolha **Produção** ou **Testes (sandbox)** e clique em **Conectar Asaas**
+3. O sistema valida a chave e tenta cadastrar sozinho o aviso de pagamento (**webhook**) no Asaas. Se não conseguir, a tela mostra a **URL** e o **token** para colar em Integrações → Webhooks, marcando os eventos de cobrança paga e vencida
+
+A chave é guardada **cifrada** no servidor e não aparece de novo. Para trocar de conta, use **Desconectar** e conecte novamente. As cobranças já emitidas continuam no Asaas.
+
+> Use primeiro o ambiente de testes (sandbox) para conferir o fluxo antes de cobrar clientes de verdade.
 
 ---
 

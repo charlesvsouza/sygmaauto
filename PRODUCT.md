@@ -30,12 +30,13 @@ Sucesso: a oficina opera o dia inteiro dentro do sistema; o dono abre o Painel e
 
 ## Positioning
 
-Quatro apostas que um sistema genérico de gestão não copiaria com verdade:
+Cinco apostas que um sistema genérico de gestão não copiaria com verdade:
 
 1. **Ciclo do atendimento fechado.** Vistoria com checklist e acessórios, orçamento aprovado pelo cliente por link (ou no balcão), execução, faturamento, entrega com data e recebedor registrados e O.S. travada depois, e documentos impressos coerentes (entrada, orçamento, O.S. via cliente e via oficina, termo de entrega com ou sem garantia) com a mesma regra de receita no financeiro.
 2. **Retífica de motores como linha própria.** Fluxo de status específico, metrologia por cilindro e laudo técnico.
-3. **WhatsApp oficial e IA.** Mensagens automáticas por evento da O.S. pela Meta Cloud API, importação de orçamento em PDF lido por IA (sempre com conferência humana) e orçamento assistido por IA (plano REDE).
-4. **Preço e simplicidade para quem não é técnico.** START R$ 149, PRO R$ 299, REDE sob consulta, com 14 dias de trial.
+3. **Cobrança direto da O.S. pelo Asaas da oficina.** PIX, boleto ou cartão emitidos da própria O.S.; o pagamento confirmado fatura a O.S. sozinho, pela mesma regra única de receita.
+4. **WhatsApp oficial e IA.** Mensagens automáticas por evento da O.S. pela Meta Cloud API, importação de orçamento em PDF lido por IA (sempre com conferência humana) e orçamento assistido por IA (plano REDE).
+5. **Preço e simplicidade para quem não é técnico.** START R$ 149, PRO R$ 299, REDE sob consulta, com 14 dias de trial.
 
 ## Operating Context
 
@@ -55,6 +56,7 @@ Quatro apostas que um sistema genérico de gestão não copiaria com verdade:
 - **Idioma:** PT-BR com acentuação completa em toda a interface, nos documentos e nas páginas públicas.
 - **Tema:** claro e teal é o único tema do produto e da marca; não há seleção de tema pelo usuário.
 - **Stack existente:** frontend em Vercel, API em Railway, PostgreSQL; multi-tenant com isolamento por oficina.
+- **Pagamentos:** a assinatura do SigmaAuto passa pelo Mercado Pago; a cobrança do cliente da oficina passa pelo Asaas, com a chave da própria oficina (cifrada no servidor) e webhook por oficina.
 - **Em aberto (não inventar):** NF-e/NFS-e, portal do cliente PWA e multi-unidades constam no plano REDE e não devem ser tratados como entregues sem confirmação no código.
 
 ## Brand Commitments

@@ -83,6 +83,7 @@ model Tenant {
   updatedAt       DateTime @updatedAt
 
   subscription          Subscription?
+  asaasAccount          AsaasAccount?
   users                 User[]
   customers             Customer[]
   vehicles              Vehicle[]
@@ -100,6 +101,23 @@ model Tenant {
   npsResponses          NpsResponse[]
 
   @@map("tenants")
+}
+
+// Conta Asaas da oficina: a chave fica cifrada (common/secret-box.ts) e nunca sai da API.
+model AsaasAccount {
+  id                String   @id @default(uuid())
+  tenantId          String   @unique
+  apiKeyEnc         String
+  environment       String   @default("production") // production | sandbox
+  webhookToken      String   // segredo conferido em cada chamada de webhook
+  webhookConfigured Boolean  @default(false)
+  accountLabel      String?
+  connectedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("asaas_accounts")
 }
 
 model SubscriptionPlan {
@@ -378,6 +396,13 @@ model ServiceOrder {
   deliveredAt  DateTime?
   deliveredTo  String?   // quem retirou/recebeu o veículo (pode não ser o titular)
   paidAt      DateTime?
+  // Cobrança emitida pelo Asaas da oficina (ver asaas/)
+  asaasPaymentId    String?
+  asaasBillingType  String?   // PIX | BOLETO | CREDIT_CARD | UNDEFINED
+  asaasChargeStatus String?   // status do Asaas: PENDING, RECEIVED, CONFIRMED, OVERDUE...
+  asaasInvoiceUrl   String?
+  asaasDueDate      DateTime?
+  asaasPaidAt       DateTime?
   
   // Informações
   notes        String?

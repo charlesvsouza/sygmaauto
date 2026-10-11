@@ -103,6 +103,16 @@ export const tenantsApi = {
   updateDocumentSettings: (data: any) => api.patch('/tenants/document-settings', data),
 };
 
+export const asaasApi = {
+  status: () => api.get('/asaas/status'),
+  connect: (data: { apiKey: string; environment: 'production' | 'sandbox' }) => api.post('/asaas/connect', data),
+  disconnect: () => api.delete('/asaas/connect'),
+  getCharge: (orderId: string) => api.get(`/asaas/orders/${orderId}/charge`),
+  createCharge: (orderId: string, data: { billingType: string; dueDate?: string }) =>
+    api.post(`/asaas/orders/${orderId}/charge`, data),
+  cancelCharge: (orderId: string) => api.delete(`/asaas/orders/${orderId}/charge`),
+};
+
 export const usersApi = {
   getAll: () => api.get('/users'),
   getById: (id: string) => api.get(`/users/${id}`),

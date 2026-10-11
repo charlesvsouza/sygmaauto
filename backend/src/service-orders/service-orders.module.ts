@@ -12,5 +12,6 @@ import { CommissionsModule } from '../commissions/commissions.module';
   imports: [NotificationsModule, CommissionsModule, PdfModule],
   controllers: [ServiceOrdersController, PublicApprovalController],
   providers: [ServiceOrdersService, ImportService, OrderDocumentsService],
+  exports: [ServiceOrdersService],
 })
 export class ServiceOrdersModule {}
