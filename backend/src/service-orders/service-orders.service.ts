@@ -730,6 +730,9 @@ export class ServiceOrdersService {
       const delivery = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
       updateData.deliveredAt = delivery.deliveredAt;
       updateData.deliveredTo = delivery.deliveredTo;
+      // Não há campo próprio de conclusão: ela nunca é posterior à entrega (vale a data da entrega).
+      const completedAt = updateData.completedAt ?? order.completedAt;
+      if (!completedAt || completedAt > delivery.deliveredAt) updateData.completedAt = delivery.deliveredAt;
     }
 
     const updated = await this.prisma.serviceOrder.update({
@@ -807,7 +810,11 @@ export class ServiceOrdersService {
     const { deliveredAt, deliveredTo } = this.resolveDelivery(order, dto.deliveredAt, dto.deliveredTo);
     const updated = await this.prisma.serviceOrder.update({
       where: { id },
-      data: { deliveredAt, deliveredTo },
+      data: {
+        deliveredAt,
+        deliveredTo,
+        ...(!order.completedAt || order.completedAt > deliveredAt ? { completedAt: deliveredAt } : {}),
+      },
     });
     await this.createTimeline(
       id, 'DELIVERY_UPDATED',
@@ -1038,10 +1045,17 @@ export class ServiceOrdersService {
         where: { id: dto.serviceId },
       });
 
-      if (catalogService && catalogService.hourlyRate && catalogService.tmo) {
-        unitPrice = catalogService.hourlyRate;
-        qty = catalogService.tmo;
-        description = `${catalogService.name} (TMO: ${catalogService.tmo}h x R$ ${catalogService.hourlyRate}/h)`;
+      if (catalogService) {
+        // Mesma regra do cadastro de serviços: TMO × VH quando ambos existem; senão, preço base.
+        if (catalogService.hourlyRate && catalogService.tmo) {
+          unitPrice = catalogService.hourlyRate;
+          qty = catalogService.tmo;
+          description = `${catalogService.name} (TMO: ${catalogService.tmo}h x R$ ${catalogService.hourlyRate}/h)`;
+        } else {
+          unitPrice = catalogService.basePrice || catalogService.hourlyRate || 0;
+          qty = 1;
+          description = dto.description || catalogService.name;
+        }
       }
     }
 
@@ -1297,6 +1311,7 @@ export class ServiceOrdersService {
     for (const item of order.items as any[]) {
       let newUnitPrice: number = Number(item.unitPrice);
       let newDescription: string = item.description;
+      let newQuantity: number = Number(item.quantity);
 
       if (item.type === 'part' && item.partId) {
         const part = await this.prisma.part.findFirst({
@@ -1309,21 +1324,25 @@ export class ServiceOrdersService {
       } else if (item.type === 'service' && item.serviceId) {
         const svc = await this.prisma.service.findFirst({
           where: { id: item.serviceId, tenantId },
-          select: { hourlyRate: true, name: true, tmo: true },
+          select: { hourlyRate: true, name: true, tmo: true, basePrice: true },
         });
-        if (svc && svc.hourlyRate) {
-          newUnitPrice = Number(svc.hourlyRate);
-          if (svc.tmo) {
+        if (svc) {
+          if (svc.hourlyRate && svc.tmo) {
+            newUnitPrice = Number(svc.hourlyRate);
+            newQuantity = Number(svc.tmo);
             newDescription = `${svc.name} (TMO: ${svc.tmo}h x R$ ${svc.hourlyRate}/h)`;
+          } else if (svc.basePrice) {
+            newUnitPrice = Number(svc.basePrice);
+            newQuantity = 1;
           }
         }
       }
 
-      const newTotal = newUnitPrice * Number(item.quantity) - Number(item.discount);
+      const newTotal = newUnitPrice * newQuantity - Number(item.discount);
       updates.push(
         this.prisma.serviceOrderItem.update({
           where: { id: item.id },
-          data: { unitPrice: newUnitPrice, totalPrice: newTotal, description: newDescription },
+          data: { unitPrice: newUnitPrice, quantity: newQuantity, totalPrice: newTotal, description: newDescription },
         }),
       );
     }

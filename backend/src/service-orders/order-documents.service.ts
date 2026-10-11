@@ -304,8 +304,13 @@ export class OrderDocumentsService {
 
   private stageDates(order: any): string {
     const d = (x?: Date | null) => (x ? formatDateTimeBR(x) : '—');
+    // A conclusão nunca é posterior à entrega; sem data de conclusão própria, vale a da entrega.
+    const completed =
+      order.deliveredAt && (!order.completedAt || new Date(order.completedAt) > new Date(order.deliveredAt))
+        ? order.deliveredAt
+        : order.completedAt;
     return `<table class="kv"><tr><td>Abertura</td><td>${d(order.createdAt)}</td><td>Aprovação</td><td>${d(order.approvedAt)}</td></tr>
-<tr><td>Conclusão</td><td>${d(order.completedAt)}</td><td>Entrega</td><td>${d(order.deliveredAt)}</td></tr>
+<tr><td>Conclusão</td><td>${order.deliveredAt && completed ? formatDateBR(new Date(completed)) : d(completed)}</td><td>Entrega</td><td>${order.deliveredAt ? formatDateBR(new Date(order.deliveredAt)) : '—'}</td></tr>
 ${order.deliveredTo ? `<tr><td>Recebido por</td><td colspan="3">${e(order.deliveredTo)}</td></tr>` : ''}</table>`;
   }
 

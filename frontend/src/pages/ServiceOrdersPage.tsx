@@ -2223,8 +2223,8 @@ export function ServiceOrdersPage() {
                             type: 'service',
                             serviceId: s.id,
                             description: s.name,
-                            quantity: s.tmo || 1,
-                            unitPrice: s.hourlyRate || s.basePrice || 0,
+                            quantity: s.tmo > 0 && s.hourlyRate > 0 ? s.tmo : 1,
+                            unitPrice: s.tmo > 0 && s.hourlyRate > 0 ? s.hourlyRate : (s.basePrice || s.hourlyRate || 0),
                             ...(quickAssignedUserId ? { assignedUserId: quickAssignedUserId } : {}),
                           })}
                           disabled={isClosed}
@@ -2233,7 +2233,7 @@ export function ServiceOrdersPage() {
                           <div>
                             <p className="font-bold text-surface-100 text-sm">{s.name}</p>
                             <p className="text-[11px] text-surface-500 font-bold mt-0.5">
-                              {s.tmo ? `TMO: ${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
+                              {s.tmo > 0 && s.hourlyRate > 0 ? `TMO:${s.tmo}h × R$ ${fmtBR(s.hourlyRate)}` : `R$ ${fmtBR(s.basePrice)}`}
                               {s.category && ` - ${s.category}`}
                             </p>
                           </div>
