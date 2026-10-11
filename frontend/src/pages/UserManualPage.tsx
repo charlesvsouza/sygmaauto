@@ -132,7 +132,7 @@ const PRINT_CSS = `
   .manual-print .manual-intro-h2 { break-before: page; }
   .manual-print a { color: #1b1b1b !important; text-decoration: none !important; }
   .manual-print .manual-ui { background: transparent !important; border: 1px solid #999 !important; color: #111 !important; }
-  .manual-print .manual-note { background: #f4f1e8 !important; border: 1px solid #cdbf94 !important; border-left-width: 3px !important; }
+  .manual-print .manual-note { background: #f4f1e8 !important; border: 1px solid #cdbf94 !important; }
   .manual-print .manual-note * { color: #2a2a2a !important; }
   .manual-print table { break-inside: avoid; }
   .manual-print th { background: #eee !important; }
@@ -217,7 +217,7 @@ const markdownComponents: Components = {
     const first = nodeText(Children.toArray(children).find((c) => isValidElement(c)) as ReactNode);
     const isPlan = /^planos?\b/i.test(first);
     return (
-      <aside className="manual-note rounded-lg border border-[#33b6bf]/25 border-l-[3px] border-l-[#33b6bf] bg-[#0b7f86]/10 px-4 py-3 text-sm [&_p]:text-sm [&_p]:leading-6">
+      <aside className="manual-note rounded-lg border border-[#33b6bf]/30 bg-[#0b7f86]/10 px-4 py-3 text-sm [&_p]:text-sm [&_p]:leading-6">
         <p className="mb-1 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-[#33b6bf]">{isPlan ? 'Planos' : 'Dica'}</p>
         {children}
       </aside>
