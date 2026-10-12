@@ -29,6 +29,7 @@ COPY backend/migrate-metrology.js ./migrate-metrology.js
 COPY backend/cleanup-seeded-orders.js ./cleanup-seeded-orders.js
 COPY backend/restore-os-backup.js ./restore-os-backup.js
 COPY backend/move-backups.js ./move-backups.js
+COPY backend/cleanup-process-customers.js ./cleanup-process-customers.js
 EXPOSE 3000
 # prisma db push + idle connection cleanup run via release.js (Railway releaseCommand)
 CMD ["node", "dist/main"]
