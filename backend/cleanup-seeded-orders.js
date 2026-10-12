@@ -83,8 +83,7 @@ async function findTenant() {
     console.table(rows.filter((r) => keep.includes(r.numero)));
     console.log(`SERIAM APAGADAS: ${exceptIds.length} de ${orders.length} O.S. (numeros: ${orders.filter((o) => !keep.includes(o.number)).map((o) => o.number).join(', ')})`);
     if (!apply) {
-      console.log('
-Nada foi apagado. Para apagar, rode o mesmo comando com --apply no final.');
+      console.log('Nada foi apagado. Para apagar, rode o mesmo comando com --apply no final.');
       return;
     }
   }
