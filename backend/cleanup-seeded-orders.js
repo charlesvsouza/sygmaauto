@@ -130,14 +130,15 @@ async function findTenant() {
 
   const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
   const list = ids.map((id) => `'${id.replace(/'/g, '')}'`).join(',');
+  await prisma.$executeRawUnsafe('CREATE SCHEMA IF NOT EXISTS os_backups');
   const tx = [
-    `CREATE TABLE backup_os_${stamp}_orders AS SELECT * FROM service_orders WHERE id IN (${list})`,
-    `CREATE TABLE backup_os_${stamp}_items AS SELECT * FROM service_order_items WHERE "serviceOrderId" IN (${list})`,
-    `CREATE TABLE backup_os_${stamp}_timeline AS SELECT * FROM service_order_timeline WHERE "serviceOrderId" IN (${list})`,
-    `CREATE TABLE backup_os_${stamp}_finance AS SELECT * FROM financial_transactions WHERE "referenceType" = 'service_order' AND "referenceId" IN (${list})`,
+    `CREATE TABLE os_backups.backup_os_${stamp}_orders AS SELECT * FROM service_orders WHERE id IN (${list})`,
+    `CREATE TABLE os_backups.backup_os_${stamp}_items AS SELECT * FROM service_order_items WHERE "serviceOrderId" IN (${list})`,
+    `CREATE TABLE os_backups.backup_os_${stamp}_timeline AS SELECT * FROM service_order_timeline WHERE "serviceOrderId" IN (${list})`,
+    `CREATE TABLE os_backups.backup_os_${stamp}_finance AS SELECT * FROM financial_transactions WHERE "referenceType" = 'service_order' AND "referenceId" IN (${list})`,
   ];
   for (const sql of tx) await prisma.$executeRawUnsafe(sql);
-  console.log(`Backup no banco: tabelas backup_os_${stamp}_orders / _items / _timeline / _finance`);
+  console.log(`Backup no banco (schema os_backups): backup_os_${stamp}_orders / _items / _timeline / _finance`);
 
   await prisma.$transaction(async (t) => {
     await t.commission.deleteMany({ where: { serviceOrderId: { in: ids } } });
