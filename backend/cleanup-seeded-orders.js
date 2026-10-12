@@ -8,6 +8,8 @@
 //   2b) Apagar tudo da oficina EXCETO os números informados (primeiro sem --apply, para ver o que seria apagado):
 //      node cleanup-seeded-orders.js <tenantId|nome da oficina> --all-except=43
 //      node cleanup-seeded-orders.js <tenantId|nome da oficina> --all-except=43 --apply
+//   2c) Igual ao 2b, mas pelos IDS das O.S. a manter (mais seguro que o numero):
+//      node cleanup-seeded-orders.js <tenantId|nome da oficina> --all-except-ids=id1,id2,...  [--apply]
 //
 // Antes de apagar, copia as linhas para tabelas de backup no próprio banco (backup_os_<data>_*),
 // e faz tudo em uma transação. Nada é apagado sem --apply e sem a lista explícita de ids.
@@ -18,6 +20,7 @@ const [tenantArg, ...flags] = process.argv.slice(2);
 const apply = flags.includes('--apply');
 const idsArg = (flags.find((f) => f.startsWith('--ids=')) || '').slice(6);
 const exceptArg = (flags.find((f) => f.startsWith('--all-except=')) || '').slice(13);
+const exceptIdsArg = (flags.find((f) => f.startsWith('--all-except-ids=')) || '').slice(17);
 
 async function findTenant() {
   const all = await prisma.tenant.findMany({ select: { id: true, name: true } });
@@ -69,14 +72,35 @@ async function findTenant() {
     };
   });
 
-  // Modo "apagar tudo menos estes números": os ids saem do banco, não de uma lista digitada.
+  // Modo "apagar tudo menos estes IDS": os ids a manter vêm da tabela conferida pelo usuário.
   let exceptIds = null;
-  if (exceptArg) {
+  if (exceptIdsArg) {
+    const keepIds = exceptIdsArg.split(',').map((x) => x.trim()).filter(Boolean);
+    const keptRows = rows.filter((r) => keepIds.includes(r.id));
+    const absent = keepIds.filter((id) => !rows.some((r) => r.id === id));
+    console.log(`Oficina: ${tenant.name} (${tenantId}) - ${rows.length} O.S. hoje`);
+    console.log(`MANTIDAS (${keptRows.length} de ${keepIds.length} pedidas):`);
+    console.table(keptRows);
+    if (absent.length) console.log('IDs pedidos que NAO existem mais (ignorados): ' + absent.join(', '));
+    const gone = orders.filter((o) => !keepIds.includes(o.id));
+    exceptIds = gone.map((o) => o.id);
+    console.log(`SERIAM APAGADAS: ${gone.length} de ${orders.length} O.S. (numeros: ${gone.map((o) => o.number).join(', ')})`);
+    if (!apply) {
+      console.log('Nada foi apagado. Para apagar, rode o mesmo comando com --apply no final.');
+      return;
+    }
+  }
+
+  // Modo "apagar tudo menos estes números": os ids saem do banco, não de uma lista digitada.
+  if (exceptArg && !exceptIdsArg) {
     const keep = exceptArg.split(',').map((n) => Number(n.trim())).filter((n) => Number.isInteger(n));
     if (keep.length === 0) throw new Error('--all-except precisa de numeros de O.S., ex.: --all-except=43');
     const kept = orders.filter((o) => keep.includes(o.number));
     const missing = keep.filter((n) => !kept.some((o) => o.number === n));
-    if (missing.length) throw new Error('Nao existe O.S. com o numero: ' + missing.join(', '));
+    if (missing.length) {
+      console.log('Numeros que existem hoje nesta oficina: ' + orders.map((o) => o.number).join(', '));
+      throw new Error('Nao existe O.S. com o numero: ' + missing.join(', '));
+    }
     exceptIds = orders.filter((o) => !keep.includes(o.number)).map((o) => o.id);
     console.log(`Oficina: ${tenant.name} (${tenantId})`);
     console.log(`MANTIDAS (${kept.length}):`);
