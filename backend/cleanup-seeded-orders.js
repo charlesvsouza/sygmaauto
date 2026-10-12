@@ -5,6 +5,9 @@
 //      node cleanup-seeded-orders.js <tenantId|nome da oficina>
 //   2) Apagar (destrutivo), só os ids escolhidos:
 //      node cleanup-seeded-orders.js <tenantId|nome da oficina> --apply --ids=id1,id2,...
+//   2b) Apagar tudo da oficina EXCETO os números informados (primeiro sem --apply, para ver o que seria apagado):
+//      node cleanup-seeded-orders.js <tenantId|nome da oficina> --all-except=43
+//      node cleanup-seeded-orders.js <tenantId|nome da oficina> --all-except=43 --apply
 //
 // Antes de apagar, copia as linhas para tabelas de backup no próprio banco (backup_os_<data>_*),
 // e faz tudo em uma transação. Nada é apagado sem --apply e sem a lista explícita de ids.
@@ -14,6 +17,7 @@ const prisma = new PrismaClient();
 const [tenantArg, ...flags] = process.argv.slice(2);
 const apply = flags.includes('--apply');
 const idsArg = (flags.find((f) => f.startsWith('--ids=')) || '').slice(6);
+const exceptArg = (flags.find((f) => f.startsWith('--all-except=')) || '').slice(13);
 
 async function findTenant() {
   const all = await prisma.tenant.findMany({ select: { id: true, name: true } });
@@ -65,6 +69,26 @@ async function findTenant() {
     };
   });
 
+  // Modo "apagar tudo menos estes números": os ids saem do banco, não de uma lista digitada.
+  let exceptIds = null;
+  if (exceptArg) {
+    const keep = exceptArg.split(',').map((n) => Number(n.trim())).filter((n) => Number.isInteger(n));
+    if (keep.length === 0) throw new Error('--all-except precisa de numeros de O.S., ex.: --all-except=43');
+    const kept = orders.filter((o) => keep.includes(o.number));
+    const missing = keep.filter((n) => !kept.some((o) => o.number === n));
+    if (missing.length) throw new Error('Nao existe O.S. com o numero: ' + missing.join(', '));
+    exceptIds = orders.filter((o) => !keep.includes(o.number)).map((o) => o.id);
+    console.log(`Oficina: ${tenant.name} (${tenantId})`);
+    console.log(`MANTIDAS (${kept.length}):`);
+    console.table(rows.filter((r) => keep.includes(r.numero)));
+    console.log(`SERIAM APAGADAS: ${exceptIds.length} de ${orders.length} O.S. (numeros: ${orders.filter((o) => !keep.includes(o.number)).map((o) => o.number).join(', ')})`);
+    if (!apply) {
+      console.log('
+Nada foi apagado. Para apagar, rode o mesmo comando com --apply no final.');
+      return;
+    }
+  }
+
   if (!apply) {
     console.log(`Oficina: ${tenant.name} (${tenantId}) - ${rows.length} O.S.`);
     console.table(rows);
@@ -75,7 +99,7 @@ async function findTenant() {
     return;
   }
 
-  const ids = idsArg.split(',').map((s) => s.trim()).filter(Boolean);
+  const ids = exceptIds || idsArg.split(',').map((s) => s.trim()).filter(Boolean);
   if (ids.length === 0) throw new Error('Informe --ids=... com as O.S. a apagar.');
   const own = new Set(orders.map((o) => o.id));
   const foreign = ids.filter((id) => !own.has(id));
