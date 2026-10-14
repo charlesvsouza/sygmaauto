@@ -294,7 +294,10 @@ ${importedNotes}` : importedNotes } : {}),
     }
   };
 
-  const totalCalculated = (data?.items || []).reduce((acc: number, item: any) => acc + (Number(item.quantity || 0) * Number(item.unitPrice || 0)), 0);
+  const totalCalculated = (data?.items || []).reduce(
+    (acc: number, item: any) => acc + (Number(item.quantity || 0) * Number(item.unitPrice || 0) - Number(item.discount || 0)),
+    0,
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">

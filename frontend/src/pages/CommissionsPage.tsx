@@ -67,6 +67,7 @@ export function CommissionsPage() {
       setAppliedFilters(f);
     } catch (error) {
       console.error('Erro ao carregar comissões', error);
+      toast.error('Não foi possível carregar as comissões. Verifique a conexão e tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -170,24 +171,28 @@ export function CommissionsPage() {
   };
 
   const exportXlsx = async () => {
-    const rows = data.map((row) => ({
-      Executor: row.user?.name || '',
-      Area: row.user?.workshopArea || '',
-      Item: row.serviceOrderItem?.description || '',
-      OS: osRef(row),
-      Base: Number(row.baseValue || 0),
-      Percentual: Number(row.commissionPercent || 0),
-      Comissao: Number(row.commissionValue || 0),
-      Status: row.status || '',
-      CriadoEm: row.createdAt ? new Date(row.createdAt).toLocaleString('pt-BR') : '',
-      PagoEm: row.paidAt ? new Date(row.paidAt).toLocaleString('pt-BR') : '',
-    }));
+    try {
+      const rows = data.map((row) => ({
+        Executor: row.user?.name || '',
+        Area: row.user?.workshopArea || '',
+        Item: row.serviceOrderItem?.description || '',
+        OS: osRef(row),
+        Base: Number(row.baseValue || 0),
+        Percentual: Number(row.commissionPercent || 0),
+        Comissao: Number(row.commissionValue || 0),
+        Status: row.status || '',
+        CriadoEm: row.createdAt ? new Date(row.createdAt).toLocaleString('pt-BR') : '',
+        PagoEm: row.paidAt ? new Date(row.paidAt).toLocaleString('pt-BR') : '',
+      }));
 
-    const xlsx = await import('xlsx');
-    const ws = xlsx.utils.json_to_sheet(rows);
-    const wb = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, ws, 'Comissões');
-    xlsx.writeFile(wb, `${fileBase()}.xlsx`);
+      const xlsx = await import('xlsx');
+      const ws = xlsx.utils.json_to_sheet(rows);
+      const wb = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(wb, ws, 'Comissões');
+      xlsx.writeFile(wb, `${fileBase()}.xlsx`);
+    } catch {
+      toast.error('Erro ao gerar a planilha XLSX. Tente novamente.');
+    }
   };
 
   return (

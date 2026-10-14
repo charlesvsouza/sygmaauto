@@ -12,7 +12,7 @@ import {
   ClipboardCheck, ShoppingCart, ArrowRight, CheckCircle2, AlertTriangle, Calendar, Sparkles, PackagePlus,
 } from 'lucide-react';
 
-import { cn } from '../lib/utils';
+import { cn, toDateTimeLocalInput, dateTimeLocalToBrIso, parseBrCurrency, todayBrInput } from '../lib/utils';
 import { useToast, useConfirm, usePrompt, StatusChip, STATUS_CHIP_CLASS, NumberInput } from '../components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
@@ -281,6 +281,7 @@ export function ServiceOrdersPage() {
     const { id } = metrologiaOsTarget;
     await serviceOrdersApi.saveMetrology(id, data);
     await serviceOrdersApi.updateStatus(id, { status: 'METROLOGIA' });
+    let failedItems = 0;
     for (const item of items) {
       try {
         await serviceOrdersApi.addItem(id, {
@@ -289,7 +290,10 @@ export function ServiceOrdersPage() {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
         });
-      } catch { /* ignora falha individual */ }
+      } catch { failedItems += 1; }
+    }
+    if (failedItems > 0) {
+      toast.warning(`${failedItems} item(ns) do laudo não puderam ser adicionados à O.S. Adicione-os manualmente.`);
     }
     // Recarrega a OS atualizada e abre o laudo para impressão
     const res = await serviceOrdersApi.getById(id);
@@ -342,9 +346,14 @@ export function ServiceOrdersPage() {
     }
   };
 
+  const selectOrderIdRef = useRef<string | null>(null);
   const selectOrder = async (order: any) => {
+    // Guarda o último O.S. pedida: respostas fora de ordem não sobrescrevem a
+    // seleção atual (clique rápido em A e depois em B não pode exibir A).
+    selectOrderIdRef.current = order.id;
     try {
       const res = await serviceOrdersApi.getById(order.id);
+      if (selectOrderIdRef.current !== order.id) return;
       const o = res.data;
       setSelectedOrder(o);
       setShowDiagBanner(o.status === 'REPROVADO');
@@ -356,7 +365,7 @@ export function ServiceOrdersPage() {
         notes: o.notes || '',
         paymentMethod: o.paymentMethod || '',
         reserveStock: Boolean(o.reserveStock),
-        scheduledDate: o.scheduledDate ? new Date(o.scheduledDate).toISOString().slice(0, 16) : '',
+        scheduledDate: o.scheduledDate ? toDateTimeLocalInput(o.scheduledDate) : '',
         discountPartsPercent: Number(o.discountPartsPercent || 0),
         discountServicesPercent: Number(o.discountServicesPercent || 0),
         paymentPlan: initialPaymentPlan(o),
@@ -405,7 +414,12 @@ export function ServiceOrdersPage() {
       return;
     }
     try {
-      await serviceOrdersApi.update(selectedOrder.id, edit);
+      await serviceOrdersApi.update(selectedOrder.id, {
+        ...edit,
+        scheduledDate: edit.scheduledDate
+          ? dateTimeLocalToBrIso(edit.scheduledDate)
+          : (edit.scheduledDate === '' ? null : undefined),
+      });
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
       loadOrders();
@@ -759,8 +773,10 @@ export function ServiceOrdersPage() {
   };
 
   const quickAddItem = async () => {
-    const price = parseFloat(quickAdd.unitPrice.replace(',', '.'));
-    const qty = parseFloat(quickAdd.quantity) || 1;
+    // Aceita "1.234,56", "1234.56" e "R$ 1.234,56" — parseFloat simples leria
+    // "1.234,56" como 1.234 e lançaria R$ 1,23 em vez de R$ 1.234,56.
+    const price = parseBrCurrency(quickAdd.unitPrice);
+    const qty = parseFloat(quickAdd.quantity.replace(',', '.')) || 1;
     if (!quickAdd.description.trim()) { toast.warning('Informe a descrição.'); return; }
     if (!price || price <= 0) { toast.warning('Informe um preço válido.'); return; }
     const discountPct = Math.min(100, Math.max(0, parseFloat(quickAdd.discountPercent) || 0));
@@ -867,7 +883,10 @@ export function ServiceOrdersPage() {
       const res = await serviceOrdersApi.getById(selectedOrder.id);
       setSelectedOrder(res.data);
       loadOrders();
-    } catch (err) { console.error(err); }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || 'Erro ao remover o item. Ele continua na O.S.');
+    }
   };
 
   // Normalise type to lowercase for filtering (seed uses)
@@ -1487,8 +1506,8 @@ export function ServiceOrdersPage() {
                             value={item.assignedUserId || ''}
                             onChange={(e) => {
                               const nextUserId = e.target.value;
-                              if (!nextUserId) return;
-                              updateItem(item.id, { assignedUserId: nextUserId });
+                              // "" = desatribuir: envia null para limpar o executor.
+                              updateItem(item.id, { assignedUserId: nextUserId || null });
                             }}
                             disabled={isClosed || !canAssignExecutor}
                             className={cn(
@@ -1961,7 +1980,7 @@ export function ServiceOrdersPage() {
                         aria-label="Data prevista de chegada"
                         type="date"
                         value={expectedPartsDate}
-                        min={new Date().toISOString().slice(0,10)}
+                        min={todayBrInput()}
                         onChange={(e) => setExpectedPartsDate(e.target.value)}
                         className="w-full border border-surface-800 rounded-xl px-3 py-2 text-sm text-surface-300 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
                       />
@@ -2343,7 +2362,10 @@ export function ServiceOrdersPage() {
                         Apenas MASTER e ADMIN podem adicionar/remover pecas (altera estoque).
                       </p>
                     )}
-                    {catalogItems.parts.filter((p) => p.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
+                    {catalogItems.parts.filter((p) =>
+                      p.name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
+                      p.internalCode?.toLowerCase().includes(catalogSearch.toLowerCase())
+                    ).length === 0 && (
                       <p className="text-center text-surface-600 text-xs py-8">Nenhuma peça encontrada no catálogo</p>
                     )}
                   </>

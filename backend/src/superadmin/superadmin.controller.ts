@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Post,
   Get,
@@ -86,7 +87,11 @@ export class SuperAdminController {
     @Param('id') id: string,
     @Body() body: { status: 'ACTIVE' | 'SUSPENDED' },
   ) {
-    return this.superAdminService.updateTenantStatus(id, body.status);
+    const status = String(body?.status ?? '').toUpperCase();
+    if (!['ACTIVE', 'SUSPENDED'].includes(status)) {
+      throw new BadRequestException('Status deve ser ACTIVE ou SUSPENDED');
+    }
+    return this.superAdminService.updateTenantStatus(id, status as 'ACTIVE' | 'SUSPENDED');
   }
 
   /** Altera o plano de assinatura de um tenant */
@@ -107,7 +112,11 @@ export class SuperAdminController {
     @Param('id') id: string,
     @Body() body: { days: number },
   ) {
-    return this.superAdminService.extendSubscription(id, body.days);
+    const days = Number(body?.days);
+    if (!Number.isFinite(days) || days < 0 || days > 3650) {
+      throw new BadRequestException('Informe um número de dias entre 0 e 3650');
+    }
+    return this.superAdminService.extendSubscription(id, days);
   }
 
   /** Popula dados demo (OS, executores, comissões) para análise de KPI */

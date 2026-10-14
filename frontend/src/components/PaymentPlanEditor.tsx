@@ -15,10 +15,13 @@ import {
 } from '../lib/paymentPlan';
 
 // Forma de pagamento antiga (texto livre) → método do plano, para abrir O.S. legadas.
+// Inclui as variantes com e sem acento usadas no backend (import.service.ts / asaas.service.ts).
 const LEGACY_METHOD: Record<string, PaymentPlanMethod> = {
   Dinheiro: 'DINHEIRO',
   PIX: 'PIX',
+  'Cartão de Débito': 'CARTAO_DEBITO',
   'Cartão de Debito': 'CARTAO_DEBITO',
+  'Cartão de Crédito': 'CARTAO_CREDITO',
   'Cartão de Credito': 'CARTAO_CREDITO',
   'Transferência Bancária': 'TRANSFERENCIA',
   Boleto: 'BOLETO',

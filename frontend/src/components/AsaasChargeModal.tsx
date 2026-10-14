@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Copy, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { asaasApi } from '../api/client';
+import { todayBrInput } from '../lib/utils';
 import { Modal, Button, useConfirm, useToast } from './ui';
 
 const OPTIONS: Array<{ value: string; label: string; hint: string }> = [
@@ -20,7 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
   RECEIVED_IN_CASH: 'Recebida em dinheiro',
 };
 
-const today = () => new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+const today = () => todayBrInput();
 const fmt = (n: number) => n.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
 type Charge = {

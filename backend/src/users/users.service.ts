@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,6 +9,9 @@ import {
   AdminResetPasswordDto,
 } from './dto/user.dto';
 
+// Papéis que exigem MASTER como ator: MASTER é o dono do tenant; um ADMIN
+// não pode criar, promover, desativar, resetar senha ou excluir contas MASTER.
+const MASTER_ONLY_ACTIONS_ON_MASTER = 'Somente o MASTER do tenant pode alterar contas MASTER.';
 
 @Injectable()
 export class UsersService {
@@ -58,13 +61,31 @@ export class UsersService {
     return user;
   }
 
-  async create(tenantId: string, dto: CreateUserDto & { createdBy: string }) {
+  private assertActorCanManageTarget(actorRole: string | undefined, target: { role: string; id: string }, actorUserId?: string) {
+    const actor = String(actorRole ?? '').toUpperCase();
+    if (!actor) throw new ForbiddenException('Ação não permitida');
+    if (actor !== 'MASTER') {
+      if (String(target.role).toUpperCase() === 'MASTER') {
+        throw new ForbiddenException(MASTER_ONLY_ACTIONS_ON_MASTER);
+      }
+      if (actorUserId && target.id === actorUserId) {
+        throw new ForbiddenException('Um ADMIN não pode alterar a própria conta por este caminho.');
+      }
+    }
+  }
+
+  async create(tenantId: string, actorRole: string | undefined, dto: CreateUserDto & { createdBy: string }) {
     const existing = await this.prisma.user.findFirst({
       where: { tenantId, email: dto.email },
     });
 
     if (existing) {
       throw new ConflictException('Email already exists in this tenant');
+    }
+
+    const role = dto.role || UserRole.PRODUTIVO;
+    if (String(role).toUpperCase() === 'MASTER' && String(actorRole ?? '').toUpperCase() !== 'MASTER') {
+      throw new ForbiddenException(MASTER_ONLY_ACTIONS_ON_MASTER);
     }
 
     const created = await this.prisma.user.create({
@@ -74,7 +95,7 @@ export class UsersService {
         email: dto.email.toLowerCase().trim(),
         recoveryEmail: dto.recoveryEmail?.toLowerCase().trim(),
         passwordHash: await bcrypt.hash(dto.password, 10),
-        role: dto.role || UserRole.PRODUTIVO,
+        role,
         isActive: dto.isActive !== undefined ? dto.isActive : true,
         passwordUpdatedAt: new Date(),
       },
@@ -106,8 +127,14 @@ export class UsersService {
     return created;
   }
 
-  async update(tenantId: string, actorUserId: string, userId: string, dto: UpdateUserDto) {
+  async update(tenantId: string, actorUserId: string, actorRole: string | undefined, userId: string, dto: UpdateUserDto) {
     const before = await this.findById(tenantId, userId);
+    this.assertActorCanManageTarget(actorRole, before, actorUserId);
+
+    // ADMIN não pode mudar papéis em nenhuma direção — só o MASTER gerencia papéis.
+    if (dto.role !== undefined && dto.role !== before.role && String(actorRole ?? '').toUpperCase() !== 'MASTER') {
+      throw new ForbiddenException('Somente o MASTER pode alterar perfis de acesso.');
+    }
 
     const updated = await this.prisma.user.update({
       where: { id: userId },
@@ -148,13 +175,19 @@ export class UsersService {
     return updated;
   }
 
-  async changePassword(tenantId: string, actorUserId: string, userId: string, dto: ChangePasswordDto) {
+  async changePassword(tenantId: string, actorUserId: string, actorRole: string | undefined, userId: string, dto: ChangePasswordDto) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId, tenantId },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Troca de senha por senha atual: cada um troca a própria; trocar a senha de
+    // outrem é atribuição do MASTER.
+    if (String(actorRole ?? '').toUpperCase() !== 'MASTER' && userId !== actorUserId) {
+      throw new ForbiddenException(MASTER_ONLY_ACTIONS_ON_MASTER);
     }
 
     const isValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
@@ -186,8 +219,9 @@ export class UsersService {
     return updated;
   }
 
-  async adminResetPassword(tenantId: string, actorUserId: string, userId: string, dto: AdminResetPasswordDto) {
-    await this.findById(tenantId, userId);
+  async adminResetPassword(tenantId: string, actorUserId: string, actorRole: string | undefined, userId: string, dto: AdminResetPasswordDto) {
+    const target = await this.findById(tenantId, userId);
+    this.assertActorCanManageTarget(actorRole, target, actorUserId);
 
     const updated = await this.prisma.user.update({
       where: { id: userId },
@@ -221,8 +255,24 @@ export class UsersService {
     return updated;
   }
 
-  async delete(tenantId: string, actorUserId: string, userId: string) {
+  async delete(tenantId: string, actorUserId: string, actorRole: string | undefined, userId: string) {
     const target = await this.findById(tenantId, userId);
+
+    if (userId === actorUserId) {
+      throw new ForbiddenException('Não é possível excluir a própria conta.');
+    }
+
+    this.assertActorCanManageTarget(actorRole, target, actorUserId);
+
+    // Garante que o tenant nunca fique sem nenhum MASTER ativo.
+    if (String(target.role).toUpperCase() === 'MASTER') {
+      const otherMasters = await this.prisma.user.count({
+        where: { tenantId, role: 'MASTER', isActive: true, id: { not: userId } },
+      });
+      if (otherMasters === 0) {
+        throw new ForbiddenException('O tenant precisa de pelo menos um MASTER ativo.');
+      }
+    }
 
     await this.prisma.auditLog.create({
       data: {

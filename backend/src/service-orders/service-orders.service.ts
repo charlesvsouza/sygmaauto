@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, forwardRef, Inject, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto, SetDeliveryDto } from './dto/service-order.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { WhatsappService } from '../notifications/whatsapp.service';
 import { CommissionsService } from '../commissions/commissions.service';
+import { AsaasService } from '../asaas/asaas.service';
 import { formatOrderCode, nextOrderNumber } from '../common/order-number';
 import { checklistHasInfo, tenantHasChecklist } from '../common/plan-access';
 import { PermissionsService } from '../permissions/permissions.service';
@@ -20,11 +21,15 @@ const BILLED_LOCK_MESSAGE =
 
 @Injectable()
 export class ServiceOrdersService {
+  private readonly logger = new Logger(ServiceOrdersService.name);
+
   constructor(
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
     private commissions: CommissionsService,
     private permissions: PermissionsService,
+    @Inject(forwardRef(() => AsaasService))
+    private asaas: AsaasService,
   ) {}
 
   // Fluxo de status da O.S.: ABERTA → diagnóstico → orçamento → aprovação → execução → entrega
@@ -66,8 +71,11 @@ export class ServiceOrdersService {
     return orderType === 'RETIFICA_MOTOR' ? this.RETIFICA_STATUS_FLOW : this.STATUS_FLOW;
   }
 
+  // Estoque trabalha em unidades inteiras: quantidade fracionária (0,5 peça)
+  // é arredondada PARA CIMA em qualquer baixa e devolvida com o mesmo critério,
+  // garantindo simetria entre saída e devolução.
   private toStockQuantity(value: number) {
-    const parsed = Math.trunc(Number(value));
+    const parsed = Math.ceil(Number(value));
     if (!Number.isFinite(parsed) || parsed <= 0) {
       throw new BadRequestException('Quantidade de peça inválida para movimentação de estoque');
     }
@@ -144,19 +152,24 @@ export class ServiceOrdersService {
     const safeQty = this.toStockQuantity(quantity);
 
     await this.prisma.$transaction(async (tx) => {
-      const part = await tx.part.findFirst({
-        where: { id: partId, tenantId, isActive: true },
-        select: { id: true, currentStock: true },
+      // Baixa/entrada atômica: o saldo é alterado por um único UPDATE condicional,
+      // evitando leitura-escrita concorrente (lost updates) entre O.S. simultâneas.
+      const result = await tx.part.updateMany({
+        where: {
+          id: partId,
+          tenantId,
+          isActive: true,
+          ...(type === 'EXIT' ? { currentStock: { gte: safeQty } } : {}),
+        },
+        data: type === 'EXIT' ? { currentStock: { decrement: safeQty } } : { currentStock: { increment: safeQty } },
       });
 
-      if (!part) {
-        throw new NotFoundException('Peça não encontrada');
-      }
-
-      const delta = type === 'ENTRY' ? safeQty : -safeQty;
-      const nextStock = (part.currentStock ?? 0) + delta;
-
-      if (nextStock < 0) {
+      if (result.count === 0) {
+        const exists = await tx.part.findFirst({
+          where: { id: partId, tenantId, isActive: true },
+          select: { id: true },
+        });
+        if (!exists) throw new NotFoundException('Peça não encontrada');
         throw new BadRequestException('Estoque insuficiente para esta operação');
       }
 
@@ -168,11 +181,6 @@ export class ServiceOrdersService {
           quantity: safeQty,
           note,
         },
-      });
-
-      await tx.part.update({
-        where: { id: partId },
-        data: { currentStock: nextStock },
       });
     });
   }
@@ -398,7 +406,9 @@ export class ServiceOrdersService {
   async updateOrcamento(tenantId: string, id: string, dto: UpdateOrcamentoDto, userId: string) {
     const order = await this.findById(tenantId, id);
 
-    if (['ENTREGUE', 'CANCELADO'].includes(order.status)) {
+    // O.S. faturada não aceita edição (mudança de plano/desconto alteraria a receita
+    // já lançada); só é liberada pelo estorno de faturamento.
+    if (order.paidAt || ['ENTREGUE', 'CANCELADO', 'FATURADO'].includes(order.status)) {
       throw new BadRequestException('Não é possível editar uma OS finalizada ou cancelada');
     }
 
@@ -756,7 +766,11 @@ export class ServiceOrdersService {
 
     if (newStatus === 'FATURADO') {
       updateData.paidAt = new Date();
-      this.commissions.generateForOrder(tenantId, id).catch(() => {});
+      // Geração de comissão aguardada: falha é registrada, não silenciada — e
+      // ocorre antes do estorno poder apagar comissões (ordem determinística).
+      await this.commissions
+        .generateForOrder(tenantId, id)
+        .catch((err) => this.logger.error(`Falha ao gerar comissões da O.S. ${id}: ${err?.message}`));
     }
 
     // Reabrir uma O.S. entregue desfaz o registro de entrega: será refeito ao entregar de novo.
@@ -1030,6 +1044,25 @@ export class ServiceOrdersService {
         'O pagamento foi recebido pelo Asaas. Estorne a cobrança no painel do Asaas primeiro; quando o Asaas avisar o estorno, repita aqui.',
       );
     }
+
+    // Cobrança criada no Asaas mas ainda não paga: cancela antes do estorno. Sem isso,
+    // a cobrança ficava órfã e o webhook de pagamento posterior re-faturava a O.S. estornada.
+    if (order.asaasPaymentId && !order.asaasPaidAt) {
+      // Confere o status real no Asaas antes de decidir (evita estornar cobrança que já caiu).
+      await this.asaas.getCharge(tenantId, id, true);
+      const fresh = await this.prisma.serviceOrder.findUnique({
+        where: { id },
+        select: { asaasPaymentId: true, asaasPaidAt: true, asaasChargeStatus: true },
+      });
+      if (fresh?.asaasPaidAt && fresh.asaasChargeStatus !== 'REFUNDED') {
+        throw new BadRequestException(
+          'O pagamento foi recebido pelo Asaas. Estorne a cobrança no painel do Asaas primeiro; quando o Asaas avisar o estorno, repita aqui.',
+        );
+      }
+      if (fresh?.asaasPaymentId && !['REFUNDED', 'DELETED'].includes(fresh.asaasChargeStatus ?? '')) {
+        await this.asaas.cancelCharge(tenantId, id, userId);
+      }
+    }
     const paidCommissions = await this.prisma.commission.count({ where: { serviceOrderId: id, status: { not: 'PENDENTE' } } });
     if (paidCommissions > 0) {
       throw new BadRequestException('Há comissão desta O.S. já paga ou fechada. Desfaça o pagamento da comissão antes de estornar.');
@@ -1163,10 +1196,11 @@ export class ServiceOrdersService {
     let unitPrice = dto.unitPrice || 0;
     let description = dto.description;
 
-    // Se for serviço e tiver ID, busca TMO e VH
+    // Se for serviço e tiver ID, busca TMO e VH — sempre dentro do tenant:
+    // um serviceId de outra oficina não deve trazer nome/preço de lá.
     if (dto.type === 'service' && dto.serviceId) {
-      const catalogService = await this.prisma.service.findUnique({
-        where: { id: dto.serviceId },
+      const catalogService = await this.prisma.service.findFirst({
+        where: { id: dto.serviceId, tenantId },
       });
 
       if (catalogService) {
@@ -1315,23 +1349,24 @@ export class ServiceOrdersService {
     await this.ensureDiscountWithinLimit(tenantId, userId, itemType, unitPrice, qty, discount);
     const totalPrice = (unitPrice * qty) - discount;
 
-    // Atualiza estoque se a quantidade mudou e for peça
+    // Atualiza estoque se a quantidade mudou e for peça (compara em unidades
+    // de estoque — Math.ceil — para manter simetria com baixa/devolução)
     if (oldItem.type === 'part' && oldItem.partId && oldItem.applied) {
-      const diff = qty - oldItem.quantity;
-      if (diff > 0) {
+      const diffUnits = this.toStockQuantity(qty) - this.toStockQuantity(oldItem.quantity);
+      if (diffUnits > 0) {
         await this.applyStockMovement(
           tenantId,
           oldItem.partId,
           'EXIT',
-          diff,
+          diffUnits,
           `Ajuste Qtd OS ${formatOrderCode(order)}`,
         );
-      } else if (diff < 0) {
+      } else if (diffUnits < 0) {
         await this.applyStockMovement(
           tenantId,
           oldItem.partId,
           'ENTRY',
-          Math.abs(diff),
+          Math.abs(diffUnits),
           `Estorno Ajuste Qtd OS ${formatOrderCode(order)}`,
         );
       }
@@ -1426,7 +1461,7 @@ export class ServiceOrdersService {
   async syncPrices(tenantId: string, id: string) {
     const order = await this.findById(tenantId, id);
 
-    if (['ENTREGUE', 'CANCELADO'].includes(order.status)) {
+    if (order.paidAt || ['ENTREGUE', 'CANCELADO', 'FATURADO'].includes(order.status)) {
       throw new BadRequestException('Não é possível sincronizar uma OS finalizada ou cancelada');
     }
 
@@ -1559,10 +1594,22 @@ export class ServiceOrdersService {
     const newStatus = hasMissing ? 'AGUARDANDO_PECAS' : order.status;
     const now = new Date();
 
-    // Gera número sequencial de pedido de compra: PC-YYYYMMDD-XXXX
-    const seq = Math.floor(1000 + Math.random() * 9000);
+    // Gera número sequencial de pedido de compra: PC-YYYYMMDD-NNNN
+    // Sequência por dia, derivada do maior número já usado no tenant (evita colisão).
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-    const purchaseOrderNumber = hasMissing ? `PC-${dateStr}-${seq}` : null;
+    const pcPrefix = `PC-${dateStr}-`;
+    const existingPCs = hasMissing
+      ? await this.prisma.serviceOrder.findMany({
+          where: { tenantId, purchaseOrderNumber: { startsWith: pcPrefix } },
+          select: { purchaseOrderNumber: true },
+        })
+      : [];
+    let lastSeq = 999;
+    for (const po of existingPCs) {
+      const n = parseInt(String(po.purchaseOrderNumber ?? '').slice(pcPrefix.length), 10);
+      if (Number.isFinite(n) && n > lastSeq) lastSeq = n;
+    }
+    const purchaseOrderNumber = hasMissing ? `${pcPrefix}${lastSeq + 1}` : null;
 
     await this.prisma.serviceOrder.update({
       where: { id },
@@ -1657,8 +1704,9 @@ export class ServiceOrdersService {
         partsCheckedAt: null,
         expectedPartsDate: null,
         purchaseOrderNumber: null,
-        status: 'APROVADO',
-        statusChangedAt: new Date(),
+        // Só regressa o status quando a O.S. está parada em "aguardando peças".
+        // Avançou para execução? o status permanece (o fluxo não anda para trás).
+        ...(order.status === 'AGUARDANDO_PECAS' ? { status: 'APROVADO', statusChangedAt: new Date() } : {}),
       },
     });
 
@@ -1712,15 +1760,20 @@ export class ServiceOrdersService {
           totalCost: (updated as any).totalCost,
         };
         if (newStatus === 'AGUARDANDO_APROVACAO') {
-          this.whatsapp.notifyOrcamentoPronto(payload);
+          this.whatsapp.notifyOrcamentoPronto(payload).catch((err) =>
+            this.logger.error(`Falha ao notificar orçamento pronto (${updated.id}): ${err?.message}`));
         } else if (newStatus === 'APROVADO') {
-          this.whatsapp.notifyAprovado(payload);
+          this.whatsapp.notifyAprovado(payload).catch((err) =>
+            this.logger.error(`Falha ao notificar aprovação (${updated.id}): ${err?.message}`));
         } else if (newStatus === 'PRONTO_ENTREGA') {
-          this.whatsapp.notifyProntoEntrega(payload);
+          this.whatsapp.notifyProntoEntrega(payload).catch((err) =>
+            this.logger.error(`Falha ao notificar pronto p/ entrega (${updated.id}): ${err?.message}`));
         } else if (newStatus === 'ENTREGUE') {
-          this.whatsapp.notifyEntregue(payload);
+          this.whatsapp.notifyEntregue(payload).catch((err) =>
+            this.logger.error(`Falha ao notificar entrega (${updated.id}): ${err?.message}`));
         } else if (newStatus === 'CANCELADO') {
-          this.whatsapp.notifyCancelado(payload);
+          this.whatsapp.notifyCancelado(payload).catch((err) =>
+            this.logger.error(`Falha ao notificar cancelamento (${updated.id}): ${err?.message}`));
         }
       }
     }
@@ -1740,7 +1793,8 @@ export class ServiceOrdersService {
 
   // Receita da O.S.: exatamente um lançamento, feito no faturamento, pelo total da O.S.
   // Se já houver um (ex.: o antigo lançamento feito na aprovação), ele é acertado para o
-  // valor e a data do faturamento em vez de duplicar.
+  // valor e a data do faturamento em vez de duplicar. A checagem roda dentro de uma
+  // transação serializável com retry, evitando corrida com o webhook do Asaas.
   private async recordOrderRevenue(order: any): Promise<void> {
     const amount = Number(order.totalCost || 0);
     const data = {
@@ -1749,16 +1803,30 @@ export class ServiceOrdersService {
       category: 'servicos',
       date: order.paidAt ?? new Date(),
     };
-    const existing = await this.prisma.financialTransaction.findFirst({
-      where: { tenantId: order.tenantId, referenceId: order.id, referenceType: 'service_order', type: 'INCOME' },
-      orderBy: { createdAt: 'asc' },
-    });
-    if (existing) {
-      await this.prisma.financialTransaction.update({ where: { id: existing.id }, data });
-    } else if (amount > 0) {
-      await this.prisma.financialTransaction.create({
-        data: { ...data, tenantId: order.tenantId, type: 'INCOME', referenceId: order.id, referenceType: 'service_order' },
-      });
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await this.prisma.$transaction(
+          async (tx) => {
+            const existing = await tx.financialTransaction.findFirst({
+              where: { tenantId: order.tenantId, referenceId: order.id, referenceType: 'service_order', type: 'INCOME' },
+              orderBy: { createdAt: 'asc' },
+            });
+            if (existing) {
+              await tx.financialTransaction.update({ where: { id: existing.id }, data });
+            } else if (amount > 0) {
+              await tx.financialTransaction.create({
+                data: { ...data, tenantId: order.tenantId, type: 'INCOME', referenceId: order.id, referenceType: 'service_order' },
+              });
+            }
+          },
+          { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+        );
+        return;
+      } catch (err: any) {
+        const isConflict = err?.code === 'P2034';
+        if (!isConflict || attempt === 2) throw err;
+      }
     }
   }
 

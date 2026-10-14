@@ -39,11 +39,13 @@ export class CreateOrUpdateItemDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
+  @Min(0)
   unitPrice?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
+  @Min(0)
   discount?: number;
 
   @ApiProperty({ required: false })
@@ -83,11 +85,13 @@ export class UpdateServiceOrderItemDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
+  @Min(0)
   unitPrice?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
+  @Min(0)
   discount?: number;
 
   @ApiProperty({ required: false })

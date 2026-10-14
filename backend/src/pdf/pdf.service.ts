@@ -60,12 +60,28 @@ export class PdfService implements OnModuleDestroy {
     return `<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body>${normalized}</body></html>`;
   }
 
+  // URLs de rede externa não são permitidas no HTML recebido do usuário:
+  // evita SSRF (varredura da rede interna/metadata) e exfiltração de dados.
+  private async attachRequestFirewall(page: puppeteer.Page) {
+    const blockedPrefixes = ['http://', 'https://', 'file://', 'ftp://'];
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const url = (req.url() || '').toLowerCase();
+      if (blockedPrefixes.some((p) => url.startsWith(p))) {
+        req.abort().catch(() => undefined);
+        return;
+      }
+      req.continue().catch(() => undefined);
+    });
+  }
+
   async renderHtml(html: string, options: RenderOptions = {}): Promise<Buffer> {
     let page: puppeteer.Page | null = null;
     try {
       const browser = await this.getBrowser();
       page = await browser.newPage();
       await page.setViewport({ width: 1280, height: 900 });
+      await this.attachRequestFirewall(page);
       await page.setContent(this.ensureHtmlDocument(html), { waitUntil: 'networkidle2' });
 
       // Imagens em data: URI (ex.: logo da empresa) não geram requisição de rede,

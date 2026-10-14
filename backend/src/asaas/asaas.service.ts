@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -28,6 +28,7 @@ export class AsaasService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
+    @Inject(forwardRef(() => ServiceOrdersService))
     private serviceOrders: ServiceOrdersService,
   ) {}
 
@@ -281,10 +282,25 @@ export class AsaasService {
       throw new BadRequestException('A cobrança já foi paga e não pode ser cancelada aqui.');
     }
     const client = await this.clientFor(tenantId);
-    await client.deletePayment(order.asaasPaymentId).catch((err) => {
-      // Já removida no Asaas: seguimos limpando do nosso lado.
-      this.logger.warn(`Cancelamento no Asaas: ${(err as Error).message}`);
-    });
+    try {
+      await client.deletePayment(order.asaasPaymentId);
+    } catch (err) {
+      // A cobrança pode já ter sido removida/estornada lá: reconfere no Asaas antes
+      // de desistir. Falhando de novo, propaga — não limpamos o vínculo local com
+      // cobrança possivelmente viva (dinheiro recebido sem tratamento).
+      try {
+        const live = await client.getPayment(order.asaasPaymentId as string);
+        const status = (live as any)?.status;
+        if (!['DELETED', 'REFUNDED', 'RECEIVED', 'CONFIRMED'].includes(status)) {
+          throw err;
+        }
+        await this.applyPaymentStatus(tenantId, orderId, status);
+      } catch (checkErr) {
+        // Se o recheck também falhou (ex.: cobrança não existe mais), tratamos como removida.
+        if (checkErr === err) throw err;
+        this.logger.warn(`Cancelamento no Asaas: ${(err as Error).message}; recheck: ${(checkErr as Error).message}`);
+      }
+    }
     await this.prisma.serviceOrder.update({
       where: { id: order.id },
       data: { asaasPaymentId: null, asaasBillingType: null, asaasChargeStatus: null, asaasInvoiceUrl: null, asaasDueDate: null },

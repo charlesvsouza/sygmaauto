@@ -13,9 +13,13 @@ import {
   ResponsiveContainer, Cell, PieChart, Pie, Legend, LineChart, Line,
 } from 'recharts';
 import { cn } from '../lib/utils';
+import { useToast } from '../components/ui';
 
 const PENDING_STATUSES = ['ABERTA', 'EM_DIAGNOSTICO', 'ORCAMENTO_PRONTO', 'AGUARDANDO_APROVACAO', 'APROVADO', 'EM_EXECUCAO', 'AGUARDANDO_PECAS'];
 const COMPLETED_STATUSES = ['PRONTO_ENTREGA', 'FATURADO', 'ENTREGUE'];
+// Faturamento = receita realmente lançada no livro-caixa (no faturamento da O.S.).
+// PRONTO_ENTREGA ainda não foi faturada e não entra aqui.
+const REVENUE_STATUSES = ['FATURADO', 'ENTREGUE'];
 
 const STATUS_LABELS: Record<string, string> = {
   ABERTA: 'Aberta', EM_DIAGNOSTICO: 'Diagnóstico', ORCAMENTO_PRONTO: 'Orçamento',
@@ -55,10 +59,15 @@ const WORKSHOP_AREA_LABEL: Record<string, string> = {
 
 function getLast6Months() {
   const months = [];
+  const now = new Date();
   for (let i = 5; i >= 0; i--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    months.push({ label: d.toLocaleDateString('pt-BR', { month: 'short' }), month: d.getMonth(), year: d.getFullYear() });
+    // Aritmética por ano/mês: setMonth estoura o dia em 29–31 (ex.: 31/10 → 01/05)
+    // e duplica o mês no gráfico.
+    const monthIdx = now.getMonth() - i;
+    const year = now.getFullYear() + Math.floor(monthIdx / 12);
+    const m = monthIdx - Math.floor(monthIdx / 12) * 12;
+    const label = new Date(year, m, 1).toLocaleDateString('pt-BR', { month: 'short' });
+    months.push({ label, month: m, year });
   }
   return months;
 }
@@ -66,6 +75,7 @@ function getLast6Months() {
 export function DashboardPage() {
   const { user, tenant } = useAuthStore();
   const navigate = useNavigate();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
   const [financialData, setFinancialData] = useState<any[]>([]);
@@ -115,10 +125,11 @@ export function DashboardPage() {
         waitingParts: allOrders.filter((o: any) => o.status === 'AGUARDANDO_PECAS').length,
         scheduledToday: allOrders.filter((o: any) => o.scheduledDate && new Date(o.scheduledDate).toDateString() === todayStr).length,
         lowStockCount: parts.filter((p: any) => (p.currentStock || 0) <= (p.minStock || 0)).length,
-        revenue: allOrders.filter((o: any) => COMPLETED_STATUSES.includes(o.status)).reduce((s: number, o: any) => s + Number(o.totalCost || 0), 0),
+        revenue: allOrders.filter((o: any) => REVENUE_STATUSES.includes(o.status)).reduce((s: number, o: any) => s + Number(o.totalCost || 0), 0),
       });
     } catch (err) {
       console.error(err);
+      toast.error('Não foi possível carregar os indicadores do painel. Verifique a conexão e recarregue.');
     } finally {
       setLoading(false);
     }
@@ -134,14 +145,14 @@ export function DashboardPage() {
       .sort((a, b) => b.count - a.count);
   }, [orders]);
 
-  // Gráfico 2: Faturamento últimos 6 meses
+  // Gráfico 2: Faturamento últimos 6 meses (receita do livro-caixa: só O.S. faturadas)
   const revenueChartData = useMemo(() => {
     const months = getLast6Months();
     return months.map(({ label, month, year }) => {
       const revenue = orders
         .filter((o) => {
-          if (!COMPLETED_STATUSES.includes(o.status)) return false;
-          const d = new Date(o.updatedAt || o.createdAt);
+          if (!REVENUE_STATUSES.includes(o.status)) return false;
+          const d = new Date(o.paidAt || o.updatedAt || o.createdAt);
           return d.getMonth() === month && d.getFullYear() === year;
         })
         .reduce((s, o) => s + Number(o.totalCost || 0), 0);

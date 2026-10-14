@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Loader2, Ruler, CheckCircle2, ChevronDown, ChevronRight, Wrench, Package, AlertTriangle, ChevronLeft, FlaskConical } from 'lucide-react';
 
-import { NumberInput, usePrompt } from './ui';
+import { NumberInput, usePrompt, useToast } from './ui';
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
 /** Medidas de um cilindro */
@@ -334,6 +334,7 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
 
   // Controle de steps
   const prompt = usePrompt();
+  const toast = useToast();
   const [step, setStep] = useState<1 | 2>(1);
   const [diagItems, setDiagItems] = useState<SuggestedItem[]>([]);
 
@@ -400,6 +401,8 @@ export function MetrologiaModal({ osId, osNumber, onSave, onCancel, initialData 
       );
       setSaved(true);
       setTimeout(onCancel, 900);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Erro ao salvar a metrologia. Os itens podem não ter sido gravados.');
     } finally {
       setSaving(false);
     }

@@ -21,6 +21,8 @@ export class TenantsController {
   }
 
   @Patch('me')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MASTER', 'ADMIN')
   @ApiOperation({ summary: 'Update current tenant' })
   async updateMe(@Tenant() tenant: { tenantId: string }, @Body() dto: UpdateTenantDto) {
     return this.tenantsService.update(tenant.tenantId, dto);

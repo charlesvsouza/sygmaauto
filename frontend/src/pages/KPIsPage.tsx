@@ -177,9 +177,11 @@ export function KPIsPage() {
     [statusCount],
   );
 
-  const aprovados = Number(statusCount.APROVADO || 0) + Number(statusCount.EM_EXECUCAO || 0) + Number(statusCount.PRONTO_ENTREGA || 0) + Number(statusCount.ENTREGUE || 0);
-  const emAprovacao = Number(statusCount.ORCAMENTO_PRONTO || 0) + Number(statusCount.AGUARDANDO_APROVACAO || 0) + Number(statusCount.REPROVADO || 0);
-  const taxaAprovacao = emAprovacao > 0 ? (aprovados / emAprovacao) * 100 : 0;
+  // Taxa de aprovação: dos orçamentos que chegaram à decisão, quantos foram aprovados.
+  // Aprovados = todo status posterior à aprovação; denominador inclui os reprovados.
+  const aprovados = Number(statusCount.APROVADO || 0) + Number(statusCount.AGUARDANDO_PECAS || 0) + Number(statusCount.EM_EXECUCAO || 0) + Number(statusCount.PRONTO_ENTREGA || 0) + Number(statusCount.FATURADO || 0) + Number(statusCount.ENTREGUE || 0);
+  const reprovados = Number(statusCount.REPROVADO || 0);
+  const taxaAprovacao = aprovados + reprovados > 0 ? (aprovados / (aprovados + reprovados)) * 100 : 0;
 
   const lowStock = useMemo(
     () => parts.filter((p: any) => Number(p.currentStock || 0) <= Number(p.minStock || 0)),

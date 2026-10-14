@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Plus, X } from 'lucide-react';
 import { customersApi, serviceOrdersApi, vehiclesApi } from '../api/client';
-import { cn } from '../lib/utils';
+import { cn, dateTimeLocalToBrIso } from '../lib/utils';
 import { orderCode } from '../lib/orderCode';
 import { useAuthStore } from '../store/authStore';
 import { ACCESSORIES, ACCESSORY_CONDITIONS, AREAS, CONDITIONS, type Condition } from './ChecklistModal';
@@ -165,7 +165,9 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
         vehicleId: vehicleId || undefined,
         kmEntrada: vehicleId ? kmEntrada : undefined,
         complaint: complaint.trim() || undefined,
-        scheduledDate: scheduledDate || undefined,
+        // "AAAA-MM-DDTHH:mm" digitado no fuso da oficina → ISO com offset -03:00
+        // explícito, para o backend gravar a hora pretendida (não 3h adiantado).
+        scheduledDate: dateTimeLocalToBrIso(scheduledDate),
         reserveStock,
         equipmentBrand: isRetifica ? engine.brand || undefined : undefined,
         equipmentModel: isRetifica ? engine.model || undefined : undefined,

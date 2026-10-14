@@ -106,13 +106,22 @@ export class InventoryService {
   }
 
   async createMovement(tenantId: string, dto: CreateMovementDto) {
-    const part = await this.findPartById(tenantId, dto.partId);
+    await this.findPartById(tenantId, dto.partId);
 
-    const delta = dto.type === 'ENTRY' ? dto.quantity : -dto.quantity;
-    const newStock = (part.currentStock ?? 0) + delta;
-
-    if (dto.type === 'EXIT' && newStock < 0) {
-      throw new BadRequestException('Estoque insuficiente');
+    // Saída atômica: o UPDATE condicional garante que duas movimentações
+    // simultâneas não tenham lost update (saldo lido duas vezes).
+    if (dto.type === 'EXIT') {
+      const debit = await this.prisma.part.updateMany({
+        where: { id: dto.partId, tenantId, currentStock: { gte: dto.quantity } },
+        data: { currentStock: { decrement: dto.quantity } },
+      });
+      if (debit.count === 0) {
+        throw new BadRequestException('Estoque insuficiente');
+      }
+      const movement = await this.prisma.inventoryMovement.create({
+        data: { tenantId, partId: dto.partId, type: dto.type, quantity: dto.quantity, note: dto.note },
+      });
+      return movement;
     }
 
     const [movement] = await this.prisma.$transaction([
@@ -121,7 +130,7 @@ export class InventoryService {
       }),
       this.prisma.part.update({
         where: { id: dto.partId },
-        data: { currentStock: newStock },
+        data: { currentStock: { increment: dto.quantity } },
       }),
     ]);
 

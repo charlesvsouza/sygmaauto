@@ -42,7 +42,9 @@ export class FinancialService {
         category: dto.category,
         referenceId: dto.referenceId,
         referenceType: dto.referenceType,
-        date: dto.date ? new Date(dto.date) : new Date(),
+        // Meio-dia em Brasília: uma data "AAAA-MM-DD" não deve virar 21h do dia
+        // anterior quando interpretada no fuso UTC do servidor.
+        date: dto.date ? new Date(`${dto.date}T12:00:00-03:00`) : new Date(),
       },
     });
 
@@ -138,18 +140,24 @@ export class FinancialService {
   async getOSProfit(tenantId: string, serviceOrderId: string) {
     const order = await this.prisma.serviceOrder.findFirst({
       where: { id: serviceOrderId, tenantId },
-      include: { items: true },
+      include: { items: { include: { part: true } } },
     });
 
     if (!order) {
       throw new NotFoundException('Service order not found');
     }
 
+    // Receita = total faturado; custo = custo real das peças (costPrice × qtd).
+    const revenue = Number(order.totalCost ?? 0);
+    const costs = order.items.reduce(
+      (sum, item) => sum + Number(item.part?.costPrice ?? 0) * Number(item.quantity ?? 1),
+      0,
+    );
     return {
       serviceOrderId,
-      revenue: Number(order.totalCost),
-      costs: order.items.reduce((sum, item) => sum + Number(item.totalPrice), 0),
-      profit: Number(order.totalCost),
+      revenue,
+      costs,
+      profit: revenue - costs,
     };
   }
 
@@ -161,11 +169,9 @@ export class FinancialService {
     const where: any = { tenantId };
     if (filters.startDate || filters.endDate) {
       where.createdAt = {};
-      if (filters.startDate) where.createdAt.gte = new Date(filters.startDate);
+      if (filters.startDate) where.createdAt.gte = new Date(`${filters.startDate}T00:00:00-03:00`);
       if (filters.endDate) {
-        const end = new Date(filters.endDate);
-        end.setHours(23, 59, 59, 999);
-        where.createdAt.lte = end;
+        where.createdAt.lte = new Date(`${filters.endDate}T23:59:59.999-03:00`);
       }
     }
     if (filters.status) where.status = filters.status;
@@ -219,9 +225,19 @@ export class FinancialService {
    * Estrutura: Receita Bruta → Deduções → Receita Líquida → CMV → Margem Bruta
    *           → Despesas Operacionais → EBITDA → Resultado Líquido
    */
+  // Limites do mês no fuso de Brasília (independente do fuso do servidor).
+  private brMonthRange(year: number, month: number): { start: Date; end: Date } {
+    const mm = String(month).padStart(2, '0');
+    const start = new Date(`${year}-${mm}-01T00:00:00-03:00`);
+    const nextYear = month === 12 ? year + 1 : year;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const end = new Date(`${nextYear}-${String(nextMonth).padStart(2, '0')}-01T00:00:00-03:00`);
+    end.setTime(end.getTime() - 1);
+    return { start, end };
+  }
+
   async getDRE(tenantId: string, year: number, month: number) {
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59);
+    const { start: startDate, end: endDate } = this.brMonthRange(year, month);
 
     // 1. Todas as transações do período
     const transactions = await this.prisma.financialTransaction.findMany({
@@ -261,8 +277,10 @@ export class FinancialService {
     // Histórico mensal dos últimos 6 meses
     const historico: Array<{ mes: string; receita: number; despesa: number; resultado: number }> = [];
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(year, month - 1 - i, 1);
-      const dEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+      const baseMonth = month - i;
+      const dYear = baseMonth < 1 ? year - 1 : year;
+      const dMonth = baseMonth < 1 ? baseMonth + 12 : baseMonth;
+      const { start: d, end: dEnd } = this.brMonthRange(dYear, dMonth);
       const txs = await this.prisma.financialTransaction.findMany({
         where: { tenantId, date: { gte: d, lte: dEnd } },
       });
@@ -318,8 +336,7 @@ export class FinancialService {
     let totalOs = 0;
 
     for (let m = 1; m <= 12; m++) {
-      const start = new Date(year, m - 1, 1);
-      const end = new Date(year, m, 0, 23, 59, 59);
+      const { start, end } = this.brMonthRange(year, m);
 
       const [txs, orders] = await Promise.all([
         this.prisma.financialTransaction.findMany({ where: { tenantId, date: { gte: start, lte: end } } }),
@@ -381,8 +398,39 @@ export class FinancialService {
 
   /** KPIs financeiros para múltiplos períodos (BI) */
   async getIndicadores(tenantId: string) {
+    // Períodos no fuso de Brasília, calculados por índice de mês (0-based).
     const now = new Date();
     const DEDUCAO = 0.08;
+
+    const curMonth = now.getMonth(); // 0-based
+    const shift = (delta: number) => {
+      const idx = curMonth + delta;
+      const yearOff = Math.floor(idx / 12);
+      return { year: now.getFullYear() + yearOff, monthIdx: idx - yearOff * 12 };
+    };
+
+    const { start: mesAtualStart, end: mesAtualEnd } = this.brMonthRange(now.getFullYear(), curMonth + 1);
+
+    // Trimestre atual (últimos 3 meses)
+    const { year: triYear, monthIdx: triMonth } = shift(-2);
+    const trimestreStart = this.brMonthRange(triYear, triMonth + 1).start;
+    const trimestreEnd = mesAtualEnd;
+
+    // Semestre atual (últimos 6 meses)
+    const { year: semYear, monthIdx: semMonth } = shift(-5);
+    const semestreStart = this.brMonthRange(semYear, semMonth + 1).start;
+    const semestreEnd = mesAtualEnd;
+
+    // Semestre anterior (os 6 meses anteriores ao semestre atual)
+    const { year: semAntStartYear, monthIdx: semAntStartMonth } = shift(-11);
+    const semAntStart = this.brMonthRange(semAntStartYear, semAntStartMonth + 1).start;
+    const { year: semAntEndYear, monthIdx: semAntEndMonth } = shift(-6);
+    const semAntEnd = this.brMonthRange(semAntEndYear, semAntEndMonth + 1).end;
+
+    // Ano atual
+    const anoStart = new Date(`${now.getFullYear()}-01-01T00:00:00-03:00`);
+    const anoEnd = new Date(`${now.getFullYear() + 1}-01-01T00:00:00-03:00`);
+    anoEnd.setTime(anoEnd.getTime() - 1);
 
     const calcPeriodo = async (start: Date, end: Date) => {
       const [txs, orders] = await Promise.all([
@@ -417,26 +465,6 @@ export class FinancialService {
         ticketMedio: orders.length > 0 ? periodLedger.receitaOS / orders.length : 0,
       };
     };
-
-    // Mês atual
-    const mesAtualStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const mesAtualEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-
-    // Trimestre atual (últimos 3 meses)
-    const trimestreStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-    const trimestreEnd   = mesAtualEnd;
-
-    // Semestre atual (últimos 6 meses)
-    const semestreStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-    const semestreEnd   = mesAtualEnd;
-
-    // Semestre anterior (6 meses atrás)
-    const semAntStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-    const semAntEnd   = new Date(now.getFullYear(), now.getMonth() - 6, 0, 23, 59, 59);
-
-    // Ano atual
-    const anoStart = new Date(now.getFullYear(), 0, 1);
-    const anoEnd   = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
 
     const [mesAtual, trimestre, semestre, semestreAnterior, anual] = await Promise.all([
       calcPeriodo(mesAtualStart, mesAtualEnd),

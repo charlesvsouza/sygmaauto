@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Loader2, PackageCheck } from 'lucide-react';
 
+import { todayBrInput } from '../lib/utils';
+
 interface DeliveryModalProps {
   /** 'confirm' = marcando como entregue agora; 'edit' = corrigindo O.S. já entregue */
   mode: 'confirm' | 'edit';
@@ -17,9 +19,15 @@ interface DeliveryModalProps {
 }
 
 const toInputDate = (iso?: string | null) => {
-  const d = iso ? new Date(iso) : new Date();
-  // Data local de Brasília (YYYY-MM-DD)
-  return new Date(d.getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+  if (!iso) return todayBrInput();
+  // Data local de Brasília (YYYY-MM-DD), incluindo horário de verão extinto.
+  const brDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(iso));
+  return brDate;
 };
 
 export function DeliveryModal({ mode, initialDate, initialName, initialAuthorizedBy, requireAuthorizedBy, unpaid, onClose, onSubmit }: DeliveryModalProps) {

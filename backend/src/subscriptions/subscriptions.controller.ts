@@ -34,8 +34,8 @@ export class SubscriptionsController {
   }
 
   @Post('cancel')
-  @Roles('ADMIN')
-  @ApiOperation({ summary: 'Cancel subscription' })
+  @Roles('MASTER')
+  @ApiOperation({ summary: 'Cancel subscription (MASTER only)' })
   async cancel(@Tenant() tenant: { tenantId: string }) {
     return this.subscriptionsService.cancel(tenant.tenantId);
   }

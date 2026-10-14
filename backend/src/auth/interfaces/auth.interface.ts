@@ -5,6 +5,7 @@ export interface JwtPayload {
   email: string;
   tenantId: string;
   role: string;
+  isImpersonation?: boolean;
 }
 
 export interface AuthTokens {

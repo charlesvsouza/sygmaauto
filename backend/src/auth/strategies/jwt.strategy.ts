@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtPayload } from '../interfaces/auth.interface';
+import { assertSubscriptionAccess } from '../../common/subscription-access';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -28,6 +29,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found or inactive');
     }
 
+    // Bloqueia acesso global quando a assinatura do tenant está vencida,
+    // suspensa (PAST_DUE) ou em trial expirado. Sessões de impersonação do
+    // superadmin passam, para permitir corrigir cobrança do próprio tenant.
+    if (!payload.isImpersonation) {
+      assertSubscriptionAccess(user.tenant.subscription);
+    }
+
     return {
       userId: user.id,
       email: user.email,
@@ -35,6 +43,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       role: user.role,
       subscription: user.tenant.subscription,
       plan: user.tenant.subscription?.plan,
+      isImpersonation: !!payload.isImpersonation,
     };
   }
 }

@@ -206,20 +206,31 @@ export class SuperAdminService {
       throw new NotFoundException('Tenant não encontrado');
     }
 
-    // Deletar na ordem correta para respeitar FK constraints
+    // Deletar na ordem correta para respeitar FK constraints. Todas as tabelas
+    // com FK para o tenant e para service_order/part/user precisam sair antes
+    // das respectivas linhas pai, senão a violação de FK aborta a exclusão.
     await this.prisma.$transaction([
       this.prisma.serviceOrderTimeline.deleteMany({ where: { serviceOrder: { tenantId } } }),
+      this.prisma.commission.deleteMany({ where: { serviceOrder: { tenantId } } }),
+      this.prisma.vehicleChecklist.deleteMany({ where: { tenantId } }),
+      this.prisma.npsResponse.deleteMany({ where: { tenantId } }),
+      this.prisma.engineMetrology.deleteMany({ where: { tenantId } }),
       this.prisma.serviceOrderItem.deleteMany({ where: { serviceOrder: { tenantId } } }),
       this.prisma.serviceOrder.deleteMany({ where: { tenantId } }),
       this.prisma.inventoryMovement.deleteMany({ where: { tenantId } }),
       this.prisma.part.deleteMany({ where: { tenantId } }),
       this.prisma.supplier.deleteMany({ where: { tenantId } }),
       this.prisma.financialTransaction.deleteMany({ where: { tenantId } }),
+      this.prisma.commissionRate.deleteMany({ where: { tenantId } }),
+      this.prisma.message.deleteMany({ where: { tenantId } }),
+      this.prisma.lgpdRequest.deleteMany({ where: { tenantId } }),
+      this.prisma.auditLog.deleteMany({ where: { tenantId } }),
       this.prisma.vehicle.deleteMany({ where: { tenantId } }),
       this.prisma.customer.deleteMany({ where: { tenantId } }),
       this.prisma.service.deleteMany({ where: { tenantId } }),
       this.prisma.user.deleteMany({ where: { tenantId } }),
       this.prisma.subscription.deleteMany({ where: { tenantId } }),
+      this.prisma.asaasAccount.deleteMany({ where: { tenantId } }),
       this.prisma.tenant.delete({ where: { id: tenantId } }),
     ]);
 
@@ -266,6 +277,23 @@ export class SuperAdminService {
         expiresIn: '2h',
       },
     );
+
+    // Trilha de auditoria: quem (superadmin) entrou como quem (tenant).
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId: tenant.id,
+        userId: masterUser.id,
+        entityType: 'Tenant',
+        entityId: tenant.id,
+        action: 'IMPERSONATION_START',
+        changes: JSON.stringify({
+          superAdminId: superAdminPayload.sub,
+          superAdminEmail: superAdminPayload.email ?? null,
+          impersonatedUserId: masterUser.id,
+          impersonatedEmail: masterUser.email,
+        }),
+      },
+    });
 
     return {
       accessToken: token,

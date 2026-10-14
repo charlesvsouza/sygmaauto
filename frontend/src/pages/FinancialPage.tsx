@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { financialApi, tenantsApi } from '../api/client';
-import { downloadReportPdf, ReportHeader, ReportSignature, REPORT_CSS, todayInput } from '../lib/report';
+import { downloadReportPdf, ReportHeader, ReportSignature, REPORT_CSS, todayInput, fmtDateInput } from '../lib/report';
 import { csvNumber, downloadCsv } from '../lib/csv';
+import { parseYmdLocal } from '../lib/utils';
 import { usePermissions } from '../lib/permissions';
 import { useAuthStore } from '../store/authStore';
 import {
@@ -57,7 +58,7 @@ export function FinancialPage() {
     amount: 0,
     type: 'EXPENSE',
     category: 'Geral',
-    date: new Date().toISOString().split('T')[0],
+    date: todayInput(),
   });
 
   useEffect(() => { loadFinancialData(); }, []);
@@ -78,6 +79,7 @@ export function FinancialPage() {
       setTenantData(tenantRes.data);
     } catch (error) {
       console.error('Falha ao carregar dados financeiros:', error);
+      toast.error('Não foi possível carregar os dados financeiros. Verifique a conexão e tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -94,7 +96,7 @@ export function FinancialPage() {
       setShowAddModal(false);
       setTransactionError('');
       loadFinancialData();
-      setFormData({ description: '', amount: 0, type: 'EXPENSE', category: 'Geral', date: new Date().toISOString().split('T')[0] });
+      setFormData({ description: '', amount: 0, type: 'EXPENSE', category: 'Geral', date: todayInput() });
     } catch (error: any) {
       const msg = error?.response?.data?.message;
       setTransactionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Erro ao salvar transação. Tente novamente.');
@@ -129,7 +131,10 @@ export function FinancialPage() {
     transactions
       .filter((t) => t.type === 'INCOME')
       .forEach((t) => {
-        const tDate = new Date(t.date);
+        // A data grava "AAAA-MM-DD" (ou timestamp cujo dia é o gravado): usar
+        // parseYmdLocal para não deslocar o lançamento para o mês anterior.
+        const tDate = parseYmdLocal(t.date);
+        if (!tDate) return;
         const bucket = buckets.find((b) => b.monthIdx === tDate.getMonth() && b.year === tDate.getFullYear());
         if (bucket) bucket.value += Number(t.amount);
       });
@@ -158,7 +163,7 @@ export function FinancialPage() {
     downloadCsv(`Financeiro-${todayInput()}`,
       ['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor', 'O.S.'],
       transactions.map((t) => [
-        new Date(t.date).toLocaleDateString('pt-BR'),
+        fmtDateInput(t.date) !== '—' ? fmtDateInput(t.date) : new Date(t.date).toLocaleDateString('pt-BR'),
         t.description ?? '',
         t.category || 'Geral',
         t.type === 'INCOME' ? 'Entrada' : 'Saída',
@@ -222,7 +227,7 @@ export function FinancialPage() {
               <tbody>
                 {transactions.map((t) => (
                   <tr key={t.id} className={t.type === 'INCOME' ? 'income-row' : 'expense-row'}>
-                    <td>{new Date(t.date).toLocaleDateString('pt-BR')}</td>
+                    <td>{fmtDateInput(t.date) !== '—' ? fmtDateInput(t.date) : new Date(t.date).toLocaleDateString('pt-BR')}</td>
                     <td>
                       {t.description}
                       {t.referenceId && <span style={{ fontSize: '8pt', color: '#888', marginLeft: '4px' }}>(OS: {t.referenceId.slice(0, 8)})</span>}
@@ -456,7 +461,7 @@ export function FinancialPage() {
                             {t.type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-surface-50">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
+                            <p className="text-sm font-bold text-surface-50">{fmtDateInput(t.date) !== '—' ? fmtDateInput(t.date) : new Date(t.date).toLocaleDateString('pt-BR')}</p>
                             <p className="text-[11px] font-mono font-bold text-surface-500 uppercase">Ref: {t.id.slice(0, 8)}</p>
                           </div>
                         </div>

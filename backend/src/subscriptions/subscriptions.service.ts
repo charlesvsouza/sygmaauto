@@ -490,22 +490,30 @@ export class SubscriptionsService {
     const currentPeriodEnd = new Date(currentPeriodStart);
     currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + monthsToAdd);
 
-    const currentSubscription = await this.findByTenant(tenantId);
-    const currentEnd = currentSubscription.currentPeriodEnd ? new Date(currentSubscription.currentPeriodEnd) : null;
-    const isDuplicateApprovedPayment =
-      currentSubscription.plan.name === plan.name &&
-      currentSubscription.status === 'ACTIVE' &&
-      currentEnd !== null &&
-      currentEnd.getTime() >= currentPeriodEnd.getTime();
+    const currentSubscription = await this.prisma.subscription.findUnique({
+      where: { tenantId },
+      include: { plan: true },
+    });
+    if (currentSubscription) {
+      const currentEnd = currentSubscription.currentPeriodEnd ? new Date(currentSubscription.currentPeriodEnd) : null;
+      const isDuplicateApprovedPayment =
+        currentSubscription.plan.name === plan.name &&
+        currentSubscription.status === 'ACTIVE' &&
+        currentEnd !== null &&
+        currentEnd.getTime() >= currentPeriodEnd.getTime();
 
-    if (isDuplicateApprovedPayment) {
-      return {
-        received: true,
-        ignored: true,
-        reason: 'payment already applied',
-        paymentId: String(paymentId),
-      };
+      if (isDuplicateApprovedPayment) {
+        return {
+          received: true,
+          ignored: true,
+          reason: 'payment already applied',
+          paymentId: String(paymentId),
+        };
+      }
     }
+    // Sem registro de assinatura (tenant legado): segue para criar/atualizar
+    // via update a seguir — responder erro aqui faria o MP reenviar o evento
+    // indefinidamente.
 
     const resolvedBillingCycle = billingCycle || BillingCycle.MONTHLY;
 

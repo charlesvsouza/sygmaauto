@@ -1,5 +1,6 @@
 import { SetMetadata, Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { assertSubscriptionAccess } from '../../common/subscription-access';
 
 export const PLAN_KEY = 'requiredPlan';
 
@@ -18,6 +19,11 @@ export class PlanGuard implements CanActivate {
     }
 
     const { user } = context.switchToHttp().getRequest();
+
+    // A JwtStrategy já bloqueia globalmente assinaturas vencidas; aqui a checagem
+    // é repetida como defesa em profundidade para as rotas com @RequirePlan.
+    assertSubscriptionAccess(user?.subscription);
+
     const userPlan = user?.plan?.name;
 
     if (!userPlan) {

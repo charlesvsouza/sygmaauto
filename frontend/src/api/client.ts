@@ -70,6 +70,12 @@ api.interceptors.response.use(
           useAuthStore.getState().logout();
           window.location.href = '/login';
         }
+      } else {
+        // Sem refreshToken (ex.: sessão de impersonação de 2h): a sessão acabou.
+        // Deslogar e voltar ao login, senão o usuário fica travado vendo falhas
+        // genéricas em toda ação.
+        useAuthStore.getState().logout();
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);

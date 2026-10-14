@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 const DEFAULT_RATES: Record<string, number> = {
@@ -36,6 +36,14 @@ export class CommissionsService {
   }
 
   async generateForOrder(tenantId: string, serviceOrderId: string) {
+    // Só gera comissões para a O.S. faturada — evita recriar comissões de uma
+    // O.S. estornada em uma corrida com o reverseBilling.
+    const order = await this.prisma.serviceOrder.findFirst({
+      where: { id: serviceOrderId, tenantId },
+      select: { status: true },
+    });
+    if (!order || order.status !== 'FATURADO') return;
+
     const items = await this.prisma.serviceOrderItem.findMany({
       where: { serviceOrderId, assignedUserId: { not: null } },
       include: { assignedUser: true, commission: true },
@@ -78,11 +86,9 @@ export class CommissionsService {
     if (filters.userId) where.userId = filters.userId;
     if (filters.startDate || filters.endDate) {
       where.createdAt = {};
-      if (filters.startDate) where.createdAt.gte = new Date(filters.startDate);
+      if (filters.startDate) where.createdAt.gte = new Date(`${filters.startDate}T00:00:00-03:00`);
       if (filters.endDate) {
-        const end = new Date(filters.endDate);
-        end.setHours(23, 59, 59, 999);
-        where.createdAt.lte = end;
+        where.createdAt.lte = new Date(`${filters.endDate}T23:59:59.999-03:00`);
       }
     }
 
@@ -130,6 +136,9 @@ export class CommissionsService {
   async markAsPaid(tenantId: string, id: string) {
     const commission = await this.prisma.commission.findFirst({ where: { id, tenantId } });
     if (!commission) throw new NotFoundException('Comissão não encontrada');
+    if (commission.status !== 'PENDENTE') {
+      throw new BadRequestException(`Comissão já está ${commission.status === 'PAGO' ? 'paga' : commission.status.toLowerCase()}.`);
+    }
 
     return this.prisma.commission.update({
       where: { id },
@@ -138,6 +147,9 @@ export class CommissionsService {
   }
 
   async upsertRate(tenantId: string, userId: string | null, role: string | null, rate: number) {
+    if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+      throw new BadRequestException('A taxa de comissão deve estar entre 0 e 100.');
+    }
     if (userId) {
       return this.prisma.commissionRate.upsert({
         where: { userId },
