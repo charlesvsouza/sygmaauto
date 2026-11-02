@@ -1888,8 +1888,15 @@ export function ServiceOrdersPage() {
                     const totalGeral = Number(selectedOrder.totalParts) + Number(selectedOrder.totalServices) + Number(selectedOrder.totalLabor);
                     const discountPartsValue = Number(selectedOrder.totalParts) * (Number(selectedOrder.discountPartsPercent || 0) / 100);
                     const discountServicesValue = (Number(selectedOrder.totalServices) + Number(selectedOrder.totalLabor)) * (Number(selectedOrder.discountServicesPercent || 0) / 100);
+                    const itemDiscounts = (selectedOrder.items || []).reduce((s: number, i: any) => s + Number(i.discount || 0), 0);
                     return (
                       <>
+                        {itemDiscounts > 0 && (
+                          <div className="flex justify-between text-[11px] font-bold text-white/80">
+                            <span>Descontos nos itens (já deduzidos)</span>
+                            <span>- R$ {fmtBR(itemDiscounts)}</span>
+                          </div>
+                        )}
                         <div className="pt-3 mt-1 border-t border-white/25 flex justify-between text-[11px] font-bold text-white/90">
                           <span>Total Geral</span>
                           <span>R$ {fmtBR(totalGeral)}</span>
