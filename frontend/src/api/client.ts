@@ -165,6 +165,9 @@ export const vehiclesApi = {
   update: (id: string, data: any) => api.patch(`/vehicles/${id}`, data),
   delete: (id: string) => api.delete(`/vehicles/${id}`),
   searchByPlate: (plate: string) => api.get(`/vehicles/search/plate/${plate}`),
+  ownershipHistory: (id: string) => api.get(`/vehicles/${id}/ownership`),
+  transfer: (id: string, customerId: string, reason?: string) =>
+    api.post(`/vehicles/${id}/transfer`, { customerId, reason }),
 };
 
 export const serviceOrdersApi = {

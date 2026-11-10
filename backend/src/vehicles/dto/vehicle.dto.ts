@@ -70,6 +70,18 @@ export class CreateVehicleDto {
   maintenanceIntervalDays?: number;
 }
 
+export class TransferVehicleDto {
+  @ApiProperty({ description: 'Novo proprietário do veículo' })
+  @IsNotEmpty()
+  @IsString()
+  customerId: string;
+
+  @ApiProperty({ required: false, description: 'Motivo da troca de propriedade' })
+  @IsOptional()
+  @IsString()
+  reason?: string;
+}
+
 export class UpdateVehicleDto {
   @ApiProperty({ required: false })
   @IsOptional()

@@ -6,7 +6,7 @@ import { cn, dateTimeLocalToBrIso } from '../lib/utils';
 import { orderCode } from '../lib/orderCode';
 import { useAuthStore } from '../store/authStore';
 import { ACCESSORIES, ACCESSORY_CONDITIONS, AREAS, CONDITIONS, type Condition } from './ChecklistModal';
-import { NumberInput, useToast } from './ui';
+import { NumberInput, useToast, useConfirm } from './ui';
 
 type OrderType = 'ORCAMENTO' | 'ORDEM_SERVICO' | 'RETIFICA_MOTOR';
 
@@ -61,11 +61,13 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor?: string; 
 // Orçamento em branco: nada é gravado e não existe número até "Salvar orçamento".
 export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, checklistEnabled, onClose, onCustomerCreated, onVehicleCreated, onCreated }: Props) {
   const toast = useToast();
+  const confirm = useConfirm();
   const { user } = useAuthStore();
 
   const [orderType, setOrderType] = useState<OrderType>('ORCAMENTO');
   const [customerId, setCustomerId] = useState('');
   const [vehicleId, setVehicleId] = useState('');
+  const [otherOwnerSearch, setOtherOwnerSearch] = useState('');
   const [kmEntrada, setKmEntrada] = useState(0);
   const [complaint, setComplaint] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
@@ -90,6 +92,28 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
   const needsChecklist = checklistEnabled && !isRetifica;
   const customerVehicles = useMemo(() => vehicles.filter((v) => v.customerId === customerId), [vehicles, customerId]);
   const selectedVehicle = vehicles.find((v) => v.id === vehicleId);
+  const selectedCustomerName = customers.find((c) => c.id === customerId)?.name ?? '';
+  // Veículo de outro proprietário: a O.S. manda, mas o sistema precisa perguntar
+  // antes de mover o veículo para o novo dono.
+  const ownershipChanging = Boolean(selectedVehicle && selectedVehicle.customerId !== customerId);
+  const selectableVehicles = useMemo(() => {
+    const list = [...customerVehicles];
+    if (selectedVehicle && !list.some((v) => v.id === selectedVehicle.id)) list.push(selectedVehicle);
+    return list;
+  }, [customerVehicles, selectedVehicle]);
+  const otherOwnerResults = useMemo(() => {
+    const term = otherOwnerSearch.trim().toLowerCase();
+    if (!term) return [];
+    const plateKey = (value: string) => String(value ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const digits = plateKey(term);
+    return vehicles
+      .filter((v) => v.customerId !== customerId)
+      .filter((v) => {
+        const haystack = `${v.plate} ${v.brand} ${v.model} ${v.customer?.name ?? ''}`.toLowerCase();
+        return haystack.includes(term) || (digits && plateKey(v.plate).includes(digits));
+      })
+      .slice(0, 6);
+  }, [vehicles, customerId, otherOwnerSearch]);
   const openForVehicle = useMemo(() => {
     const closed = ['FATURADO', 'ENTREGUE', 'CANCELADO', 'REPROVADO'];
     return vehicleId ? orders.filter((o) => o.vehicleId === vehicleId && !closed.includes(o.status)) : [];
@@ -153,7 +177,30 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
     } finally { setBusy(false); }
   };
 
-  const save = async () => {
+  const save = async (forceTransfer = false) => {
+    let confirmTransfer = forceTransfer === true;
+    if (!confirmTransfer && ownershipChanging && selectedVehicle) {
+      const from = selectedVehicle.customer?.name ?? 'proprietário atual';
+      const to = selectedCustomerName || 'o novo cliente';
+      const ok = await confirm({
+        title: 'Alterar propriedade do veículo',
+        message: (
+          <>
+            <span className="block mb-3">Tem certeza que deseja alterar a propriedade deste veículo?</span>
+            <span className="block mb-1"><strong>Veículo:</strong> {selectedVehicle.plate} — {selectedVehicle.brand} {selectedVehicle.model}</span>
+            <span className="block mb-1"><strong>De:</strong> {from}</span>
+            <span className="block mb-3"><strong>Para:</strong> {to}</span>
+            <span className="block text-xs text-muted">
+              O veículo passará para o novo dono. As ordens de serviço anteriores continuam no histórico com o cliente da época.
+            </span>
+          </>
+        ),
+        confirmLabel: 'Sim, transferir',
+      });
+      if (!ok) return;
+      confirmTransfer = true;
+    }
+
     setBusy(true);
     try {
       const items = [...AREAS, ...ACCESSORIES]
@@ -163,6 +210,7 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
         orderType,
         customerId,
         vehicleId: vehicleId || undefined,
+        confirmVehicleTransfer: confirmTransfer || undefined,
         kmEntrada: vehicleId ? kmEntrada : undefined,
         complaint: complaint.trim() || undefined,
         // "AAAA-MM-DDTHH:mm" digitado no fuso da oficina → ISO com offset -03:00
@@ -187,7 +235,22 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
       toast.success(`Orçamento salvo com o número ${orderCode(res.data)}.`);
       onCreated(res.data);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Não foi possível salvar. Confira os dados.');
+      const data = err?.response?.data;
+      // Corrida: outro usuário pode ter mexido na propriedade entre a checagem
+      // local e o envio. Repete a confirmação com os dados que o backend devolveu.
+      if (data?.code === 'VEHICLE_OWNER_CHANGED') {
+        const ok = await confirm({
+          title: 'Alterar propriedade do veículo',
+          message: data.message,
+          confirmLabel: 'Sim, transferir',
+        });
+        if (ok) {
+          setBusy(false);
+          return save(true);
+        }
+      } else {
+        toast.error(data?.message || 'Não foi possível salvar. Confira os dados.');
+      }
     } finally { setBusy(false); }
   };
 
@@ -278,13 +341,50 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
                     <Field label={`Veículo ${isRetifica ? '(opcional)' : '*'}`} htmlFor="ns-vehicle">
                       <select id="ns-vehicle" className={field} value={vehicleId} onChange={(e) => setVehicleId(e.target.value)}>
                         <option value="">{isRetifica ? 'Motor avulso / sem veículo' : 'Selecione um veículo...'}</option>
-                        {customerVehicles.map((v) => <option key={v.id} value={v.id}>{v.plate} · {v.brand} {v.model}</option>)}
+                        {selectableVehicles.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.plate} · {v.brand} {v.model}
+                            {v.customerId !== customerId ? ` (dono atual: ${v.customer?.name ?? '—'})` : ''}
+                          </option>
+                        ))}
                       </select>
                     </Field>
                   </div>
                   <button type="button" onClick={() => setNewVehicleOpen((v) => !v)} className="inline-flex h-11 items-center gap-1.5 rounded-md border border-line px-4 text-sm font-semibold text-accent-ink hover:bg-accent-soft">
                     <Plus size={14} /> {newVehicleOpen ? 'Fechar cadastro' : 'Novo veículo'}
                   </button>
+                </div>
+
+                <div className="rounded-lg border border-line bg-panel-2 p-3">
+                  <Field label="Veículo em nome de outro cliente" htmlFor="ns-other-vehicle">
+                    <input
+                      id="ns-other-vehicle"
+                      className={field}
+                      placeholder="Busque pela placa, modelo ou nome do dono atual..."
+                      value={otherOwnerSearch}
+                      onChange={(e) => setOtherOwnerSearch(e.target.value)}
+                    />
+                  </Field>
+                  <p className="mt-2 text-xs text-muted">
+                    O cliente mudou? Localize o veículo pelo dono anterior e selecione-o. Ao salvar, o sistema confirma a troca de propriedade.
+                  </p>
+                  {otherOwnerResults.length > 0 && (
+                    <ul className="mt-3 space-y-1.5">
+                      {otherOwnerResults.map((v) => (
+                        <li key={v.id}>
+                          <button
+                            type="button"
+                            onClick={() => { setVehicleId(v.id); setOtherOwnerSearch(''); }}
+                            className="flex w-full items-center justify-between gap-3 rounded-md border border-line bg-panel px-3 py-2 text-left text-sm hover:border-accent hover:bg-accent-soft"
+                          >
+                            <span className="font-mono font-semibold text-ink">{v.plate}</span>
+                            <span className="flex-1 truncate text-muted">{v.brand} {v.model}</span>
+                            <span className="shrink-0 text-xs text-muted">dono: {v.customer?.name ?? '—'}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 {newVehicleOpen && (
@@ -308,6 +408,20 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
                     <div><dt className="text-xs text-muted">Ano / cor</dt><dd className="font-semibold text-ink">{selectedVehicle.year || '—'} / {selectedVehicle.color || '—'}</dd></div>
                     <div><dt className="text-xs text-muted">Chassi</dt><dd className="font-semibold text-ink">{selectedVehicle.vin || '—'}</dd></div>
                   </dl>
+                )}
+
+                {ownershipChanging && selectedVehicle && (
+                  <div className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm">
+                    <AlertTriangle size={16} className="mt-0.5 shrink-0 text-warning" />
+                    <div>
+                      <p className="font-semibold text-ink">Troca de propriedade</p>
+                      <p className="text-xs text-muted">
+                        Este veículo está em nome de <strong>{selectedVehicle.customer?.name ?? 'outro cliente'}</strong>.
+                        Ao salvar, você confirmará a transferência para <strong>{selectedCustomerName || 'este cliente'}</strong>.
+                        As O.S. anteriores continuam no histórico do dono da época.
+                      </p>
+                    </div>
+                  </div>
                 )}
 
                 {openForVehicle.length > 0 && (
@@ -439,7 +553,7 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
           </p>
           <div className="flex gap-2">
             <button type="button" onClick={onClose} className="h-11 rounded-md px-5 text-sm font-semibold text-muted hover:bg-panel-2">Descartar</button>
-            <button type="button" onClick={save} disabled={!canSave} className="h-11 rounded-md bg-accent px-6 text-sm font-semibold text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" onClick={() => save()} disabled={!canSave} className="h-11 rounded-md bg-accent px-6 text-sm font-semibold text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50">
               {busy ? 'Salvando...' : 'Salvar e gerar número'}
             </button>
           </div>

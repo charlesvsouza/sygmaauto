@@ -2398,6 +2398,9 @@ export function ServiceOrdersPage() {
             setShowCreateModal(false);
             loadOrders();
             selectOrder(order);
+            // A propriedade do veículo pode ter mudado na abertura da O.S.
+            vehiclesApi.getAll().then((r) => setVehicles(r.data)).catch(() => {});
+            customersApi.getAll().then((r) => setCustomers(r.data)).catch(() => {});
           }}
         />
       )}

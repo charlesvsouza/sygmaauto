@@ -98,6 +98,7 @@ model Tenant {
   messages              Message[]
   auditLogs             AuditLog[]
   checklists            VehicleChecklist[]
+  vehicleOwnerships     VehicleOwnership[]
   commissions           Commission[]
   commissionRates       CommissionRate[]
   npsResponses          NpsResponse[]
@@ -233,6 +234,7 @@ model Customer {
   vehicles      Vehicle[]
   serviceOrders ServiceOrder[]
   npsResponses  NpsResponse[]
+  vehicleOwnerships VehicleOwnership[]
 
   @@map("customers")
 }
@@ -263,9 +265,35 @@ model Vehicle {
   tenant         Tenant         @relation(fields: [tenantId], references: [id])
   customer       Customer       @relation(fields: [customerId], references: [id])
   serviceOrders  ServiceOrder[]
+  ownerships     VehicleOwnership[]
 
   @@unique([tenantId, plate])
   @@map("vehicles")
+}
+
+// Histórico de propriedade do veículo: cada troca de dono fecha o registro
+// anterior (endedAt) e abre um novo. O campo Vehicle.customerId continua
+// apontando para o proprietário atual; as O.S. antigas mantêm o cliente
+// da época, preservando o histórico sem prender o veículo a um único dono.
+model VehicleOwnership {
+  id             String   @id @default(uuid())
+  tenantId       String
+  vehicleId      String
+  customerId     String
+  startedAt      DateTime @default(now())
+  endedAt        DateTime?
+  serviceOrderId String?  // O.S. que motivou a transferência (quando houver)
+  transferredBy  String?  // usuário que confirmou a troca
+  reason         String?
+  createdAt      DateTime @default(now())
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  vehicle  Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([customerId])
+  @@map("vehicle_ownerships")
 }
 
 model Service {

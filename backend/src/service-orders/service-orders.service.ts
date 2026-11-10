@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException, forwardRef, Inject, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, ConflictException, forwardRef, Inject, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateServiceOrderDto, CreateOrcamentoDto, UpdateOrcamentoDto, UpdateStatusDto, AprovarOrcamentoDto, FinalizeOrderDto, CreateOrUpdateItemDto, UpdateServiceOrderItemDto, SaveMetrologyDto, SetDeliveryDto } from './dto/service-order.dto';
@@ -272,9 +272,37 @@ export class ServiceOrdersService {
     const customer = await this.prisma.customer.findFirst({ where: { id: dto.customerId, tenantId } });
     if (!customer) throw new NotFoundException('Cliente não encontrado');
 
+    let vehicle: any = null;
     if (dto.vehicleId) {
-      const vehicle = await this.prisma.vehicle.findFirst({ where: { id: dto.vehicleId, tenantId } });
+      vehicle = await this.prisma.vehicle.findFirst({
+        where: { id: dto.vehicleId, tenantId },
+        include: { customer: true },
+      });
       if (!vehicle) throw new NotFoundException('Veículo não encontrado');
+
+      // O veículo pode ter trocado de dono: a O.S. manda. Sem a confirmação
+      // explícita, paramos e devolvemos os dados para o front perguntar.
+      if (vehicle.customerId !== dto.customerId) {
+        if (!dto.confirmVehicleTransfer) {
+          const newOwner = await this.prisma.customer.findFirst({
+            where: { id: dto.customerId, tenantId },
+            select: { id: true, name: true },
+          });
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'VEHICLE_OWNER_CHANGED',
+            message:
+              `O veículo ${vehicle.plate} está registrado em nome de ` +
+              `${vehicle.customer?.name ?? 'outro cliente'}. ` +
+              `Confirme a troca de propriedade para ${newOwner?.name ?? 'o novo cliente'}.`,
+            vehicle: { id: vehicle.id, plate: vehicle.plate },
+            currentOwner: vehicle.customer
+              ? { id: vehicle.customer.id, name: vehicle.customer.name }
+              : null,
+            newOwner: newOwner ?? null,
+          });
+        }
+      }
     }
 
     const requestedOrderType = (dto as CreateServiceOrderDto).orderType;
@@ -324,7 +352,38 @@ export class ServiceOrdersService {
       throw new BadRequestException('Preencha o checklist de entrada: informe ao menos o combustível, uma área do veículo ou uma observação.');
     }
 
+    const willTransfer = Boolean(
+      vehicle && dto.vehicleId && vehicle.customerId !== dto.customerId,
+    );
+    const previousOwner = willTransfer ? vehicle.customer : null;
+
     const order = await this.prisma.$transaction(async (tx) => {
+      // Troca de dono confirmada: fecha o histórico anterior e o veículo passa
+      // para o cliente desta O.S. As O.S. antigas mantêm o cliente da época.
+      let newOwnershipId: string | null = null;
+      if (willTransfer && vehicle) {
+        const now = new Date();
+        await tx.vehicleOwnership.updateMany({
+          where: { tenantId, vehicleId: vehicle.id, endedAt: null },
+          data: { endedAt: now },
+        });
+        const ownership = await tx.vehicleOwnership.create({
+          data: {
+            tenantId,
+            vehicleId: vehicle.id,
+            customerId: dto.customerId,
+            startedAt: now,
+            transferredBy: userId,
+            reason: 'Troca de propriedade na abertura de O.S.',
+          },
+        });
+        newOwnershipId = ownership.id;
+        await tx.vehicle.update({
+          where: { id: vehicle.id },
+          data: { customerId: dto.customerId },
+        });
+      }
+
       const created = await tx.serviceOrder.create({
       data: {
         tenantId,
@@ -356,6 +415,13 @@ export class ServiceOrdersService {
         items: true,
       },
     });
+
+      if (newOwnershipId) {
+        await tx.vehicleOwnership.update({
+          where: { id: newOwnershipId },
+          data: { serviceOrderId: created.id },
+        });
+      }
       if (needsChecklist && entry) {
         await tx.vehicleChecklist.create({
           data: {
@@ -374,6 +440,30 @@ export class ServiceOrdersService {
       }
       return created;
     });
+
+    if (willTransfer && vehicle) {
+      await this.createTimeline(
+        order.id,
+        'PROPRIEDADE_ALTERADA',
+        `Propriedade do veículo ${vehicle.plate} transferida de ${previousOwner?.name ?? 'proprietário anterior'} para ${order.customer?.name ?? 'novo proprietário'}`,
+        userId,
+      );
+      await this.prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          entityType: 'Vehicle',
+          entityId: vehicle.id,
+          action: 'OWNERSHIP_CHANGED',
+          changes: JSON.stringify({
+            serviceOrderId: order.id,
+            fromCustomerId: previousOwner?.id ?? vehicle.customerId,
+            toCustomerId: dto.customerId,
+            plate: vehicle.plate,
+          }),
+        },
+      });
+    }
 
     await this.createTimeline(order.id, 'ABERTA', 'O.S. aberta', userId);
 

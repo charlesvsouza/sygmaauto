@@ -19,6 +19,7 @@ import {
   RefreshCw,
   AlertTriangle,
   FileText,
+  Car,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatCpfCnpj, formatCep, formatPhone, onlyDigits } from '../lib/masks';
@@ -35,6 +36,7 @@ export function CustomersPage() {
   const [loadingCep, setLoadingCep] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
+  const [vehicleHistory, setVehicleHistory] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -131,6 +133,11 @@ export function CustomersPage() {
       estado: customer.estado || '',
       notes: customer.notes || '',
     });
+    setVehicleHistory([]);
+    customersApi
+      .getById(customer.id)
+      .then((res) => setVehicleHistory(res.data?.vehicleOwnerships ?? []))
+      .catch(() => setVehicleHistory([]));
     setShowModal(true);
   };
 
@@ -148,6 +155,7 @@ export function CustomersPage() {
 
   const resetForm = () => {
     setEditingCustomer(null);
+    setVehicleHistory([]);
     setFormData({
       name: '',
       document: '',
@@ -512,6 +520,48 @@ export function CustomersPage() {
                       className="w-full px-4 py-3 rounded-lg border border-line bg-surface-900 focus:outline-none focus:ring-4 focus:ring-accent/40 focus:border-accent/40 transition-all text-sm min-h-[100px]"
                     />
                   </div>
+
+                  {/* Histórico de veículos — fio da meada da propriedade */}
+                  {editingCustomer && (
+                    <div className="bg-surface-900 rounded-xl border border-line p-6 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-bold text-surface-50 border-b border-line pb-3">
+                        <Car size={16} className="text-surface-500" /> Histórico de veículos
+                      </div>
+                      {vehicleHistory.length === 0 ? (
+                        <p className="text-sm text-muted">Nenhum veículo registrado no nome deste cliente.</p>
+                      ) : (
+                        <ul className="divide-y divide-line">
+                          {vehicleHistory.map((item) => {
+                            const start = new Date(item.startedAt);
+                            const end = item.endedAt ? new Date(item.endedAt) : null;
+                            const fmt = (d: Date) => d.toLocaleDateString('pt-BR');
+                            return (
+                              <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-ink">
+                                    <span className="font-mono">{item.vehicle?.plate ?? '—'}</span>
+                                    {' · '}
+                                    {item.vehicle?.brand} {item.vehicle?.model}
+                                  </p>
+                                  <p className="text-xs text-muted">
+                                    {fmt(start)} até {end ? fmt(end) : 'hoje'}
+                                  </p>
+                                </div>
+                                <span className={cn(
+                                  'rounded-full px-2.5 py-0.5 text-xs font-semibold border',
+                                  end
+                                    ? 'bg-panel-2 text-muted border-line'
+                                    : 'bg-accent-soft text-accent-ink border-accent/30',
+                                )}>
+                                  {end ? 'Proprietário anterior' : 'Proprietário atual'}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  )}
                 </form>
               </div>
 

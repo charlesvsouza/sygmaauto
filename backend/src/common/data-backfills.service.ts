@@ -96,9 +96,17 @@ export class DataBackfillsService implements OnApplicationBootstrap {
         `DELETE FROM financial_transactions WHERE id IN (SELECT ft.id ${orphanFilter})`,
       );
 
-      if (numbered || fixed || created || removed) {
+      // 3. Histórico de propriedade do veículo: cada veículo sem registro recebe o
+      //    proprietário atual como primeiro dono, na data de cadastro (fio da meada).
+      const ownerships = await tx.$executeRawUnsafe(`
+        INSERT INTO vehicle_ownerships (id, "tenantId", "vehicleId", "customerId", "startedAt", "createdAt")
+        SELECT gen_random_uuid()::text, v."tenantId", v.id, v."customerId", v."createdAt", now()
+        FROM vehicles v
+        WHERE NOT EXISTS (SELECT 1 FROM vehicle_ownerships vo WHERE vo."vehicleId" = v.id)`);
+
+      if (numbered || fixed || created || removed || ownerships) {
         this.logger.log(
-          `O.S. numeradas: ${numbered}; receitas acertadas: ${fixed}, criadas: ${created}, removidas para audit_logs: ${removed}`,
+          `O.S. numeradas: ${numbered}; receitas acertadas: ${fixed}, criadas: ${created}, removidas para audit_logs: ${removed}; históricos de veículo criados: ${ownerships}`,
         );
       }
     }, { timeout: 120_000 });

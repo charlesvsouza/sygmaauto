@@ -19,6 +19,15 @@ export class CustomersService {
       where: { id: customerId, tenantId },
       include: {
         vehicles: true,
+        // Fio da meada: veículos que já estiveram (ou estão) no nome do cliente.
+        vehicleOwnerships: {
+          include: {
+            vehicle: {
+              select: { id: true, plate: true, brand: true, model: true, year: true },
+            },
+          },
+          orderBy: { startedAt: 'desc' },
+        },
         _count: { select: { serviceOrders: true } },
       },
     });

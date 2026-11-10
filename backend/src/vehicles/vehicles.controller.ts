@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { VehiclesService } from './vehicles.service';
-import { CreateVehicleDto, UpdateVehicleDto } from './dto/vehicle.dto';
+import { CreateVehicleDto, UpdateVehicleDto, TransferVehicleDto } from './dto/vehicle.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Capability } from '../auth/decorators/roles.decorator';
-import { Tenant } from '../common/decorators/tenant.decorator';
+import { Tenant, CurrentUser } from '../common/decorators/tenant.decorator';
 import { FRONT_OFFICE_ROLES } from '../common/roles';
 
 @ApiTags('Vehicles')
@@ -31,6 +31,30 @@ export class VehiclesController {
   @ApiOperation({ summary: 'Find vehicle by plate' })
   async findByPlate(@Tenant() tenant: { tenantId: string }, @Param('plate') plate: string) {
     return this.vehiclesService.findByPlate(tenant.tenantId, plate);
+  }
+
+  @Get(':id/ownership')
+  @ApiOperation({ summary: 'Histórico de propriedade do veículo' })
+  async ownershipHistory(@Tenant() tenant: { tenantId: string }, @Param('id') id: string) {
+    return this.vehiclesService.getOwnershipHistory(tenant.tenantId, id);
+  }
+
+  @Post(':id/transfer')
+  @Capability('os.create_edit')
+  @ApiOperation({ summary: 'Transferir a propriedade do veículo para outro cliente' })
+  async transfer(
+    @Tenant() tenant: { tenantId: string },
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() dto: TransferVehicleDto,
+  ) {
+    return this.vehiclesService.transferOwnership(
+      tenant.tenantId,
+      id,
+      dto.customerId,
+      user?.userId,
+      dto.reason,
+    );
   }
 
   @Post()
