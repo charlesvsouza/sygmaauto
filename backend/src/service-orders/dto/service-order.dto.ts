@@ -111,11 +111,6 @@ export class CreateOrcamentoDto {
   @IsString()
   vehicleId?: string;
 
-  @ApiProperty({ required: false, description: 'Confirma a troca de propriedade do veículo para o cliente informado' })
-  @IsOptional()
-  @IsBoolean()
-  confirmVehicleTransfer?: boolean;
-
   @ApiProperty({ required: false })
   @IsOptional()
   @IsInt()

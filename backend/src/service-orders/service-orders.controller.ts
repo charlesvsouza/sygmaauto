@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Headers, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ServiceOrdersService } from './service-orders.service';
@@ -68,8 +68,14 @@ export class ServiceOrdersController {
     @Tenant() tenant: { tenantId: string },
     @CurrentUser() user: { userId: string },
     @Body() dto: CreateOrcamentoDto,
+    @Headers('x-confirm-vehicle-transfer') confirmVehicleTransfer?: string,
   ) {
-    return this.serviceOrdersService.createOrcamento(tenant.tenantId, dto, user.userId);
+    return this.serviceOrdersService.createOrcamento(
+      tenant.tenantId,
+      dto,
+      user.userId,
+      confirmVehicleTransfer === 'true',
+    );
   }
 
   @Post()
@@ -79,11 +85,13 @@ export class ServiceOrdersController {
     @Tenant() tenant: { tenantId: string },
     @CurrentUser() user: { userId: string },
     @Body() dto: CreateServiceOrderDto,
+    @Headers('x-confirm-vehicle-transfer') confirmVehicleTransfer?: string,
   ) {
+    const confirmed = confirmVehicleTransfer === 'true';
     if (dto.orderType === 'ORDEM_SERVICO') {
-      return this.serviceOrdersService.createServiceOrder(tenant.tenantId, dto, user.userId);
+      return this.serviceOrdersService.createServiceOrder(tenant.tenantId, dto, user.userId, confirmed);
     }
-    return this.serviceOrdersService.createOrcamento(tenant.tenantId, dto, user.userId);
+    return this.serviceOrdersService.createOrcamento(tenant.tenantId, dto, user.userId, confirmed);
   }
 
   @Patch(':id')

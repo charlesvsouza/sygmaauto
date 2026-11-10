@@ -210,7 +210,6 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
         orderType,
         customerId,
         vehicleId: vehicleId || undefined,
-        confirmVehicleTransfer: confirmTransfer || undefined,
         kmEntrada: vehicleId ? kmEntrada : undefined,
         complaint: complaint.trim() || undefined,
         // "AAAA-MM-DDTHH:mm" digitado no fuso da oficina → ISO com offset -03:00
@@ -231,7 +230,7 @@ export function NewOrderSheet({ customers, vehicles, orders, canUseRetifica, che
             }
           : undefined,
       };
-      const res = await serviceOrdersApi.create(payload);
+      const res = await serviceOrdersApi.create(payload, confirmTransfer);
       toast.success(`Orçamento salvo com o número ${orderCode(res.data)}.`);
       onCreated(res.data);
     } catch (err: any) {

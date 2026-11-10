@@ -181,7 +181,10 @@ export const serviceOrdersApi = {
       responseType: 'blob',
       params: opts?.warranty === false ? { warranty: 0 } : undefined,
     }),
-  create: (data: any) => api.post('/service-orders', data),
+  create: (data: any, confirmVehicleTransfer?: boolean) =>
+    api.post('/service-orders', data, {
+      headers: confirmVehicleTransfer ? { 'x-confirm-vehicle-transfer': 'true' } : undefined,
+    }),
   update: (id: string, data: any) => api.patch(`/service-orders/${id}`, data),
   delete: (id: string, reason?: string) => api.delete(`/service-orders/${id}`, { data: { reason } }),
   syncPrices: (id: string) => api.post(`/service-orders/${id}/sync-prices`),

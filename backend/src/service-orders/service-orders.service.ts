@@ -267,7 +267,7 @@ export class ServiceOrdersService {
     });
   }
 
-  async createOrcamento(tenantId: string, dto: CreateOrcamentoDto, userId: string) {
+  async createOrcamento(tenantId: string, dto: CreateOrcamentoDto, userId: string, confirmVehicleTransfer = false) {
     // Valida cliente e, quando informado, o veículo
     const customer = await this.prisma.customer.findFirst({ where: { id: dto.customerId, tenantId } });
     if (!customer) throw new NotFoundException('Cliente não encontrado');
@@ -283,7 +283,7 @@ export class ServiceOrdersService {
       // O veículo pode ter trocado de dono: a O.S. manda. Sem a confirmação
       // explícita, paramos e devolvemos os dados para o front perguntar.
       if (vehicle.customerId !== dto.customerId) {
-        if (!dto.confirmVehicleTransfer) {
+        if (!confirmVehicleTransfer) {
           const newOwner = await this.prisma.customer.findFirst({
             where: { id: dto.customerId, tenantId },
             select: { id: true, name: true },
@@ -470,10 +470,10 @@ export class ServiceOrdersService {
     return order;
   }
 
-  async createServiceOrder(tenantId: string, dto: CreateServiceOrderDto, userId: string) {
+  async createServiceOrder(tenantId: string, dto: CreateServiceOrderDto, userId: string, confirmVehicleTransfer = false) {
     // Sempre cria como ABERTA — o tipo (ORCAMENTO/ORDEM_SERVICO) define a natureza do documento,
     // mas o fluxo de status começa sempre em ABERTA para seguir as etapas normalmente.
-    const baseOrder = await this.createOrcamento(tenantId, dto, userId);
+    const baseOrder = await this.createOrcamento(tenantId, dto, userId, confirmVehicleTransfer);
 
     if (dto.orderType === 'ORDEM_SERVICO' || dto.orderType === 'RETIFICA_MOTOR') {
       return this.prisma.serviceOrder.update({
