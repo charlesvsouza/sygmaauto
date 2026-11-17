@@ -10,10 +10,11 @@ export class InventoryService {
   // onde `serviceOrdersPerMonth`/`users` também usam -1). Todo plano novo PRECISA entrar
   // aqui: o fallback antigo era 100, o que dava o menor limite justamente a quem paga mais
   // (era o caso do RETIFICA_PRO, de R$ 499, e do RETIFICA_REDE, de R$ 899).
+  // Decisão do dono (17/11/2026): RETIFICA_PRO 10.000 peças, RETIFICA_REDE ilimitado.
   private readonly partsLimitByPlan: Record<string, number> = {
     START: 100,
     PRO: 1000,
-    RETIFICA_PRO: 1000,
+    RETIFICA_PRO: 10000,
     REDE: -1,
     RETIFICA_REDE: -1,
   };

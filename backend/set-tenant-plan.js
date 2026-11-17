@@ -17,9 +17,9 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Espelho do mapa do código. Se mudar lá, muda aqui.
-const PARTS_LIMIT_BY_PLAN = { START: 100, PRO: 1000, REDE: 1000000 };
+const PARTS_LIMIT_BY_PLAN = { START: 100, PRO: 1000, RETIFICA_PRO: 10000, REDE: -1, RETIFICA_REDE: -1 };
 const limitForPlan = (name) => PARTS_LIMIT_BY_PLAN[name] ?? 100;
-const fmt = (n) => (n >= 1000000 ? '1.000.000 (efetivamente ilimitado)' : String(n));
+const fmt = (n) => (n < 0 ? 'ilimitado' : String(n));
 
 const args = process.argv.slice(2);
 const apply = args.includes('--apply');
