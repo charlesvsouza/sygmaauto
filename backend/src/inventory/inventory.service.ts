@@ -6,23 +6,45 @@ import { CreatePartDto, UpdatePartDto, CreateMovementDto } from './dto/inventory
 export class InventoryService {
   constructor(private prisma: PrismaService) {}
 
+  // Limite de peças por plano. -1 = ilimitado (mesma convenção do `limits` dos planos,
+  // onde `serviceOrdersPerMonth`/`users` também usam -1). Todo plano novo PRECISA entrar
+  // aqui: o fallback antigo era 100, o que dava o menor limite justamente a quem paga mais
+  // (era o caso do RETIFICA_PRO, de R$ 499, e do RETIFICA_REDE, de R$ 899).
   private readonly partsLimitByPlan: Record<string, number> = {
     START: 100,
     PRO: 1000,
-    REDE: 1000000,
+    RETIFICA_PRO: 1000,
+    REDE: -1,
+    RETIFICA_REDE: -1,
   };
 
   private async getTenantPlanName(tenantId: string) {
     const subscription = await this.prisma.subscription.findUnique({
       where: { tenantId },
-      include: { plan: { select: { name: true } } },
+      include: { plan: { select: { name: true, limits: true } } },
     });
-    return subscription?.plan?.name || 'START';
+    return { planName: subscription?.plan?.name || 'START', limits: subscription?.plan?.limits ?? null };
   }
 
-  private getPartsLimit(planName: string) {
+  /** `parts` escrito no `limits` do plano vence o mapa. Aceita -1 como ilimitado. */
+  private partsLimitFromLimits(limits: string | null): number | null {
+    if (!limits) return null;
+    try {
+      const parsed = JSON.parse(limits) as Record<string, unknown>;
+      const raw = parsed.parts ?? parsed.partsLimit ?? parsed.maxParts;
+      const value = Number(raw);
+      return Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getPartsLimit(planName: string, limits: string | null = null) {
+    const fromPlan = this.partsLimitFromLimits(limits);
+    if (fromPlan !== null) return fromPlan;
     return this.partsLimitByPlan[planName] ?? 100;
   }
+
 
   private normalizeOptionalString(value?: string) {
     const trimmed = value?.trim();
@@ -53,10 +75,11 @@ export class InventoryService {
   }
 
   async createPart(tenantId: string, dto: CreatePartDto) {
-    const planName = await this.getTenantPlanName(tenantId);
-    const maxParts = this.getPartsLimit(planName);
+    const { planName, limits } = await this.getTenantPlanName(tenantId);
+    const maxParts = this.getPartsLimit(planName, limits);
     const activeParts = await this.prisma.part.count({ where: { tenantId, isActive: true } });
-    if (activeParts >= maxParts) {
+    // maxParts < 0 = ilimitado: não bloqueia.
+    if (maxParts >= 0 && activeParts >= maxParts) {
       throw new BadRequestException(`Limite de ${maxParts} pecas atingido para o plano ${planName}.`);
     }
 
