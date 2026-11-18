@@ -7,5 +7,6 @@ import { AsaasService } from './asaas.service';
   imports: [forwardRef(() => ServiceOrdersModule)],
   controllers: [AsaasController, AsaasWebhookController],
   providers: [AsaasService],
+  exports: [AsaasService],
 })
 export class AsaasModule {}
