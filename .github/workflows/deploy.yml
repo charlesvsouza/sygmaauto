@@ -83,9 +83,12 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
       - name: Deploy to Railway
-        run: railway up --service sygmaauto-api --detach
+        run: |
+          # remove espacos/quebras de linha que podem vir junto ao colar o secret
+          export RAILWAY_TOKEN="$(printf '%s' "$RAW_TOKEN" | tr -d '[:space:]')"
+          railway up --service sygmaauto-api --detach
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAW_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
   # ─── Deploy: Vercel (frontend) ────────────────────────────────────────────
   # O deploy do frontend é feito pela integração Git nativa do Vercel
