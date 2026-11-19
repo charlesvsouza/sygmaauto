@@ -73,22 +73,18 @@ jobs:
           VITE_API_URL: https://placeholder-api.railway.app
 
   # ─── Deploy: Railway (backend) ───────────────────────────────────────────
-  deploy-backend:
-    name: Deploy Backend → Railway
-    needs: [detect-changes, backend-check]
-    if: needs.detect-changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-      - name: Deploy to Railway
-        run: |
-          # remove espacos/quebras de linha que podem vir junto ao colar o secret
-          export RAILWAY_TOKEN="$(printf '%s' "$RAW_TOKEN" | tr -d '[:space:]')"
-          railway up --service sygmaauto-api --detach
-        env:
-          RAW_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  # O deploy do backend é feito pela integração Git nativa do Railway (serviço
+  # sygmaauto-api conectado a este repo, branch master, Dockerfile em backend/):
+  # todo push em master gera um deploy de produção automaticamente. É o que
+  # publicou o commit 080fe01.
+  #
+  # O job que rodava `railway up --service sygmaauto-api` aqui era um caminho
+  # DUPLICADO e vivia vermelho: o secret RAILWAY_TOKEN expirou (o último válido
+  # foi criado em 28/04/2026) e o run falhava em ~50s depois do build, dando
+  # alarme falso de deploy quebrado enquanto a integração publicava normalmente.
+  # Removido em 19/11/2026, mesmo critério do job do Vercel abaixo. Se um dia a
+  # integração nativa for desligada, o deploy volta a ser manual:
+  #   railway login && railway up --service sygmaauto-api --detach  (com backend/ no cwd)
 
   # ─── Deploy: Vercel (frontend) ────────────────────────────────────────────
   # O deploy do frontend é feito pela integração Git nativa do Vercel
