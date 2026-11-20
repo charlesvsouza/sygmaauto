@@ -21,6 +21,7 @@ export class DataBackfillsService implements OnApplicationBootstrap {
   }
 
   async run() {
+    this.logger.log('acertos de dados: iniciando');
     await this.prisma.$transaction(async (tx) => {
       const [{ locked }] = await tx.$queryRawUnsafe<Array<{ locked: boolean }>>(
         `SELECT pg_try_advisory_xact_lock(${BACKFILL_LOCK_KEY}) AS locked`,
@@ -108,6 +109,9 @@ export class DataBackfillsService implements OnApplicationBootstrap {
         this.logger.log(
           `O.S. numeradas: ${numbered}; receitas acertadas: ${fixed}, criadas: ${created}, removidas para audit_logs: ${removed}; históricos de veículo criados: ${ownerships}`,
         );
+      } else {
+        // Sem mudança também precisa deixar rastro: é o que prova que o acerto rodou no boot.
+        this.logger.log('acertos de dados: nada a corrigir (O.S., receitas e histórico de veículo em dia)');
       }
     }, { timeout: 120_000 });
   }
