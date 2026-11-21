@@ -28,10 +28,24 @@ export class AiService {
     private config: ConfigService,
   ) {}
 
+  /**
+   * Provedor: Gemini (Google). A chave do OpenAI que estava no Railway estava
+   * revogada desde antes de 19/11/2026 (HTTP 401 "Incorrect API key provided"),
+   * e o erro caía no fallback de catálogo — o assistente parecia "parado".
+   * Usa GEMINI_API_KEY se existir; senão GOOGLE_API_KEY (a mesma que já estava lá).
+   */
+  private chaveGemini(): string | undefined {
+    return (
+      this.config.get<string>('GEMINI_API_KEY') ??
+      this.config.get<string>('GOOGLE_API_KEY') ??
+      undefined
+    );
+  }
+
   async suggest(tenantId: string, dto: AiSuggestDto): Promise<AiSuggestion[]> {
-    const apiKey = this.config.get<string>('OPENAI_API_KEY');
+    const apiKey = this.chaveGemini();
     if (!apiKey) {
-      this.logger.warn('OPENAI_API_KEY não configurada — retornando sugestões baseadas em catálogo');
+      this.logger.warn('GEMINI_API_KEY/GOOGLE_API_KEY não configurada — retornando sugestões baseadas em catálogo');
       return this.suggestFromCatalog(tenantId, dto);
     }
 
@@ -79,34 +93,50 @@ export class AiService {
       .join('\n');
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const modelo = this.config.get<string>('GEMINI_MODEL') ?? 'gemini-2.5-flash';
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${apiKey}`;
+
+      const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.3,
-          max_tokens: 800,
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 900,
+            responseMimeType: 'application/json',
+          },
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`OpenAI HTTP ${response.status}`);
+        const corpo = (await response.text()).slice(0, 200);
+        throw new Error(`Gemini HTTP ${response.status}: ${corpo}`);
       }
 
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content ?? '[]';
+      const data: any = await response.json();
+      const bruto =
+        data?.candidates?.[0]?.content?.parts
+          ?.map((p: any) => p?.text ?? '')
+          .join('') ?? '[]';
 
-      let suggestions: AiSuggestion[] = JSON.parse(content);
+      // A resposta pode vir com cerca de código; o JSON é o que interessa.
+      const limpo = String(bruto)
+        .trim()
+        .replace(/^```(?:json)?/i, '')
+        .replace(/```$/, '')
+        .trim();
+
+      const parsed = JSON.parse(limpo || '[]');
+      if (!Array.isArray(parsed)) throw new Error('resposta da IA não é um array');
+
+      let suggestions: AiSuggestion[] = parsed;
 
       // Enriquecer com IDs do catálogo quando houver match por nome
       suggestions = suggestions.map((s) => {
         if (s.type === 'service') {
           const match = services.find(
-            (srv) => srv.name.toLowerCase() === s.description.toLowerCase(),
+            (srv) => srv.name.toLowerCase() === String(s.description ?? '').toLowerCase(),
           );
           if (match) {
             return {
@@ -118,7 +148,7 @@ export class AiService {
           }
         } else {
           const match = parts.find(
-            (p) => p.name.toLowerCase() === s.description.toLowerCase(),
+            (p) => p.name.toLowerCase() === String(s.description ?? '').toLowerCase(),
           );
           if (match) {
             return {
@@ -134,7 +164,7 @@ export class AiService {
 
       return suggestions.slice(0, 5);
     } catch (err) {
-      this.logger.error('Erro ao chamar OpenAI:', err);
+      this.logger.error(`Erro ao chamar Gemini (${(err as Error)?.message ?? err}) — usando catálogo`);
       return this.suggestFromCatalog(tenantId, dto);
     }
   }
