@@ -6,6 +6,9 @@ dockerfilePath = "backend/Dockerfile"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 1
 healthcheckPath = "/health"
-# Aplica o schema antes de subir. Sem --accept-data-loss: mudança destrutiva faz o
-# deploy falhar em vez de apagar dados. (releaseCommand não é executado pelo Railway.)
-startCommand = "sh -c 'node move-backups.js; npx prisma db push --skip-generate && node dist/main'"
+# Aplica as migrations antes de subir. O histórico agora é real: prisma/migrations tem a
+# baseline `0_init` (schema inteiro em Postgres), já registrada como aplicada em 21/11/2026,
+# e daqui pra frente toda mudança de schema entra como migration versionada.
+# Sem `db push`: ele alterava o schema sem deixar histórico, e foi o que deixou o banco
+# atrás do código (faltava a coluna tenants.orderSequence até 19/11/2026).
+startCommand = "sh -c 'node move-backups.js; npx prisma migrate deploy && node dist/main'"
