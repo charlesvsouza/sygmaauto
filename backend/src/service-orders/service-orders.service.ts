@@ -906,12 +906,66 @@ export class ServiceOrdersService {
       await this.recordOrderRevenue(updated);
     }
 
+    // Pagamento já recebido (Pix/cartão no Asaas ou baixa manual) e a O.S. ficou pronta:
+    // o faturamento não espera o balcão — fatura automaticamente.
+    if (newStatus === 'PRONTO_ENTREGA' && this.estaQuitada(updated)) {
+      await this.updateStatus(tenantId, id, {
+        status: 'FATURADO',
+        notes: 'Pagamento já recebido — faturamento automático',
+      } as UpdateStatusDto).catch((err) =>
+        this.logger.error(`Faturamento automático falhou na O.S. ${id}: ${err?.message}`),
+      );
+    }
+
     if (newStatus === 'ENTREGUE') {
     }
 
     this.notifyStatusChange(tenantId, updated, newStatus);
 
     return updated;
+  }
+
+  /**
+   * Efeitos de uma O.S. PAGA que não podem depender de o balcão avançar o status:
+   * baixa das peças no estoque, receita no financeiro, comissões e forma de pagamento.
+   * Idempotente (webhook repetido, cron, clique duplo). Se a O.S. já está em
+   * "Pronto p/ Entrega", fatura na hora.
+   */
+  async settlePaidOrder(
+    tenantId: string,
+    orderId: string,
+    opts: { paymentMethod?: string | null; source?: string } = {},
+  ): Promise<{ baixadas: number; faturada: boolean }> {
+    const order = await this.prisma.serviceOrder.findFirst({ where: { id: orderId, tenantId }, include: { items: true } });
+    if (!order) return { baixadas: 0, faturada: false };
+
+    if (opts.paymentMethod && !order.paymentMethod) {
+      await this.prisma.serviceOrder.update({ where: { id: orderId }, data: { paymentMethod: opts.paymentMethod } });
+    }
+
+    const baixadas = await this.applyPendingParts(
+      order,
+      `OS ${formatOrderCode(order)} paga${opts.source ? ` (${opts.source})` : ''}`,
+    );
+    await this.recordOrderRevenue({ ...order, paidAt: order.paidAt ?? new Date() });
+
+    if (order.status === 'PRONTO_ENTREGA') {
+      await this.updateStatus(tenantId, orderId, {
+        status: 'FATURADO',
+        notes: 'Pagamento recebido — faturamento automático',
+      } as UpdateStatusDto);
+      return { baixadas, faturada: true };
+    }
+    return { baixadas, faturada: false };
+  }
+
+  /** A O.S. já está quitada? (asaasPaidValue cobre o total, ou já foi faturada) */
+  private estaQuitada(order: any): boolean {
+    if (!order) return false;
+    if (order.paidAt) return true;
+    const total = Number(order.totalCost ?? 0);
+    const pago = Number(order.asaasPaidValue ?? 0);
+    return total > 0 && pago >= total - 0.01;
   }
 
   // O.S. encerrada (entregue, faturada, cancelada ou reprovada) não aceita mudança nos itens:

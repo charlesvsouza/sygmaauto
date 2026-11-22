@@ -384,15 +384,14 @@ export class AsaasService {
         ? `Pagamento confirmado pelo Asaas (${PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] ?? 'Asaas'}): R$ ${pagoAgora.toFixed(2).replace('.', ',')}`
         : `Adiantamento recebido pelo Asaas: R$ ${pagoAgora.toFixed(2).replace('.', ',')} de R$ ${totalOs.toFixed(2).replace('.', ',')} (falta R$ ${(totalOs - pagoAgora).toFixed(2).replace('.', ',')})`,
     );
-    // Serviço pronto e ainda com saldo: não fatura; o saldo é cobrado depois.
-    if (order.status === 'PRONTO_ENTREGA' && quitada) {
-      await this.prisma.serviceOrder.update({
-        where: { id: orderId },
-        data: { paymentMethod: PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] },
-      });
+    // Quitou: baixa as peças do estoque, lança a receita no financeiro, gera as comissões e
+    // grava a forma de pagamento. Se a O.S. já estiver pronta para entrega, fatura na hora.
+    // Vale para qualquer status: o pagamento não espera o balcão. Idempotente.
+    if (quitada) {
+      const rotulo = PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] ?? 'Asaas';
       await this.serviceOrders
-        .updateStatus(tenantId, orderId, { status: 'FATURADO', notes: 'Pagamento recebido pelo Asaas' } as UpdateStatusDto)
-        .catch((err) => this.logger.error(`Não foi possível faturar a O.S. ${orderId} após pagamento Asaas: ${err.message}`));
+        .settlePaidOrder(tenantId, orderId, { paymentMethod: rotulo, source: 'Asaas' })
+        .catch((err) => this.logger.error(`Efeitos da baixa automática falharam na O.S. ${orderId}: ${err?.message}`));
     }
   }
 
