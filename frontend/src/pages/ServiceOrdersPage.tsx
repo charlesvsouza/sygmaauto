@@ -510,6 +510,38 @@ export function ServiceOrdersPage() {
     }
   };
 
+  /**
+   * Envia o orçamento para o WhatsApp do cliente: abre o wa.me (WhatsApp Web/app de quem
+   * está atendendo) com a mensagem pronta e o link público de aprovação. Não depende da API
+   * oficial da Meta — que ainda não tem token configurado neste servidor.
+   */
+  const enviarOrcamentoWhatsApp = (order: any) => {
+    if (!order?.approvalToken) {
+      toast.warning('Gere o link de aprovação primeiro: "Enviar para Aprovação".');
+      return;
+    }
+    const link = `${window.location.origin}/aprovacao/${order.approvalToken}`;
+    const nome = order.customer?.name ?? '';
+    const veiculo = order.vehicle
+      ? [order.vehicle.plate, order.vehicle.brand, order.vehicle.model].filter(Boolean).join(' ')
+      : '';
+    const texto = [
+      `Olá${nome ? `, ${nome}` : ''}! Aqui é da ${tenantFullData?.name ?? 'oficina'}${veiculo ? ` sobre o veículo ${veiculo}` : ''}.`,
+      '',
+      `Seu orçamento da O.S. ${orderCode(order)} está pronto — total R$ ${fmtBR(totalComEdicao(order))}.`,
+      'Para aprovar (ou recusar), é só abrir o link:',
+      link,
+      '',
+      'Qualquer dúvida, responda por aqui.',
+    ].join(String.fromCharCode(10));
+    const numero = String(order.customer?.phone ?? '').replace(/\D/g, '');
+    const destino = numero.length >= 10 ? `55${numero.replace(/^55/, '')}` : '';
+    const url = destino
+      ? `https://wa.me/${destino}?text=${encodeURIComponent(texto)}`
+      : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank', 'noopener');
+  };
+
   // Valores AO VIVO: o subtotal de cada item e o total da O.S. refletem o que está na tela
   // (quantidade/horas e desconto digitados), sem precisar salvar. O total salvos vem do servidor;
   // aqui aplicamos só a DIFERENÇA das linhas em edição, para não brigar com taxas/ajustes da O.S.
@@ -1734,6 +1766,15 @@ export function ServiceOrdersPage() {
                           </button>
                         )}
                       </div>
+                    )}
+                    {selectedOrder.approvalToken && (
+                      <button type="button"
+                        onClick={() => enviarOrcamentoWhatsApp(selectedOrder)}
+                        className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
+                        title={selectedOrder.customer?.phone ? 'Abre o WhatsApp com a mensagem pronta' : 'Cliente sem telefone: o WhatsApp abre para escolher o contato'}
+                      >
+                        Enviar orçamento por WhatsApp
+                      </button>
                     )}
                     {canChargeAsaas && (
                       <button type="button"
