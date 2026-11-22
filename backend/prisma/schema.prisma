@@ -438,6 +438,12 @@ model ServiceOrder {
   asaasInvoiceUrl   String?
   asaasDueDate      DateTime?
   asaasPaidAt       DateTime?
+  // Valor efetivamente cobrado nesta emissão e o percentual do saldo (adiantamento 10–100%).
+  // Sem isso, uma cobrança parcial seria confundida com o total da O.S.
+  asaasChargeValue   Float?
+  asaasChargePercent Int?
+  // Quanto já foi recebido no Asaas somando as cobranças desta O.S. (adiantamentos + saldo).
+  asaasPaidValue     Float?
   
   // Informações
   notes        String?

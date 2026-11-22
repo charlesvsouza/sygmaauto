@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Headers, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeController, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Capability } from '../auth/decorators/roles.decorator';
@@ -30,6 +30,13 @@ class CreateChargeDto {
   @IsOptional()
   @IsString()
   dueDate?: string;
+
+  /** Adiantamento: percentual do saldo (10 a 100). Sem informar, cobra o saldo inteiro. */
+  @IsOptional()
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  percent?: number;
 }
 
 @ApiTags('Asaas')

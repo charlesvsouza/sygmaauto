@@ -121,7 +121,7 @@ export const asaasApi = {
   setNotify: (notifyCustomers: boolean) => api.patch('/asaas/settings', { notifyCustomers }),
   disconnect: () => api.delete('/asaas/connect'),
   getCharge: (orderId: string) => api.get(`/asaas/orders/${orderId}/charge`),
-  createCharge: (orderId: string, data: { billingType: string; dueDate?: string }) =>
+  createCharge: (orderId: string, data: { billingType: string; dueDate?: string; percent?: number }) =>
     api.post(`/asaas/orders/${orderId}/charge`, data),
   cancelCharge: (orderId: string) => api.delete(`/asaas/orders/${orderId}/charge`),
 };

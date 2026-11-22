@@ -31,14 +31,27 @@ type Charge = {
   invoiceUrl?: string;
   dueDate?: string;
   value?: number;
+  /** Valor efectivamente cobrado nesta emissão (adiantamento pode ser menor que o total). */
+  chargeValue?: number;
+  chargePercent?: number;
+  /** Quanto já foi recebido nesta O.S. e quanto falta. */
+  paidValue?: number;
+  balance?: number;
   pix?: { encodedImage: string; payload: string } | null;
 };
 
 // Cobrança da O.S. pelo Asaas da oficina: emite, mostra link/QR do PIX e acompanha o status.
-export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChanged }: {
+export function AsaasChargeModal({ orderId, orderLabel, total, customerName, customerPhone, approvalUrl, salonName, vehicleLabel, onClose, onChanged }: {
   orderId: string;
   orderLabel: string;
   total: number;
+  /** Nome e telefone do cliente, para montar a mensagem do WhatsApp. */
+  customerName?: string | null;
+  customerPhone?: string | null;
+  /** Link público de aprovação do orçamento (quando a O.S. tem token). */
+  approvalUrl?: string | null;
+  salonName?: string | null;
+  vehicleLabel?: string | null;
   onClose: () => void;
   onChanged: () => void;
 }) {
@@ -48,6 +61,8 @@ export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChange
   const [billingType, setBillingType] = useState('PIX');
   const [dueDate, setDueDate] = useState(today());
   const [busy, setBusy] = useState(false);
+  /** Adiantamento: percentual do saldo que será cobrado agora (10 a 100). */
+  const [percent, setPercent] = useState(100);
 
   const load = async () => {
     setBusy(true);
@@ -67,7 +82,7 @@ export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChange
   const emit = async () => {
     setBusy(true);
     try {
-      const res = await asaasApi.createCharge(orderId, { billingType, dueDate });
+      const res = await asaasApi.createCharge(orderId, { billingType, dueDate, percent });
       setCharge(res.data);
       onChanged();
       toast.success('Cobrança emitida.');
@@ -100,6 +115,41 @@ export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChange
 
   const paid = charge?.status === 'RECEIVED' || charge?.status === 'CONFIRMED';
 
+  // Saldo que ainda falta receber (o total, quando não há nada pago).
+  const saldo = Number(charge?.balance ?? total);
+  const valorCobrado = Math.round((saldo * percent) / 100 * 100) / 100;
+
+  /** Monta a mensagem e abre o WhatsApp do cliente (wa.me) com o texto pronto. */
+  const whatsapp = (comCobranca: boolean) => {
+    const linhas: string[] = [];
+    linhas.push(`Olá${customerName ? `, ${customerName}` : ''}! Aqui é da ${salonName ?? 'oficina'} sobre o serviço${vehicleLabel ? ` do veículo ${vehicleLabel}` : ''}.`);
+    linhas.push('');
+    linhas.push(`O.S. ${orderLabel} — total R$ ${fmt(total)}`);
+    if (comCobranca && charge?.hasCharge) {
+      const pago = Number(charge.paidValue ?? 0);
+      if (pago > 0) linhas.push(`Já recebido: R$ ${fmt(pago)} · saldo R$ ${fmt(saldo)}`);
+      if (percent < 100) linhas.push(`Para iniciar o serviço, pedimos um adiantamento de ${percent}%: R$ ${fmt(valorCobrado)}.`);
+      if (charge.pix?.payload) {
+        linhas.push('');
+        linhas.push('Pix copia e cola:');
+        linhas.push(charge.pix.payload);
+      }
+      if (charge.invoiceUrl) {
+        linhas.push('');
+        linhas.push(`Ou pague pelo link: ${charge.invoiceUrl}`);
+      }
+    }
+    if (approvalUrl) {
+      linhas.push('');
+      linhas.push(`Confira e aprove o orçamento por aqui: ${approvalUrl}`);
+    }
+    const texto = encodeURIComponent(linhas.join(String.fromCharCode(10)));
+    const numero = (customerPhone ?? '').replace(/\D/g, '');
+    const destino = numero.length >= 10 ? `55${numero.replace(/^55/, '')}` : '';
+    const url = destino ? `https://wa.me/${destino}?text=${texto}` : `https://wa.me/?text=${texto}`;
+    window.open(url, '_blank', 'noopener');
+  };
+
   return (
     <Modal
       open
@@ -109,13 +159,15 @@ export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChange
       footer={
         charge?.hasCharge ? (
           <>
+            {!paid && <Button variant="ghost" onClick={() => whatsapp(true)} disabled={busy}>Enviar por WhatsApp</Button>}
             {!paid && <Button variant="ghost" onClick={cancel} disabled={busy}>Cancelar cobrança</Button>}
             <Button onClick={onClose}>Fechar</Button>
           </>
         ) : (
           <>
+            <Button variant="ghost" onClick={() => whatsapp(false)}>{approvalUrl ? 'Enviar orçamento por WhatsApp' : 'Enviar por WhatsApp'}</Button>
             <Button variant="ghost" onClick={onClose}>Fechar</Button>
-            <Button onClick={emit} disabled={busy || !charge}>{busy ? 'Emitindo...' : `Emitir cobrança de R$ ${fmt(total)}`}</Button>
+            <Button onClick={emit} disabled={busy || !charge}>{busy ? 'Emitindo...' : `Cobrar R$ ${fmt(valorCobrado)}`}</Button>
           </>
         )
       }
@@ -168,7 +220,25 @@ export function AsaasChargeModal({ orderId, orderLabel, total, onClose, onChange
             <label htmlFor="asaas-due" className="block text-sm font-semibold text-muted">Vencimento</label>
             <input id="asaas-due" type="date" min={today()} value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input mt-1 max-w-[12rem]" />
           </div>
-          <p className="text-xs text-surface-500">O cliente precisa ter CPF ou CNPJ no cadastro. Valor cobrado: o total da O.S.</p>
+          <div>
+            <label htmlFor="asaas-percent" className="block text-sm font-semibold text-muted">Adiantamento (% do saldo)</label>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              {[10, 25, 50, 100].map((p) => (
+                <button key={p} type="button" onClick={() => setPercent(p)}
+                  className={`h-9 rounded-md border px-3 text-sm font-semibold ${percent === p ? 'border-accent bg-accent-soft text-accent-ink' : 'border-line text-surface-300 hover:bg-surface-950'}`}>
+                  {p === 100 ? 'Total' : `${p}%`}
+                </button>
+              ))}
+              <input id="asaas-percent" type="number" min={10} max={100} step={5} value={percent}
+                onChange={(e) => setPercent(Math.min(100, Math.max(10, Number(e.target.value) || 10)))}
+                className="input h-9 w-24" aria-label="Percentual do adiantamento" />
+            </div>
+            <p className="mt-2 text-xs text-surface-500">
+              Cobra <strong>R$ {fmt(valorCobrado)}</strong> agora de um saldo de R$ {fmt(saldo)}.
+              {percent < 100 ? ` Ficam R$ ${fmt(Math.round((saldo - valorCobrado) * 100) / 100)} para depois.` : ''}
+            </p>
+          </div>
+          <p className="text-xs text-surface-500">O cliente precisa ter CPF ou CNPJ no cadastro.</p>
         </div>
       )}
     </Modal>

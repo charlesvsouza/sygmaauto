@@ -134,7 +134,15 @@ export class AsaasService {
       invoiceUrl: order.asaasInvoiceUrl,
       dueDate: order.asaasDueDate,
       paidAt: order.asaasPaidAt,
+      /** Valor da O.S. inteira. */
       value: Number(order.totalCost || 0),
+      /** Valor efetivamente cobrado nesta emissão (adiantamento pode ser menor). */
+      chargeValue: order.asaasChargeValue != null ? Number(order.asaasChargeValue) : Number(order.totalCost || 0),
+      chargePercent: order.asaasChargePercent ?? 100,
+      /** Quanto já foi recebido somando as cobranças desta O.S. */
+      paidValue: Number(order.asaasPaidValue || 0),
+      /** Quanto ainda falta receber. */
+      balance: this.round2(Number(order.totalCost || 0) - Number(order.asaasPaidValue || 0)),
     };
   }
 
@@ -142,17 +150,29 @@ export class AsaasService {
     tenantId: string,
     orderId: string,
     userId: string,
-    dto: { billingType: AsaasBillingType; dueDate?: string },
+    dto: { billingType: AsaasBillingType; dueDate?: string; percent?: number },
   ) {
     const order = await this.loadOrder(tenantId, orderId);
     if (!CHARGEABLE_STATUSES.includes(order.status)) {
       throw new BadRequestException('Só é possível cobrar uma O.S. aprovada, em execução ou pronta para entrega.');
     }
-    if (order.asaasPaymentId && !['DELETED', 'REFUNDED'].includes(order.asaasChargeStatus ?? '')) {
-      throw new BadRequestException('Esta O.S. já tem uma cobrança no Asaas. Cancele a atual para emitir outra.');
+    const total = Number(order.totalCost || 0);
+    if (total <= 0) throw new BadRequestException('O valor da O.S. é zero: não há o que cobrar.');
+    // Adiantamento: a oficina escolhe de 10% a 100% do SALDO (total menos o que já foi recebido).
+    const jaPago = Number((order as { asaasPaidValue?: number | null }).asaasPaidValue ?? 0);
+    const saldo = this.round2(total - jaPago);
+    if (saldo <= 0) throw new BadRequestException('Esta O.S. já está totalmente recebida: não há saldo a cobrar.');
+    const percent = dto.percent ?? 100;
+    if (!Number.isInteger(percent) || percent < 10 || percent > 100) {
+      throw new BadRequestException('O percentual deve ser um número inteiro de 10 a 100.');
     }
-    const value = Number(order.totalCost || 0);
-    if (value <= 0) throw new BadRequestException('O valor da O.S. é zero: não há o que cobrar.');
+    // Cobrança ABERTA anterior continua bloqueando; cobrança já paga só libera a próxima se ainda houver saldo.
+    const statusAnterior = order.asaasChargeStatus ?? '';
+    const aberta = Boolean(order.asaasPaymentId) && !['DELETED', 'REFUNDED', 'RECEIVED', 'CONFIRMED'].includes(statusAnterior);
+    if (aberta) {
+      throw new BadRequestException('Esta O.S. já tem uma cobrança aberta no Asaas. Cancele a atual para emitir outra.');
+    }
+    const value = this.round2((saldo * percent) / 100);
 
     const cpfCnpj = digits(order.customer.document);
     if (!isValidCpfCnpj(cpfCnpj)) {
@@ -242,9 +262,12 @@ export class AsaasService {
         asaasInvoiceUrl: payment.invoiceUrl ?? payment.bankSlipUrl ?? null,
         asaasDueDate: new Date(`${dueDate}T12:00:00-03:00`),
         asaasPaidAt: null,
+        asaasChargeValue: value,
+        asaasChargePercent: percent,
       },
     });
-    await this.timeline(order.id, 'ASAAS_CHARGE', `Cobrança ${PAYMENT_LABEL[dto.billingType]} emitida no Asaas (vence em ${dueDate.split('-').reverse().join('/')})`, userId);
+    const rotuloValor = `R$ ${value.toFixed(2).replace('.', ',')}${percent < 100 ? ` (${percent}% do saldo de R$ ${saldo.toFixed(2).replace('.', ',')})` : ''}`;
+    await this.timeline(order.id, 'ASAAS_CHARGE', `Cobrança ${PAYMENT_LABEL[dto.billingType]} emitida no Asaas: ${rotuloValor} (vence em ${dueDate.split('-').reverse().join('/')})`, userId);
     return this.getCharge(tenantId, orderId, false);
   }
 
@@ -337,17 +360,32 @@ export class AsaasService {
     const order = await this.prisma.serviceOrder.findFirst({ where: { id: orderId, tenantId } });
     if (!order) return;
 
+    // Valor recebido nesta cobrança (o do adiantamento, não o total da O.S.).
+    const recebidoAgora = Number((order as { asaasChargeValue?: number | null }).asaasChargeValue ?? order.totalCost ?? 0);
+    const jaRecebido = Number((order as { asaasPaidValue?: number | null }).asaasPaidValue ?? 0);
+
     await this.prisma.serviceOrder.update({
       where: { id: orderId },
       data: {
         asaasChargeStatus: status,
         ...(paid && !order.asaasPaidAt ? { asaasPaidAt: new Date() } : {}),
+        ...(paid && !order.asaasPaidAt ? { asaasPaidValue: this.round2(jaRecebido + recebidoAgora) } : {}),
       },
     });
     if (!paid || order.asaasPaidAt) return; // idempotente: o Asaas reenvia eventos
 
-    await this.timeline(orderId, 'ASAAS_PAID', `Pagamento confirmado pelo Asaas (${PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] ?? 'Asaas'})`);
-    if (order.status === 'PRONTO_ENTREGA') {
+    const totalOs = Number(order.totalCost || 0);
+    const pagoAgora = this.round2(jaRecebido + recebidoAgora);
+    const quitada = pagoAgora >= this.round2(totalOs) - 0.01;
+    await this.timeline(
+      orderId,
+      'ASAAS_PAID',
+      quitada
+        ? `Pagamento confirmado pelo Asaas (${PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] ?? 'Asaas'}): R$ ${pagoAgora.toFixed(2).replace('.', ',')}`
+        : `Adiantamento recebido pelo Asaas: R$ ${pagoAgora.toFixed(2).replace('.', ',')} de R$ ${totalOs.toFixed(2).replace('.', ',')} (falta R$ ${(totalOs - pagoAgora).toFixed(2).replace('.', ',')})`,
+    );
+    // Serviço pronto e ainda com saldo: não fatura; o saldo é cobrado depois.
+    if (order.status === 'PRONTO_ENTREGA' && quitada) {
       await this.prisma.serviceOrder.update({
         where: { id: orderId },
         data: { paymentMethod: PAYMENT_LABEL[billingType ?? order.asaasBillingType ?? 'UNDEFINED'] },
@@ -356,6 +394,10 @@ export class AsaasService {
         .updateStatus(tenantId, orderId, { status: 'FATURADO', notes: 'Pagamento recebido pelo Asaas' } as UpdateStatusDto)
         .catch((err) => this.logger.error(`Não foi possível faturar a O.S. ${orderId} após pagamento Asaas: ${err.message}`));
     }
+  }
+
+  private round2(v: number): number {
+    return Math.round((Number(v) + Number.EPSILON) * 100) / 100;
   }
 
   private async timeline(serviceOrderId: string, status: string, description: string, createdBy?: string) {

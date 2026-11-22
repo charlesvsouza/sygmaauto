@@ -1486,7 +1486,7 @@ export function ServiceOrdersPage() {
                     <tr>
                       <th className="px-5 py-3 border-b border-surface-800/70">Descrição</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-56">Executor</th>
-                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Qtd/Hrs</th>
+                      <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Horas</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-20 text-center">Desc. %</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28">Unitário</th>
                       <th className="px-5 py-3 border-b border-surface-800/70 w-28 text-right">Subtotal</th>
@@ -1525,7 +1525,7 @@ export function ServiceOrdersPage() {
                         </td>
                         <td className="px-5 py-3">
                           <NumberInput
-                            aria-label={`Quantidade do serviço ${item.description}`} step="0.5" min="0.5"
+                            aria-label={`Horas do serviço ${item.description}`} step="0.5" min="0.5"
                             className="w-16 bg-surface-950 border border-transparent hover:border-surface-800 rounded-md px-2 py-1 text-center font-bold text-xs"
                             value={pendingQtyByItem[item.id] ?? item.quantity}
                             onChange={(e) => setPendingQtyByItem({ ...pendingQtyByItem, [item.id]: Number(e.target.value) })}
@@ -2212,7 +2212,7 @@ export function ServiceOrdersPage() {
                     />
                   </div>
                   <div className="w-20 space-y-1">
-                    <label htmlFor="fld-serviceorderspage-7" className="block text-sm font-semibold text-muted">{catalogMode === 'service' ? 'Qtd/Hrs' : 'Qtd'}</label>
+                    <label htmlFor="fld-serviceorderspage-7" className="block text-sm font-semibold text-muted">{catalogMode === 'service' ? 'Horas' : 'Qtd'}</label>
                     <NumberInput id="fld-serviceorderspage-7"
                       aria-label="Quantidade do item rápido"
                       min="0.5"
@@ -2409,6 +2409,11 @@ export function ServiceOrdersPage() {
           orderId={selectedOrder.id}
           orderLabel={orderCode(selectedOrder)}
           total={Number(selectedOrder.totalCost || 0)}
+          customerName={selectedOrder.customer?.name ?? null}
+          customerPhone={selectedOrder.customer?.phone ?? null}
+          salonName={tenantFullData?.name ?? null}
+          vehicleLabel={selectedOrder.vehicle ? `${selectedOrder.vehicle.plate ?? ''} ${selectedOrder.vehicle.brand ?? ''} ${selectedOrder.vehicle.model ?? ''}`.trim() : null}
+          approvalUrl={selectedOrder.approvalToken ? `${window.location.origin}/aprovacao/${selectedOrder.approvalToken}` : null}
           onClose={() => setShowAsaasCharge(false)}
           onChanged={async () => {
             const fresh = await serviceOrdersApi.getById(selectedOrder.id);
