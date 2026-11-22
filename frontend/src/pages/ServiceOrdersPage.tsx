@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PAYMENT_PLAN_METHODS, PAYMENT_PLAN_SCOPE_LABEL } from '../lib/paymentPlan';
 import { asaasApi, serviceOrdersApi, customersApi, vehiclesApi, servicesApi, inventoryApi, tenantsApi, usersApi, checklistApi, aiApi } from '../api/client';
 import { downloadHtmlPdf, escapeHtml } from '../lib/report';
 import { orderCode, orderShortCode } from '../lib/orderCode';
@@ -510,12 +511,33 @@ export function ServiceOrdersPage() {
     }
   };
 
+  /** Formas de pagamento escolhidas na O.S., em texto para a mensagem do cliente. */
+  const descricaoFormasPagamento = (order: any): string => {
+    const plano = (order?.paymentPlan ?? null) as PaymentPlan | null;
+    if (plano && Array.isArray(plano.groups) && plano.groups.length > 0) {
+      return plano.groups
+        .map((g: any) => {
+          const metodo = (PAYMENT_PLAN_METHODS as Record<string, string>)[g.method] ?? g.method;
+          const partes = g.installments > 1 ? `${g.installments}x` : 'à vista';
+          const escopo = (PAYMENT_PLAN_SCOPE_LABEL as Record<string, string>)[g.scope] ?? g.scope;
+          const entrada = g.downPayment ? ' com entrada' : '';
+          return `${escopo}: ${partes} no ${metodo}${entrada}`;
+        })
+        .join(' · ');
+    }
+    const simples = String(order?.paymentMethod ?? '').trim();
+    return simples ? `${simples}` : '';
+  };
+
   /**
-   * Envia o orçamento para o WhatsApp do cliente: abre o wa.me (WhatsApp Web/app de quem
-   * está atendendo) com a mensagem pronta e o link público de aprovação. Não depende da API
-   * oficial da Meta — que ainda não tem token configurado neste servidor.
+   * Envia o orçamento pelo WhatsApp com o PDF EM ANEXO e as formas de pagamento escolhidas.
+   *
+   * O PDF é baixado autenticado e entregue via Web Share API (no celular abre a folha de
+   * compartilhamento com o arquivo anexado). Onde o navegador não compartilha arquivo (caso do
+   * Chrome no desktop), o PDF é baixado e o wa.me abre com o texto pronto — aí é só anexar o
+   * arquivo que está na pasta de downloads.
    */
-  const enviarOrcamentoWhatsApp = (order: any) => {
+  const enviarOrcamentoWhatsApp = async (order: any) => {
     if (!order?.approvalToken) {
       toast.warning('Gere o link de aprovação primeiro: "Enviar para Aprovação".');
       return;
@@ -525,20 +547,54 @@ export function ServiceOrdersPage() {
     const veiculo = order.vehicle
       ? [order.vehicle.plate, order.vehicle.brand, order.vehicle.model].filter(Boolean).join(' ')
       : '';
+    const formas = descricaoFormasPagamento(order);
     const texto = [
       `Olá${nome ? `, ${nome}` : ''}! Aqui é da ${tenantFullData?.name ?? 'oficina'}${veiculo ? ` sobre o veículo ${veiculo}` : ''}.`,
       '',
-      `Seu orçamento da O.S. ${orderCode(order)} está pronto — total R$ ${fmtBR(totalComEdicao(order))}.`,
+      `Segue o orçamento da O.S. ${orderCode(order)} — total R$ ${fmtBR(totalComEdicao(order))}.`,
+      ...(formas ? [`Forma de pagamento: ${formas}.`] : []),
+      '',
       'Para aprovar (ou recusar), é só abrir o link:',
       link,
       '',
       'Qualquer dúvida, responda por aqui.',
     ].join(String.fromCharCode(10));
-    const numero = String(order.customer?.phone ?? '').replace(/\D/g, '');
+    const numero = String(order.customer?.phone ?? '').replace(/[^0-9]/g, '');
     const destino = numero.length >= 10 ? `55${numero.replace(/^55/, '')}` : '';
     const url = destino
       ? `https://wa.me/${destino}?text=${encodeURIComponent(texto)}`
       : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+
+    // PDF do orçamento (mesmo documento do botão "Documentos → Orçamento").
+    let arquivo: File | null = null;
+    try {
+      const res = await serviceOrdersApi.downloadDocument(order.id, 'orcamento');
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const nomeArquivo = `ORCAMENTO-${orderCode(order).replace(/[^A-Za-z0-9]+/g, '-')}.pdf`;
+      arquivo = new File([blob], nomeArquivo, { type: 'application/pdf' });
+    } catch {
+      toast.warning('Não foi possível gerar o PDF agora. A mensagem vai sem o anexo.');
+    }
+
+    const nav = navigator as Navigator & { canShare?: (d: any) => boolean; share?: (d: any) => Promise<void> };
+    if (arquivo && nav.canShare?.({ files: [arquivo] }) && nav.share) {
+      try {
+        await nav.share({ files: [arquivo], text: texto, title: `Orçamento O.S. ${orderCode(order)}` });
+        return;
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return; // o usuário fechou a folha de compartilhamento
+      }
+    }
+
+    // Sem compartilhamento de arquivo: baixa o PDF e abre o WhatsApp com o texto.
+    if (arquivo) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(arquivo);
+      a.download = arquivo.name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast.info('PDF baixado. Anexe o arquivo no WhatsApp que abriu.');
+    }
     window.open(url, '_blank', 'noopener');
   };
 
@@ -1769,7 +1825,7 @@ export function ServiceOrdersPage() {
                     )}
                     {selectedOrder.approvalToken && (
                       <button type="button"
-                        onClick={() => enviarOrcamentoWhatsApp(selectedOrder)}
+                        onClick={() => void enviarOrcamentoWhatsApp(selectedOrder)}
                         className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
                         title={selectedOrder.customer?.phone ? 'Abre o WhatsApp com a mensagem pronta' : 'Cliente sem telefone: o WhatsApp abre para escolher o contato'}
                       >

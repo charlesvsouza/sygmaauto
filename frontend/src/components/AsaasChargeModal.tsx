@@ -144,7 +144,7 @@ export function AsaasChargeModal({ orderId, orderLabel, total, customerName, cus
       linhas.push(`Confira e aprove o orçamento por aqui: ${approvalUrl}`);
     }
     const texto = encodeURIComponent(linhas.join(String.fromCharCode(10)));
-    const numero = (customerPhone ?? '').replace(/\D/g, '');
+    const numero = (customerPhone ?? '').replace(/[^0-9]/g, '');
     const destino = numero.length >= 10 ? `55${numero.replace(/^55/, '')}` : '';
     const url = destino ? `https://wa.me/${destino}?text=${texto}` : `https://wa.me/?text=${texto}`;
     window.open(url, '_blank', 'noopener');
