@@ -1559,8 +1559,10 @@ export class ServiceOrdersService {
 
     for (const item of order.items as any[]) {
       let newUnitPrice: number = Number(item.unitPrice);
-      let newDescription: string = item.description;
-      let newQuantity: number = Number(item.quantity);
+      // A QUANTIDADE É DA OFICINA. Sincronizar preço nunca pode sobrescrever horas/quantidade
+      // digitadas (ex.: o padrão 1,0 h que a oficina mudou para 3,0 h). O TMO do catálogo é
+      // sugestão na hora de incluir o item, não uma regra que volta por cima do que foi editado.
+      const newQuantity: number = Number(item.quantity);
 
       if (item.type === 'part' && item.partId) {
         const part = await this.prisma.part.findFirst({
@@ -1577,12 +1579,10 @@ export class ServiceOrdersService {
         });
         if (svc) {
           if (svc.hourlyRate && svc.tmo) {
+            // Só o preço da hora vem do catálogo; as horas continuam as da O.S.
             newUnitPrice = Number(svc.hourlyRate);
-            newQuantity = Number(svc.tmo);
-            newDescription = `${svc.name} (TMO: ${svc.tmo}h x R$ ${svc.hourlyRate}/h)`;
           } else if (svc.basePrice) {
             newUnitPrice = Number(svc.basePrice);
-            newQuantity = 1;
           }
         }
       }
@@ -1591,7 +1591,7 @@ export class ServiceOrdersService {
       updates.push(
         this.prisma.serviceOrderItem.update({
           where: { id: item.id },
-          data: { unitPrice: newUnitPrice, quantity: newQuantity, totalPrice: newTotal, description: newDescription },
+          data: { unitPrice: newUnitPrice, totalPrice: newTotal },
         }),
       );
     }
