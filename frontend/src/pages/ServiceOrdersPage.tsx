@@ -529,43 +529,62 @@ export function ServiceOrdersPage() {
     return simples ? `${simples}` : '';
   };
 
-  /**
-   * Envia o orçamento pelo WhatsApp com o PDF EM ANEXO e as formas de pagamento escolhidas.
-   *
-   * O PDF é baixado autenticado e entregue via Web Share API (no celular abre a folha de
-   * compartilhamento com o arquivo anexado). Onde o navegador não compartilha arquivo (caso do
-   * Chrome no desktop), o PDF é baixado e o wa.me abre com o texto pronto — aí é só anexar o
-   * arquivo que está na pasta de downloads.
-   */
-  const enviarOrcamentoWhatsApp = async (order: any) => {
-    if (!order?.approvalToken) {
-      toast.warning('Gere o link de aprovação primeiro: "Enviar para Aprovação".');
-      return;
-    }
-    const link = `${window.location.origin}/aprovacao/${order.approvalToken}`;
-    const nome = order.customer?.name ?? '';
-    const veiculo = order.vehicle
-      ? [order.vehicle.plate, order.vehicle.brand, order.vehicle.model].filter(Boolean).join(' ')
-      : '';
-    const formas = descricaoFormasPagamento(order);
-    const texto = [
-      `Olá${nome ? `, ${nome}` : ''}! Aqui é da ${tenantFullData?.name ?? 'oficina'}${veiculo ? ` sobre o veículo ${veiculo}` : ''}.`,
-      '',
-      `Segue o orçamento da O.S. ${orderCode(order)} — total R$ ${fmtBR(totalComEdicao(order))}.`,
-      ...(formas ? [`Forma de pagamento: ${formas}.`] : []),
-      '',
-      'Para aprovar (ou recusar), é só abrir o link:',
-      link,
-      '',
-      'Qualquer dúvida, responda por aqui.',
-    ].join(String.fromCharCode(10));
-    const numero = String(order.customer?.phone ?? '').replace(/[^0-9]/g, '');
+  /** Abre o WhatsApp do cliente com um texto pronto (usa o celular do cadastro; sem celular, deixa escolher). */
+  const abrirWhatsAppCliente = (order: any, texto: string) => {
+    const numero = String(order?.customer?.phone ?? '').replace(/[^0-9]/g, '');
     const destino = numero.length >= 10 ? `55${numero.replace(/^55/, '')}` : '';
     const url = destino
       ? `https://wa.me/${destino}?text=${encodeURIComponent(texto)}`
       : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank', 'noopener');
+  };
 
-    // PDF do orçamento (mesmo documento do botão "Documentos → Orçamento").
+  const saudacao = (order: any) => {
+    const nome = order?.customer?.name ?? '';
+    const veiculo = order?.vehicle
+      ? [order.vehicle.plate, order.vehicle.brand, order.vehicle.model].filter(Boolean).join(' ')
+      : '';
+    return `Olá${nome ? `, ${nome}` : ''}! Aqui é da ${tenantFullData?.name ?? 'oficina'}${veiculo ? ` sobre o veículo ${veiculo}` : ''}.`;
+  };
+
+  /**
+   * ENVIO 1 — só o LINK DE APROVAÇÃO (texto curto, sem anexo).
+   * É a mensagem que pede a resposta do cliente: aprovar ou recusar.
+   */
+  const enviarLinkAprovacao = (order: any) => {
+    if (!order?.approvalToken) {
+      toast.warning('Gere o link primeiro: "Enviar para Aprovação".');
+      return;
+    }
+    const link = `${window.location.origin}/aprovacao/${order.approvalToken}`;
+    const texto = [
+      saudacao(order),
+      '',
+      `Seu orçamento da O.S. ${orderCode(order)} está pronto — total R$ ${fmtBR(totalComEdicao(order))}.`,
+      'Para aprovar (ou recusar), abra o link (não precisa instalar nada):',
+      link,
+      '',
+      'O orçamento completo, com as formas de pagamento, vai na mensagem seguinte.',
+    ].join(String.fromCharCode(10));
+    abrirWhatsAppCliente(order, texto);
+  };
+
+  /**
+   * ENVIO 2 — o ORÇAMENTO em PDF (com as formas de pagamento).
+   * No celular abre a folha de compartilhamento com o arquivo anexado; no desktop baixa o PDF
+   * e abre o WhatsApp para anexar (o wa.me não anexa arquivo sozinho).
+   */
+  const enviarOrcamentoPdf = async (order: any) => {
+    const formas = descricaoFormasPagamento(order);
+    const texto = [
+      saudacao(order),
+      '',
+      `Segue o orçamento da O.S. ${orderCode(order)} — total R$ ${fmtBR(totalComEdicao(order))}.`,
+      ...(formas ? [`Forma de pagamento: ${formas}.`] : []),
+      '',
+      'Qualquer dúvida sobre os itens, responda por aqui.',
+    ].join(String.fromCharCode(10));
+
     let arquivo: File | null = null;
     try {
       const res = await serviceOrdersApi.downloadDocument(order.id, 'orcamento');
@@ -573,7 +592,7 @@ export function ServiceOrdersPage() {
       const nomeArquivo = `ORCAMENTO-${orderCode(order).replace(/[^A-Za-z0-9]+/g, '-')}.pdf`;
       arquivo = new File([blob], nomeArquivo, { type: 'application/pdf' });
     } catch {
-      toast.warning('Não foi possível gerar o PDF agora. A mensagem vai sem o anexo.');
+      toast.warning('Não foi possível gerar o PDF agora.');
     }
 
     const nav = navigator as Navigator & { canShare?: (d: any) => boolean; share?: (d: any) => Promise<void> };
@@ -582,11 +601,10 @@ export function ServiceOrdersPage() {
         await nav.share({ files: [arquivo], text: texto, title: `Orçamento O.S. ${orderCode(order)}` });
         return;
       } catch (err: any) {
-        if (err?.name === 'AbortError') return; // o usuário fechou a folha de compartilhamento
+        if (err?.name === 'AbortError') return;
       }
     }
 
-    // Sem compartilhamento de arquivo: baixa o PDF e abre o WhatsApp com o texto.
     if (arquivo) {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(arquivo);
@@ -595,7 +613,7 @@ export function ServiceOrdersPage() {
       URL.revokeObjectURL(a.href);
       toast.info('PDF baixado. Anexe o arquivo no WhatsApp que abriu.');
     }
-    window.open(url, '_blank', 'noopener');
+    abrirWhatsAppCliente(order, texto);
   };
 
   // Valores AO VIVO: o subtotal de cada item e o total da O.S. refletem o que está na tela
@@ -1825,13 +1843,20 @@ export function ServiceOrdersPage() {
                     )}
                     {selectedOrder.approvalToken && (
                       <button type="button"
-                        onClick={() => void enviarOrcamentoWhatsApp(selectedOrder)}
+                        onClick={() => enviarLinkAprovacao(selectedOrder)}
                         className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
-                        title={selectedOrder.customer?.phone ? 'Abre o WhatsApp com a mensagem pronta' : 'Cliente sem telefone: o WhatsApp abre para escolher o contato'}
+                        title="Manda só o link para o cliente aprovar ou recusar, sem anexo"
                       >
-                        Enviar orçamento por WhatsApp
+                        Enviar link de aprovação (WhatsApp)
                       </button>
                     )}
+                    <button type="button"
+                      onClick={() => void enviarOrcamentoPdf(selectedOrder)}
+                      className="w-full px-3 py-2 rounded-xl text-[11px] font-bold transition-all text-left border border-line bg-surface-950/60 text-surface-200 hover:bg-surface-900"
+                      title="Manda o orçamento em PDF, com as formas de pagamento"
+                    >
+                      Enviar orçamento em PDF (WhatsApp)
+                    </button>
                     {canChargeAsaas && (
                       <button type="button"
                         onClick={() => setShowAsaasCharge(true)}
