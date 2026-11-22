@@ -139,10 +139,10 @@ export class AsaasService {
       /** Valor efetivamente cobrado nesta emissão (adiantamento pode ser menor). */
       chargeValue: order.asaasChargeValue != null ? Number(order.asaasChargeValue) : Number(order.totalCost || 0),
       chargePercent: order.asaasChargePercent ?? 100,
-      /** Quanto já foi recebido somando as cobranças desta O.S. */
-      paidValue: Number(order.asaasPaidValue || 0),
+      /** Quanto já foi recebido somando as cobranças desta O.S. (O.S. antiga paga = total). */
+      paidValue: this.jaRecebido(order),
       /** Quanto ainda falta receber. */
-      balance: this.round2(Number(order.totalCost || 0) - Number(order.asaasPaidValue || 0)),
+      balance: this.round2(Number(order.totalCost || 0) - this.jaRecebido(order)),
     };
   }
 
@@ -159,7 +159,7 @@ export class AsaasService {
     const total = Number(order.totalCost || 0);
     if (total <= 0) throw new BadRequestException('O valor da O.S. é zero: não há o que cobrar.');
     // Adiantamento: a oficina escolhe de 10% a 100% do SALDO (total menos o que já foi recebido).
-    const jaPago = Number((order as { asaasPaidValue?: number | null }).asaasPaidValue ?? 0);
+    const jaPago = this.jaRecebido(order);
     const saldo = this.round2(total - jaPago);
     if (saldo <= 0) throw new BadRequestException('Esta O.S. já está totalmente recebida: não há saldo a cobrar.');
     const percent = dto.percent ?? 100;
@@ -362,7 +362,7 @@ export class AsaasService {
 
     // Valor recebido nesta cobrança (o do adiantamento, não o total da O.S.).
     const recebidoAgora = Number((order as { asaasChargeValue?: number | null }).asaasChargeValue ?? order.totalCost ?? 0);
-    const jaRecebido = Number((order as { asaasPaidValue?: number | null }).asaasPaidValue ?? 0);
+    const jaRecebido = this.jaRecebido(order);
 
     await this.prisma.serviceOrder.update({
       where: { id: orderId },
@@ -394,6 +394,12 @@ export class AsaasService {
         .updateStatus(tenantId, orderId, { status: 'FATURADO', notes: 'Pagamento recebido pelo Asaas' } as UpdateStatusDto)
         .catch((err) => this.logger.error(`Não foi possível faturar a O.S. ${orderId} após pagamento Asaas: ${err.message}`));
     }
+  }
+
+  /** Total já recebido nesta O.S. O.S. paga antes das colunas novas (asaasPaidAt sem paidValue) conta como quitada. */
+  private jaRecebido(order: { asaasPaidValue?: number | null; asaasPaidAt?: Date | null; totalCost?: number | null }): number {
+    if (order.asaasPaidValue != null) return Number(order.asaasPaidValue);
+    return order.asaasPaidAt ? Number(order.totalCost ?? 0) : 0;
   }
 
   private round2(v: number): number {
