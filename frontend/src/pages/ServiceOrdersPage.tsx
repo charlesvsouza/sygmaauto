@@ -510,6 +510,23 @@ export function ServiceOrdersPage() {
     }
   };
 
+  // Valores AO VIVO: o subtotal de cada item e o total da O.S. refletem o que está na tela
+  // (quantidade/horas e desconto digitados), sem precisar salvar. O total salvos vem do servidor;
+  // aqui aplicamos só a DIFERENÇA das linhas em edição, para não brigar com taxas/ajustes da O.S.
+  const qtdEmTela = (item: any) => Number(pendingQtyByItem[item.id] ?? item.quantity ?? 0);
+  const descontoPctEmTela = (item: any) => Number(pendingDiscountPctByItem[item.id] ?? itemDiscountPercent(item));
+  const subtotalEmTela = (item: any) => {
+    const base = qtdEmTela(item) * Number(item.unitPrice || 0);
+    const desc = Math.round(base * (descontoPctEmTela(item) / 100) * 100) / 100;
+    return Math.max(0, Math.round((base - desc) * 100) / 100);
+  };
+  const subtotalSalvo = (item: any) => Number(item.totalPrice || 0);
+  const totalComEdicao = (order: any) => {
+    const itens: any[] = Array.isArray(order?.items) ? order.items : [];
+    const delta = itens.reduce((soma, item) => soma + (subtotalEmTela(item) - subtotalSalvo(item)), 0);
+    return Math.round((Number(order?.totalCost || 0) + delta) * 100) / 100;
+  };
+
   const pendingChangesCount = Object.entries(pendingQtyByItem).filter(([itemId, newQty]) => {
     const current = selectedOrder?.items?.find((i: any) => i.id === itemId);
     return current && Number(newQty) > 0 && Number(newQty) !== Number(current.quantity);
@@ -1544,7 +1561,7 @@ export function ServiceOrdersPage() {
                           />
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(subtotalEmTela(item))}</td>
                         <td className="px-5 py-3 text-right whitespace-nowrap">
                           {canRegisterCatalog && !isClosed && !item.serviceId && (
                             <button
@@ -1645,7 +1662,7 @@ export function ServiceOrdersPage() {
                           />
                         </td>
                         <td className="px-5 py-3 text-surface-400">R$ {fmtBR(item.unitPrice)}</td>
-                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(item.totalPrice)}</td>
+                        <td className="px-5 py-3 font-bold text-surface-100 text-right">R$ {fmtBR(subtotalEmTela(item))}</td>
                         <td className="px-5 py-3 text-right whitespace-nowrap">
                           {canRegisterCatalog && !isClosed && !item.partId && (
                             <button
@@ -1918,7 +1935,7 @@ export function ServiceOrdersPage() {
                   })()}
                   <div className="pt-3 border-t border-accent">
                     <p className="text-[11px] font-bold text-white mb-1">Total Geral com Desconto</p>
-                    <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(selectedOrder.totalCost)}</p>
+                    <p className="text-3xl font-bold tracking-tight">R$ {fmtBR(totalComEdicao(selectedOrder))}</p>
                   </div>
                 </div>
               </div>
@@ -2408,7 +2425,7 @@ export function ServiceOrdersPage() {
         <AsaasChargeModal
           orderId={selectedOrder.id}
           orderLabel={orderCode(selectedOrder)}
-          total={Number(selectedOrder.totalCost || 0)}
+          total={totalComEdicao(selectedOrder)}
           customerName={selectedOrder.customer?.name ?? null}
           customerPhone={selectedOrder.customer?.phone ?? null}
           salonName={tenantFullData?.name ?? null}
@@ -2521,7 +2538,7 @@ export function ServiceOrdersPage() {
             <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-xs text-red-700 font-medium space-y-1">
               <p><span className="font-bold">OS:</span> #{orderCode(selectedOrder)}</p>
               <p><span className="font-bold">Status atual:</span> {statusConfig[selectedOrder.status]?.label ?? selectedOrder.status}</p>
-              <p><span className="font-bold">Total:</span> R$ {fmtBR(selectedOrder.totalCost)}</p>
+              <p><span className="font-bold">Total:</span> R$ {fmtBR(totalComEdicao(selectedOrder))}</p>
             </div>
 
             <div className="space-y-2">
